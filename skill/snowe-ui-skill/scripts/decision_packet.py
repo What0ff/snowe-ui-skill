@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-"""Architecture-first decision support for Snowe UI Skill.
+"""Schema 3 unresolved-first decision support for Snowe UI Skill.
 
-The packet deliberately does not choose a site recipe, visual style, font,
-palette, image source, or motion intensity.  It turns a brief into a causal
-design workbench: facts and unknowns, design pressures, evidence needs,
-candidate contracts, and proof obligations.  A capable agent performs the
-actual synthesis and records the decision after comparing real candidates.
+The runtime preserves the brief verbatim. It does not detect its language,
+classify vocabulary, infer work mode, platform, facts, or pressures, or query
+product analogs unless the caller explicitly supplies ``analog_query``. Only
+``declared_context`` can populate semantic situation fields. The packet adds a
+generic inquiry and proof workbench; the agent derives project pressures from
+verified evidence and performs the actual design synthesis.
 """
 
 from __future__ import annotations
@@ -155,7 +156,7 @@ def _identity_sources() -> list[str]:
 
 
 class DecisionPacketGenerator:
-    """Generate an open design workbench without selecting the design."""
+    """Wrap a verbatim brief and caller declarations in an open inquiry."""
 
     def generate(
         self,
@@ -564,6 +565,7 @@ def generate_decision_packet(
     declared_context: dict[str, Any] | None = None,
     analog_query: str | None = None,
 ) -> str:
+    """Format a schema 3 packet without semantically interpreting ``brief``."""
     packet = DecisionPacketGenerator().generate(
         brief,
         project_name,

@@ -31,7 +31,7 @@ node scripts/browser-smoke.mjs --smoke
   task requires it.
 - `skill/snowe-ui-skill/scripts/` — deterministic retrieval, open decision
   support, and low-level validators.
-- `skill/snowe-ui-skill/data/` — subordinate retrieval evidence and analogs.
+- `skill/snowe-ui-skill/data/` — remaining optional retrieval evidence catalogs.
 - `evals/` and `benchmarks/` — behavioral contracts and rendered forward-tests.
 - `tests/` — product, safety, packaging, and benchmark regression coverage.
 

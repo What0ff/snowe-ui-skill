@@ -1,5 +1,7 @@
 # Snowe Design Decision Packet
 
+> **Historical benchmark artifact.** This file preserves the schema 2.0 packet used while creating Goodturn and is not an example of current CLI output. Schema 3 preserves a brief verbatim, does not infer mode, platform, signals, or pressures, and retrieves product analogs only after an explicit `--analog-query`. See the current [CLI reference](../../../../skill/snowe-ui-skill/references/cli-reference.md).
+
 **Project:** Goodturn Cycles
 **Schema:** 2.0
 **Brief:** Responsive commerce website for Goodturn Cycles, a fictional independent city-bike retailer. First-time and returning urban riders need to choose by daily use, carrying needs, terrain, maintenance tolerance, and fit; the business sells a curated three-bike range with transparent euro prices, guided fit, free local test rides, workshop care, delivery, and a 30-day right-ride exchange. Primary conversion is a fit-informed test ride or reserve/buy decision, not generic lead capture.

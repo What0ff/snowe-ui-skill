@@ -6,7 +6,7 @@
 
 Snowe is an architecture-first design skill for Codex and compatible `SKILL.md` runtimes. It helps an agent frame the real product and business problem, synthesize materially different experience directions, choose through causal evidence, implement in the target repository, and improve the result through rendered critique.
 
-It is not a layout, style, or landing-page recipe chooser. Local datasets are analog and retrieval evidence; they do not define the solution space.
+It is not a layout, style, or landing-page recipe chooser. The remaining optional local evidence catalogs support explicit retrieval and analogy; they do not classify the brief or define the solution space.
 
 > Snowe UI Skill is an independent community project. It is not affiliated with or endorsed by OpenAI.
 
@@ -43,15 +43,9 @@ Goodturn, its bikes, prices, policies, address, and imagery are fictional benchm
 - [Read the rendered QA and corrections](benchmarks/bicycle-commerce/design-intelligence/goodturn-cycles/QA.md)
 - [Browse all screenshots](benchmarks/bicycle-commerce/screenshots)
 
-## Generalization showcase — three different experience classes
+## Rendered generalization evidence — three additional experience classes
 
-Goodturn is not the only proof. Three rendered forward-tests begin from different actors, objects, stakes, content, and repeat-use conditions. None uses generated imagery or a custom asset because those choices do not improve the work; municipal and warehouse motion is limited to necessary state feedback, while the publication uses only reading progress.
-
-<p align="center">
-  <img src="benchmarks/forward-tests/municipal-service/screenshots/desktop-home.jpg" alt="Larkhaven municipal permit service" width="32%">
-  <img src="benchmarks/forward-tests/warehouse-operations/screenshots/desktop-queue.jpg" alt="Relay North warehouse exception queue" width="32%">
-  <img src="benchmarks/forward-tests/literary-publication/screenshots/desktop-issue.jpg" alt="The Morrow Review literary issue" width="32%">
-</p>
+Goodturn is the flagship, not the only rendered evidence. Three additional forward-tests begin from different actors, objects, stakes, content, and repeat-use conditions. None uses generated imagery or a custom asset because those choices do not improve the work; municipal and warehouse motion is limited to necessary state feedback, while the publication uses only reading progress. Together, the four benchmarks provide evidence across four materially different tested classes—not proof of universal performance or automated aesthetic quality.
 
 | Experience | Causal architecture | Interaction posture |
 |---|---|---|
@@ -59,13 +53,32 @@ Goodturn is not the only proof. Three rendered forward-tests begin from differen
 | Relay North operations | Persistent application shell around exception queue, affected object, history, and audited resolution | Dense records, stable inspector, search/filter, J/K/E and slash keyboard paths |
 | The Morrow Review | Issue relationships flowing into sustained reading, contents, editorial context, archive, then earned membership | Typographic navigation, reading controls, saved state, archive discovery |
 
-Their narrow states also transform differently: the service becomes one evidence order, the operations table becomes structured records with an on-demand rail, and the editorial spread becomes a continuous authored reading flow.
+### Representative desktop and mobile states
+
+Each pair keeps a desktop interaction large enough to inspect while retaining one narrow-state transformation. Open an image for its full-resolution capture.
+
+#### Larkhaven — eligibility before application
 
 <p align="center">
-  <img src="benchmarks/forward-tests/municipal-service/screenshots/mobile-status-dialog.jpg" alt="Larkhaven mobile status result" width="29%">
-  <img src="benchmarks/forward-tests/warehouse-operations/screenshots/mobile-resolution.jpg" alt="Relay North mobile resolution dialog" width="29%">
-  <img src="benchmarks/forward-tests/literary-publication/screenshots/mobile-contents.jpg" alt="Morrow Review mobile issue navigation" width="29%">
+  <a href="benchmarks/forward-tests/municipal-service/screenshots/desktop-result.jpg"><img src="benchmarks/forward-tests/municipal-service/screenshots/desktop-result.jpg" alt="Larkhaven desktop eligibility result" width="74%"></a>
+  <a href="benchmarks/forward-tests/municipal-service/screenshots/mobile-status-dialog.jpg"><img src="benchmarks/forward-tests/municipal-service/screenshots/mobile-status-dialog.jpg" alt="Larkhaven mobile request status result" width="21%"></a>
 </p>
+
+#### Relay North — live queue and audited resolution
+
+<p align="center">
+  <a href="benchmarks/forward-tests/warehouse-operations/screenshots/desktop-queue.jpg"><img src="benchmarks/forward-tests/warehouse-operations/screenshots/desktop-queue.jpg" alt="Relay North desktop warehouse exception queue" width="74%"></a>
+  <a href="benchmarks/forward-tests/warehouse-operations/screenshots/mobile-resolution.jpg"><img src="benchmarks/forward-tests/warehouse-operations/screenshots/mobile-resolution.jpg" alt="Relay North mobile resolution dialog" width="21%"></a>
+</p>
+
+#### The Morrow Review — sustained reading and issue navigation
+
+<p align="center">
+  <a href="benchmarks/forward-tests/literary-publication/screenshots/desktop-reading.jpg"><img src="benchmarks/forward-tests/literary-publication/screenshots/desktop-reading.jpg" alt="Morrow Review desktop reading view" width="74%"></a>
+  <a href="benchmarks/forward-tests/literary-publication/screenshots/mobile-contents.jpg"><img src="benchmarks/forward-tests/literary-publication/screenshots/mobile-contents.jpg" alt="Morrow Review mobile issue navigation" width="21%"></a>
+</p>
+
+The transformations remain causally different: the service becomes one evidence order, the operations table becomes structured records with an on-demand rail, and the editorial spread becomes a continuous authored reading flow.
 
 - [Open the rendered forward-tests](benchmarks/forward-tests/README.md)
 - [Read the cross-benchmark causal comparison](benchmarks/CROSS-BENCHMARK.md)
@@ -118,7 +131,7 @@ snowe-ui-skill/
 ├── skill/snowe-ui-skill/             # Installable product
 │   ├── SKILL.md                       # Core workflow and reference router
 │   ├── agents/openai.yaml             # Skill interface metadata
-│   ├── data/                          # Retrieval evidence and analog catalogs
+│   ├── data/                          # Optional local evidence catalogs
 │   ├── references/                    # Progressive specialist guidance
 │   └── scripts/
 │       ├── search.py                  # CLI entrypoint
@@ -128,7 +141,7 @@ snowe-ui-skill/
 │       └── contrast.py                # Exact opaque-color contrast checks
 ├── evals/designer-behavior/           # Cross-business behavioral contracts
 ├── benchmarks/bicycle-commerce/       # Rendered Goodturn forward-test
-├── benchmarks/forward-tests/           # Public-service, operations, and editorial proof
+├── benchmarks/forward-tests/           # Public-service, operations, and editorial evidence
 ├── scripts/browser-smoke.mjs           # Dependency-free Chrome/CDP browser checks
 └── tests/                             # Product and benchmark regression suite
 ```
@@ -182,6 +195,8 @@ python skill/snowe-ui-skill/scripts/search.py \
   "bicycle fit comparison" --domain product --max-results 5
 ```
 
+`--domain` is required for catalog retrieval. Current domains are `chart`, `product`, `ux`, `icons`, `icon-families`, `icon-concepts`, `icon-candidates`, `react`, `web`, and `google-fonts`; stack guidance uses the separate `--stack` option.
+
 Open a decision packet without selecting a layout, style, palette, font, image, or motion recipe:
 
 ```bash
@@ -192,7 +207,16 @@ python skill/snowe-ui-skill/scripts/search.py \
   --format markdown
 ```
 
-The packet does not classify brief vocabulary or privilege English. It leaves work mode, platform, pressures, and ambiguous domain terms unresolved unless the caller supplies verified context. Local analogs are not retrieved automatically; add `--analog-query "caller chosen lexical terms"` only when an analogy can change a live decision.
+The packet preserves the brief verbatim. It does not classify brief vocabulary, detect its language, or infer work mode, platform, pressures, or ambiguous domain roles. Those fields remain `UNRESOLVED` unless the caller supplies explicit context; the agent derives pressures later from verified project evidence.
+
+Local product analogs are not retrieved automatically. Request a subordinate lexical lookup only when it can change a live decision:
+
+```bash
+python skill/snowe-ui-skill/scripts/search.py \
+  "Городской магазин велосипедов с подбором посадки" \
+  --decision-packet \
+  --analog-query "bicycle retailer fit"
+```
 
 Persist the open brief, a durable decision ledger, and an optional page inquiry:
 
@@ -205,11 +229,13 @@ python skill/snowe-ui-skill/scripts/search.py \
   --output-dir /path/to/project
 ```
 
+Persistence writes under `design-intelligence/<project>/`: `BRIEF.md` is regenerated from the current packet, `DECISIONS.md` is created only when absent and then preserved, and `--page` adds or refreshes a page inquiry without prescribing a page type or section order.
+
 `--design-system` remains a compatibility alias for `--decision-packet`; it no longer invokes the removed recipe generator. See `python skill/snowe-ui-skill/scripts/search.py --help` for all domains and stacks.
 
-## Knowledge base
+## Optional local evidence
 
-The bundled evidence layer includes caller-requested product analog terms, Google Fonts metadata, UX and web implementation guidance, chart guidance, stack-specific references, icon families/concepts, and curated icon candidates.
+The remaining optional local evidence catalogs include caller-requested product analog terms, Google Fonts metadata, UX and web implementation guidance, chart guidance, stack-specific references, icon families/concepts, and curated icon candidates.
 
 These records can expand vocabulary, reveal alternatives, provide counterexamples, or route current research. They are not product classification, current market truth, conversion proof, or an authoritative list of allowable designs.
 
@@ -241,7 +267,11 @@ Run the dependency-free rendered smoke layer with Node 22 and a local Chrome/Chr
 node scripts/browser-smoke.mjs --smoke
 ```
 
-CI runs compile and unit regressions on Python 3.11/3.13 across Ubuntu and Windows, the multilingual/generalization behavior evaluation, and the Chrome smoke. The browser layer catches runtime errors, broken assets, horizontal overflow, menu/dialog behavior, focus handoff, critical interactions, responsive states, and reduced-motion regressions. It deliberately does not pretend to certify aesthetic quality. Rendered forward-tests preserve briefs, candidates, accepted/rejected decisions, real states, responsive captures, findings, corrections, and remaining limits.
+CI runs compile and unit regressions on Python 3.11/3.13 across Ubuntu and Windows, the multilingual/generalization behavior evaluation, and the Chrome smoke.
+
+- Unit tests and the behavioral eval protect runtime, epistemic, packaging, and benchmark contracts; they do not score taste.
+- Browser smoke executes the four tested benchmarks and checks for runtime errors, broken assets, horizontal overflow, menu/dialog behavior, focus handoff, critical interactions, responsive states, and reduced-motion regressions.
+- Rendered captures, decision records, and QA notes provide comparative evidence for human visual judgment. They do not certify aesthetic quality or universal performance.
 
 ## Design principles
 

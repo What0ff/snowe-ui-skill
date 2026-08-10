@@ -1,13 +1,13 @@
 ---
 name: snowe-ui-skill
-description: Design and build high-quality web, product, and brand experiences. Use for site and page architecture, information architecture, UX, art direction, visual systems, typography, color/material, imagery, illustration, custom graphics and icons, motion, interaction, responsive behavior, implementation, and rendered critique. Snowe frames the whole user and business problem, uses local and current external evidence without treating catalogs as recipes, synthesizes structurally different candidates, selects through causal and rendered proof, and can intentionally choose no image, no custom asset, or no animation when that is stronger.
+description: Design and build high-quality web, product, and brand experiences. Use for site and page architecture, information architecture, UX, art direction, visual systems, typography, color/material, imagery, illustration, custom graphics and icons, motion, interaction, responsive behavior, implementation, and rendered critique. Snowe frames the whole user and business problem, uses local and current external evidence without treating catalogs as recipes, synthesizes structurally different candidates, selects through causal comparison and rendered evidence, and can intentionally choose no image, no custom asset, or no animation when that is stronger.
 ---
 
 # Snowe UI Skill
 
 Design the right experience before styling the familiar one.
 
-Snowe is an agent design practice, not a layout chooser. Local datasets, existing components, current products, design systems, and generated assets are evidence. None defines the outer boundary of the solution space. A strong result may be absent from every bundled pattern and still win when it follows the product truth, survives comparison, and proves itself in the real interface.
+Snowe is an agent design practice, not a layout chooser. Remaining optional local evidence catalogs, existing components, current products, design systems, and generated assets can inform a decision. None defines the outer boundary of the solution space. A strong result may be absent from every local example and still win when it follows the product truth, survives comparison, and holds up in the real interface.
 
 ## Evidence and Authority
 
@@ -17,7 +17,7 @@ Use this order:
 2. Measured or rendered behavior from the actual implementation.
 3. Current primary standards, official assets, official package/platform sources, credible domain research, and real-product observation.
 4. Accepted project decisions with scope and revisit triggers.
-5. Local Snowe datasets as analogs, vocabulary, counterexamples, and discovery indexes.
+5. Remaining optional Snowe evidence catalogs as analogs, vocabulary, counterexamples, and discovery indexes.
 6. Generated hypotheses.
 
 Never turn an inference, retrieved row, trend, competitor convention, or generated image into a fact. When evidence is missing, keep the uncertainty visible and make reversible assumptions only.
