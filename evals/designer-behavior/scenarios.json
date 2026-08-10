@@ -1,38 +1,144 @@
-[
-  {
-    "id": "bicycle-commerce",
-    "brief": "Responsive commerce website for an independent urban bicycle retailer. First-time riders need fit and use-case confidence before buying. Show real bikes, prices, workshop service, local test rides, and a clear purchase path.",
-    "expected_signals": ["commerce"],
-    "forbidden_signals": ["service_transaction", "operations"]
+{
+  "core_scenarios": [
+    {
+      "id": "bicycle-commerce",
+      "brief": "Responsive commerce website for an independent urban bicycle retailer. First-time riders need fit and use-case confidence before buying.",
+      "declared_context": {
+        "platforms": ["responsive web"],
+        "facts": ["The assortment, prices, test rides, workshop service, and purchase path must be concrete."],
+        "pressures": ["Support confident fit and use-case selection before asking for purchase commitment."]
+      }
+    },
+    {
+      "id": "municipal-service",
+      "brief": "Municipal online service for residents to check permit eligibility, apply, upload documents, track status, and recover from missing evidence.",
+      "declared_context": {
+        "platforms": ["multilingual responsive web", "assisted-service fallback"],
+        "facts": ["A failed or misunderstood application can delay a resident's legal activity."],
+        "pressures": ["Prevent avoidable submission errors and make recovery and status legible without commercial persuasion."]
+      }
+    },
+    {
+      "id": "pediatric-care",
+      "brief": "Pediatric care mobile app for parents to triage symptoms, book appointments, manage medication reminders, and understand when to seek urgent care.",
+      "declared_context": {
+        "platforms": ["mobile"],
+        "facts": ["The product cannot replace clinical diagnosis."],
+        "pressures": ["Reduce harmful ambiguity while preserving an immediate escalation path and calm comprehension."]
+      }
+    },
+    {
+      "id": "literary-publication",
+      "brief": "Independent literary magazine publishing long-form fiction, criticism, themed issues, authors, archives, events, and paid membership.",
+      "declared_context": {
+        "platforms": ["responsive web"],
+        "facts": ["Sustained reading and issue relationships are primary content behavior."],
+        "pressures": ["Let editorial value and reading continuity precede membership conversion."]
+      }
+    },
+    {
+      "id": "warehouse-operations",
+      "brief": "Keyboard-first warehouse operations workspace for dispatchers managing live inventory, exceptions, transfers, receiving, and audit history on desktop.",
+      "declared_context": {
+        "platforms": ["desktop", "keyboard-first"],
+        "facts": ["Dispatchers repeatedly detect, inspect, and resolve time-sensitive exceptions."],
+        "pressures": ["Minimize time and context switching between exception detection, decision, action, and auditability."]
+      }
+    },
+    {
+      "id": "experimental-musician",
+      "brief": "Website and shop for an experimental musician: releases, performances, essays, limited physical editions, listening, and direct fan purchase.",
+      "declared_context": {
+        "platforms": ["responsive web"],
+        "facts": ["Listening and authorship must remain perceptually primary."],
+        "pressures": ["Support direct purchase without reducing the artist's body of work to a generic product catalog."]
+      }
+    }
+  ],
+  "equivalence_pairs": [
+    {
+      "id": "commerce-en-ru",
+      "left": "Independent bicycle retailer with prices, fit advice, test rides, workshop care, and purchase.",
+      "right": "Независимый магазин велосипедов с ценами, подбором посадки, тест-драйвом, мастерской и покупкой."
+    },
+    {
+      "id": "public-service-en-ru",
+      "left": "Municipal permit service for eligibility, application, evidence upload, recovery, and status.",
+      "right": "Муниципальная услуга для проверки права, подачи заявления, загрузки доказательств, восстановления и проверки статуса."
+    },
+    {
+      "id": "mixed-language",
+      "left": "Keyboard-first warehouse workspace with live exceptions and audit history.",
+      "right": "Keyboard-first складское workspace: live exceptions и история аудита."
+    }
+  ],
+  "ambiguity_cases": [
+    {"id": "service-workshop", "brief": "Bicycle store workshop service and service history."},
+    {"id": "service-government", "brief": "Public service application recovery."},
+    {"id": "platform-editorial", "brief": "Literary publication platform and archive."},
+    {"id": "audit-review", "brief": "Audit the existing account form."},
+    {"id": "audit-record", "brief": "Read-only audit history for transfers."},
+    {"id": "store-retail", "brief": "A store with physical pickup."},
+    {"id": "store-data", "brief": "Store application history in an archive."},
+    {"id": "application-software", "brief": "Desktop application platform."},
+    {"id": "application-request", "brief": "Permit application and evidence."},
+    {"id": "unknown-domain", "brief": "Control surface for a xenobiological spore-exchange ritual."},
+    {"id": "unresolved-pressure", "brief": "A platform for a new community."}
+  ],
+  "metamorphic_cases": {
+    "stable_paraphrase": {
+      "left": "Review the current account form and preserve its coherent visual system.",
+      "right": "Keep the coherent identity while examining the existing account form."
+    },
+    "meaningful_business_change": {
+      "brief": "Member-supported literary archive.",
+      "left_context": {"pressures": ["Sustain paid membership after readers experience editorial value."]},
+      "right_context": {"pressures": ["Maximize free public access and institutional preservation."]}
+    },
+    "preservation": {
+      "brief": "Fix dialog focus restoration in the existing product without redesigning it.",
+      "declared_context": {
+        "work_mode": "evolution",
+        "facts": ["The existing visual and component system is coherent and accepted."],
+        "pressures": ["Correct the focus defect while preserving unrelated accepted decisions."]
+      }
+    }
   },
-  {
-    "id": "municipal-service",
-    "brief": "Municipal online service for residents to check permit eligibility, apply, upload documents, track status, and recover from missing evidence. Multilingual responsive web, high stakes.",
-    "expected_signals": ["service_transaction", "high_stakes", "multilingual"],
-    "forbidden_signals": ["commerce", "editorial_content"]
-  },
-  {
-    "id": "pediatric-care",
-    "brief": "Pediatric care mobile app for parents to triage symptoms, book appointments, manage medication reminders, and understand when to seek urgent care.",
-    "expected_signals": ["service_transaction", "high_stakes"],
-    "forbidden_signals": ["commerce", "operations"]
-  },
-  {
-    "id": "literary-publication",
-    "brief": "Independent literary magazine platform publishing long-form fiction, criticism, themed issues, authors, archives, events, and paid membership.",
-    "expected_signals": ["editorial_content", "event_or_community"],
-    "forbidden_signals": ["service_transaction", "operations"]
-  },
-  {
-    "id": "warehouse-operations",
-    "brief": "Keyboard-first warehouse operations workspace for dispatchers managing live inventory, exceptions, transfers, receiving, and audit history on desktop.",
-    "expected_signals": ["operations", "dense_information", "keyboard_first"],
-    "forbidden_signals": ["commerce", "service_transaction"]
-  },
-  {
-    "id": "experimental-musician",
-    "brief": "Website and shop for an experimental musician: releases, performances, essays, limited physical editions, listening, and direct fan purchase. Expressive brand but no assumed animation.",
-    "expected_signals": ["commerce", "brand_expression"],
-    "forbidden_signals": ["service_transaction", "operations"]
-  }
-]
+  "progressive_disclosure": [
+    {
+      "id": "narrow-focus-fix",
+      "task": "Restore focus after an existing dialog closes without changing its design system.",
+      "needed": ["quality-gates.md"],
+      "not_needed": ["experience-architecture.md", "imagery-and-assets.md", "motion-and-interaction.md", "designer-evaluation.md"],
+      "reason": "The product structure and visual language are accepted; only an interaction/accessibility defect is open."
+    },
+    {
+      "id": "journey-architecture",
+      "task": "Reorganize a municipal permit journey across eligibility, evidence, submission, recovery, and status.",
+      "needed": ["exploration-protocol.md", "experience-architecture.md"],
+      "not_needed": ["iconography-system.md", "imagery-and-assets.md", "motion-and-interaction.md"],
+      "reason": "The organizing logic and whole journey are open; visual assets and motion are not yet decisions."
+    },
+    {
+      "id": "no-image-decision",
+      "task": "Decide whether a dense warehouse exception workspace needs imagery.",
+      "needed": ["imagery-and-assets.md"],
+      "not_needed": ["iconography-system.md", "motion-and-interaction.md", "designer-evaluation.md"],
+      "reason": "The active comparison is image versus no image; generation workflow ends when no image wins."
+    },
+    {
+      "id": "routine-icon",
+      "task": "Choose a familiar close glyph from the product's existing icon family.",
+      "needed": ["iconography-system.md"],
+      "not_needed": ["imagery-and-assets.md", "art-direction-gate.md", "experience-architecture.md"],
+      "reason": "A known system action in an accepted family does not justify custom drawing or broader art direction."
+    },
+    {
+      "id": "benchmark-comparison",
+      "task": "Compare several rendered products for unexplained topology and visual-language repetition.",
+      "needed": ["designer-evaluation.md"],
+      "not_needed": ["cli-reference.md", "iconography-system.md"],
+      "reason": "The active work is cross-scenario evidence, not asset production or local retrieval."
+    }
+  ]
+}

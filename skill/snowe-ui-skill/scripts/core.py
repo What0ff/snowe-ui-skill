@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Snowe UI Skill Core - BM25 search engine for UI/UX style guides
-"""
+"""Snowe UI Skill Core: BM25 retrieval over explicitly selected evidence catalogs."""
 
 import csv
 import re
@@ -25,40 +23,20 @@ ICON_CANDIDATE_FAMILY_ALIASES = {
 }
 
 CSV_CONFIG = {
-    "style": {
-        "file": "styles.csv",
-        "search_cols": ["Style Category", "Keywords", "Best For", "Type", "AI Prompt Keywords"],
-        "output_cols": ["Style Category", "Type", "Keywords", "Primary Colors", "Effects & Animation", "Best For", "Light Mode ✓", "Dark Mode ✓", "Performance", "Accessibility", "Framework Compatibility", "Complexity", "AI Prompt Keywords", "CSS/Technical Keywords", "Implementation Checklist", "Design System Variables"]
-    },
-    "color": {
-        "file": "colors.csv",
-        "search_cols": ["Product Type", "Notes"],
-        "output_cols": ["Product Type", "Primary", "On Primary", "Secondary", "On Secondary", "Accent", "On Accent", "Background", "Foreground", "Card", "Card Foreground", "Muted", "Muted Foreground", "Border", "Destructive", "On Destructive", "Ring", "Notes"]
-    },
     "chart": {
         "file": "charts.csv",
         "search_cols": ["Data Type", "Keywords", "Best Chart Type", "When to Use", "When NOT to Use", "Accessibility Notes"],
         "output_cols": ["Data Type", "Keywords", "Best Chart Type", "Secondary Options", "When to Use", "When NOT to Use", "Data Volume Threshold", "Color Guidance", "Accessibility Grade", "Accessibility Notes", "A11y Fallback", "Library Recommendation", "Interactive Level"]
     },
-    "landing": {
-        "file": "landing.csv",
-        "search_cols": ["Pattern Name", "Keywords", "Conversion Optimization", "Section Order"],
-        "output_cols": ["Pattern Name", "Keywords", "Section Order", "Primary CTA Placement", "Color Strategy", "Conversion Optimization"]
-    },
     "product": {
         "file": "products.csv",
-        "search_cols": ["Product Type", "Keywords", "Primary Style Recommendation", "Key Considerations"],
-        "output_cols": ["Product Type", "Keywords", "Key Considerations", "Primary Style Recommendation", "Secondary Styles", "Landing Page Pattern", "Dashboard Style (if applicable)", "Color Palette Focus"]
+        "search_cols": ["Product Type", "Keywords"],
+        "output_cols": ["Product Type", "Keywords"]
     },
     "ux": {
         "file": "ux-guidelines.csv",
         "search_cols": ["Category", "Issue", "Description", "Platform"],
         "output_cols": ["Category", "Issue", "Platform", "Description", "Do", "Don't", "Code Example Good", "Code Example Bad", "Severity"]
-    },
-    "typography": {
-        "file": "typography.csv",
-        "search_cols": ["Font Pairing Name", "Category", "Mood/Style Keywords", "Best For", "Heading Font", "Body Font"],
-        "output_cols": ["Font Pairing Name", "Category", "Heading Font", "Body Font", "Mood/Style Keywords", "Best For", "Google Fonts URL", "CSS Import", "Tailwind Config", "Notes"]
     },
     "icons": {
         "file": "icons.csv",
@@ -79,11 +57,6 @@ CSV_CONFIG = {
         "file": "icon-candidates.csv",
         "search_cols": ["Concept", "Role", "Family", "Icon Name", "Metaphor", "Use When", "Avoid When", "Keywords"],
         "output_cols": ["Concept", "Role", "Family", "Icon Name", "Package", "Import Hint", "Metaphor", "Use When", "Avoid When", "Verified Version", "Official URL"]
-    },
-    "gsap": {
-        "file": "motion.csv",
-        "search_cols": ["Category", "Intensity Tier", "Keywords", "Trigger"],
-        "output_cols": ["Category", "Intensity Tier", "Trigger", "Duration", "Easing", "GSAP Snippet", "Framework Notes", "Do", "Don't", "Performance Notes"]
     },
     "react": {
         "file": "react-performance.csv",
@@ -110,22 +83,6 @@ DOMAIN_SOURCE_ROLES = {
         "analogy evidence",
         "Treat matches as unverified analogs. Reuse relevant concerns only; do not inherit product identity, layout, style, palette, or landing recipe.",
     ),
-    "landing": (
-        "historical pattern examples",
-        "Section orders are examples to challenge, combine, or reject after journey and content modeling; they are not page architecture.",
-    ),
-    "style": (
-        "visual vocabulary and implementation clues",
-        "A style row can widen vocabulary but cannot establish art direction, brand fit, or rendered quality.",
-    ),
-    "color": (
-        "palette examples",
-        "Palette rows are starting evidence only. Verify brand provenance, semantic roles, rendered contrast, themes, and content context.",
-    ),
-    "typography": (
-        "font discovery snapshot",
-        "A pairing is not a selection. Verify current files, license, scripts, metrics, roles, loading, fallback, and real-content renders.",
-    ),
     "google-fonts": (
         "font catalog snapshot",
         "Confirm current official metadata and actual files before choosing or loading a family.",
@@ -145,10 +102,6 @@ DOMAIN_SOURCE_ROLES = {
     "icons": (
         "legacy universal-icon lookup",
         "Use only for familiar system actions and verify the repository's actual source. Product-specific symbols require broader reasoning.",
-    ),
-    "gsap": (
-        "motion implementation examples",
-        "Retrieve only after motion has a defined communicative job and a static/reduced-motion equivalent; a snippet is not a motion decision.",
     ),
     "chart": (
         "visualization guidance snapshot",
@@ -299,39 +252,23 @@ def _search_csv(filepath, search_cols, output_cols, query, max_results, row_filt
     return results
 
 
-def detect_domain(query):
-    """Auto-detect the most relevant domain from query"""
-    query_lower = query.lower()
-
-    domain_keywords = {
-        "color": ["color", "palette", "hex", "#", "rgb", "token", "semantic", "accent", "destructive", "muted", "foreground"],
-        "chart": ["chart", "graph", "visualization", "trend", "bar", "pie", "scatter", "heatmap", "funnel"],
-        "landing": ["landing", "page", "cta", "conversion", "hero", "testimonial", "pricing", "section"],
-        "product": ["saas", "ecommerce", "e-commerce", "fintech", "healthcare", "gaming", "portfolio", "crypto", "dashboard", "fitness", "restaurant", "hotel", "travel", "music", "education", "learning", "legal", "insurance", "medical", "beauty", "pharmacy", "dental", "pet", "dating", "wedding", "recipe", "delivery", "ride", "booking", "calendar", "timer", "tracker", "diary", "note", "chat", "messenger", "crm", "invoice", "parking", "transit", "vpn", "alarm", "weather", "sleep", "meditation", "fasting", "habit", "grocery", "meme", "wardrobe", "plant care", "reading", "flashcard", "puzzle", "trivia", "arcade", "photography", "streaming", "podcast", "newsletter", "marketplace", "freelancer", "coworking", "airline", "museum", "theater", "church", "non-profit", "charity", "kindergarten", "daycare", "senior care", "veterinary", "florist", "bakery", "brewery", "construction", "automotive", "real estate", "logistics", "agriculture", "coding bootcamp"],
-        "style": ["style", "design", "ui", "minimalism", "glassmorphism", "neumorphism", "brutalism", "dark mode", "flat", "aurora", "prompt", "css", "implementation", "variable", "checklist", "tailwind"],
-        "ux": ["ux", "usability", "accessibility", "wcag", "touch", "scroll", "animation", "keyboard", "navigation", "mobile"],
-        "typography": ["font pairing", "typography pairing", "heading font", "body font"],
-        "google-fonts": ["google font", "font family", "font weight", "font style", "variable font", "noto", "font for", "find font", "font subset", "font language", "monospace font", "serif font", "sans serif font", "display font", "handwriting font", "font", "typography", "serif", "sans"],
-        "icon-families": ["icon family", "icon families", "icon library", "icon libraries", "symbol family", "glyph family", "lucide", "phosphor", "tabler icons", "iconoir", "remix icon", "radix icons", "heroicons", "material symbols", "sf symbols", "hugeicons"],
-        "icon-concepts": ["icon metaphor", "icon concept", "ai icon", "automation icon", "security icon", "analytics icon", "integration icon", "platform icon", "growth icon", "trust icon", "community icon", "achievement icon", "non generic icon", "distinctive icon"],
-        "icon-candidates": ["icon candidate", "icon candidates", "glyph candidate", "named icon", "concrete icon", "icon export", "export name", "lucide glyph", "tabler glyph", "phosphor glyph", "iconoir glyph", "radix glyph", "remix glyph", "hugeicons glyph"],
-        "icons": ["icon", "icons", "symbol", "glyph", "pictogram", "svg icon"],
-        "gsap": ["gsap", "quickto", "scrolltrigger", "stagger", "magnetic cursor", "parallax", "page transition", "scroll reveal", "scroll-triggered", "scrollytelling", "flip plugin", "splittext", "shimmer", "skeleton loader"],
-        "react": ["react", "next.js", "nextjs", "suspense", "memo", "usecallback", "useeffect", "rerender", "bundle", "waterfall", "barrel", "dynamic import", "rsc", "server component"],
-        "web": ["aria", "focus", "outline", "semantic", "virtualize", "autocomplete", "form", "input type", "preconnect"]
-    }
-
-    scores = {domain: sum(1 for kw in keywords if re.search(r'\b' + re.escape(kw) + r'\b', query_lower)) for domain, keywords in domain_keywords.items()}
-    best = max(scores, key=scores.get)
-    return best if scores[best] > 0 else "style"
-
-
 def search(query, domain=None, max_results=MAX_RESULTS):
-    """Main search function with auto-domain detection"""
+    """Search one caller-selected evidence domain without semantic inference."""
     if domain is None:
-        domain = detect_domain(query)
+        return {
+            "error": "An explicit evidence domain is required; automatic semantic domain detection is intentionally unavailable",
+            "query": query,
+            "available_domains": list(CSV_CONFIG),
+        }
+    if domain not in CSV_CONFIG:
+        return {
+            "error": f"Unknown evidence domain: {domain}",
+            "domain": domain,
+            "query": query,
+            "available_domains": list(CSV_CONFIG),
+        }
 
-    config = CSV_CONFIG.get(domain, CSV_CONFIG["style"])
+    config = CSV_CONFIG[domain]
     filepath = DATA_DIR / config["file"]
 
     if not filepath.exists():
@@ -388,12 +325,7 @@ def search(query, domain=None, max_results=MAX_RESULTS):
         row_filter=row_filter,
     )
 
-    # Return style evidence faithfully. Historical rows are explicitly labeled
-    # as vocabulary, not policy; silently rewriting or excluding them would
-    # hide the evidence and reintroduce a hard-coded aesthetic boundary.
-    if domain == "style":
-        results = results[:max_results]
-    elif domain == "icons":
+    if domain == "icons":
         results = [
             result
             for result in results

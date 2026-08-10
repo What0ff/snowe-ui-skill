@@ -20,7 +20,17 @@ python <skill-directory>/scripts/search.py \
   --decision-packet --format markdown --project-name "Project Name"
 ```
 
-`--decision-packet` (short form `-dp`) returns unresolved product, architecture, art-direction, imagery, custom-graphic, motion, responsive, research, and evaluation questions. It detects brief pressures with word-boundary signals and retrieves labeled local analogs, but intentionally does not select a category, page pattern, layout, section order, style, palette, font, image, or animation.
+`--decision-packet` (short form `-dp`) preserves the brief verbatim and returns unresolved product, architecture, art-direction, imagery, custom-graphic, motion, responsive, research, and evaluation questions. It does not detect the language, classify vocabulary, infer a domain/platform/work mode, or invent pressures. Unknown and ambiguous framing remains explicitly unresolved.
+
+Local analogs are also off by default. Add a caller-chosen lexical query only when a product analogy can change an open decision:
+
+```text
+python <skill-directory>/scripts/search.py \
+  "Городской магазин велосипедов; уверенность в посадке до покупки" \
+  --decision-packet --analog-query "bicycle retailer fit"
+```
+
+`--analog-query` ranks at most three subordinate product-catalog matches. It is not semantic confidence, does not expand the brief, and changes no situation or architecture field when results are absent.
 
 Use `--format json` for structured evaluation or tooling. `--json` belongs to domain/stack search and cannot be combined with a decision packet.
 
@@ -86,22 +96,19 @@ Every result reports a **source role** and **use boundary**. Ranking is English-
 | Domain | Evidence role |
 |---|---|
 | `product` | Product analogs and concern prompts; never project identity |
-| `landing` | Historical page examples and counterexamples; never section recipes |
-| `style` | Visual vocabulary and implementation cues; never an art-direction winner |
-| `color` | Palette examples to inspect and verify; never brand or contrast proof |
-| `typography` | Pairing hypotheses and loading clues; never file/script/metric proof |
 | `google-fonts` | Bundled font metadata snapshot; verify current official files and license |
 | `ux` | Issue prompts and heuristics to verify in the actual flow |
 | `web` | App-interface/accessibility prompts; verify platform applicability |
 | `chart` | Visualization candidates, limitations, and accessibility prompts |
 | `react` | React/Next performance prompts; verify current repository/version |
-| `gsap` | Historical implementation examples; never evidence that motion is needed |
 | `icon-concepts` | Role-first metaphor prompts and ambiguity warnings |
 | `icon-families` | Source discovery snapshot; verify current official source/license |
 | `icon-candidates` | Exact known glyph/import hints for one named family |
 | `icons` | Legacy concrete icon-name lookup |
 
-Use concrete queries with the unresolved decision and context, not `modern app`. Query several domains only when each can change a decision. External current research remains necessary for unstable, high-leverage, or unsupported questions.
+There is intentionally no layout, landing, style, palette, typography-pairing, or motion-preset domain. Those catalogs were removed because their bundled combinations acted like solutions even when labeled as historical evidence.
+
+Use concrete queries with the unresolved decision and context, not `modern app`. Query several domains only when each can change a decision. External current research remains necessary for unstable, high-leverage, or unsupported questions. Lexical catalogs may be English-oriented; that limitation affects only an explicitly requested lookup, never decision-packet framing.
 
 For `icon-candidates`, name exactly one supported family per query so results remain auditable. Repeat exact-glyph lookup across sources, then render finalists in the same component. Do not use package count or catalog thumbnails as visual evidence.
 

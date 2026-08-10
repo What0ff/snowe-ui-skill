@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Rendered Snowe forward-test: a municipal permit journey organized around eligibility, evidence, recovery, and status.">
+  <title>Home alteration permit · Larkhaven Services</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to service</a>
+  <header class="civic-header">
+    <div class="header-inner">
+      <a class="civic-mark" href="#main" aria-label="Larkhaven Services home">
+        <span class="civic-name">Larkhaven</span>
+        <span class="civic-sub">Public services</span>
+      </a>
+      <button class="nav-toggle" id="nav-toggle" type="button" aria-expanded="false" aria-controls="service-nav">Menu</button>
+      <nav class="service-nav" id="service-nav" aria-label="Public services" data-open="false">
+        <a href="#requirements" data-i18n="navServices">Services</a>
+        <button type="button" id="status-open" data-i18n="navRequests">My requests</button>
+        <a href="#help" data-i18n="navHelp">Help</a>
+      </nav>
+      <button class="language" id="language-toggle" type="button" aria-label="Schimbă limba în română">RO</button>
+    </div>
+  </header>
+
+  <div class="service-band" aria-label="Service category">
+    <div class="band-inner">
+      <span>City service</span>
+      <span aria-hidden="true">/</span>
+      <span data-i18n="category">Building and streets</span>
+      <span class="service-ref">Service BH-14</span>
+    </div>
+  </div>
+
+  <main id="main" tabindex="-1">
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a href="#main" data-i18n="home">Home</a>
+      <span aria-hidden="true">/</span>
+      <a href="#requirements" data-i18n="permits">Permits</a>
+      <span aria-hidden="true">/</span>
+      <span aria-current="page" data-i18n="shortTitle">Home alterations</span>
+    </nav>
+
+    <section class="service-intro" aria-labelledby="service-title">
+      <p class="eyebrow" data-i18n="eyebrow">Before you alter a home</p>
+      <h1 id="service-title" data-i18n="title">Home alteration permit</h1>
+      <p class="lede" data-i18n="lede">Check whether your work needs permission, prepare the right evidence, and follow one request from submission to decision.</p>
+      <dl class="service-facts" aria-label="Service facts">
+        <div><dt data-i18n="formTime">Form time</dt><dd>8–12 min</dd></div>
+        <div><dt data-i18n="decisionTime">Decision</dt><dd data-i18n="workingDays">10 working days</dd></div>
+        <div><dt data-i18n="fee">Fee</dt><dd data-i18n="noFee">No fee</dd></div>
+      </dl>
+    </section>
+
+    <div class="service-layout">
+      <article class="service-content">
+        <section id="requirements" class="plain-section" aria-labelledby="requirements-title">
+          <h2 id="requirements-title" data-i18n="beforeStart">Before you start</h2>
+          <p data-i18n="beforeCopy">You will need the property address, a short description of the work, and a sketch or contractor plan. Owners and authorised tenants can apply.</p>
+          <ul class="evidence-list">
+            <li><strong data-i18n="address">Property address</strong><span data-i18n="addressNote">Including unit and cadastral number when known</span></li>
+            <li><strong data-i18n="workPlan">Work plan</strong><span data-i18n="workPlanNote">PDF, JPG, or PNG; up to 15 MB per file</span></li>
+            <li><strong data-i18n="consent">Owner consent</strong><span data-i18n="consentNote">Only when the applicant is a tenant</span></li>
+          </ul>
+        </section>
+
+        <section class="eligibility" id="eligibility" aria-labelledby="eligibility-title">
+          <div class="section-number" aria-hidden="true">01</div>
+          <div>
+            <p class="section-kicker" data-i18n="firstCheck">First, check eligibility</p>
+            <h2 id="eligibility-title" data-i18n="checkNeed">Do you need this permit?</h2>
+            <p data-i18n="checkCopy">Answer three questions. Your answers are not submitted and can be changed.</p>
+          </div>
+
+          <div class="error-summary" id="eligibility-errors" role="alert" tabindex="-1" hidden>
+            <h3 data-i18n="fixAnswers">Check your answers</h3>
+            <ul></ul>
+          </div>
+
+          <form id="eligibility-form" novalidate>
+            <fieldset data-question="property">
+              <legend><span>1.</span> <span data-i18n="qProperty">Is the property inside Larkhaven city limits?</span></legend>
+              <label><input type="radio" name="property" value="yes"> <span data-i18n="yes">Yes</span></label>
+              <label><input type="radio" name="property" value="no"> <span data-i18n="no">No</span></label>
+            </fieldset>
+            <fieldset data-question="structure">
+              <legend><span>2.</span> <span data-i18n="qStructure">Will the work change walls, windows, access, or the roof?</span></legend>
+              <label><input type="radio" name="structure" value="yes"> <span data-i18n="yes">Yes</span></label>
+              <label><input type="radio" name="structure" value="no"> <span data-i18n="no">No</span></label>
+              <label><input type="radio" name="structure" value="unsure"> <span data-i18n="unsure">Not sure</span></label>
+            </fieldset>
+            <fieldset data-question="emergency">
+              <legend><span>3.</span> <span data-i18n="qEmergency">Is this urgent work needed to remove an immediate safety risk?</span></legend>
+              <label><input type="radio" name="emergency" value="yes"> <span data-i18n="yes">Yes</span></label>
+              <label><input type="radio" name="emergency" value="no"> <span data-i18n="no">No</span></label>
+            </fieldset>
+            <button class="primary-action" type="submit" data-i18n="checkButton">Check and continue</button>
+          </form>
+
+          <section class="eligibility-result" id="eligibility-result" tabindex="-1" hidden aria-live="polite">
+            <p class="result-label" data-i18n="resultLabel">Eligibility result</p>
+            <h3 id="result-title">You can use this service</h3>
+            <p id="result-copy">Your answers indicate that a permit review is likely. You can begin now and save before uploading evidence.</p>
+            <a class="primary-action" href="#application-path" data-i18n="seeSteps">See application steps</a>
+          </section>
+        </section>
+
+        <section id="application-path" class="application-path" aria-labelledby="path-title">
+          <div class="section-number" aria-hidden="true">02</div>
+          <div>
+            <p class="section-kicker" data-i18n="applicationPath">Application path</p>
+            <h2 id="path-title" data-i18n="oneRequest">One request, four visible stages</h2>
+          </div>
+          <ol>
+            <li><span>1</span><div><strong data-i18n="stageStart">Start and identify the property</strong><p data-i18n="stageStartCopy">Save immediately after address validation.</p></div></li>
+            <li><span>2</span><div><strong data-i18n="stageEvidence">Add work details and evidence</strong><p data-i18n="stageEvidenceCopy">File checks happen before submission.</p></div></li>
+            <li><span>3</span><div><strong data-i18n="stageReview">Review and submit</strong><p data-i18n="stageReviewCopy">See every answer, declaration, and attachment together.</p></div></li>
+            <li><span>4</span><div><strong data-i18n="stageTrack">Track and respond</strong><p data-i18n="stageTrackCopy">Requests for missing evidence stay in the same timeline.</p></div></li>
+          </ol>
+          <button class="secondary-action" type="button" id="save-demo" data-i18n="startApplication">Start application</button>
+          <p class="prototype-note" id="save-note" role="status" aria-live="polite"></p>
+        </section>
+      </article>
+
+      <aside class="service-aside" aria-label="Service progress and help">
+        <section class="journey-panel" aria-labelledby="journey-title">
+          <p class="aside-label" data-i18n="yourJourney">Your service journey</p>
+          <h2 id="journey-title" data-i18n="knowNext">Know what happens next</h2>
+          <ol>
+            <li class="current"><span>1</span><div><strong data-i18n="journeyCheck">Check</strong><small data-i18n="journeyCheckCopy">Eligibility and evidence</small></div></li>
+            <li><span>2</span><div><strong data-i18n="journeyApply">Apply</strong><small data-i18n="journeyApplyCopy">Save and submit</small></div></li>
+            <li><span>3</span><div><strong data-i18n="journeyRespond">Respond</strong><small data-i18n="journeyRespondCopy">Missing information</small></div></li>
+            <li><span>4</span><div><strong data-i18n="journeyDecision">Decision</strong><small data-i18n="journeyDecisionCopy">Downloadable record</small></div></li>
+          </ol>
+        </section>
+
+        <section class="help-panel" id="help" aria-labelledby="help-title">
+          <p class="aside-label" data-i18n="needHelp">Need help?</p>
+          <h2 id="help-title" data-i18n="talkPerson">Talk to a person</h2>
+          <p data-i18n="helpCopy">Permit support can explain the process, arrange an interpreter, or offer an assisted appointment.</p>
+          <p><strong>021 555 0144</strong><br><span data-i18n="hours">Mon–Fri, 08:30–16:30</span></p>
+          <a href="mailto:permits@example.invalid">permits@example.invalid</a>
+        </section>
+      </aside>
+    </div>
+  </main>
+
+  <footer>
+    <div><strong>Larkhaven Public Services</strong><span data-i18n="fictional">Fictional service prototype for Snowe evaluation</span></div>
+    <nav aria-label="Footer"><a href="#help" data-i18n="accessibility">Accessibility</a><a href="#help" data-i18n="privacy">Privacy</a></nav>
+  </footer>
+
+  <dialog id="status-dialog" aria-labelledby="status-title">
+    <form method="dialog" class="dialog-shell" id="status-form" novalidate>
+      <div class="dialog-top">
+        <div><p class="section-kicker" data-i18n="existingRequest">Existing request</p><h2 id="status-title" data-i18n="checkStatus">Check request status</h2></div>
+        <button class="dialog-close" value="cancel" aria-label="Close status lookup">Close</button>
+      </div>
+      <p data-i18n="statusCopy">Enter the reference from your confirmation email. This prototype accepts LH-24017.</p>
+      <label for="request-reference" data-i18n="reference">Request reference</label>
+      <input id="request-reference" name="reference" autocomplete="off" placeholder="LH-24017" aria-describedby="reference-hint">
+      <small id="reference-hint" data-i18n="referenceHint">Format: LH followed by five digits</small>
+      <p class="field-error" id="reference-error" role="alert" hidden></p>
+      <button class="primary-action" value="default" data-i18n="findRequest">Find request</button>
+      <section class="status-result" id="status-result" tabindex="-1" hidden>
+        <p class="result-label" data-i18n="currentStatus">Current status</p>
+        <h3 data-i18n="evidenceReceived">Evidence received</h3>
+        <p data-i18n="statusResultCopy">Submitted 6 August. Assigned to case officer Mira Petrescu. Next update due by 14 August.</p>
+      </section>
+    </form>
+  </dialog>
+</body>
+</html>

@@ -10,546 +10,187 @@ actual synthesis and records the decision after comparing real candidates.
 
 from __future__ import annotations
 
-import csv
 import json
 import re
-from collections import Counter
 from datetime import datetime, timezone
-from functools import lru_cache
 from pathlib import Path
 from typing import Any, Iterable
 
-from core import DATA_DIR, search
+from core import search
 
 
-SCHEMA_VERSION = "2.0"
-
-_TOKEN_RE = re.compile(r"[^\W_]+(?:[-’'][^\W_]+)*", re.UNICODE)
-
-_ANALOG_GENERIC_TERMS = {
-    "app",
-    "application",
-    "audit",
-    "before",
-    "brand",
-    "care",
-    "clear",
-    "desktop",
-    "direct",
-    "existing",
-    "first",
-    "high",
-    "history",
-    "independent",
-    "live",
-    "local",
-    "mobile",
-    "music",
-    "need",
-    "online",
-    "platform",
-    "product",
-    "real",
-    "responsive",
-    "service",
-    "show",
-    "shop",
-    "site",
-    "track",
-    "price",
-    "prices",
-    "purchase",
-    "public",
-    "reminder",
-    "reminders",
-    "upload",
-    "user",
-    "web",
-    "website",
-}
-
-_STOPWORDS = {
-    "a",
-    "an",
-    "and",
-    "app",
-    "application",
-    "build",
-    "create",
-    "design",
-    "for",
-    "from",
-    "in",
-    "new",
-    "of",
-    "on",
-    "or",
-    "product",
-    "site",
-    "the",
-    "to",
-    "ui",
-    "ux",
-    "web",
-    "website",
-    "with",
-}
-
-_QUERY_EXPANSIONS = {
-    "bicycle": ("bike", "cycling"),
-    "bicycles": ("bike", "cycling"),
-    "bike": ("bicycle", "cycling"),
-    "medication": ("health", "healthcare", "medical", "prescription"),
-    "municipal": ("civic", "government", "public service"),
-    "municipality": ("civic", "government", "public service"),
-    "musician": ("music", "artist", "album", "record"),
-    "magazine": ("editorial", "publication", "articles"),
-    "journal": ("editorial", "publication", "articles"),
-    "pediatric": ("health", "healthcare", "medical", "child", "parent"),
-    "performances": ("concert", "tour", "music"),
-    "releases": ("music", "album", "record"),
-    "store": ("retail", "shop", "ecommerce"),
-    "retailer": ("retail", "shop", "ecommerce"),
-    "symptoms": ("health", "medical", "triage"),
-    "warehouse": ("inventory", "stock", "operations"),
-}
-
-_SIGNAL_RULES: dict[str, tuple[str, ...]] = {
-    "commerce": (
-        "buy",
-        "cart",
-        "catalog",
-        "commerce",
-        "ecommerce",
-        "e-commerce",
-        "price",
-        "pricing",
-        "purchase",
-        "retail",
-        "retailer",
-        "shop",
-        "store",
-        "subscription",
-    ),
-    "service_transaction": (
-        "application status",
-        "appointment",
-        "apply",
-        "booking",
-        "document upload",
-        "eligibility",
-        "permit",
-        "registration",
-        "status tracker",
-        "triage",
-    ),
-    "editorial_content": (
-        "article",
-        "articles",
-        "editorial",
-        "issue",
-        "journal",
-        "literary",
-        "long-form",
-        "magazine",
-        "news",
-        "publication",
-        "reading",
-        "story",
-    ),
-    "operations": (
-        "admin",
-        "analytics",
-        "console",
-        "dashboard",
-        "dispatcher",
-        "exceptions",
-        "inventory",
-        "monitoring",
-        "operations",
-        "stock",
-        "warehouse",
-        "workspace",
-    ),
-    "event_or_community": (
-        "agenda",
-        "community",
-        "event",
-        "events",
-        "live dates",
-        "membership",
-        "schedule",
-        "ticket",
-        "tickets",
-    ),
-    "brand_expression": (
-        "art direction",
-        "brand",
-        "campaign",
-        "experimental",
-        "expressive",
-        "immersive",
-        "portfolio",
-        "rebrand",
-        "storytelling",
-        "visual identity",
-    ),
-    "comparison": (
-        "compare",
-        "comparison",
-        "decision support",
-        "fit guide",
-        "selector",
-    ),
-    "location_or_route": (
-        "city",
-        "location",
-        "map",
-        "nearby",
-        "route",
-        "store locator",
-    ),
-    "media_rich": (
-        "album",
-        "gallery",
-        "image",
-        "imagery",
-        "photo",
-        "photography",
-        "video",
-        "visual",
-    ),
-    "high_stakes": (
-        "civic",
-        "financial",
-        "government",
-        "health",
-        "healthcare",
-        "medical",
-        "municipal",
-        "pediatric",
-        "public service",
-        "safety",
-    ),
-    "multilingual": (
-        "bilingual",
-        "internationalization",
-        "localization",
-        "multilingual",
-        "rtl",
-    ),
-    "dense_information": (
-        "data-dense",
-        "dense",
-        "high-density",
-        "inventory",
-        "metrics",
-        "table",
-        "tables",
-    ),
-    "keyboard_first": (
-        "keyboard-first",
-        "keyboard first",
-        "power user",
-        "shortcut",
-    ),
-}
-
-_PRESSURES = {
-    "commerce": "Make the offer concrete, support confident selection, expose price and fulfilment evidence, and place conversion where the decision becomes ready.",
-    "service_transaction": "Join eligibility, evidence, submission, recovery, and status into one understandable journey instead of mirroring organizational structure.",
-    "editorial_content": "Balance discovery with sustained reading, preserve issue/article relationships, and make subscription or attendance a consequence of editorial value rather than an interruption.",
-    "operations": "Reduce time to detect, understand, and act; preserve scan paths, object context, state history, and frequent keyboard loops.",
-    "event_or_community": "Make time, place, availability, participation, and social proof legible without turning urgency into noise.",
-    "brand_expression": "Create a recognizable point of view from the product, audience, content, material, or behavior rather than selecting a trend label.",
-    "comparison": "Keep criteria commensurable and visible at the decision moment; avoid forcing memory-based comparison across pages.",
-    "location_or_route": "Preserve orientation, distance, sequence, and a non-map alternative when spatial context matters.",
-    "media_rich": "Give every visual a job—desire, proof, explanation, orientation, detail, or atmosphere—and budget crop, loading, and fallback behavior.",
-    "high_stakes": "Prioritize comprehension, error prevention, recovery, provenance, accessibility, and calm confidence over novelty.",
-    "multilingual": "Treat script coverage, expansion, bidirectionality, content parity, and locale switching as architecture inputs rather than final QA.",
-    "dense_information": "Use density to support expert scanning and comparison; prevent compression from hiding priority, state, or action.",
-    "keyboard_first": "Model repeated command paths, focus movement, shortcuts, undo, and state continuity as first-class interaction architecture.",
-}
+SCHEMA_VERSION = "3.0"
 
 
-def _tokens(value: str) -> list[str]:
-    return [token.casefold() for token in _TOKEN_RE.findall(str(value or ""))]
+def _as_string_list(value: Any, field: str) -> list[str]:
+    if value is None:
+        return []
+    if not isinstance(value, (list, tuple)):
+        raise TypeError(f"declared_context.{field} must be a list of strings")
+    items = [str(item).strip() for item in value if str(item).strip()]
+    return items
 
 
-def _contains_phrase(tokens: list[str], phrase: str) -> bool:
-    phrase_tokens = _tokens(phrase)
-    if not phrase_tokens:
-        return False
-    width = len(phrase_tokens)
-    return any(tokens[index : index + width] == phrase_tokens for index in range(len(tokens) - width + 1))
+def _normalize_declared_context(value: dict[str, Any] | None) -> dict[str, Any]:
+    """Pass through explicit caller declarations without interpreting the brief."""
+    context = dict(value or {})
+    work_mode = str(context.pop("work_mode", "")).strip()
+    platforms = _as_string_list(context.pop("platforms", None), "platforms")
+    facts = _as_string_list(context.pop("facts", None), "facts")
+    pressures = _as_string_list(context.pop("pressures", None), "pressures")
+    other = {str(key): child for key, child in context.items()}
+    declared = bool(work_mode or platforms or facts or pressures or other)
+    return {
+        "status": "CALLER_DECLARED" if declared else "NOT_PROVIDED",
+        "work_mode": work_mode or "UNRESOLVED — determine from the requested change and verified repository state",
+        "platforms": platforms or ["UNRESOLVED — verify target surfaces, environments, and input modes"],
+        "facts": facts,
+        "pressures": pressures,
+        "other": other,
+        "provenance": "Values in this block come only from the caller; the runtime never derives them from brief vocabulary.",
+    }
 
 
-def _detect_signals(brief: str) -> list[str]:
-    tokens = _tokens(brief)
+def _pressure_inquiry() -> list[dict[str, str]]:
     return [
-        signal
-        for signal, markers in _SIGNAL_RULES.items()
-        if any(_contains_phrase(tokens, marker) for marker in markers)
+        {
+            "dimension": "user outcome and context",
+            "question": "What outcome is each primary actor trying to reach, in what situation, frequency, environment, and level of consequence?",
+        },
+        {
+            "dimension": "business or organizational outcome",
+            "question": "Which outcome, transaction, adoption, efficiency, trust, learning, or relationship matters—and what evidence would show progress without harming the user outcome?",
+        },
+        {
+            "dimension": "objects, content, and state",
+            "question": "Which real objects, attributes, relationships, content types, lifecycle states, exceptions, and provenance shape the experience?",
+        },
+        {
+            "dimension": "journey and decision structure",
+            "question": "Which decisions, dependencies, entry points, return visits, recovery paths, assisted routes, and cross-channel steps determine the architecture?",
+        },
+        {
+            "dimension": "risk and exclusion",
+            "question": "Which errors, ambiguity, language needs, access barriers, performance limits, or policy constraints could cause material harm or failure?",
+        },
+        {
+            "dimension": "identity and perception",
+            "question": "Which verified product, brand, audience, place, material, content, or behavioral truths should the experience make perceptible?",
+        },
     ]
 
 
-def _work_mode(brief: str) -> str:
-    tokens = _tokens(brief)
-    if any(
-        _contains_phrase(tokens, phrase)
-        for phrase in (
-            "design audit",
-            "ui audit",
-            "ux audit",
-            "usability audit",
-            "usability review",
-            "design review",
-            "review this",
-            "review the",
-            "review existing",
-            "critique this",
-            "critique the",
-            "diagnose this",
-            "diagnose the",
-            "audit this",
-            "audit the",
-            "audit existing",
-        )
-    ):
-        return "review"
-    if any(
-        _contains_phrase(tokens, phrase)
-        for phrase in ("existing", "polish", "refine", "redesign", "rework", "improve")
-    ):
-        return "evolution"
-    return "new_direction"
-
-
-def _platforms(brief: str) -> list[str]:
-    tokens = _tokens(brief)
-    platforms: list[str] = []
-    groups = (
-        ("responsive_web", ("responsive web", "website", "web")),
-        ("mobile", ("mobile", "ios", "android", "touch-first")),
-        ("desktop", ("desktop", "keyboard-first", "pointer-first")),
-    )
-    for platform, markers in groups:
-        if any(_contains_phrase(tokens, marker) for marker in markers):
-            platforms.append(platform)
-    return platforms or ["UNKNOWN — verify target surfaces and input modes"]
-
-
-def _research_plan(mode: str, signals: list[str], brief: str) -> dict[str, Any]:
-    tokens = _tokens(brief)
-    triggers: list[dict[str, str]] = []
-    if mode == "new_direction" or "brand_expression" in signals:
-        triggers.append(
-            {
-                "question": "What does the current product, market, cultural, and visual landscape make familiar—and where is there room to be meaningfully distinct?",
-                "sources": "Real current products, official brand assets, primary platform guidance, and credible domain research",
-                "stop": "Stop when new sources repeat known approaches and no longer introduce a material architecture, content, or art-direction challenger.",
-            }
-        )
-    if "commerce" in signals:
-        triggers.append(
-            {
-                "question": "What information and interaction evidence do buyers currently need to compare, trust, and purchase this category?",
-                "sources": "Current category retailers and manufacturers plus evidence-based ecommerce UX research",
-                "stop": "Stop after the main decision anxieties, content conventions, and strongest counterexamples are represented.",
-            }
-        )
-    if "high_stakes" in signals or "multilingual" in signals:
-        triggers.append(
-            {
-                "question": "Which current standards, service guidance, legal constraints, language requirements, and failure modes shape the experience?",
-                "sources": "Official standards, regulator or service guidance, platform accessibility documentation, and verified organizational policy",
-                "stop": "Standards and hard constraints are resolved or explicitly left UNKNOWN with a safe fallback.",
-            }
-        )
-    if any(_contains_phrase(tokens, marker) for marker in ("icon", "font", "library", "framework", "image generator", "gpt image")):
-        triggers.append(
-            {
-                "question": "Which current official assets, packages, licenses, capabilities, and platform constraints can materially change the decision?",
-                "sources": "Official documentation, authoritative registries, licenses, and current release information",
-                "stop": "The viable candidates and their current integration constraints are verified; no speculative dependency set is installed.",
-            }
-        )
-    if not triggers:
-        triggers.append(
-            {
-                "question": "Could current external evidence reveal a materially different architecture, interaction, visual language, or risk than repository evidence alone?",
-                "sources": "Use targeted primary or real-product sources only if the answer is plausibly yes.",
-                "stop": "Skip or stop when external exploration cannot reasonably change a high-leverage decision.",
-            }
-        )
+def _research_plan() -> dict[str, Any]:
     return {
         "posture": "targeted, decision-led research; never a mandatory moodboard",
-        "triggers": triggers,
+        "triggers": [
+            {
+                "activate_when": "Current standards, law, policy, safety, accessibility, localization, or platform behavior could change a material constraint.",
+                "question": "What current primary guidance or verified policy governs the unresolved decision?",
+                "sources": "Official standards, regulator or organizational policy, primary platform documentation, and current accessibility guidance",
+                "stop": "The constraint is verified, safely bounded, or explicitly left UNKNOWN with a recovery path.",
+            },
+            {
+                "activate_when": "Real products, category behavior, culture, or audience expectations could reveal a material alternative or risk.",
+                "question": "Which current examples widen the architecture, content, interaction, or identity space without becoming a template?",
+                "sources": "Real current products, first-party product material, credible domain research, and direct observation",
+                "stop": "New examples repeat known approaches and no longer change a candidate or risk.",
+            },
+            {
+                "activate_when": "A font, icon family, package, browser technique, image generator, or other dependency is a live candidate.",
+                "question": "Which current official asset, capability, license, version, and integration constraints affect the choice?",
+                "sources": "Official documentation, authoritative registries, licenses, release notes, and real target-platform renders",
+                "stop": "Viable candidates and their constraints are verified; speculative dependencies are not installed.",
+            },
+        ],
+        "activation_rule": "The agent activates only checks that can change a material decision. Brief vocabulary never activates research automatically.",
         "synthesis_rule": "Extract transferable principles, tensions, and counterexamples. Do not copy a competitor's composition, brand codes, imagery, or interaction signature.",
         "evidence_record": "decision | source | observed fact | implication | confidence | freshness | candidate changed?",
     }
 
 
-def _expanded_query(brief: str) -> str:
-    query_tokens = _tokens(brief)
-    additions: list[str] = []
-    for token in query_tokens:
-        for expansion in _QUERY_EXPANSIONS.get(token, ()):
-            if expansion not in additions:
-                additions.append(expansion)
-    return " ".join((brief, *additions))
+def _local_analogs(analog_query: str | None) -> dict[str, Any]:
+    query = str(analog_query or "").strip()
+    if not query:
+        return {
+            "status": "NOT_REQUESTED",
+            "query": None,
+            "product_analogs": [],
+        }
 
-
-def _matched_terms(brief: str, values: Iterable[Any]) -> list[str]:
-    query_terms = {token for token in _tokens(brief) if token not in _STOPWORDS and len(token) > 2}
-    evidence_terms = set(_tokens(" ".join(str(value) for value in values)))
-    return sorted(query_terms & evidence_terms)
-
-
-@lru_cache(maxsize=1)
-def _product_term_frequency() -> tuple[int, dict[str, int]]:
-    """Return product-vocabulary document frequency for weak-analog rejection."""
-    filepath = DATA_DIR / "products.csv"
-    counts: Counter[str] = Counter()
-    total = 0
-    with filepath.open(newline="", encoding="utf-8") as handle:
-        for row in csv.DictReader(handle):
-            total += 1
-            values = (
-                row.get("Product Type", ""),
-                row.get("Keywords", ""),
-                row.get("Key Considerations", ""),
-            )
-            counts.update(set(_tokens(" ".join(values))))
-    return total, dict(counts)
-
-
-def _meaningful_analog_terms(terms: Iterable[str]) -> list[str]:
-    total, frequency = _product_term_frequency()
-    rare_limit = max(5, round(total * 0.05))
-    meaningful = [term for term in terms if term not in _ANALOG_GENERIC_TERMS]
-    if len(meaningful) >= 2:
-        return meaningful
-    return [term for term in meaningful if frequency.get(term, total) <= rare_limit]
-
-
-def _non_generic_terms(terms: Iterable[str]) -> list[str]:
-    return [term for term in terms if term not in _ANALOG_GENERIC_TERMS]
-
-
-def _local_analogs(brief: str) -> list[dict[str, Any]]:
-    expanded = _expanded_query(brief)
-    specific_terms = [
-        token
-        for token in _tokens(expanded)
-        if token not in _STOPWORDS and token not in _ANALOG_GENERIC_TERMS and len(token) > 2
+    result = search(query, "product", 3)
+    analogs = [
+        {
+            "status": "UNVERIFIED_ANALOG",
+            "label": item.get("Product Type", "Unlabelled analog"),
+            "catalog_terms": item.get("Keywords", ""),
+            "warning": "The caller chose this lexical query. BM25 rank is not semantic confidence; use the row only to widen questions or alternatives.",
+        }
+        for item in result.get("results", [])
     ]
-    candidates: list[dict[str, Any]] = []
-    seen_labels: set[str] = set()
-    for query in (" ".join(specific_terms), expanded):
-        if not query.strip():
-            continue
-        result = search(query, "product", 16)
-        for item in result.get("results", []):
-            label = item.get("Product Type", "Unlabelled analog")
-            if label in seen_labels:
-                continue
-            seen_labels.add(label)
-            candidates.append(item)
-
-    ranked: list[tuple[int, dict[str, Any], list[str]]] = []
-    for item in candidates:
-        matches = _meaningful_analog_terms(_matched_terms(expanded, item.values()))
-        if not matches:
-            continue
-        label_matches = _non_generic_terms(
-            _matched_terms(expanded, (item.get("Product Type", ""),))
-        )
-        keyword_matches = _non_generic_terms(
-            _matched_terms(expanded, (item.get("Keywords", ""),))
-        )
-        consideration_matches = _non_generic_terms(
-            _matched_terms(expanded, (item.get("Key Considerations", ""),))
-        )
-        if not label_matches and not keyword_matches and len(matches) < 2:
-            continue
-        score = 5 * len(label_matches) + 3 * len(keyword_matches) + len(consideration_matches)
-        ranked.append((score, item, matches))
-
-    analogs: list[dict[str, Any]] = []
-    for _score, item, matches in sorted(ranked, key=lambda entry: entry[0], reverse=True):
-        analogs.append(
-            {
-                "status": "UNVERIFIED_ANALOG",
-                "label": item.get("Product Type", "Unlabelled analog"),
-                "matched_terms": matches,
-                "possibly_useful_evidence": item.get("Key Considerations", ""),
-                "warning": "Use only the relevant concern or content clue. Do not inherit this row's product identity, layout, style, palette, or landing recipe.",
-            }
-        )
-        if len(analogs) == 3:
-            break
-    return analogs
+    return {
+        "status": "REQUESTED_BY_CALLER",
+        "query": query,
+        "product_analogs": analogs,
+    }
 
 
-def _unknowns(signals: list[str]) -> list[str]:
-    questions = [
-        "What outcome is the primary user trying to reach, in what context, and what currently makes it difficult?",
-        "What business outcome and conversion event matter, and what evidence would show success without harming the user outcome?",
-        "Which actors, objects, content, states, entry points, return visits, and offline or cross-channel steps belong to the whole journey?",
-        "Which requirements are facts, which are reversible assumptions, and which unknowns could change the architecture or brand position?",
+def _unknowns() -> list[str]:
+    return [
+        "What in the brief is verified fact, what is a stakeholder claim, what is an assumption, and what evidence is missing?",
+        "What would make the current framing wrong, incomplete, or too narrow?",
+        "Which important pressure may be absent from every bundled vocabulary or familiar product category?",
+        "Which parts of the problem require domain, language, cultural, legal, or operational expertise the runtime does not possess?",
     ]
-    if "commerce" in signals:
-        questions.append("What is sold, how does the assortment differ, which criteria drive selection, and which fulfilment, service, warranty, availability, or price facts remove purchase anxiety?")
-    if "service_transaction" in signals:
-        questions.append("What must users understand before starting, what evidence must they provide, how can they save or recover work, and how is progress or status explained?")
-    if "editorial_content" in signals:
-        questions.append("How do issues, articles, authors, topics, archives, events, and paid offerings relate, and which reading/discovery loops should the architecture preserve?")
-    if "operations" in signals:
-        questions.append("Which objects change state, which exceptions demand action, what decisions repeat, and what context or history must remain visible while acting?")
-    if "high_stakes" in signals:
-        questions.append("Which errors create real harm, what provenance or reassurance is required, and what assisted or alternative path exists when the digital journey fails?")
-    return questions
 
 
-def _identity_sources(signals: list[str]) -> list[str]:
-    sources = [
-        "The product's real objects, construction, workflow, or information relationships",
-        "Audience language, culture, habits, and context of use",
+def _identity_sources() -> list[str]:
+    return [
+        "The product's real objects, construction, workflow, state transitions, or information relationships",
+        "Audience language, culture, habits, access needs, and context of use",
         "Verified brand history, voice, assets, materials, place, and behavior",
-        "The form and quality of real content—not placeholder volume or trend labels",
+        "The form, authorship, provenance, and quality of real content—not placeholder volume or trend labels",
+        "Physical, service, operational, editorial, commercial, or community realities discovered in the project",
     ]
-    if "commerce" in signals:
-        sources.append("Product engineering, materials, fit, use environments, service expertise, and the rituals of selection and ownership")
-    if "editorial_content" in signals:
-        sources.append("Editorial voice, issue structure, pacing, authorship, annotation, and the physical or archival qualities of publication")
-    if "operations" in signals:
-        sources.append("Domain states, transitions, signals, physical environment, and the cadence of expert decisions")
-    return sources
 
 
 class DecisionPacketGenerator:
     """Generate an open design workbench without selecting the design."""
 
-    def generate(self, brief: str, project_name: str | None = None) -> dict[str, Any]:
-        signals = _detect_signals(brief)
-        mode = _work_mode(brief)
-        pressures = [_PRESSURES[signal] for signal in signals if signal in _PRESSURES]
-        if not pressures:
-            pressures = [
-                "The brief does not yet expose a dominant experience pressure. Resolve the user outcome, business outcome, content, and usage context before proposing architecture."
-            ]
+    def generate(
+        self,
+        brief: str,
+        project_name: str | None = None,
+        *,
+        declared_context: dict[str, Any] | None = None,
+        analog_query: str | None = None,
+    ) -> dict[str, Any]:
+        context = _normalize_declared_context(declared_context)
+        pressure_status = (
+            "CALLER_DECLARED — verify provenance and causal relevance"
+            if context["pressures"]
+            else "UNRESOLVED — derive from verified project evidence; do not classify from brief keywords"
+        )
+        evidence = _local_analogs(analog_query)
 
         return {
             "schema_version": SCHEMA_VERSION,
             "project_name": project_name or "Untitled design inquiry",
             "brief": brief,
             "situation": {
-                "mode": mode,
-                "platforms": _platforms(brief),
-                "signals": signals or ["unresolved"],
-                "design_pressures": pressures,
-                "unknowns": _unknowns(signals),
+                "framing_status": "UNRESOLVED" if context["status"] == "NOT_PROVIDED" else "PARTIALLY_DECLARED",
+                "mode": context["work_mode"],
+                "platforms": context["platforms"],
+                "declared_facts": context["facts"],
+                "other_declared_context": context["other"],
+                "declaration_provenance": context["provenance"],
+                "pressure_status": pressure_status,
+                "design_pressures": context["pressures"],
+                "pressure_inquiry": _pressure_inquiry(),
+                "extension_rule": "Add any evidence-backed pressure the project reveals, even when it has no name or precedent in Snowe's local vocabulary.",
+                "unknowns": _unknowns(),
+                "language_policy": "The runtime preserves the brief verbatim and does not detect language, translate, classify intent, or privilege English vocabulary.",
+                "ambiguity_policy": "Ambiguous terms such as service, platform, audit, history, store, and application remain unresolved until surrounding evidence establishes their role.",
                 "fact_policy": "The original brief and verified repository or external evidence are facts. Retrieved analogs, inferred audiences, market assumptions, and generated directions remain hypotheses until verified.",
             },
             "decision_graph": {
@@ -565,7 +206,7 @@ class DecisionPacketGenerator:
                 ],
                 "rule": "A downstream choice may be novel or absent from every local catalog. Keep it when its causal chain is stronger than the alternatives and it survives real-content and rendered tests.",
             },
-            "research": _research_plan(mode, signals, brief),
+            "research": _research_plan(),
             "architecture": {
                 "status": "OPEN — synthesize after the whole journey and content model are understood",
                 "inputs": [
@@ -597,7 +238,7 @@ class DecisionPacketGenerator:
             },
             "art_direction": {
                 "status": "OPEN — architecture and real content constrain the visual language before styling begins",
-                "identity_sources": _identity_sources(signals),
+                "identity_sources": _identity_sources(),
                 "direction_method": [
                     "Frame directions as perceptual and behavioral theses, not style labels or mood adjectives.",
                     "Make finalists differ in composition, typographic voice, image/graphic logic, material behavior, or interaction character where those differences express a real product trade-off.",
@@ -647,6 +288,12 @@ class DecisionPacketGenerator:
             "motion": {
                 "status": "OPEN — the static and reduced-motion experience is the baseline",
                 "decision_question": "Does motion clarify cause, continuity, hierarchy, spatial relationship, progress, feedback, or story—and is that benefit worth its repetition and runtime cost?",
+                "eligible_outcomes": [
+                    "No animation",
+                    "State feedback only",
+                    "Continuity or explanatory motion",
+                    "Expressive motion with an earned narrative or identity role",
+                ],
                 "record": "trigger/state change | information motion carries | affected hierarchy | frequency | choreography | interruption | performance budget | reduced/static equivalent | reject condition",
                 "rules": [
                     "Use immediate restrained feedback for frequent controls; reserve expressive choreography for low-frequency moments whose narrative or spatial role earns it.",
@@ -675,9 +322,12 @@ class DecisionPacketGenerator:
                 "stop": "Resolve every REJECT and material REVISE finding, rerender the affected evidence, and stop when further change no longer improves a stated driver. Preserve UNKNOWN where evidence genuinely cannot be obtained.",
             },
             "local_evidence": {
-                "role": "lexical analogs and prompts for investigation—not classification, direction, or architecture",
-                "product_analogs": _local_analogs(brief),
-                "limitations": "Bundled CSVs are snapshots, mainly English, and contain historical recipes and unverified claims. Confirm current facts externally and synthesize beyond them.",
+                "status": evidence["status"],
+                "role": "caller-requested lexical analogs only—never classification, pressure inference, direction, or architecture",
+                "query": evidence["query"],
+                "product_analogs": evidence["product_analogs"],
+                "absence_rule": "NOT_REQUESTED, no match, or removal of the local dataset changes no framing or design obligation.",
+                "limitations": "Bundled catalogs are optional English-oriented snapshots. They may widen vocabulary after the question is known; they cannot establish current truth or bound synthesis.",
             },
         }
 
@@ -701,15 +351,30 @@ def format_packet_markdown(packet: dict[str, Any]) -> str:
         "",
         "## Design situation",
         "",
+        f"- **Framing:** {situation['framing_status']}",
         f"- **Mode:** {situation['mode']}",
         f"- **Platforms:** {', '.join(situation['platforms'])}",
-        f"- **Signals:** {', '.join(situation['signals'])}",
+        f"- **Pressure status:** {situation['pressure_status']}",
+        f"- **Language policy:** {situation['language_policy']}",
+        f"- **Ambiguity policy:** {situation['ambiguity_policy']}",
         f"- **Fact policy:** {situation['fact_policy']}",
         "",
-        "### Design pressures",
+        "### Caller-declared facts",
         "",
     ]
-    _append_list(lines, situation["design_pressures"])
+    _append_list(lines, situation["declared_facts"] or ["UNKNOWN — no structured facts were supplied"])
+    lines.extend(
+        (
+            "",
+        "### Design pressures",
+        "",
+        )
+    )
+    _append_list(lines, situation["design_pressures"] or ["UNRESOLVED — establish from evidence before architecture"])
+    lines.extend(("", "### Pressure inquiry", ""))
+    for item in situation["pressure_inquiry"]:
+        lines.append(f"- **{item['dimension'].title()}:** {item['question']}")
+    lines.append(f"- **Extension rule:** {situation['extension_rule']}")
     lines.extend(("", "### Resolve before architecture", ""))
     _append_list(lines, situation["unknowns"])
 
@@ -728,8 +393,9 @@ def format_packet_markdown(packet: dict[str, Any]) -> str:
     _append_list(lines, graph["layers"])
 
     research = packet["research"]
-    lines.extend(("", "## External research", "", f"- **Posture:** {research['posture']}", f"- **Synthesis:** {research['synthesis_rule']}", ""))
+    lines.extend(("", "## External research", "", f"- **Posture:** {research['posture']}", f"- **Activation:** {research['activation_rule']}", f"- **Synthesis:** {research['synthesis_rule']}", ""))
     for trigger in research["triggers"]:
+        lines.append(f"- **Activate when:** {trigger['activate_when']}")
         lines.append(f"- **Question:** {trigger['question']}")
         lines.append(f"  - Sources: {trigger['sources']}")
         lines.append(f"  - Stop: {trigger['stop']}")
@@ -765,7 +431,9 @@ def format_packet_markdown(packet: dict[str, Any]) -> str:
     lines.append(f"- **Reject when:** {custom['reject_when']}")
 
     motion = packet["motion"]
-    lines.extend(("", "## Motion", "", f"- **Status:** {motion['status']}", f"- **Decision:** {motion['decision_question']}", f"- **Record:** `{motion['record']}`", ""))
+    lines.extend(("", "## Motion", "", f"- **Status:** {motion['status']}", f"- **Decision:** {motion['decision_question']}", f"- **Record:** `{motion['record']}`", "", "### Eligible outcomes", ""))
+    _append_list(lines, motion["eligible_outcomes"])
+    lines.extend(("", "### Rules", ""))
     _append_list(lines, motion["rules"])
 
     responsive = packet["responsive"]
@@ -787,12 +455,11 @@ def format_packet_markdown(packet: dict[str, Any]) -> str:
     lines.append(f"- **Stop:** {evaluation['stop']}")
 
     evidence = packet["local_evidence"]
-    lines.extend(("", "## Local evidence", "", f"- **Role:** {evidence['role']}", f"- **Limitations:** {evidence['limitations']}", ""))
+    lines.extend(("", "## Local evidence", "", f"- **Status:** {evidence['status']}", f"- **Role:** {evidence['role']}", f"- **Query:** {evidence['query'] or 'none'}", f"- **Absence rule:** {evidence['absence_rule']}", f"- **Limitations:** {evidence['limitations']}", ""))
     for analog in evidence["product_analogs"]:
-        matches = ", ".join(analog["matched_terms"]) or "weak lexical overlap"
-        lines.append(f"- **{analog['label']}** — `{analog['status']}`; matched: {matches}")
-        if analog["possibly_useful_evidence"]:
-            lines.append(f"  - Possible evidence: {analog['possibly_useful_evidence']}")
+        lines.append(f"- **{analog['label']}** — `{analog['status']}`")
+        if analog["catalog_terms"]:
+            lines.append(f"  - Catalog terms: {analog['catalog_terms']}")
         lines.append(f"  - Warning: {analog['warning']}")
     return "\n".join(lines) + "\n"
 
@@ -894,8 +561,15 @@ def generate_decision_packet(
     page: str | None = None,
     output_dir: str | None = None,
     page_brief: str | None = None,
+    declared_context: dict[str, Any] | None = None,
+    analog_query: str | None = None,
 ) -> str:
-    packet = DecisionPacketGenerator().generate(brief, project_name)
+    packet = DecisionPacketGenerator().generate(
+        brief,
+        project_name,
+        declared_context=declared_context,
+        analog_query=analog_query,
+    )
     if persist:
         persist_decision_packet(packet, page=page, output_dir=output_dir, page_brief=page_brief)
     if output_format == "json":

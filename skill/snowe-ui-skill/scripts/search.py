@@ -2,15 +2,17 @@
 # -*- coding: utf-8 -*-
 """
 Snowe UI Skill Search - local evidence retrieval and design decision packets
-Usage: python search.py "<query>" [--domain <domain>] [--stack <stack>] [--max-results 3]
+Usage: python search.py "<query>" --domain <domain> [--max-results 3]
        python search.py "<brief>" --decision-packet [-p "Project Name"]
+       python search.py "<brief>" --decision-packet --analog-query "<explicit lexical query>"
        python search.py "<brief>" --decision-packet --persist [-p "Project Name"] [--page "catalog"]
 
-Domains: style, color, chart, landing, product, ux, typography, icons, icon-families, icon-concepts, icon-candidates, gsap, react, web, google-fonts
+Domains: chart, product, ux, icons, icon-families, icon-concepts, icon-candidates, react, web, google-fonts
 Stacks: react, nextjs, vue, svelte, astro, swiftui, react-native, flutter, nuxtjs, nuxt-ui, html-tailwind, shadcn, jetpack-compose, threejs, angular, laravel, javafx, wpf, winui, avalonia, uno, uwp
 
-Decision packets keep architecture, art direction, imagery, custom graphics,
-motion, and responsive behavior open until an agent compares real candidates.
+Decision packets preserve the brief without semantic classification and keep
+architecture, art direction, imagery, custom graphics, motion, and responsive
+behavior open until an agent resolves pressures and compares real candidates.
 The historical --design-system spelling remains an alias, but no recipe-based
 design system is selected.
 
@@ -83,6 +85,12 @@ if __name__ == "__main__":
     )
     parser.add_argument("--project-name", "-p", type=str, default=None, help="Project name for decision-packet output")
     parser.add_argument("--format", "-f", choices=["markdown", "json"], default="markdown", help="Decision-packet output format")
+    parser.add_argument(
+        "--analog-query",
+        type=str,
+        default=None,
+        help="Optional caller-chosen lexical query for subordinate product analogs; the brief is never expanded or classified automatically",
+    )
     # Persistence (Brief + durable decisions + page inquiries)
     parser.add_argument("--persist", action="store_true", help="Save BRIEF.md and initialize a durable non-overwritten DECISIONS.md")
     parser.add_argument("--page", type=str, default=None, help="Create a page inquiry without prescribing a page type or section order")
@@ -94,6 +102,8 @@ if __name__ == "__main__":
         parser.error("--domain and --stack are mutually exclusive")
     if args.decision_packet and (args.domain or args.stack):
         parser.error("--decision-packet cannot be combined with --domain or --stack")
+    if args.analog_query and not args.decision_packet:
+        parser.error("--analog-query requires --decision-packet")
     if args.page and not args.persist:
         parser.error("--page requires --persist")
     if args.output_dir and not args.persist:
@@ -114,6 +124,7 @@ if __name__ == "__main__":
             page=args.page,
             output_dir=args.output_dir,
             page_brief=args.query if args.page else None,
+            analog_query=args.analog_query,
         )
         print(result)
 
@@ -140,6 +151,8 @@ if __name__ == "__main__":
             print(format_output(result))
     # Domain search
     else:
+        if not args.domain:
+            parser.error("--domain is required for local evidence search; automatic semantic domain detection is intentionally unavailable")
         result = search(args.query, args.domain, args.max_results)
         if args.json:
             import json

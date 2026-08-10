@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Rendered Snowe forward-test: a keyboard-first warehouse exception workspace.">
+  <title>Exception queue · Relay North</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#workspace">Skip to exception queue</a>
+  <header class="topbar">
+    <button class="rail-toggle" id="rail-toggle" type="button" aria-expanded="false" aria-controls="app-rail">Nav</button>
+    <a class="product-mark" href="#workspace" aria-label="Relay North operations home">
+      <strong>RELAY / NORTH</strong><span>Dispatch control</span>
+    </a>
+    <div class="shift-state"><span class="live-dot" aria-hidden="true"></span><strong>Day shift</strong><span>07:00–15:00</span></div>
+    <div class="network-state"><span>WMS sync</span><strong>14:32:08</strong><span class="state-ok">Healthy</span></div>
+    <button class="operator" type="button" aria-label="Operator menu">MP</button>
+  </header>
+
+  <div class="app-shell">
+    <nav class="app-rail" id="app-rail" aria-label="Operations" data-open="false">
+      <div class="rail-group">
+        <p>Control</p>
+        <a class="active" href="#workspace" aria-current="page"><span>EX</span><strong>Exceptions</strong><kbd>G E</kbd></a>
+        <a href="#inventory"><span>IN</span><strong>Inventory</strong><kbd>G I</kbd></a>
+        <a href="#transfers"><span>TR</span><strong>Transfers</strong><kbd>G T</kbd></a>
+        <a href="#receiving"><span>RC</span><strong>Receiving</strong><kbd>G R</kbd></a>
+      </div>
+      <div class="rail-group rail-secondary">
+        <p>Records</p>
+        <a href="#audit"><span>AU</span><strong>Audit log</strong></a>
+        <a href="#settings"><span>ST</span><strong>Settings</strong></a>
+      </div>
+      <p class="rail-foot">DC-04 / Bucharest North<br>Snapshot 10 Aug 2026</p>
+    </nav>
+
+    <main class="workspace" id="workspace" tabindex="-1">
+      <section class="workspace-head" aria-labelledby="queue-title">
+        <div>
+          <p class="path">OPERATIONS / EXCEPTIONS / <strong>OPEN</strong></p>
+          <h1 id="queue-title">Exception queue</h1>
+          <p>Detect, inspect, and resolve inventory blocks without leaving object context.</p>
+        </div>
+        <dl class="queue-metrics" aria-label="Queue summary">
+          <div class="critical"><dt>Critical</dt><dd>03</dd></div>
+          <div><dt>Due &lt; 30m</dt><dd>07</dd></div>
+          <div><dt>Open</dt><dd>18</dd></div>
+          <div><dt>Resolved shift</dt><dd>41</dd></div>
+        </dl>
+      </section>
+
+      <section class="command-row" aria-label="Queue controls">
+        <label class="search-control" for="queue-search"><span>Search</span><input id="queue-search" type="search" placeholder="ID, SKU, location, owner" autocomplete="off"><kbd>/</kbd></label>
+        <div class="queue-tabs" role="group" aria-label="Exception status">
+          <button class="selected" type="button" data-filter="all" aria-pressed="true">Open <span>18</span></button>
+          <button type="button" data-filter="critical" aria-pressed="false">Critical <span>3</span></button>
+          <button type="button" data-filter="unassigned" aria-pressed="false">Unassigned <span>5</span></button>
+        </div>
+        <button class="refresh" type="button" id="refresh-queue">Refresh <kbd>R</kbd></button>
+      </section>
+
+      <div class="work-grid">
+        <section class="queue-panel" aria-label="Open exceptions">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th scope="col">Priority / age</th><th scope="col">Exception</th><th scope="col">Object</th><th scope="col">Location</th><th scope="col">Owner</th><th scope="col">Due</th></tr></thead>
+              <tbody id="queue-body">
+                <tr class="selected" tabindex="0" data-id="EX-1842" data-filter="critical" data-title="Pick face below safety stock" data-object="SKU AX-440 / Urban Lamp Set" data-location="A-14-03" data-owner="M. Pavel" data-age="18 min" data-due="14:44" data-available="2" data-required="8" data-inbound="24 units at 16:20" aria-selected="true">
+                  <td><span class="priority p0">P0</span><small>18m</small></td><td><strong>Pick face below safety stock</strong><small>EX-1842 · Short pick risk</small></td><td>AX-440<br><small>Urban Lamp Set</small></td><td><code>A-14-03</code></td><td>M. Pavel</td><td><strong>12m</strong></td>
+                </tr>
+                <tr tabindex="0" data-id="EX-1838" data-filter="critical unassigned" data-title="Transfer arrived with seal mismatch" data-object="Transfer TR-90317 / 6 pallets" data-location="Gate 2" data-owner="Unassigned" data-age="27 min" data-due="14:39" data-available="6 pallets held" data-required="Seal verification" data-inbound="Origin seal 77-041">
+                  <td><span class="priority p0">P0</span><small>27m</small></td><td><strong>Transfer seal mismatch</strong><small>EX-1838 · Security hold</small></td><td>TR-90317<br><small>6 pallets</small></td><td><code>GATE-02</code></td><td><span class="unassigned">Unassigned</span></td><td><strong>7m</strong></td>
+                </tr>
+                <tr tabindex="0" data-id="EX-1831" data-filter="critical" data-title="Cold-zone temperature breach" data-object="Batch CL-192 / Biokit V4" data-location="COLD-07" data-owner="I. Stoica" data-age="31 min" data-due="14:37" data-available="4.9°C peak" data-required="2–4°C" data-inbound="Sensor recovered at 14:21">
+                  <td><span class="priority p0">P0</span><small>31m</small></td><td><strong>Temperature breach</strong><small>EX-1831 · Quality hold</small></td><td>CL-192<br><small>Biokit V4</small></td><td><code>COLD-07</code></td><td>I. Stoica</td><td><strong>5m</strong></td>
+                </tr>
+                <tr tabindex="0" data-id="EX-1829" data-filter="unassigned" data-title="Receipt quantity differs from ASN" data-object="ASN 450091 / Cable Reel" data-location="DOCK-05" data-owner="Unassigned" data-age="42 min" data-due="15:04" data-available="118 received" data-required="120 expected" data-inbound="Supplier Atlas Wire">
+                  <td><span class="priority p1">P1</span><small>42m</small></td><td><strong>Receipt quantity mismatch</strong><small>EX-1829 · Receiving</small></td><td>ASN 450091<br><small>Cable Reel</small></td><td><code>DOCK-05</code></td><td><span class="unassigned">Unassigned</span></td><td>32m</td>
+                </tr>
+                <tr tabindex="0" data-id="EX-1817" data-filter="" data-title="Cycle count variance above tolerance" data-object="SKU NR-221 / Rail Clamp" data-location="B-08-11" data-owner="A. Ene" data-age="1h 08m" data-due="15:20" data-available="192 counted" data-required="200 system" data-inbound="Last movement TR-90288">
+                  <td><span class="priority p1">P1</span><small>1h 08m</small></td><td><strong>Cycle count variance</strong><small>EX-1817 · Inventory</small></td><td>NR-221<br><small>Rail Clamp</small></td><td><code>B-08-11</code></td><td>A. Ene</td><td>48m</td>
+                </tr>
+                <tr tabindex="0" data-id="EX-1809" data-filter="unassigned" data-title="Putaway location is occupied" data-object="Pallet PL-60773 / Mixed" data-location="C-02-06" data-owner="Unassigned" data-age="1h 23m" data-due="15:42" data-available="Location occupied" data-required="Alternate slot" data-inbound="Pallet waiting in buffer 3">
+                  <td><span class="priority p2">P2</span><small>1h 23m</small></td><td><strong>Putaway blocked</strong><small>EX-1809 · Capacity</small></td><td>PL-60773<br><small>Mixed pallet</small></td><td><code>C-02-06</code></td><td><span class="unassigned">Unassigned</span></td><td>1h 10m</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="queue-foot"><span id="visible-count">6 visible of 18 open</span><span><kbd>J</kbd>/<kbd>K</kbd> move <kbd>Enter</kbd> inspect <kbd>E</kbd> resolve</span></div>
+        </section>
+
+        <aside class="inspector" id="inspector" aria-labelledby="inspector-title">
+          <div class="inspector-head">
+            <div><p class="object-id" id="detail-id">EX-1842</p><h2 id="inspector-title">Pick face below safety stock</h2></div>
+            <span class="priority p0" id="detail-priority">P0</span>
+          </div>
+          <dl class="detail-strip">
+            <div><dt>Age</dt><dd id="detail-age">18 min</dd></div>
+            <div><dt>Due</dt><dd id="detail-due">14:44</dd></div>
+            <div><dt>Owner</dt><dd id="detail-owner">M. Pavel</dd></div>
+          </dl>
+          <section class="object-summary" aria-labelledby="object-title">
+            <p class="panel-label">Affected object</p><h3 id="object-title">SKU AX-440 / Urban Lamp Set</h3>
+            <div class="stock-balance"><div><span>Available</span><strong id="detail-available">2</strong></div><div><span>Required</span><strong id="detail-required">8</strong></div></div>
+            <p><span class="data-label">Location</span><code id="detail-location">A-14-03</code></p>
+            <p><span class="data-label">Context</span><span id="detail-inbound">24 units at 16:20</span></p>
+          </section>
+          <section class="timeline" aria-labelledby="timeline-title">
+            <div class="panel-heading"><p class="panel-label">Object history</p><h3 id="timeline-title">Last four events</h3></div>
+            <ol>
+              <li><time>14:14</time><div><strong>Exception created</strong><small>Wave W-771 could not allocate 8 units.</small></div></li>
+              <li><time>14:12</time><div><strong>Pick confirmed</strong><small>6 units moved to dispatch lane D-09.</small></div></li>
+              <li><time>13:48</time><div><strong>Replenishment queued</strong><small>Task RP-4421 assigned to L. Ionescu.</small></div></li>
+              <li><time>12:26</time><div><strong>Cycle count</strong><small>10 units confirmed at A-14-03.</small></div></li>
+            </ol>
+          </section>
+          <div class="inspector-actions">
+            <button class="resolve" id="resolve-open" type="button">Resolve exception <kbd>E</kbd></button>
+            <button type="button" id="assign-self">Assign to me</button>
+          </div>
+        </aside>
+      </div>
+    </main>
+  </div>
+
+  <dialog id="resolve-dialog" aria-labelledby="resolve-title">
+    <form class="resolve-form" id="resolve-form" method="dialog" novalidate>
+      <div class="dialog-head"><div><p class="panel-label">Decision record</p><h2 id="resolve-title">Resolve <span>EX-1842</span></h2></div><button value="cancel" aria-label="Close resolution dialog">Close</button></div>
+      <p>Record the action and its object consequence. Resolution writes to the exception and inventory audit trails.</p>
+      <fieldset>
+        <legend>Resolution</legend>
+        <label><input type="radio" name="resolution" value="replenish"> Trigger immediate replenishment</label>
+        <label><input type="radio" name="resolution" value="split"> Split allocation across locations</label>
+        <label><input type="radio" name="resolution" value="hold"> Hold affected order for review</label>
+      </fieldset>
+      <label for="resolution-note">Operator note <span>required</span></label>
+      <textarea id="resolution-note" rows="4" placeholder="State what changed and why"></textarea>
+      <div class="dialog-error" id="resolve-error" role="alert" tabindex="-1" hidden></div>
+      <div class="dialog-actions"><button value="cancel">Cancel</button><button class="resolve" value="default">Commit resolution</button></div>
+    </form>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+</body>
+</html>

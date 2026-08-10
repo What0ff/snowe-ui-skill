@@ -1,0 +1,52 @@
+{
+  "benchmarks": [
+    {
+      "id": "municipal-service",
+      "title": "Larkhaven home alteration permit",
+      "path": "benchmarks/forward-tests/municipal-service/index.html",
+      "experience_class": "public service transaction",
+      "topology": "single request journey with eligibility, evidence, application, recovery, status, and assisted-service paths",
+      "navigation": "civic service frame plus journey-local progress",
+      "composition": "service introduction, prerequisite evidence, eligibility checkpoint, application path, persistent support",
+      "content_model": "service, requirement, eligibility answer, request, evidence, stage, status, support channel",
+      "visual_carrier": "civic type, service references, numbered sequence, and institutional material contrast",
+      "imagery_decision": "NO_GENERATED_IMAGERY",
+      "custom_asset_decision": "NO_CUSTOM_ASSET",
+      "motion_decision": "STATE_FEEDBACK_ONLY",
+      "responsive_transformation": "adjacent journey/support becomes post-task panels, then one linear evidence order with menu navigation",
+      "screenshots": ["desktop-home.jpg", "desktop-result.jpg", "intermediate-home.jpg", "mobile-home.jpg", "mobile-menu.jpg", "mobile-status-dialog.jpg"]
+    },
+    {
+      "id": "warehouse-operations",
+      "title": "Relay North exception queue",
+      "path": "benchmarks/forward-tests/warehouse-operations/index.html",
+      "experience_class": "keyboard-first operations workspace",
+      "topology": "persistent application shell around exception queue, affected object, history, and resolution",
+      "navigation": "stable command rail, filters, search, and keyboard traversal",
+      "composition": "operational summary, command row, dense queue, contextual inspector, audit-writing resolution",
+      "content_model": "exception, priority, object, location, owner, due time, stock balance, event, resolution",
+      "visual_carrier": "state density, identifiers, aligned records, priority fields, and control-room surfaces",
+      "imagery_decision": "NO_GENERATED_IMAGERY",
+      "custom_asset_decision": "NO_CUSTOM_ASSET",
+      "motion_decision": "STATE_FEEDBACK_ONLY",
+      "responsive_transformation": "side-by-side queue/inspector becomes stacked detail, then structured record rows plus on-demand rail",
+      "screenshots": ["desktop-queue.jpg", "desktop-resolution.jpg", "intermediate-queue.jpg", "mobile-queue.jpg", "mobile-navigation.jpg", "mobile-resolution.jpg"]
+    },
+    {
+      "id": "literary-publication",
+      "title": "The Morrow Review Issue 18",
+      "path": "benchmarks/forward-tests/literary-publication/index.html",
+      "experience_class": "editorial issue and sustained reading",
+      "topology": "current issue relationships flowing into story, contents, editorial context, archive, and earned membership",
+      "navigation": "publication destinations plus issue-local sequence and text links",
+      "composition": "issue thesis, lead reading experience, complete contents, editor context, archive",
+      "content_model": "issue, contribution, form, contributor, translation, note, archive theme, membership",
+      "visual_carrier": "typographic voice, issue numbering, rules, marginalia, reading pace, and authored language",
+      "imagery_decision": "NO_GENERATED_IMAGERY",
+      "custom_asset_decision": "NO_CUSTOM_ASSET",
+      "motion_decision": "READING_PROGRESS_ONLY",
+      "responsive_transformation": "editorial spread and margin notes become one authored reading flow; contents and archive preserve sequence without card-grid conversion",
+      "screenshots": ["desktop-issue.jpg", "desktop-reading.jpg", "intermediate-issue.jpg", "mobile-issue.jpg", "mobile-contents.jpg", "mobile-membership.jpg"]
+    }
+  ]
+}

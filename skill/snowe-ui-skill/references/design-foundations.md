@@ -90,15 +90,15 @@ Choose components by behavior and platform semantics, then style them within the
 
 ## Icons and Graphics
 
-Define the primary drawing language and source roles. Familiar universal actions should remain recognizable; product and domain symbols can become more ownable when the metaphor and rendering stay clear. See [iconography-system.md](iconography-system.md).
+Define the primary drawing language and source roles. Familiar universal actions should remain recognizable; product and domain symbols can become more ownable when the metaphor and rendering stay clear. Open [iconography-system.md](iconography-system.md) only when icon-source, metaphor, family, or custom drawing is an active decision.
 
 ## Imagery and Illustration
 
-Give each visual a communicative role and a treatment: source, truth, subject, framing, crop, aspect, light/color behavior, caption, responsive transformation, fallback, and loading. Compare no-image and alternative media directions when the visual is material. See [imagery-and-assets.md](imagery-and-assets.md).
+Give each visual a communicative role and a treatment: source, truth, subject, framing, crop, aspect, light/color behavior, caption, responsive transformation, fallback, and loading. Compare no-image and alternative media directions when the visual is material. Open [imagery-and-assets.md](imagery-and-assets.md) only while that decision remains active; stop after a justified no-image choice.
 
 ## Motion and Interaction
 
-Define states and transitions before animation. Motion can clarify cause, continuity, hierarchy, progress, feedback, spatial relationships, or narrative. It can also slow, distract, or harm. Start with the static/reduced experience and see [motion-and-interaction.md](motion-and-interaction.md).
+Define states and transitions before animation. Motion can clarify cause, continuity, hierarchy, progress, feedback, spatial relationships, or narrative. It can also slow, distract, or harm. Start with the static/reduced experience and open [motion-and-interaction.md](motion-and-interaction.md) only when motion is an active decision or defect.
 
 ## System Coherence
 

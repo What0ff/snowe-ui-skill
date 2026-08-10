@@ -15,6 +15,13 @@ No third-party Python packages are required for the runtime or tests.
 ```bash
 python -m unittest discover -s tests -v
 python -m compileall -q skill/snowe-ui-skill/scripts
+python evals/designer-behavior/run_eval.py
+```
+
+Rendered benchmark changes also require Node 22 plus a local Chrome/Chromium smoke pass:
+
+```bash
+node scripts/browser-smoke.mjs --smoke
 ```
 
 ## Where changes belong

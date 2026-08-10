@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
-"""Contract evaluation for Snowe's open design-inquiry behavior.
+"""Behavioral contracts for Snowe's open, generalizable design practice.
 
-This runner intentionally does not score creativity or visual quality. It
-detects recipe selection, signal collisions, automatic asset/motion choices,
-and epistemic-boundary regressions. Rendered artifacts still need the manual
-comparative evaluation described in README.md and the skill reference.
+The runner checks epistemic boundaries and metamorphic behavior. It never
+scores creativity, taste, or a preferred layout. Rendered cross-benchmark
+evidence remains a separate proof surface.
 """
 
 from __future__ import annotations
@@ -13,12 +12,15 @@ import json
 import sys
 from pathlib import Path
 from typing import Any
+from unittest.mock import patch
 
 
 ROOT = Path(__file__).resolve().parents[2]
-SKILL_SCRIPTS = ROOT / "skill" / "snowe-ui-skill" / "scripts"
+SKILL_ROOT = ROOT / "skill" / "snowe-ui-skill"
+SKILL_SCRIPTS = SKILL_ROOT / "scripts"
 sys.path.insert(0, str(SKILL_SCRIPTS))
 
+import decision_packet as packet_module  # noqa: E402
 from decision_packet import DecisionPacketGenerator  # noqa: E402
 
 
@@ -33,6 +35,7 @@ FORBIDDEN_SELECTION_KEYS = {
     "colors",
     "motion_snippet",
     "motion_intensity",
+    "signals",
 }
 
 
@@ -48,79 +51,236 @@ def nested_keys(value: Any) -> set[str]:
     return keys
 
 
+def framing_signature(packet: dict[str, Any]) -> dict[str, Any]:
+    situation = packet["situation"]
+    return {
+        "framing_status": situation["framing_status"],
+        "mode": situation["mode"],
+        "platforms": situation["platforms"],
+        "pressure_status": situation["pressure_status"],
+        "design_pressures": situation["design_pressures"],
+        "pressure_inquiry": situation["pressure_inquiry"],
+        "unknowns": situation["unknowns"],
+        "language_policy": situation["language_policy"],
+        "architecture_status": packet["architecture"]["status"],
+        "asset_status": packet["assets"]["visual_need_decision"]["status"],
+        "motion_status": packet["motion"]["status"],
+        "local_evidence_status": packet["local_evidence"]["status"],
+    }
+
+
+def open_contract_failures(packet: dict[str, Any]) -> list[str]:
+    failures: list[str] = []
+    unexpected = sorted(FORBIDDEN_SELECTION_KEYS & nested_keys(packet))
+    if unexpected:
+        failures.append("selected or classified keys: " + ", ".join(unexpected))
+    if not packet["architecture"]["status"].startswith("OPEN"):
+        failures.append("architecture was prematurely committed")
+    if packet["assets"]["visual_need_decision"]["status"] != "OPEN":
+        failures.append("visual asset was automatically selected")
+    if not packet["motion"]["status"].startswith("OPEN"):
+        failures.append("motion was automatically selected")
+    if packet["local_evidence"]["status"] != "NOT_REQUESTED":
+        failures.append("local evidence was retrieved without caller opt-in")
+    if packet["local_evidence"]["product_analogs"]:
+        failures.append("default packet contains analogs")
+    return failures
+
+
+def finding(scenario: str, failures: list[str], evidence: list[str]) -> dict[str, Any]:
+    return {
+        "verdict": "REJECT" if failures else "KEEP",
+        "scenario": scenario,
+        "evidence": failures or evidence,
+    }
+
+
 def evaluate() -> dict[str, Any]:
-    scenarios = json.loads((Path(__file__).with_name("scenarios.json")).read_text(encoding="utf-8"))
+    data = json.loads((Path(__file__).with_name("scenarios.json")).read_text(encoding="utf-8"))
     generator = DecisionPacketGenerator()
     findings: list[dict[str, Any]] = []
-    profiles: dict[str, tuple[str, ...]] = {}
 
-    for scenario in scenarios:
-        packet = generator.generate(scenario["brief"], scenario["id"])
-        signals = set(packet["situation"]["signals"])
-        profiles[scenario["id"]] = tuple(packet["situation"]["signals"])
-        failures: list[str] = []
-
-        unexpected_keys = sorted(FORBIDDEN_SELECTION_KEYS & nested_keys(packet))
-        if unexpected_keys:
-            failures.append("selected recipe keys: " + ", ".join(unexpected_keys))
-        missing = sorted(set(scenario["expected_signals"]) - signals)
-        forbidden = sorted(set(scenario["forbidden_signals"]) & signals)
-        if missing:
-            failures.append("missing contextual signals: " + ", ".join(missing))
-        if forbidden:
-            failures.append("context collision signals: " + ", ".join(forbidden))
-        if not packet["architecture"]["status"].startswith("OPEN"):
-            failures.append("architecture was prematurely committed")
-        if packet["assets"]["visual_need_decision"]["status"] != "OPEN":
-            failures.append("visual asset was automatically selected")
-        if not packet["motion"]["status"].startswith("OPEN"):
-            failures.append("motion was automatically selected")
-        if any(
-            analog.get("status") != "UNVERIFIED_ANALOG"
-            for analog in packet["local_evidence"]["product_analogs"]
-        ):
-            failures.append("a local analog escaped its unverified evidence role")
-
+    for scenario in data["core_scenarios"]:
+        packet = generator.generate(
+            scenario["brief"],
+            scenario["id"],
+            declared_context=scenario["declared_context"],
+        )
+        failures = open_contract_failures(packet)
+        expected_pressures = scenario["declared_context"]["pressures"]
+        if packet["situation"]["design_pressures"] != expected_pressures:
+            failures.append("caller-declared pressure was changed")
         findings.append(
-            {
-                "verdict": "REJECT" if failures else "KEEP",
-                "scenario": scenario["id"],
-                "signals": list(packet["situation"]["signals"]),
-                "design_pressures": packet["situation"]["design_pressures"],
-                "local_analogs": [
-                    {"label": item["label"], "matched_terms": item["matched_terms"]}
-                    for item in packet["local_evidence"]["product_analogs"]
-                ],
-                "evidence": failures or [
-                    "Architecture, imagery, and motion remain open; contextual signals and evidence roles match the scenario."
-                ],
-            }
+            finding(
+                scenario["id"],
+                failures,
+                ["Caller facts and pressures pass through; architecture, imagery, motion, and local evidence remain open."],
+            )
         )
 
-    duplicate_profiles: dict[tuple[str, ...], list[str]] = {}
-    for scenario_id, profile in profiles.items():
-        duplicate_profiles.setdefault(profile, []).append(scenario_id)
-    collisions = [ids for ids in duplicate_profiles.values() if len(ids) > 1]
-    if collisions:
+    for pair in data["equivalence_pairs"]:
+        left = generator.generate(pair["left"])
+        right = generator.generate(pair["right"])
+        failures = open_contract_failures(left) + open_contract_failures(right)
+        if framing_signature(left) != framing_signature(right):
+            failures.append("language or paraphrase changed unresolved framing")
         findings.append(
-            {
-                "verdict": "REVISE",
-                "scenario": "cross-scenario-pressure-profile",
-                "evidence": [
-                    "Identical signal profiles require manual causal review: " + ", ".join(ids)
-                    for ids in collisions
-                ],
-            }
+            finding(
+                pair["id"],
+                failures,
+                ["Equivalent English, Russian, or mixed-language briefs retain the same unresolved framing contract."],
+            )
         )
+
+    ambiguity_failures: list[str] = []
+    for case in data["ambiguity_cases"]:
+        packet = generator.generate(case["brief"])
+        situation = packet["situation"]
+        if situation["design_pressures"]:
+            ambiguity_failures.append(f"{case['id']}: inferred a pressure")
+        if not situation["mode"].startswith("UNRESOLVED"):
+            ambiguity_failures.append(f"{case['id']}: inferred work mode")
+        if "signals" in situation:
+            ambiguity_failures.append(f"{case['id']}: emitted signals")
+    findings.append(
+        finding(
+            "ambiguous-and-unknown-language",
+            ambiguity_failures,
+            ["Ambiguous roles, an unknown domain, and an under-specified brief remain unresolved."],
+        )
+    )
+
+    metamorphic = data["metamorphic_cases"]
+    stable = metamorphic["stable_paraphrase"]
+    stable_left = generator.generate(stable["left"])
+    stable_right = generator.generate(stable["right"])
+    stable_failures = []
+    if framing_signature(stable_left) != framing_signature(stable_right):
+        stable_failures.append("small paraphrase caused framing churn")
+    findings.append(
+        finding(
+            "small-change-stability",
+            stable_failures,
+            ["A small wording change does not change the unresolved contract."],
+        )
+    )
+
+    changed = metamorphic["meaningful_business_change"]
+    changed_left = generator.generate(changed["brief"], declared_context=changed["left_context"])
+    changed_right = generator.generate(changed["brief"], declared_context=changed["right_context"])
+    change_failures = []
+    if changed_left["situation"]["design_pressures"] == changed_right["situation"]["design_pressures"]:
+        change_failures.append("meaningful caller-declared business change did not change pressures")
+    if changed_left["architecture"] != changed_right["architecture"]:
+        change_failures.append("shared architecture workbench changed before synthesis")
+    findings.append(
+        finding(
+            "meaningful-business-change",
+            change_failures,
+            ["Explicit business differences change pressures without selecting a layout or style."],
+        )
+    )
+
+    preservation = metamorphic["preservation"]
+    preserved = generator.generate(
+        preservation["brief"],
+        declared_context=preservation["declared_context"],
+    )
+    skill_text = (SKILL_ROOT / "SKILL.md").read_text(encoding="utf-8")
+    preserve_failures = []
+    if preserved["situation"]["mode"] != "evolution":
+        preserve_failures.append("explicit evolution mode was not preserved")
+    if preservation["declared_context"]["facts"] != preserved["situation"]["declared_facts"]:
+        preserve_failures.append("coherent-system preservation fact was lost")
+    if "Preserve a coherent existing system" not in skill_text:
+        preserve_failures.append("router does not protect accepted coherent systems")
+    findings.append(
+        finding(
+            "coherent-system-preservation",
+            preserve_failures,
+            ["A bounded defect can preserve accepted architecture and visual-system facts."],
+        )
+    )
+
+    discretion = generator.generate("Unresolved product")
+    outcomes = discretion["assets"]["visual_need_decision"]["eligible_outcomes"]
+    discretion_failures = []
+    if "No image" not in outcomes:
+        discretion_failures.append("no-image outcome disappeared")
+    if "No animation" not in discretion["motion"]["eligible_outcomes"]:
+        discretion_failures.append("no-animation outcome disappeared")
+    if discretion["assets"]["custom_graphics"].get("reject_when") is None:
+        discretion_failures.append("custom asset rejection path disappeared")
+    findings.append(
+        finding(
+            "asset-and-motion-discretion",
+            discretion_failures,
+            ["No image, rejected custom work, and no animation remain first-class outcomes."],
+        )
+    )
+
+    baseline = generator.generate("Unknown domain")
+    with patch.object(packet_module, "search", return_value={"results": []}):
+        absent = generator.generate("Unknown domain", analog_query="catalog term with no rows")
+    absence_failures = []
+    for key in ("situation", "architecture", "art_direction", "assets", "motion", "responsive"):
+        if baseline[key] != absent[key]:
+            absence_failures.append(f"missing dataset changed {key}")
+    if absent["local_evidence"]["product_analogs"]:
+        absence_failures.append("empty dataset produced analogs")
+    findings.append(
+        finding(
+            "dataset-absence",
+            absence_failures,
+            ["An absent or unmatched local catalog changes no framing or design obligation."],
+        )
+    )
+
+    route_failures: list[str] = []
+    route_evidence: list[str] = []
+    for trace in data["progressive_disclosure"]:
+        overlap = sorted(set(trace["needed"]) & set(trace["not_needed"]))
+        if overlap:
+            route_failures.append(f"{trace['id']}: contradictory routes {', '.join(overlap)}")
+        for reference in trace["needed"] + trace["not_needed"]:
+            if not (SKILL_ROOT / "references" / reference).is_file():
+                route_failures.append(f"{trace['id']}: missing reference {reference}")
+        for reference in trace["needed"]:
+            if f"references/{reference}" not in skill_text:
+                route_failures.append(f"{trace['id']}: router omits {reference}")
+        if not trace["reason"].strip():
+            route_failures.append(f"{trace['id']}: missing causal reason")
+        route_evidence.append(
+            f"{trace['id']}: {', '.join(trace['needed'])}; excludes {', '.join(trace['not_needed'])}"
+        )
+    if "Do not preload the library" not in skill_text:
+        route_failures.append("router lacks an explicit no-preload boundary")
+    findings.append(finding("progressive-disclosure", route_failures, route_evidence))
+
+    packet_source = (SKILL_SCRIPTS / "decision_packet.py").read_text(encoding="utf-8")
+    boundary_failures = []
+    for symbol in ("_SIGNAL_RULES", "_QUERY_EXPANSIONS", "_PRESSURES", "_detect_signals"):
+        if symbol in packet_source:
+            boundary_failures.append(f"semantic classifier table returned: {symbol}")
+    for filename in ("landing.csv", "styles.csv", "colors.csv", "typography.csv", "motion.csv"):
+        if (SKILL_ROOT / "data" / filename).exists():
+            boundary_failures.append(f"obsolete recipe dataset returned: {filename}")
+    findings.append(
+        finding(
+            "semantic-and-evidence-boundary",
+            boundary_failures,
+            ["No keyword classifier tables or default architecture/style/palette/font/motion recipe catalogs remain."],
+        )
+    )
 
     return {
-        "method": "behavioral contract findings; no creativity or taste score",
+        "method": "behavioral and metamorphic findings; no creativity, taste, layout, or style score",
         "findings": findings,
         "manual_proof_still_required": [
-            "structurally different architecture candidates from the real trade-offs",
-            "product-specific art direction and coherent implemented visual language",
-            "optional imagery, custom assets, and motion compared inside the real layout",
-            "wide, pressure, narrow, interaction, accessibility, and reduced-motion renders",
+            "causally different rendered architectures across real scenario classes",
+            "product-specific visual languages and responsive transformations",
+            "interaction, focus, overflow, asset, error, and reduced-motion browser evidence",
+            "cross-benchmark review of repeated topology, carriers, cards, CTAs, imagery, and motion",
         ],
     }
 
@@ -128,7 +288,7 @@ def evaluate() -> dict[str, Any]:
 def main() -> int:
     result = evaluate()
     print(json.dumps(result, indent=2, ensure_ascii=False))
-    return 1 if any(item["verdict"] == "REJECT" for item in result["findings"]) else 0
+    return 1 if any(item["verdict"] != "KEEP" for item in result["findings"]) else 0
 
 
 if __name__ == "__main__":

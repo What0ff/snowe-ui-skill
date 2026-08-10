@@ -10,9 +10,9 @@ It is not a layout, style, or landing-page recipe chooser. Local datasets are an
 
 > Snowe UI Skill is an independent community project. It is not affiliated with or endorsed by OpenAI.
 
-## Showcase — Goodturn Cycles
+## Flagship showcase — Goodturn Cycles
 
-The first end-to-end behavioral benchmark is a fictional Bucharest city-bike workshop. Snowe created the positioning, site architecture, three-bike assortment, visual system, imagery strategy, custom icon family, responsive transformations, interaction model, and conversion paths from an open brief.
+The flagship end-to-end behavioral benchmark is a fictional Bucharest city-bike workshop. Snowe created the positioning, site architecture, three-bike assortment, visual system, imagery strategy, custom icon family, responsive transformations, interaction model, and conversion paths from an open brief.
 
 ![Goodturn Cycles wide homepage](benchmarks/bicycle-commerce/screenshots/desktop-home.jpg)
 
@@ -42,6 +42,34 @@ Goodturn, its bikes, prices, policies, address, and imagery are fictional benchm
 - [Read the candidate comparison](benchmarks/bicycle-commerce/design-intelligence/goodturn-cycles/CANDIDATES.md)
 - [Read the rendered QA and corrections](benchmarks/bicycle-commerce/design-intelligence/goodturn-cycles/QA.md)
 - [Browse all screenshots](benchmarks/bicycle-commerce/screenshots)
+
+## Generalization showcase — three different experience classes
+
+Goodturn is not the only proof. Three rendered forward-tests begin from different actors, objects, stakes, content, and repeat-use conditions. None uses generated imagery or a custom asset because those choices do not improve the work; municipal and warehouse motion is limited to necessary state feedback, while the publication uses only reading progress.
+
+<p align="center">
+  <img src="benchmarks/forward-tests/municipal-service/screenshots/desktop-home.jpg" alt="Larkhaven municipal permit service" width="32%">
+  <img src="benchmarks/forward-tests/warehouse-operations/screenshots/desktop-queue.jpg" alt="Relay North warehouse exception queue" width="32%">
+  <img src="benchmarks/forward-tests/literary-publication/screenshots/desktop-issue.jpg" alt="The Morrow Review literary issue" width="32%">
+</p>
+
+| Experience | Causal architecture | Interaction posture |
+|---|---|---|
+| Larkhaven public service | One request journey through eligibility, evidence, application, recovery, status, and assisted service | Plain-language forms, bilingual state, error summary, visible service progress |
+| Relay North operations | Persistent application shell around exception queue, affected object, history, and audited resolution | Dense records, stable inspector, search/filter, J/K/E and slash keyboard paths |
+| The Morrow Review | Issue relationships flowing into sustained reading, contents, editorial context, archive, then earned membership | Typographic navigation, reading controls, saved state, archive discovery |
+
+Their narrow states also transform differently: the service becomes one evidence order, the operations table becomes structured records with an on-demand rail, and the editorial spread becomes a continuous authored reading flow.
+
+<p align="center">
+  <img src="benchmarks/forward-tests/municipal-service/screenshots/mobile-status-dialog.jpg" alt="Larkhaven mobile status result" width="29%">
+  <img src="benchmarks/forward-tests/warehouse-operations/screenshots/mobile-resolution.jpg" alt="Relay North mobile resolution dialog" width="29%">
+  <img src="benchmarks/forward-tests/literary-publication/screenshots/mobile-contents.jpg" alt="Morrow Review mobile issue navigation" width="29%">
+</p>
+
+- [Open the rendered forward-tests](benchmarks/forward-tests/README.md)
+- [Read the cross-benchmark causal comparison](benchmarks/CROSS-BENCHMARK.md)
+- [Inspect the local evidence audit](evals/designer-behavior/EVIDENCE-AUDIT.md)
 
 ## What Snowe changes
 
@@ -100,6 +128,8 @@ snowe-ui-skill/
 │       └── contrast.py                # Exact opaque-color contrast checks
 ├── evals/designer-behavior/           # Cross-business behavioral contracts
 ├── benchmarks/bicycle-commerce/       # Rendered Goodturn forward-test
+├── benchmarks/forward-tests/           # Public-service, operations, and editorial proof
+├── scripts/browser-smoke.mjs           # Dependency-free Chrome/CDP browser checks
 └── tests/                             # Product and benchmark regression suite
 ```
 
@@ -162,6 +192,8 @@ python skill/snowe-ui-skill/scripts/search.py \
   --format markdown
 ```
 
+The packet does not classify brief vocabulary or privilege English. It leaves work mode, platform, pressures, and ambiguous domain terms unresolved unless the caller supplies verified context. Local analogs are not retrieved automatically; add `--analog-query "caller chosen lexical terms"` only when an analogy can change a live decision.
+
 Persist the open brief, a durable decision ledger, and an optional page inquiry:
 
 ```bash
@@ -177,9 +209,11 @@ python skill/snowe-ui-skill/scripts/search.py \
 
 ## Knowledge base
 
-The bundled evidence layer includes style vocabulary, semantic color systems, typography systems and Google Fonts metadata, product analogs, UX guidance, chart and landing-page snapshots, stack-specific guidance, motion references, icon families/concepts, and curated icon candidates.
+The bundled evidence layer includes caller-requested product analog terms, Google Fonts metadata, UX and web implementation guidance, chart guidance, stack-specific references, icon families/concepts, and curated icon candidates.
 
 These records can expand vocabulary, reveal alternatives, provide counterexamples, or route current research. They are not product classification, current market truth, conversion proof, or an authoritative list of allowable designs.
+
+Layout, landing, style-combination, palette, typography-pairing, and motion-preset catalogs were removed: even labeled as historical evidence, they encoded ready-made solutions and unsupported suitability claims. Git history preserves the old rows; the installable skill does not return them.
 
 ## Evaluation and validation
 
@@ -201,7 +235,13 @@ Compile-check the installable runtime:
 python -m compileall -q skill/snowe-ui-skill/scripts
 ```
 
-The automated boundary checks premature recipe selection, contextual pressure diversity, optional imagery/motion, evidence roles, path safety, contrast, SVG integrity, CLI behavior, and benchmark UX/artifact contracts. It deliberately does not pretend to certify aesthetic quality. Rendered forward-tests preserve briefs, candidates, accepted/rejected decisions, real states, responsive captures, findings, corrections, and remaining limits.
+Run the dependency-free rendered smoke layer with Node 22 and a local Chrome/Chromium installation:
+
+```bash
+node scripts/browser-smoke.mjs --smoke
+```
+
+CI runs compile and unit regressions on Python 3.11/3.13 across Ubuntu and Windows, the multilingual/generalization behavior evaluation, and the Chrome smoke. The browser layer catches runtime errors, broken assets, horizontal overflow, menu/dialog behavior, focus handoff, critical interactions, responsive states, and reduced-motion regressions. It deliberately does not pretend to certify aesthetic quality. Rendered forward-tests preserve briefs, candidates, accepted/rejected decisions, real states, responsive captures, findings, corrections, and remaining limits.
 
 ## Design principles
 

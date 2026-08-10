@@ -24,16 +24,18 @@ Never turn an inference, retrieved row, trend, competitor convention, or generat
 
 ## Route the Work
 
-- Read [exploration-protocol.md](references/exploration-protocol.md) for the causal design loop, inquiry depth, candidate portfolios, and convergence.
-- For a new site, product, page family, navigation change, conversion flow, or architecture problem, read [experience-architecture.md](references/experience-architecture.md) before visual direction.
-- For a new identity, redesign, campaign, or material visual change, read [art-direction-gate.md](references/art-direction-gate.md) and [design-foundations.md](references/design-foundations.md).
-- For photography, illustration, diagrams, product compositions, generated imagery, or custom visual assets, read [imagery-and-assets.md](references/imagery-and-assets.md).
-- For icon systems or custom icons, read [iconography-system.md](references/iconography-system.md).
-- For animation, transitions, feedback, gestures, and interaction character, read [motion-and-interaction.md](references/motion-and-interaction.md).
-- When current external design space, standards, packages, fonts, techniques, or real products could change a high-leverage decision, read [research-and-evidence.md](references/research-and-evidence.md).
-- For accessibility, content resilience, responsive QA, states, performance, and rendered critique, read [quality-gates.md](references/quality-gates.md).
-- For behavior benchmarks and non-numeric designer evaluation, read [designer-evaluation.md](references/designer-evaluation.md).
-- For local retrieval, decision packets, persistence, stacks, and SVG validation, read [cli-reference.md](references/cli-reference.md).
+Load only the references whose decision is active. Do not preload the library, and do not follow a nested link merely because another reference mentions that domain.
+
+- Read [exploration-protocol.md](references/exploration-protocol.md) when a material decision needs alternatives, causal comparison, or convergence. Skip it for a direct, already-bounded implementation fix.
+- Read [experience-architecture.md](references/experience-architecture.md) for a new site/product topology, page family, navigation model, conversion/task flow, or structural redesign. A narrow component fix does not need it.
+- Read [art-direction-gate.md](references/art-direction-gate.md) and [design-foundations.md](references/design-foundations.md) for a new identity, campaign, or material visual-system change. Preserve a coherent existing system unless evidence opens that decision.
+- Read [imagery-and-assets.md](references/imagery-and-assets.md) only when photography, illustration, diagrams, generated imagery, or a material custom visual is genuinely under consideration. A recorded no-image decision ends this route.
+- Read [iconography-system.md](references/iconography-system.md) for icon-source choice, an icon system, a product-specific metaphor, or custom icon work. A routine known glyph does not trigger the broader custom-asset process.
+- Read [motion-and-interaction.md](references/motion-and-interaction.md) only when motion carries information or character, or when an existing transition is failing. Static work does not need a motion exploration.
+- Read [research-and-evidence.md](references/research-and-evidence.md) when current external evidence can change a high-leverage decision; skip saturated or already verified questions.
+- Read [quality-gates.md](references/quality-gates.md) for implementation validation, accessibility/content/responsive stress, states, performance, or rendered critique. Do not use it as a substitute for product framing.
+- Read [designer-evaluation.md](references/designer-evaluation.md) for benchmark design, comparative evaluation, or systemic behavior review—not every routine delivery.
+- Read [cli-reference.md](references/cli-reference.md) only when invoking local retrieval, packets, persistence, stack guidance, contrast, or SVG validation.
 
 Read only the references needed for the current decision. Do not make every project execute every specialist workflow.
 
@@ -182,7 +184,9 @@ The optional decision packet opens the right questions without selecting the des
 python <skill-directory>/scripts/search.py "<real brief>" --decision-packet --format markdown --project-name "<name>"
 ```
 
-Use targeted domain and stack retrieval only for unresolved questions. Every result now states its evidence role and limitation. For custom SVG assets, use the structural validator described in [cli-reference.md](references/cli-reference.md), then complete rendered optical QA.
+The deterministic packet preserves the brief and leaves unknown mode, platform, pressures, language, and ambiguous domain terms unresolved. It does not run a keyword classifier. Local product analogs are off by default; request them with `--analog-query` only when a caller-chosen lexical lookup can change a live decision.
+
+Use targeted domain and stack retrieval only for unresolved questions. Every result states its evidence role and limitation, and layout/style/palette/type/motion recipe domains intentionally do not exist. For custom SVG assets, use the structural validator described in [cli-reference.md](references/cli-reference.md), then complete rendered optical QA.
 
 ## Delivery
 

@@ -33,3 +33,36 @@ jobs:
 
       - name: Run regression suite
         run: python -m unittest discover -s tests -v
+
+  designer-behavior:
+    name: Designer behavior boundaries
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Run multilingual and generalization evaluation
+        run: python evals/designer-behavior/run_eval.py
+
+  browser-smoke:
+    name: Rendered benchmark smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Check runtime, interactions, focus, responsive states, and reduced motion
+        run: node scripts/browser-smoke.mjs --smoke
