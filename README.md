@@ -47,6 +47,8 @@ Goodturn, its bikes, prices, policies, address, and imagery are fictional benchm
 
 Doppler is a fictional carbonated soft-drink campaign where rich motion is justified by the product itself: carbonation pressure, a cylindrical aluminum package, and flavor change all need one continuous physical carrier. The dependency-free CSS-3D can enters with a finite release, responds to pointer and keyboard rotation, then completes a controlled turn when visitors tune one of three named flavors; the rest of the page stays deliberately still.
 
+### [Open the live interactive Doppler experience →](https://what0ff.github.io/snowe-ui-skill/)
+
 ![Doppler Soda live product and flavor motion](benchmarks/soda-campaign/screenshots/hero-motion.gif)
 
 | Wide flavor state | Mobile product state |

@@ -2,6 +2,10 @@
 
 Doppler is a fictional carbonated soft-drink campaign created as rendered evidence of Snowe's expressive-motion capability. It is a static, dependency-free HTML/CSS/JavaScript experience: no build, backend, CDN, analytics, or runtime network service is required.
 
+### [Open the live interactive Doppler experience →](https://what0ff.github.io/snowe-ui-skill/)
+
+The live page is an interactive fictional benchmark; no purchase or payment is processed. The checked-in GIF and still screenshots below remain rendered evidence captured from the benchmark.
+
 ![Doppler can and flavor motion](screenshots/hero-motion.gif)
 
 The selected thesis treats carbonation as a moving signal. A segmented CSS-3D aluminum can wraps three original local label textures, enters with a finite pressure release, rotates through direct pointer/keyboard input, and makes a complete physical turn when flavor state changes. Long-form product communication stays still; navigation, selection, and the fictional six-pack confirmation use restrained functional feedback.

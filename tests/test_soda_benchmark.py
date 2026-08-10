@@ -66,8 +66,9 @@ class SodaBenchmarkTests(unittest.TestCase):
         for reference in self.parser.references:
             self.assertFalse(reference.startswith(("http://", "https://", "//")), reference)
             self.assertTrue((SODA / reference).is_file(), reference)
-        runtime = "\n".join((self.html, self.css, self.js))
+        runtime = "\n".join((self.css, self.js))
         self.assertNotRegex(runtime, r"https?://")
+        self.assertIn('href="https://github.com/What0ff/snowe-ui-skill"', self.html)
 
     def test_product_flavors_conversion_and_disclosure_are_explicit(self):
         for phrase in (
@@ -164,10 +165,34 @@ class SodaBenchmarkTests(unittest.TestCase):
             self.assertIn(marker, smoke)
 
         readme = (ROOT / "README.md").read_text(encoding="utf-8")
+        benchmark_readme = (SODA / "README.md").read_text(encoding="utf-8")
         cross = (ROOT / "benchmarks" / "CROSS-BENCHMARK.md").read_text(encoding="utf-8")
+        pages = (ROOT / ".github" / "workflows" / "pages.yml").read_text(encoding="utf-8")
+        live_url = "https://what0ff.github.io/snowe-ui-skill/"
         self.assertIn("Flagship expressive-motion showcase — Doppler Soda", readme)
+        self.assertIn(f"[Open the live interactive Doppler experience →]({live_url})", readme)
+        self.assertIn(f"[Open the live interactive Doppler experience →]({live_url})", benchmark_readme)
+        self.assertIn("no purchase or payment is processed", benchmark_readme)
+        self.assertIn("checked-in GIF and still screenshots", benchmark_readme)
         self.assertIn("benchmarks/soda-campaign/screenshots/hero-motion.gif", readme)
         self.assertIn("## Expressive-motion companion", cross)
+        for marker in (
+            "branches: [main]",
+            "benchmarks/soda-campaign/**",
+            ".github/workflows/pages.yml",
+            "workflow_dispatch:",
+            "contents: read",
+            "pages: write",
+            "id-token: write",
+            "group: pages",
+            "cancel-in-progress: false",
+            "name: github-pages",
+            "actions/configure-pages@v5",
+            "actions/upload-pages-artifact@v3",
+            "path: benchmarks/soda-campaign",
+            "actions/deploy-pages@v5",
+        ):
+            self.assertIn(marker, pages)
 
 
 if __name__ == "__main__":
