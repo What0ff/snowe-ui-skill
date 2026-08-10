@@ -22,9 +22,11 @@ python -m compileall -q skill/snowe-ui-skill/scripts
 - `skill/snowe-ui-skill/SKILL.md` — core workflow and activation metadata.
 - `skill/snowe-ui-skill/references/` — detailed guidance loaded only when the
   task requires it.
-- `skill/snowe-ui-skill/scripts/` — deterministic retrieval and synthesis.
-- `skill/snowe-ui-skill/data/` — structured design knowledge.
-- `tests/` — regression and packaging coverage.
+- `skill/snowe-ui-skill/scripts/` — deterministic retrieval, open decision
+  support, and low-level validators.
+- `skill/snowe-ui-skill/data/` — subordinate retrieval evidence and analogs.
+- `evals/` and `benchmarks/` — behavioral contracts and rendered forward-tests.
+- `tests/` — product, safety, packaging, and benchmark regression coverage.
 
 Keep repository-facing documentation outside the installable skill directory.
 The exception is `LICENSE`, which remains inside the skill so copied installs

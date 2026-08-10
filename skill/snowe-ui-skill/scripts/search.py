@@ -1,32 +1,30 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Snowe UI Skill Search - BM25 search engine for UI/UX style guides
+Snowe UI Skill Search - local evidence retrieval and design decision packets
 Usage: python search.py "<query>" [--domain <domain>] [--stack <stack>] [--max-results 3]
-       python search.py "<query>" --design-system [-p "Project Name"]
-       python search.py "<query>" --design-system --persist [-p "Project Name"] [--page "dashboard"]
-       python search.py "<query>" --design-system --variance 8 --motion 9 --density 7
+       python search.py "<brief>" --decision-packet [-p "Project Name"]
+       python search.py "<brief>" --decision-packet --persist [-p "Project Name"] [--page "catalog"]
 
 Domains: style, color, chart, landing, product, ux, typography, icons, icon-families, icon-concepts, icon-candidates, gsap, react, web, google-fonts
 Stacks: react, nextjs, vue, svelte, astro, swiftui, react-native, flutter, nuxtjs, nuxt-ui, html-tailwind, shadcn, jetpack-compose, threejs, angular, laravel, javafx, wpf, winui, avalonia, uno, uwp
 
-Design dials (1-10, only with --design-system):
-  --variance   DESIGN_VARIANCE: 1=centered/minimal, 10=bold/asymmetric
-  --motion     MOTION_INTENSITY: 1=subtle, 10=complex; attaches a GSAP snippet from motion.csv
-  --density    VISUAL_DENSITY: 1=spacious, 10=dense/dashboard; overrides the spacing scale
-  --roundness  ROUNDNESS: 1=sharp, 10=soft; full rounding remains reserved for semantic controls
+Decision packets keep architecture, art direction, imagery, custom graphics,
+motion, and responsive behavior open until an agent compares real candidates.
+The historical --design-system spelling remains an alias, but no recipe-based
+design system is selected.
 
-Persistence (Master + Overrides pattern):
-  --persist    Save design system to design-system/MASTER.md
-               and initialize a non-overwritten PROJECT-MEMORY.md
-  --page       Also create a page-specific override file in design-system/pages/
+Persistence:
+  --persist    Save design-intelligence/<project>/BRIEF.md and initialize a
+               non-overwritten DECISIONS.md
+  --page       Also create a page inquiry without prescribing a page type or section order
 """
 
 import argparse
 import sys
 import io
 from core import CSV_CONFIG, AVAILABLE_STACKS, MAX_RESULTS, search, search_stack
-from design_system import generate_design_system, slugify_name
+from decision_packet import generate_decision_packet, slugify_name
 
 # Force UTF-8 for stdout/stderr to handle emojis on Windows (cp1252 default)
 if sys.stdout.encoding and sys.stdout.encoding.lower() != 'utf-8':
@@ -48,6 +46,10 @@ def format_output(result):
         output.append(f"## Snowe UI Skill Search Results")
         output.append(f"**Domain:** {result['domain']} | **Query:** {result['query']}")
     output.append(f"**Source:** {result['file']} | **Found:** {result['count']} results\n")
+    if result.get("source_role"):
+        output.append(f"**Source role:** {result['source_role']}")
+    if result.get("warning"):
+        output.append(f"**Use boundary:** {result['warning']}\n")
 
     for i, row in enumerate(result['results'], 1):
         output.append(f"### Result {i}")
@@ -68,65 +70,65 @@ if __name__ == "__main__":
     parser.add_argument("--stack", "-s", choices=AVAILABLE_STACKS, help=f"Stack-specific search. Available: {', '.join(AVAILABLE_STACKS)}")
     parser.add_argument("--max-results", "-n", type=int, default=MAX_RESULTS, help="Max results (default: 3)")
     parser.add_argument("--json", action="store_true", help="Output as JSON")
-    # Design system generation
-    parser.add_argument("--design-system", "-ds", action="store_true", help="Generate complete design system recommendation")
-    parser.add_argument("--project-name", "-p", type=str, default=None, help="Project name for design system output")
-    parser.add_argument("--format", "-f", choices=["ascii", "markdown"], default="ascii", help="Output format for design system")
-    # Persistence (Master + Overrides pattern)
-    parser.add_argument("--persist", action="store_true", help="Save MASTER.md and initialize a durable non-overwritten PROJECT-MEMORY.md")
-    parser.add_argument("--page", type=str, default=None, help="Create page-specific override file in design-system/pages/")
+    # Architecture-first design decision packet. --design-system remains a
+    # compatibility alias but no longer chooses a recipe-based design system.
+    parser.add_argument(
+        "--decision-packet",
+        "--design-system",
+        "-dp",
+        "-ds",
+        dest="decision_packet",
+        action="store_true",
+        help="Open an architecture-first design decision packet; does not select a layout, style, palette, font, imagery, or motion recipe",
+    )
+    parser.add_argument("--project-name", "-p", type=str, default=None, help="Project name for decision-packet output")
+    parser.add_argument("--format", "-f", choices=["markdown", "json"], default="markdown", help="Decision-packet output format")
+    # Persistence (Brief + durable decisions + page inquiries)
+    parser.add_argument("--persist", action="store_true", help="Save BRIEF.md and initialize a durable non-overwritten DECISIONS.md")
+    parser.add_argument("--page", type=str, default=None, help="Create a page inquiry without prescribing a page type or section order")
     parser.add_argument("--output-dir", "-o", type=str, default=None, help="Output directory for persisted files (default: current directory)")
-    # Design dials (1-10), only applied with --design-system
-    parser.add_argument("--variance", type=int, choices=range(1, 11), metavar="1-10", help="DESIGN_VARIANCE dial: 1=centered/minimal, 10=bold/asymmetric (only with --design-system)")
-    parser.add_argument("--motion", type=int, choices=range(1, 11), metavar="1-10", help="MOTION_INTENSITY dial: 1=subtle, 10=complex; pulls a matching GSAP snippet from motion.csv (only with --design-system)")
-    parser.add_argument("--density", type=int, choices=range(1, 11), metavar="1-10", help="VISUAL_DENSITY dial: 1=spacious, 10=dense/dashboard; overrides the spacing scale (only with --design-system)")
-    parser.add_argument("--roundness", type=int, choices=range(1, 11), metavar="1-10", help="ROUNDNESS dial: 1=sharp, 10=soft; never enables generic pill-shaped controls (only with --design-system)")
 
     args = parser.parse_args()
 
     if args.domain and args.stack:
         parser.error("--domain and --stack are mutually exclusive")
-    if args.design_system and (args.domain or args.stack):
-        parser.error("--design-system cannot be combined with --domain or --stack")
+    if args.decision_packet and (args.domain or args.stack):
+        parser.error("--decision-packet cannot be combined with --domain or --stack")
     if args.page and not args.persist:
         parser.error("--page requires --persist")
     if args.output_dir and not args.persist:
         parser.error("--output-dir requires --persist")
-    design_only_values = (args.persist, args.page, args.output_dir, args.variance, args.motion, args.density, args.roundness)
-    if not args.design_system and any(value is not None and value is not False for value in design_only_values):
-        parser.error("--persist, --page, --output-dir, and design dials require --design-system")
-    if args.design_system and args.json:
-        parser.error("--json is available for domain and stack searches; use --format markdown for design systems")
+    packet_only_values = (args.persist, args.page, args.output_dir)
+    if not args.decision_packet and any(value is not None and value is not False for value in packet_only_values):
+        parser.error("--persist, --page, and --output-dir require --decision-packet")
+    if args.decision_packet and args.json:
+        parser.error("--json is available for domain and stack searches; use --format json for decision packets")
 
-    # Design system takes priority
-    if args.design_system:
-        result = generate_design_system(
+    # Decision packet takes priority
+    if args.decision_packet:
+        result = generate_decision_packet(
             args.query,
             args.project_name,
             args.format,
             persist=args.persist,
             page=args.page,
             output_dir=args.output_dir,
-            variance=args.variance,
-            motion=args.motion,
-            density=args.density,
-            roundness=args.roundness,
+            page_brief=args.query if args.page else None,
         )
         print(result)
 
         # Print persistence confirmation
         if args.persist:
-            project_slug = slugify_name(args.project_name or args.query)
+            project_slug = slugify_name(args.project_name or "untitled-design-inquiry")
             print("\n" + "=" * 60)
-            print(f"Design system persisted to design-system/{project_slug}/")
-            print(f"   design-system/{project_slug}/MASTER.md (Generated working system defaults)")
-            print(f"   design-system/{project_slug}/PROJECT-MEMORY.md (Durable decisions; preserved on regeneration)")
+            print(f"Design intelligence persisted to design-intelligence/{project_slug}/")
+            print(f"   design-intelligence/{project_slug}/BRIEF.md (Regenerated decision packet)")
+            print(f"   design-intelligence/{project_slug}/DECISIONS.md (Durable accepted decisions; preserved on regeneration)")
             if args.page:
                 page_filename = slugify_name(args.page, "page")
-                print(f"   design-system/{project_slug}/pages/{page_filename}.md (Page Overrides)")
+                print(f"   design-intelligence/{project_slug}/pages/{page_filename}.md (Open page inquiry)")
             print("")
-            print(f"Usage: When building a page, check design-system/{project_slug}/pages/[page].md first.")
-            print(f"   If exists, its rules override MASTER.md. Otherwise, use MASTER.md.")
+            print(f"Usage: Read accepted decisions, then the brief and any relevant page inquiry.")
             print("=" * 60)
     # Stack search
     elif args.stack:

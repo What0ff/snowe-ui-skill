@@ -1,0 +1,18 @@
+{
+  "name": "workshop",
+  "role": "interface icon",
+  "grid": 24,
+  "live_area": "2.6..19.2 with diagonal optical centering",
+  "drawing_language": {
+    "mode": "stroke",
+    "stroke_width": 1.75,
+    "linecap": "round",
+    "linejoin": "round",
+    "corner_language": "open mechanical tool silhouette with small rounded transitions",
+    "detail_budget": "one open wrench silhouette and one handle counter at 16 px"
+  },
+  "target_sizes": [16, 20, 24, 28],
+  "source": "repository-owned custom drawing for Goodturn Cycles benchmark",
+  "license": "project-owned benchmark asset",
+  "accessibility_owner": "owning labelled service item; SVG is decorative"
+}

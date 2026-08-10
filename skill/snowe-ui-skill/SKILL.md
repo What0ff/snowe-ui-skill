@@ -1,210 +1,189 @@
 ---
 name: snowe-ui-skill
-description: Professional UI/UX design, implementation, refactoring, and review for web, mobile, and desktop products. Use when Codex must create or improve pages and components, establish or critique a visual direction or design system, explore relevant external alternatives before material design decisions, choose layout, typography, color, shape, iconography, imagery, motion, or control density, select and install a justified icon source, implement responsive and accessible interfaces, audit usability or perceived quality, or retrieve stack-specific UI guidance. Includes evidence-based exploration, art-direction and creative-distinction gates, content- and script-aware typography direction, searchable datasets, deterministic design-system generation, durable project design memory, bounded rendered critique, and guardrails against decorative pill/capsule overuse, oversized controls, generic icon metaphors, and AI-blue/cyan/violet neon or glow as the default identity.
+description: Design and build high-quality web, product, and brand experiences. Use for site and page architecture, information architecture, UX, art direction, visual systems, typography, color/material, imagery, illustration, custom graphics and icons, motion, interaction, responsive behavior, implementation, and rendered critique. Snowe frames the whole user and business problem, uses local and current external evidence without treating catalogs as recipes, synthesizes structurally different candidates, selects through causal and rendered proof, and can intentionally choose no image, no custom asset, or no animation when that is stronger.
 ---
 
 # Snowe UI Skill
 
-Create interfaces that are coherent, distinctive, accessible, and grounded in the real product context. Treat bundled search results as decision support, not as permission to overwrite repository conventions or platform behavior.
+Design the right experience before styling the familiar one.
 
-## Operating Contract
+Snowe is an agent design practice, not a layout chooser. Local datasets, existing components, current products, design systems, and generated assets are evidence. None defines the outer boundary of the solution space. A strong result may be absent from every bundled pattern and still win when it follows the product truth, survives comparison, and proves itself in the real interface.
 
-- Inspect the repository, current UI, component library, tokens, brand assets, target platforms, and real content before proposing a direction.
-- If `design-system/<project>/PROJECT-MEMORY.md` exists, read its `CONFIRMED` decisions before material UI work and verify them against the current repository and brief. Never overwrite confirmed memory with generated defaults.
-- Preserve an established design system by default. Correct accessibility, semantic, consistency, or task-level defects that are inside the requested scope without turning them into an unsolicited redesign.
-- Match the requested scope: review without mutation for review tasks; implement and verify for build or change tasks.
-- Base claims on rendered evidence, source code, official assets, measured values, or cited platform standards. Do not invent brand rules, user research, or test results.
-- Prefer semantic or native controls and the repository's existing components over unnecessary custom primitives.
-- For every material decision, search the full relevant option space through [exploration-protocol.md](references/exploration-protocol.md) before committing. Treat repository, platform, brand, installed-package, and current-token choices as the baseline, not the search boundary. Compare concrete external challengers on identical real content, rank semantic and visual quality first, and apply dependency, license, performance, migration, and maintenance cost only afterward.
-- Do not turn this into infinite churn: preserve confirmed invariants and learned or native routine decisions, declare the relevant candidate universe, and stop at evidence saturation after every applicable class is covered. A catalog, package, font, trend, or moodboard list without same-context finalist evidence does not close exploration.
-- Treat installed icon packages as evidence and a migration baseline, not a closed allowlist.
-- Use broad cross-library exploration by default for every non-universal product, domain, navigation, status, or signature icon; also enter it whenever the user asks to inspect other libraries, expand the pool, find the best available glyph, or rejects the current candidates. Reserve routine primary-source lookup for confirmed learned universal actions with clear coherent coverage. Do not finalize after finding a strong installed glyph: inspect concrete candidates from at least three relevant uninstalled families when available and render at least two external finalists beside the installed baseline at the same size and in the same UI context. A catalog skim or package-name list is not a comparison. Rank semantic and visual quality before applying dependency, lockfile, bundle, migration, or maintenance cost.
-- During authorized implementation work, install the strongest justified package-based adapter or integrate the selected official native or asset source when it passes the source and dependency gates; do not mutate dependencies during review-only work or acquire every candidate speculatively.
-- Make one coherent visual decision at a time. Avoid mixing unrelated trends, icon families, radius systems, or motion languages.
-- Separate invariants from defaults and heuristics. Accessibility, semantics, content integrity, verified brand rules, and explicit product constraints are invariants. Package counts, class names, exact pixel ranges, raw hue names, numbers of cards or fonts, and preferred visual recipes are diagnostic signals—not automatic pass/fail rules.
-- Judge rendered behavior and visual coherence before implementation proxies. Permit a documented platform, brand, content, or task exception when it produces the stronger outcome without weakening an invariant.
+## Evidence and Authority
+
+Use this order:
+
+1. Explicit requirements and verified repository, product, brand, content, user, and platform facts.
+2. Measured or rendered behavior from the actual implementation.
+3. Current primary standards, official assets, official package/platform sources, credible domain research, and real-product observation.
+4. Accepted project decisions with scope and revisit triggers.
+5. Local Snowe datasets as analogs, vocabulary, counterexamples, and discovery indexes.
+6. Generated hypotheses.
+
+Never turn an inference, retrieved row, trend, competitor convention, or generated image into a fact. When evidence is missing, keep the uncertainty visible and make reversible assumptions only.
 
 ## Route the Work
 
-- For every material choice in direction, composition, typography, iconography, color or material, component behavior, imagery, motion, or data visualization, read [exploration-protocol.md](references/exploration-protocol.md) first and retain its Explore → Compare → Commit phase order.
-- For a new page, product, redesign, or unresolved visual identity, read [design-foundations.md](references/design-foundations.md) and [art-direction-gate.md](references/art-direction-gate.md), inspect the project, then compare and critique design hypotheses and prove a product-specific identity carrier before selecting one.
-- For an existing UI review or polish pass, read [quality-gates.md](references/quality-gates.md), inspect the rendered UI, and search only the relevant domains.
-- For a material visual change inside an established product, read [art-direction-gate.md](references/art-direction-gate.md) and use the current interface as the comparison baseline.
-- For typography, shape, control, or visual-hierarchy work, read the relevant sections in [design-foundations.md](references/design-foundations.md). Typography decisions require representative content, required-script coverage, font-file and fallback evidence, and rendered metrics—not a font-name pairing alone.
-- For icon selection, replacement, source choice, package acquisition, custom SVGs, or icon QA, read [iconography-system.md](references/iconography-system.md). Choose its routine or broad exploration mode before searching. Query `icon-concepts` whenever the metaphor is unresolved; query `icon-families` to compare installed and uninstalled families; then query `icon-candidates` one source at a time after the role and metaphor are fixed, using `<family> <real subject> <mechanism/output>`. In broad mode, repeat concrete searches and rendered comparisons until the exploration-closure gate passes; an acceptable installed result does not end that search.
-- For CLI options, domains, stacks, persistence, or query construction, read [cli-reference.md](references/cli-reference.md).
-- For accessibility or target-size claims, use [quality-gates.md](references/quality-gates.md) and preserve the distinction between web conformance and platform recommendations.
+- Read [exploration-protocol.md](references/exploration-protocol.md) for the causal design loop, inquiry depth, candidate portfolios, and convergence.
+- For a new site, product, page family, navigation change, conversion flow, or architecture problem, read [experience-architecture.md](references/experience-architecture.md) before visual direction.
+- For a new identity, redesign, campaign, or material visual change, read [art-direction-gate.md](references/art-direction-gate.md) and [design-foundations.md](references/design-foundations.md).
+- For photography, illustration, diagrams, product compositions, generated imagery, or custom visual assets, read [imagery-and-assets.md](references/imagery-and-assets.md).
+- For icon systems or custom icons, read [iconography-system.md](references/iconography-system.md).
+- For animation, transitions, feedback, gestures, and interaction character, read [motion-and-interaction.md](references/motion-and-interaction.md).
+- When current external design space, standards, packages, fonts, techniques, or real products could change a high-leverage decision, read [research-and-evidence.md](references/research-and-evidence.md).
+- For accessibility, content resilience, responsive QA, states, performance, and rendered critique, read [quality-gates.md](references/quality-gates.md).
+- For behavior benchmarks and non-numeric designer evaluation, read [designer-evaluation.md](references/designer-evaluation.md).
+- For local retrieval, decision packets, persistence, stacks, and SVG validation, read [cli-reference.md](references/cli-reference.md).
 
-## Workflow
+Read only the references needed for the current decision. Do not make every project execute every specialist workflow.
 
-Before the domain workflow below, declare the relevant option universe and open an exploration ledger for every material decision. Search outside the repository by default, render the strongest relevant challengers on the same real content, close exploration, and only then apply implementation economics. Do not reopen accepted invariants or benchmark unchanged routine tokens.
+## Choose the Inquiry Depth
 
-### 1. Establish the Product Truth
+Use the smallest process that can still change the outcome:
 
-Identify:
+- **Direct:** a narrow defect, routine state, learned platform action, or change inside a coherent accepted system. Inspect context, implement, render the affected state, and verify the invariant.
+- **Focused:** a material choice inside an established product. Compare the current baseline with one or more real challengers only where uncertainty or consequence justifies it.
+- **Portfolio:** a new product, site, page family, visual identity, architecture, or unresolved high-impact decision. Frame the whole problem, create structurally different candidates, prototype the risky slices, then converge.
 
-- Primary user and task
-- Product type and information density
-- Platform and input modes
-- Existing brand and design-system constraints
-- Required content and states
-- Technical stack and component library
-- Accessibility, localization, performance, and delivery constraints
-- Confirmed project-memory decisions, their scope, evidence, and revisit triggers when memory exists
+Increase depth when a decision is consequential, uncertain, hard to reverse, visually or behaviorally defining, or likely to benefit from current external evidence. Reduce it when the answer is native, learned, already accepted, low-risk, or cheap to correct. Broad exploration is a tool, not a ritual.
 
-If critical context is absent, infer only reversible visual details. Do not fabricate product requirements.
+## The Design Loop
 
-### 2. Select the Direction Through an Art-Director Gate
+### 1. Establish Product Truth
 
-Choose the smallest review mode that matches the decision:
+Inspect the repository and rendered product before proposing direction. Build the smallest useful model of:
 
-- For a narrow fix or state addition, execute inside the current system and run a compact fit check.
-- For polish or extension of an established interface, compare the current baseline with one focused refinement hypothesis.
-- For a new product, redesign, or unresolved identity, create two direction cards and add a third only when it represents another material product trade-off; then run the full gate in [art-direction-gate.md](references/art-direction-gate.md).
+- the business, offer, positioning, and success condition;
+- primary and secondary users, contexts, frequency, stakes, and input modes;
+- the outcome users seek and what currently blocks confidence or progress;
+- conversion or task completion and the evidence that must precede it;
+- actors, objects, content, relationships, states, quantities, lifecycle, and ownership;
+- entry points, return visits, failure and recovery, offline or cross-channel steps;
+- real content, scripts, localization, accessibility, performance, platform, and delivery constraints;
+- verified brand assets and accepted project decisions.
 
-Keep every candidate on the same real content, user task, functional requirements, and platform constraints. Make full-gate candidates differ structurally rather than presenting palette, radius, or icon swaps.
+Do not confuse an existing process, organizational chart, database, component library, or brief wording with the user's actual problem. If critical context is absent, investigate locally, research when it has decision value, and mark remaining assumptions.
 
-Critique each applicable direction with `PASS`, `BLOCKER`, `UNKNOWN`, or `N/A` across product fit, task hierarchy, information architecture, content resilience, system coherence, distinctiveness, brand provenance, accessibility feasibility, platform fit, implementation feasibility, and the visual guardrails. Put exactly one of those tokens in the status field and record caveats separately; never invent `PASS with risk` or another softened status. Reserve `BLOCKER` for a violated requirement or outcome-level harm, not a heuristic count. Do not use numeric taste scores or silently turn missing evidence into a pass.
+### 2. Open a Decision Graph
 
-Eliminate unresolved blockers, select one coherent direction, and record why it won and why the strongest alternative lost. Synthesize only compatible ideas that can be restated as one thesis; do not average unrelated concepts. Ask for a user decision only when equally viable directions imply materially different brand or business positions.
-
-State the selected compact design thesis before implementation:
-
-- Desired perception
-- Primary visual direction and one supporting influence
-- Dominant composition and focal point
-- Type, color, shape, icon, imagery, and motion approach
-- One product-specific signature device when it improves recognition, or an explicit decision that content, typography, and composition carry the identity without added ornament
-- Explicit anti-patterns for this product
-
-Prove creative distinction without manufacturing decoration: derive one repeatable identity carrier from the product's real objects, workflow, data, language, or audience; define where it may repeat; and run a subtraction test. The interface must still have intentional hierarchy when the logo, gradient, and decorative layer are temporarily removed. An ownable move may be composition, typography, content behavior, data treatment, imagery, or interaction; ornament is optional.
-
-When no reliable design system exists, generate a starting hypothesis:
+For every high-leverage choice, keep a causal record:
 
 ```text
-python <skill-directory>/scripts/search.py "<product audience task tone density platform>" --design-system --format markdown --project-name "<name>"
+driver → design move → expected user/business consequence → evidence → risk → revisit trigger
 ```
 
-Treat generated retrieval as one input to the gate, not as proof that a direction is correct. Use the optional `--variance`, `--motion`, `--density`, and `--roundness` dials only when they express a real product decision. Even `--roundness 10` does not permit generic pill-shaped controls.
+This graph provides freedom without randomness. A choice does not need to appear in a catalog; it needs a stronger causal chain and better proof than the alternatives. Routine tokens and low-level implementation details do not need ceremonial records.
 
-### 3. Resolve the System Before Components
+### 3. Synthesize Experience Architecture
 
-Define or reuse:
+Architecture precedes art direction for a new experience.
 
-- Semantic color roles and verified foreground/surface pairs
-- Role-based type scale and content measure
-- Required scripts, actual font files and weights, fallback metrics, numeral behavior, and localization stress content
-- Spacing, grid, gutters, and responsive behavior
-- Component-specific radius tokens
-- Surface and elevation hierarchy
-- Icon family, visible size, and hit-target strategy
-- Icon roles and metaphors, including explicit anti-cliche decisions for product and domain concepts
-- Motion tokens and reduced-motion behavior
-- Component roles and state coverage
+Map the whole journey and the content/product object model before naming pages or sections. Define what belongs inside the product boundary, how users orient, what they need to understand or compare, where decisions become ready, how they act, and how they return or recover.
 
-Fix any generated `ADJUST` contrast result before delivery or document why the pair is not used for normal text.
+Create enough structurally different candidates to cover the live trade-offs. Candidates must differ in organizing principle, topology, navigation, sequence, disclosure, interaction, or conversion—not only palette, radius, or section styling. A candidate may be entirely synthesized from the brief and evidence. No hero, card grid, dashboard shell, product page layout, or navigation pattern is mandatory.
 
-### 4. Implement in the Existing Architecture
+Prototype the riskiest page slice, navigation transition, comparison, form step, or conversion moment using real content before committing the full architecture. Record why the winner serves the whole journey and why the strongest alternative lost.
 
-- Freeze a compact implementation contract from the selected direction: thesis, dominant composition, optional signature device, preserved repository conventions, approved deviations, non-negotiables, forbidden defaults, representative content and states, and target viewports or devices.
-- Query the actual stack when implementation guidance is needed:
+### 4. Establish Art Direction
+
+Derive visual identity from the product's real objects, construction, workflow, information relationships, content, audience, language, place, material, and verified brand—not from a style label.
+
+For portfolio work, compare directions on identical product truth and real content. Make them express meaningful trade-offs through composition, typography, image/graphic logic, material behavior, interaction, or motion. Select one coherent thesis; hybridize only moves that can be restated as one idea.
+
+Define:
+
+- desired perception and behavior;
+- dominant composition and focal hierarchy;
+- typographic roles and voice;
+- semantic color and material logic;
+- shape, surface, icon, imagery, and motion languages;
+- one primary identity carrier and its repetition boundary, or an explicit decision that content and composition already carry identity;
+- responsive transformations, not just breakpoints;
+- real content and states that the system must survive.
+
+### 5. Decide Whether Assets and Motion Exist
+
+Do not begin with a tool.
+
+For every potential visual, state what it must explain, prove, orient, reveal, or make desirable. Compare no image, verified existing assets, photography, illustration, diagram, data, product composition, generated imagery, and custom graphics when relevant. Choose generation only when it can deliver a truthful, art-directed composition better than available alternatives. Judge the result inside the actual layout and crop; reject it when the page is stronger without it.
+
+For custom icons and graphics, define the drawing language before paths. Compare visible text, established symbols, compatible external sources, and custom work. Validate structure and provenance, then render at target sizes beside neighboring assets. Reject custom work that is less recognizable, less balanced, or less coherent than an existing option.
+
+Start motion from the static and reduced-motion experience. Add it only when it clarifies cause, continuity, hierarchy, progress, feedback, spatial relationships, or story. High-frequency interactions normally need restrained feedback; expressive choreography must earn its repetition and performance cost. No animation is a valid design decision.
+
+### 6. Commit an Implementation Contract
+
+Before substantial implementation, freeze the accepted causal decisions:
+
+- experience and architecture thesis;
+- site scope, navigation model, page jobs, key flows, and conversion path;
+- visual thesis and identity carrier;
+- type, color/material, shape, imagery/graphic, icon, interaction, and motion roles;
+- responsive invariants and transformations;
+- preserved repository conventions and justified deviations;
+- representative content, states, viewports, input and accessibility modes;
+- unresolved risks and their safe fallback or revisit trigger.
+
+The contract prevents implementation convenience from silently replacing the design. Change it when new evidence appears, not when a familiar component is easier.
+
+### 7. Implement in the Real Architecture
+
+- Preserve semantic HTML or native controls, correct component behavior, repository conventions, and accepted design-system invariants.
+- Use real content early; do not postpone copy, data shape, product facts, price, error messages, or localization until polish.
+- Keep content, structure, behavior, state, styling, and assets maintainable in the target stack.
+- Add dependencies only after a selected current official source wins and the repository's package, license, performance, and ownership constraints are verified.
+- Include applicable default, hover, pressed, focus-visible, selected, disabled, loading, empty, partial, error, success, offline, and recovery states.
+- Preserve keyboard operation, accessible names, zoom/text scaling, reduced motion, high contrast, theme behavior, and content order.
+
+### 8. Render, Critique, Learn
+
+Run the repository's real build and checks, then inspect the functioning interface at narrow, pressure/intermediate, and wide sizes. Exercise important interactions and states; code inspection cannot prove hierarchy, crop, optical balance, motion, or responsive behavior.
+
+Use this finding record:
 
 ```text
-python <skill-directory>/scripts/search.py "<concern>" --stack <stack> --max-results 5
+KEEP | REVISE | REJECT | UNKNOWN
+viewport/state | visible or behavioral evidence | consequence | correction or acceptance reason | rerender/retest
 ```
 
-- Extend existing tokens and variants instead of scattering one-off values.
-- When the selected package-based icon source is not installed, verify the current official package, compatible version, license, framework support, bundle behavior, and maintenance; detect the repository package manager from metadata and lockfiles; install only the selected runtime adapter so the manifest and lockfile update together; then integrate it through a documented source role and shared wrapper. For native symbols, fonts, or official assets, use the platform-supported integration and availability checks. Acquisition is a normal implementation step for an authorized build/change task and does not require a separate installed-only fallback.
-- Do not acquire a package for a review, audit, or direction-only task. Do not add several libraries for comparison, hand-edit dependency versions when the package manager is available, or replace unrelated icons opportunistically.
-- Keep structure, behavior, state, and styling responsibilities clear.
-- Use real content and representative edge cases while building.
-- Include default, hover where supported, pressed, focus-visible, selected, disabled, loading, empty, error, and success states as applicable.
-- Preserve keyboard behavior, accessible names, focus order, text scaling or zoom, reduced motion, and theme behavior.
-- Use official brand assets. If new imagery is required, obtain or generate it intentionally instead of shipping arbitrary placeholders.
+Critique the result against the product outcome and implementation contract, not against a generic aesthetic checklist. Resolve every `REJECT` and material `REVISE`, rerender the affected evidence, and stop when further change no longer improves a stated driver. If a correction exposes a weak architecture or art-direction premise, reopen that decision instead of polishing around it.
 
-### 5. Render and Iterate
+## Professional Invariants
 
-- Run the relevant build, tests, and static checks.
-- Inspect the real interface at narrow, intermediate, and wide sizes.
-- Compare the render with the selected thesis and implementation contract; for refinement work, compare it with the previous interface baseline as well.
-- Exercise interaction states instead of reviewing only the default screenshot.
-- Check light and dark themes independently when both exist.
-- Inspect hierarchy at thumbnail scale and alignment, wrapping, icon balance, surface nesting, and state contrast at full scale.
-- Run one full rendered critic pass across composition, typography, density, noise, and product identity. Record each visible finding as `severity | viewport/state | evidence | consequence | correction | verification`.
-- Apply the smallest coherent correction set, then rerender the same evidence set. Treat that rerender as targeted verification rather than a fresh taste pass.
-- Run another full critic pass only when a correction materially changes composition or a blocker or major remains. Do not use pixel-delta scoring, tweak roulette, or endless screenshot churn.
-- Do not approve perceived quality from code inspection alone. Deliver only after blockers and majors are resolved or explicitly reported as external limitations.
+These constrain the solution space without prescribing its style:
 
-### 6. Report Evidence
+- The primary user outcome, required content, and action hierarchy remain understandable.
+- Accessibility, semantics, focus, labels, contrast, error recovery, zoom/text scaling, reduced motion, and target behavior are verified in context.
+- Responsive composition preserves priority and reading/task order; it does not merely shrink the desktop.
+- Localization, long content, missing data, partial states, and user-generated content do not break the experience.
+- Product and brand claims, prices, metrics, research, and asset provenance are factual.
+- Essential actions are not hover-, gesture-, animation-, or image-dependent.
+- Performance cost is proportional to user value; media space is reserved and heavy work is intentional.
+- Familiar universal actions stay recognizable. Novelty belongs where it improves product identity, comprehension, or experience.
 
-Summarize the implemented direction, files changed, checks run, viewport or device coverage, accessibility modes tested, and any remaining limitation. Distinguish executed checks from inferred guidance. Add or supersede a `PROJECT-MEMORY.md` entry only for a project-wide decision that is confirmed by the user, verified repository or brand evidence, or an accepted rendered result; keep generated hypotheses `PROPOSED`.
+Everything else—grid, number of sections, font count, radius, palette family, navigation form, amount of imagery, card use, icon source count, and motion intensity—is contextual. Judge the rendered consequence, not the token or count.
 
-## Shape Defaults and Exceptions
+## Common Failure Modes
 
-Apply these defaults across generated guidance and implementation:
+- Selecting a product category, landing pattern, style, palette, or font before understanding the whole journey.
+- Treating several cosmetic variants as exploration.
+- Requiring external research, image generation, custom graphics, or animation on every project.
+- Copying a current product instead of extracting transferable evidence and synthesizing a new answer.
+- Using anti-pattern rules so aggressively that every result converges on the same neutral design.
+- Replacing design judgment with a long ledger, gate collection, or numeric creativity score.
+- Calling a generated packet, retrieved catalog row, source-code scan, or first working render proof of quality.
+- Keeping custom work because effort was spent on it after an existing asset proves clearer or better balanced.
 
-- Do not use a pill or capsule as generic decoration.
-- Do not use full rounding as the default for buttons, fields, cards, toolbars, or navigation. The presence of `rounded-full`, `999px`, `Capsule`, or an equivalent token is not itself a failure; evaluate the component role and repeated rendered effect.
-- Avoid a wide pill behind a standalone icon when it adds decoration but no state, grouping, platform, or brand meaning.
-- Avoid a separate pill behind every navigation icon or icon-label item unless the items genuinely behave as compact semantic choices and the repetition preserves hierarchy.
-- Preserve the interaction target with transparent padding. Use a compact rounded-square container only when it communicates hover, press, focus, selection, grouping, or elevation.
-- Prefer color, weight, underline, side marker, icon fill, or a restrained tonal surface for navigation selection.
-- Prefer true pills for semantic chips, tags, filters, statuses, entered entities, and compact choices. Preserve established native or brand controls without requiring special permission, but do not propagate their geometry to unrelated components.
-- Use circles for avatars, true FABs, record or media controls, swatches, and established compact icon controls when the silhouette communicates a real role; do not repeat circles as generic chrome.
-- If legitimate chips dominate the screen, replace some with a list, menu, checkbox group, tabs, or another behaviorally correct control.
-- Do not inflate buttons, fields, selects, segmented controls, or icon containers to make the interface feel important.
-- Separate visible geometry from the interaction target: extend the hit area transparently and without overlap when accessibility requires more space.
-- For pointer-first desktop, use approximately 32–36px controls in dense workspaces and 36–40px in standard layouts as starting ranges. For touch, separate visible geometry from the platform target. Treat these values as heuristics, not thresholds; content, native components, input mode, density, brand, and measured usability may justify another value.
-- Size controls to their content by default. Use full-width or unusually tall actions only when the narrow layout or task flow gives them a clear reason.
+## Local Decision Support
 
-Preserve native component geometry when the target platform, repository architecture, or user brief makes native fidelity relevant. Do not copy that geometry to unrelated controls without the same reason.
+The optional decision packet opens the right questions without selecting the design:
 
-## Professional Visual Guardrails
+```text
+python <skill-directory>/scripts/search.py "<real brief>" --decision-packet --format markdown --project-name "<name>"
+```
 
-- Avoid card soup. Use cards only for independent or actionable groups; use spacing, headings, and dividers for ordinary structure.
-- Avoid generic centered hero + identical icon-card grid composition unless the content genuinely calls for it.
-- Establish a clear action hierarchy. Use one dominant action when the task has one obvious next step; permit peer actions when the workflow genuinely gives them equal priority.
-- Define a primary icon drawing language and a source-role map. Do not count packages as a quality metric: multiple sources can be coherent, while one package can still be inconsistent through mixed weights, fills, sizes, and metaphors.
-- Prefer the repository's established interface source for routine additions when it remains the strongest fit. Evaluate installable challengers for weak coverage or a materially stronger product, domain, or platform role; install the selected official adapter after the compatibility and dependency-acquisition gates pass.
-- Treat a missing glyph as a decision point, not automatic permission or prohibition. Compare visible text, a compatible auxiliary source, and a repository-owned SVG using recognition and ownership evidence.
-- Preserve familiar symbols for universal actions, but make product and domain icons specific to the real object, mechanism, input, output, or consequence.
-- For every non-universal product icon, record `real subject → mechanism/output`, explore enough plausible candidates to make a real choice, start with the primary source, and document any source exception plus compatibility evidence.
-- Prefer verified named exports from `icon-candidates` over recalled component names, but confirm the installed package version before implementation.
-- Treat sparkles, wands, brains, rockets, shields, lightning, globes, puzzle pieces, cubes, generic charts, trophies, stars, and gears as high-cliche-risk symbols. Use them when literal, learned, branded, or demonstrably clearest—not as automatic shorthand for product value.
-- When brand evidence is absent, start from a context-derived solid foundation. Do not use generic AI-blue/cyan/violet neon, electric edge light, bloom, glow, or ambient luminous gradients as the default identity.
-- Do not reject blue, cyan, violet, a gradient, or a shadow solely by token or hue name. A restrained functional color or evidence-backed brand, domain, data, illustration, or material treatment is valid when hierarchy, contrast, and repetition remain controlled.
-- Use accent color, gradients, shadows, blur, and animation selectively and semantically. Avoid readability-damaging text glow, indiscriminate glowing borders, aura blobs, or blue-purple light washes without a brief, brand, genre, or content reason.
-- Do not add hover motion to noninteractive surfaces.
-- Do not hide essential actions behind hover, swipe, drag, or gesture-only interaction.
-- Do not claim accessibility from palette metadata or static screenshots alone.
-- Do not disable zoom, remove focus indicators, or truncate essential content to preserve a composition.
+Use targeted domain and stack retrieval only for unresolved questions. Every result now states its evidence role and limitation. For custom SVG assets, use the structural validator described in [cli-reference.md](references/cli-reference.md), then complete rendered optical QA.
 
-## Search Discipline
+## Delivery
 
-- Build queries from product, audience, task, tone, density, and platform.
-- Run one complete design-system search, then targeted domain searches for unresolved decisions.
-- Use `ux`, `web`, `chart`, or stack search for an audit; do not regenerate the visual direction unless redesign is in scope.
-- Treat rankings as lexical evidence. Validate semantic and product fit.
-- See [cli-reference.md](references/cli-reference.md) for the complete domain and stack inventory.
-
-## Delivery Gate
-
-Before delivering UI work, confirm:
-
-- The applied direction passed the appropriate art-direction mode, and any material unknown or rejected alternative is recorded without fake certainty.
-- The primary task and focal point are obvious.
-- The result has a product-specific identity carrier that improves recognition, comprehension, or task flow and does not depend on a generic SaaS recipe or compulsory ornament.
-- Layout works with real content at intermediate widths.
-- Color and focus states are measured or visually verified in the rendered UI.
-- Controls have correct semantics, accessible names, and platform-appropriate targets.
-- Pills normally belong to legitimate semantic, native, or verified brand roles; a standalone icon does not receive a pill merely as decoration.
-- Universal action icons remain recognizable; product icons avoid vague stock metaphors; every icon source has a documented role; and icons that appear together form a coherent rendered drawing language.
-- Any requested broad icon search includes a source-by-source candidate record and same-context renders of external finalists; catalog-only review or an early installed-family winner does not satisfy the exploration-closure gate, and integration cost is applied only after semantic and visual ranking.
-- Every material font, composition, color or material, component, imagery, motion, and data-visualization choice has the relevant-universe declaration, external challenger evidence, same-context finalist comparison, quality-first ranking, and strongest-rejected rationale required by the exploration protocol.
-- Any newly selected icon dependency was verified against current official package and license evidence, installed with the repository package manager, recorded with its role and version, included in build and bundle checks, and rendered beside neighboring icons; rejected candidates were not left installed.
-- Typography was rendered with representative content, required scripts, long labels, numeric stress where relevant, and actual fallback behavior; hierarchy survives without clipping or accidental reflow.
-- Fixed UI does not cover content or focused controls.
-- Motion is purposeful, interruptible, and reduced when requested by the system.
-- Empty, loading, error, success, and disabled states are coherent with the system.
-- One bounded full critic pass was completed, blocker and major findings were corrected, and the final result was rerendered after the last material change.
-- Confirmed project-memory decisions were preserved, scoped exceptions stayed local to their named role, and newly generated hypotheses were not written as facts.
+Report the chosen architecture and thesis, the causal decisions that materially shaped it, the strongest rejected alternative, external evidence that changed the outcome, assets or motion deliberately used or omitted, implementation scope, rendered viewports/states, accessibility and performance checks, corrections made after review, and remaining unknowns. Distinguish executed evidence from inference.

@@ -1,100 +1,178 @@
-# Exploration Protocol
+# Causal Design Inquiry
 
-Use this reference before committing any material design decision. Its purpose is to search the full relevant option space, compare real candidates, and prevent repository familiarity or implementation cost from deciding quality before discovery is complete.
+Use this reference when the answer is not already a verified invariant or routine platform convention. It replaces recipe selection with a compact loop that can widen, compare, commit, and reopen decisions as evidence changes.
 
-## Contents
+## 1. Calibrate the Inquiry
 
-1. Always-on contract
-2. Define the relevant universe
-3. Explore, compare, commit
-4. Domain coverage
-5. Evidence ledger
-6. Closure rule
-7. Integration economics
-8. Failure patterns
+Inquiry depth follows consequence, uncertainty, and reversibility.
 
-## 1. Always-on Contract
+### Direct
 
-Run this protocol for every material choice in visual direction, composition, typography, iconography, color or material, component behavior, imagery, motion, and data visualization. Treat installed packages, current tokens, native components, and existing assets as the baseline—not the search boundary.
+Use when the change is narrow, the system is coherent, and the answer is learned or accepted. Examples: repair focus, add a known state, correct a close icon, extend a tokenized component.
 
-“All possible options” means all options that remain relevant after explicit product, platform, script, accessibility, brand, license, performance, and scope constraints are applied. It does not mean enumerating an infinite catalog, every hex value, or cosmetic variants that cannot change the decision.
+Evidence required:
 
-Skip broad discovery only for a confirmed invariant or a routine decision whose answer is learned, native, or already fixed by the accepted system, such as a close icon, a platform back gesture, an unchanged spacing token, or a narrow bug fix. Still verify fit in context. Promote the decision to full exploration as soon as the current system is unclear, weak, rejected, or materially challenged.
+- repository and rendered context;
+- the affected invariant and state;
+- targeted implementation and rerender.
 
-## 2. Define the Relevant Universe
+### Focused
 
-Before searching, record:
+Use when one material choice inside an established experience is unresolved. Keep the current product as a baseline and introduce challengers only for the decision that can materially improve.
 
-- Decision and real user consequence
-- Required platform, input modes, scripts, content, states, and accessibility behavior
-- Verified brand, repository, native, license, performance, and delivery constraints
-- Current baseline and why it may or may not be sufficient
-- Candidate classes and authoritative sources that could plausibly change the outcome
-- Excluded classes with evidence; do not exclude a source merely because it is uninstalled or unfamiliar
+Evidence required:
 
-Search both bundled datasets and current primary sources. Treat a local registry as an index, not an exhaustive market boundary. Deduplicate cosmetic variants and preserve materially different approaches.
+- causal driver and expected consequence;
+- current baseline plus credible alternatives;
+- same-content comparison at the affected sizes and states;
+- accepted decision and revisit trigger.
 
-## 3. Explore, Compare, Commit
+### Portfolio
 
-1. **Explore for quality.** Retrieve concrete options across the relevant candidate classes. Do not apply dependency, migration, lockfile, procurement, or familiarity penalties yet, except to remove a proven legal, platform, or hard-delivery incompatibility.
-2. **Compare in context.** Put finalists on the same real content, viewport, state, theme, size, and task. Names, catalog pages, trend labels, and package descriptions are discovery evidence—not visual proof.
-3. **Rank semantic and visual fit.** Compare task clarity, recognition, hierarchy, content resilience, script coverage, optical behavior, system coherence, product identity, and accessibility feasibility.
-4. **Apply integration economics.** Only after the quality ranking, evaluate license, package or asset model, bundle or runtime cost, loading, maintenance, migration, lockfile impact, and ownership.
-5. **Commit one coherent decision.** Record why it won and why the strongest rejected option lost. Install or integrate the winner when implementation is authorized; do not keep the comparison set.
+Use for new experiences, site/page architecture, navigation, conversion models, identities, or high-impact unresolved work. Generate enough candidates to cover the real trade-offs; do not enforce an arbitrary concept count.
 
-## 4. Domain Coverage
+Evidence required:
 
-| Domain | Discovery coverage | Required comparison proof |
-|---|---|---|
-| Visual direction and composition | Current baseline plus structurally distinct directions that represent the material product trade-offs | Same content and requirements; use the direct, refinement, or full art-direction gate rather than palette-only variants |
-| Typography | Scan applicable repository, platform, open, and licensed foundry or catalog candidates for required scripts, weights, axes, numerals, tone, and loading constraints; include materially different typographic archetypes | Render the baseline and at least three strongest external finalists when available using real headings, body, labels, long localized strings, numerals, and fallback behavior; a font-name list or specimen page is insufficient |
-| Iconography | Search concrete glyphs across every relevant family class; in broad cases include at least three uninstalled sources when available | Render at least two external finalists beside the installed baseline at the exact UI size and state; follow [iconography-system.md](iconography-system.md) |
-| Color and material | Compare complete semantic role systems and material treatments appropriate to the product, brand, themes, and content—not isolated swatches | Apply finalists to the same focal hierarchy, controls, data, states, and themes; measure applicable contrast and inspect repetition |
-| Shape, surfaces, and controls | Compare coherent geometry and density systems plus behaviorally correct native, repository, and viable stack primitives | Render representative controls together with focus, selected, disabled, error, content expansion, and target behavior; do not select by component-gallery aesthetics |
-| Imagery and illustration | Inspect verified brand or repository assets plus relevant licensed, commissioned, generated, or diagrammatic directions | Compare crops or compositions on the real layout; verify provenance, rights, responsive behavior, text contrast, and loading |
-| Motion | Compare the static or reduced-motion baseline with the relevant functional transition models; exclude decorative motion that cannot explain cause, continuity, hierarchy, or status | Exercise the real interaction, interruption, repeated use, reduced motion, and performance rather than approving a demo clip |
-| Data visualization | Enumerate chart families capable of answering the real analytical question and reject incompatible encodings with evidence | Render the strongest encodings with representative data, labels, extremes, empty/error states, and accessible text or table support |
+- whole-journey and content/object model;
+- structurally distinct candidates;
+- proof slices using real content;
+- strongest rejected alternative;
+- implementation contract and rendered learning.
 
-The numeric floors above are evidence floors for high-variety searches, not quality scores or mandates to add dependencies. If fewer viable options exist, document every authoritative source searched and the exact constraint or no-result evidence.
+Escalate when a supposedly routine answer proves weak, generic, inaccessible, inconsistent, or contradicted by current evidence. De-escalate when further search is unlikely to change the decision.
 
-## 5. Evidence Ledger
+## 2. Frame a Decision Graph
 
-Use one compact row per candidate:
+Use one row only for choices that shape architecture, perception, behavior, assets, or substantial implementation cost:
 
 ```text
-decision | candidate class | exact candidate/source | external or baseline | constraints passed | same-context render | semantic/visual finding | integration finding | advance/reject reason
+driver → design move → expected user/business consequence → evidence → risk → revisit trigger
 ```
 
-Keep phase-A quality findings separate from phase-B integration findings. A candidate cannot be called visually weaker merely because it is new, and it cannot be called production-ready merely because it is installed.
+Drivers can include:
 
-## 6. Closure Rule
+- user outcome, context, frequency, ability, confidence, or risk;
+- business model, positioning, conversion, trust, or service obligation;
+- product objects, content relationships, real data, quantity, or lifecycle;
+- verified brand, culture, geography, language, material, or history;
+- platform, input, performance, accessibility, or delivery constraints.
 
-Exploration closes only when:
+A design move can be new. Do not require a catalog label. The expected consequence must be observable in content, behavior, hierarchy, conversion, comprehension, recognition, or operational efficiency.
 
-- The relevant universe and exclusions are declared.
-- Every applicable candidate class has concrete evidence, not only a name.
-- External challengers were gathered wherever the baseline was not an invariant.
-- Finalists were compared with identical real content and conditions.
-- Required scripts, states, themes, sizes, and platform behaviors were exercised.
-- The quality ranking exists before integration economics.
-- The strongest rejected candidate and decisive difference are recorded.
-- Another unsearched relevant class is not reasonably likely to change the winner; if it might, keep the result `UNKNOWN` and continue.
+## 3. Find the Live Trade-offs
 
-Stop after evidence saturation. Do not continue collecting near-duplicates after every relevant class is covered and new candidates no longer introduce a materially different or stronger answer.
+Do not create alternatives by changing everything. Identify tensions the brief actually contains, for example:
 
-## 7. Integration Economics
+- broad discovery versus guided selection;
+- immediate action versus education and confidence;
+- editorial immersion versus fast product comparison;
+- expert density versus occasional-user guidance;
+- fixed narrative versus self-directed exploration;
+- expressive brand character versus high-stakes calm;
+- visual proof versus performance and content flexibility;
+- persistent context versus focused progression.
 
-After closure, prefer the winner that preserves the strongest task and design outcome inside real constraints. Reuse the baseline when it genuinely wins. When an external option wins and implementation is authorized, verify its current official source, license, version or asset provenance, platform compatibility, loading or bundle model, maintenance, and owner; then integrate only that winner and verify the build plus render.
+Candidate directions should take meaningful positions on those tensions. If two candidates organize the same content and journey identically, they are probably visual variants, not different solutions.
 
-For review-only work, keep all comparison artifacts outside the repository and report the exact future integration action without mutating dependencies or project assets.
+## 4. Expand the Evidence Space
 
-## 8. Failure Patterns
+Gather evidence that can change the decision:
 
-- Stopping after the first acceptable installed or familiar option
-- Calling a catalog skim, search-result list, moodboard, or font-name list a comparison
-- Applying dependency or migration cost during discovery instead of after quality ranking
-- Comparing superficial variants while omitting another relevant structural or typographic class
-- Searching only bundled datasets when current official sources could change the answer
-- Installing the whole shortlist to make a contact sheet inside the product repository
-- Reopening confirmed invariants and routine platform conventions without evidence
-- Continuing indefinitely through near-duplicates after coverage and evidence saturation
+- repository behavior, components, content, analytics, assets, and accepted decisions;
+- user or stakeholder evidence supplied in the task;
+- current primary standards and official platform/package sources;
+- real current products, category conventions, and counterexamples;
+- credible usability or domain research;
+- local Snowe datasets as analogs and vocabulary;
+- generated sketches, prototypes, content models, and visual candidates.
+
+Do not search everything. External exploration has value when the decision is current, unfamiliar, high-impact, market/brand-defining, or likely to benefit from real examples. Skip it when the answer is native, accepted, low-risk, or already saturated. See [research-and-evidence.md](research-and-evidence.md).
+
+Keep discovery and selection separate enough to notice anchoring, but do not ignore hard constraints such as accessibility, license, platform incompatibility, or unavailable content.
+
+## 5. Generate Candidates From Causes
+
+For each candidate:
+
+1. State its organizing thesis in plain language.
+2. Trace its key moves to drivers.
+3. Show how the whole journey, content/object model, navigation, page jobs, art direction, assets, interaction, and responsive behavior reinforce that thesis.
+4. Name the trade-off it accepts.
+5. Identify the assumption most likely to invalidate it.
+
+At least one candidate should be synthesized from the evidence rather than inherited from the nearest local pattern whenever the catalog does not represent the strongest answer. This is not a novelty quota: a familiar architecture can still win when the task and evidence support it.
+
+Do not generate a candidate whose only rationale is “more creative,” “more premium,” “more modern,” or “easier to implement.” Translate those claims into observable behavior and perception.
+
+## 6. Prototype Proof Slices
+
+Do not implement complete polished concepts before testing the decision that separates them.
+
+Choose the smallest slice that can invalidate a candidate:
+
+- site map and navigation transition;
+- catalog discovery and comparison moment;
+- first transaction step and recovery;
+- article discovery into sustained reading;
+- dense exception triage and action;
+- hero or opening composition with real offer, price, and proof;
+- type/image relationship at actual crop and long copy;
+- custom icon beside established neighbors at 16/20/24px;
+- state transition with and without motion;
+- mobile reordering at the layout's pressure width.
+
+Keep content, state, viewport, and requirements identical when comparing candidates. A moodboard, style name, package page, prompt, or isolated asset is discovery evidence—not a proof slice.
+
+## 7. Converge Without False Precision
+
+Use `KEEP`, `REVISE`, `REJECT`, or `UNKNOWN` per relevant criterion:
+
+- causal fit;
+- user and business outcome;
+- architecture and content resilience;
+- task/conversion clarity;
+- identity and coherence;
+- accessibility and localization;
+- responsive and interaction behavior;
+- asset truth and provenance;
+- performance and implementation feasibility.
+
+Do not add the statuses into a taste score. Some criteria are disqualifying, others are trade-offs. Explain the decisive difference.
+
+Selection order:
+
+1. Reject violations of required outcomes, facts, accessibility, safety, content, platform, or scope.
+2. Treat unknowns as explicit risk and prototype or research them when they can change the winner.
+3. Prefer the candidate with the strongest causal fit and real proof.
+4. Apply implementation cost after the meaningful experience alternatives are understood, while respecting hard feasibility throughout.
+5. Hybridize only compatible moves that become one coherent thesis.
+
+Ask for a user decision only when viable candidates imply materially different business or brand positions and the user owns that choice. Continue autonomously on reversible implementation details.
+
+## 8. Commit and Reopen
+
+Record the accepted design in the implementation contract and durable decision journal only after evidence supports it. Include the revisit trigger—for example new brand assets, a wider catalog, user-test failure, localization, performance data, or a platform change.
+
+Reopen a decision when:
+
+- real content breaks the architecture;
+- rendered hierarchy contradicts the intended consequence;
+- the custom or generated asset loses to the simpler alternative;
+- motion obscures or delays the state change;
+- intermediate width reveals a weak composition premise;
+- external evidence invalidates a current assumption;
+- implementation cost changes the feasible set materially.
+
+Do not preserve a weak premise because it has already produced code or polished assets.
+
+## 9. Stop
+
+Stop expanding when:
+
+- every live trade-off has a representative candidate or an evidence-backed exclusion;
+- new sources and sketches repeat existing approaches;
+- proof slices expose a decisive difference;
+- the accepted decision has no unresolved blocker;
+- further change cannot be tied to a driver.
+
+This is evidence saturation, not exhaustion of the internet or every visual possibility.

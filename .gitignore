@@ -1,0 +1,90 @@
+# Agent and AI-runtime configuration
+AGENTS.md
+**/AGENTS.md
+agents/
+**/agents/
+.agents/
+**/.agents/
+.codex/
+**/.codex/
+.openai/
+**/.openai/
+.claude/
+**/.claude/
+.gemini/
+**/.gemini/
+.continue/
+**/.continue/
+.aider*
+**/.aider*
+CLAUDE.md
+**/CLAUDE.md
+CODEX.md
+**/CODEX.md
+GEMINI.md
+**/GEMINI.md
+.github/copilot-instructions.md
+.github/instructions/
+.github/prompts/
+.cursor/
+**/.cursor/
+.windsurf/
+**/.windsurf/
+.roo/
+**/.roo/
+
+# Installable skill metadata is product code, not local AI-development context.
+!/skill/snowe-ui-skill/agents/
+!/skill/snowe-ui-skill/agents/openai.yaml
+
+# AI-assisted development context and generated project memory
+docs/atlas/
+scripts/atlas/
+work/
+outputs/
+PROJECT-MEMORY.md
+**/PROJECT-MEMORY.md
+HANDOFF.md
+**/HANDOFF.md
+
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+credentials.json
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+
+# Build and packaging output
+build/
+dist/
+*.egg-info/
+
+# Editors and operating systems
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Logs and temporary files
+*.log
+*.tmp
+*.temp
+tmp/
+temp/

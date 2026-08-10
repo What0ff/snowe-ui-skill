@@ -1,0 +1,431 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f2eee3">
+  <meta name="description" content="Goodturn Cycles — three city bikes, personal fit, free test rides, workshop care, and transparent prices. A fictional Snowe benchmark.">
+  <title>Goodturn Cycles — Three bikes. One right turn.</title>
+  <link rel="preload" href="assets/fonts/barlow-condensed-700-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/manrope-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <div class="service-ribbon" aria-label="Goodturn purchase promise">
+    <span>Personal fit included</span>
+    <span aria-hidden="true">/</span>
+    <span>Free test rides</span>
+    <span aria-hidden="true">/</span>
+    <span>30-day right-ride exchange</span>
+  </div>
+
+  <header class="site-header" id="top">
+    <a class="brand" href="#top" aria-label="Goodturn Cycles home">
+      <svg class="brand-mark" viewBox="0 0 40 40" aria-hidden="true">
+        <circle cx="20" cy="20" r="15.5"></circle>
+        <path d="M20 4.5v31M4.5 20h25.5l5.5-5.5M30 20l5.5 5.5"></path>
+      </svg>
+      <span class="brand-name">Goodturn</span>
+      <span class="brand-kind">Cycles</span>
+    </a>
+
+    <nav class="primary-nav" aria-label="Primary navigation">
+      <a href="#bikes">Bikes</a>
+      <a href="#find">Find my ride</a>
+      <a href="#workshop">Workshop</a>
+      <a href="#visit">Visit</a>
+    </nav>
+
+    <div class="header-actions">
+      <button class="text-action" type="button" data-open-booking>Book a test ride</button>
+      <button class="cart-button" type="button" data-open-cart aria-label="Open reservations, 0 items">
+        Reserve <span class="cart-count" aria-hidden="true">0</span>
+      </button>
+      <button class="menu-button" type="button" aria-controls="mobile-menu" aria-expanded="false" aria-label="Open menu">
+        <span>Menu</span>
+        <span class="menu-glyph" aria-hidden="true"></span>
+      </button>
+    </div>
+
+    <nav class="mobile-menu" id="mobile-menu" aria-label="Mobile navigation" hidden>
+      <a href="#bikes"><span>01</span>Bikes</a>
+      <a href="#find"><span>02</span>Find my ride</a>
+      <a href="#workshop"><span>03</span>Workshop</a>
+      <a href="#visit"><span>04</span>Visit</a>
+      <button type="button" data-open-booking>Book a test ride</button>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-copy page-gutter">
+        <p class="eyebrow"><span>Independent city-bike workshop</span><span>Bucharest · Tue–Sat</span></p>
+        <h1 id="hero-title">Three bikes.<br><em>One right turn.</em></h1>
+        <p class="hero-lede">Goodturn chooses the useful parts before you have to: upright city geometry, low-maintenance drivetrains, and a fit you can feel before you buy.</p>
+        <div class="hero-actions">
+          <a class="button button--signal" href="#find">Find my ride <span aria-hidden="true">↘</span></a>
+          <a class="button button--line" href="#bikes">See all three bikes</a>
+        </div>
+        <dl class="hero-ledger" aria-label="Range summary">
+          <div><dt>Range</dt><dd>3 city bikes</dd></div>
+          <div><dt>From</dt><dd>€1,290 incl. VAT</dd></div>
+          <div><dt>Every bike</dt><dd>Fit + 12-month care</dd></div>
+        </dl>
+      </div>
+
+      <figure class="hero-visual">
+        <img src="assets/images/goodturn-hero.webp" width="1536" height="1024" alt="A rider on a vermilion Goodturn city bicycle on a quiet stone street" fetchpriority="high">
+        <figcaption>
+          <span><b>Turn One</b> / daily commuter</span>
+          <span>€1,290</span>
+        </figcaption>
+        <span class="visual-coordinate" aria-hidden="true">44.4268° N / 26.1025° E</span>
+      </figure>
+    </section>
+
+    <section class="range-section" id="bikes" aria-labelledby="range-title">
+      <header class="section-intro page-gutter">
+        <p class="section-index"><span>01</span> / The range</p>
+        <div>
+          <h2 id="range-title">Choose the day,<br>not the drivetrain.</h2>
+          <p>Three city bikes cover most real weeks. Start with what you carry and how you want to sit; we have already narrowed the component noise.</p>
+        </div>
+      </header>
+
+      <div class="range-controls page-gutter">
+        <div class="filter-set" role="group" aria-label="Filter bikes by daily use">
+          <button type="button" class="filter-button is-active" data-filter="all" aria-pressed="true">All three</button>
+          <button type="button" class="filter-button" data-filter="commute" aria-pressed="false">Daily commute</button>
+          <button type="button" class="filter-button" data-filter="easy" aria-pressed="false">Easy access</button>
+          <button type="button" class="filter-button" data-filter="carry" aria-pressed="false">Carry more</button>
+        </div>
+        <p class="filter-status" aria-live="polite"><span data-visible-count>3</span> bikes shown</p>
+      </div>
+
+      <div class="product-field">
+        <article class="bike-row" data-product-row data-product="turn-one" data-uses="commute light weekend">
+          <p class="bike-number" aria-hidden="true">01</p>
+          <button class="bike-image-button" type="button" data-open-product="turn-one" aria-label="View Turn One details">
+            <img src="assets/images/turn-one.webp" width="1536" height="1024" alt="Matte vermilion Turn One commuter bicycle in full side profile" loading="lazy">
+            <span>Open bike <span aria-hidden="true">↗</span></span>
+          </button>
+          <div class="bike-story">
+            <p class="bike-role">The everyday light one</p>
+            <h3>Turn One</h3>
+            <p>Quick through weekday traffic, calm enough for the long way home. A clean belt drive and ready-fitted rack keep the ritual simple.</p>
+            <dl class="bike-vitals">
+              <div><dt>Posture</dt><dd>Neutral upright</dd></div>
+              <div><dt>Weight</dt><dd>11.4 kg</dd></div>
+              <div><dt>Rider fit</dt><dd>165–192 cm</dd></div>
+            </dl>
+          </div>
+          <div class="bike-commercial">
+            <p class="price"><span>€</span>1,290</p>
+            <p>VAT included · ready in 2–4 days</p>
+            <button class="button button--ink" type="button" data-open-product="turn-one">Fit, sizes & details</button>
+            <button class="compare-toggle" type="button" data-compare="turn-one" aria-pressed="false"><span aria-hidden="true">+</span> Compare</button>
+          </div>
+        </article>
+
+        <article class="bike-row" data-product-row data-product="turn-step" data-uses="commute easy errands">
+          <p class="bike-number" aria-hidden="true">02</p>
+          <button class="bike-image-button" type="button" data-open-product="turn-step" aria-label="View Turn Step details">
+            <img src="assets/images/turn-step.webp" width="1536" height="1024" alt="Deep olive Turn Step step-through bicycle with basket and rear rack in full side profile" loading="lazy">
+            <span>Open bike <span aria-hidden="true">↗</span></span>
+          </button>
+          <div class="bike-story">
+            <p class="bike-role">The easy-on all-rounder</p>
+            <h3>Turn Step</h3>
+            <p>Low entry, generous basket, relaxed steering. Built for regular clothes, quick stops, and riders who value ease over racing posture.</p>
+            <dl class="bike-vitals">
+              <div><dt>Posture</dt><dd>Relaxed upright</dd></div>
+              <div><dt>Weight</dt><dd>13.1 kg</dd></div>
+              <div><dt>Rider fit</dt><dd>155–185 cm</dd></div>
+            </dl>
+          </div>
+          <div class="bike-commercial">
+            <p class="price"><span>€</span>1,490</p>
+            <p>VAT included · ready in 3–5 days</p>
+            <button class="button button--ink" type="button" data-open-product="turn-step">Fit, sizes & details</button>
+            <button class="compare-toggle" type="button" data-compare="turn-step" aria-pressed="false"><span aria-hidden="true">+</span> Compare</button>
+          </div>
+        </article>
+
+        <article class="bike-row" data-product-row data-product="turn-cargo" data-uses="carry family errands">
+          <p class="bike-number" aria-hidden="true">03</p>
+          <button class="bike-image-button" type="button" data-open-product="turn-cargo" aria-label="View Turn Cargo details">
+            <img src="assets/images/turn-cargo.webp" width="1536" height="1024" alt="Graphite Turn Cargo longtail bicycle carrying a citron crate in full side profile" loading="lazy">
+            <span>Open bike <span aria-hidden="true">↗</span></span>
+          </button>
+          <div class="bike-story">
+            <p class="bike-role">The small-car replacement</p>
+            <h3>Turn Cargo</h3>
+            <p>A stable longtail for groceries, work gear, or one child seat. Compact enough for the bike room; strong enough for the full week.</p>
+            <dl class="bike-vitals">
+              <div><dt>Capacity</dt><dd>80 kg rear load</dd></div>
+              <div><dt>Weight</dt><dd>21.8 kg</dd></div>
+              <div><dt>Rider fit</dt><dd>160–195 cm</dd></div>
+            </dl>
+          </div>
+          <div class="bike-commercial">
+            <p class="price"><span>€</span>2,790</p>
+            <p>VAT included · ready in 5–7 days</p>
+            <button class="button button--ink" type="button" data-open-product="turn-cargo">Fit, sizes & details</button>
+            <button class="compare-toggle" type="button" data-compare="turn-cargo" aria-pressed="false"><span aria-hidden="true">+</span> Compare</button>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <aside class="compare-bar" aria-label="Bike comparison" hidden>
+      <div>
+        <p><b data-compare-count>0</b> selected</p>
+        <ul data-compare-names aria-label="Selected bikes"></ul>
+      </div>
+      <button class="button button--citron" type="button" data-open-compare disabled>Compare bikes</button>
+      <button class="compare-clear" type="button" data-clear-compare>Clear</button>
+    </aside>
+
+    <section class="finder-section" id="find" aria-labelledby="finder-title">
+      <div class="finder-intro page-gutter">
+        <p class="section-index"><span>02</span> / Guided choice</p>
+        <div>
+          <p class="finder-kicker">No component quiz.</p>
+          <h2 id="finder-title">Tell us what Tuesday looks like.</h2>
+          <p>Three everyday questions. One useful starting point. You can still inspect every bike or ask a human in the workshop.</p>
+          <a href="#bikes">Skip guidance and see all bikes <span aria-hidden="true">→</span></a>
+        </div>
+      </div>
+
+      <form class="ride-finder" id="ride-finder" novalidate>
+        <div class="finder-progress" aria-label="Finder progress">
+          <span class="is-current" data-progress="0">1</span>
+          <span data-progress="1">2</span>
+          <span data-progress="2">3</span>
+        </div>
+
+        <fieldset class="finder-step" data-step="0">
+          <legend>Most days, the bike needs to…</legend>
+          <label class="choice"><input type="radio" name="day" value="commute"><span><b>Move me</b><small>Work, meetings, the long way home</small></span></label>
+          <label class="choice"><input type="radio" name="day" value="errands"><span><b>Handle stops</b><small>Shops, appointments, everyday errands</small></span></label>
+          <label class="choice"><input type="radio" name="day" value="carry"><span><b>Carry the week</b><small>Groceries, gear, or one child seat</small></span></label>
+        </fieldset>
+
+        <fieldset class="finder-step" data-step="1" hidden>
+          <legend>How do you want to sit?</legend>
+          <label class="choice"><input type="radio" name="posture" value="neutral"><span><b>Balanced</b><small>Alert in traffic, easy over distance</small></span></label>
+          <label class="choice"><input type="radio" name="posture" value="relaxed"><span><b>Very upright</b><small>Low entry, easy starts and stops</small></span></label>
+          <label class="choice"><input type="radio" name="posture" value="stable"><span><b>Planted</b><small>Steady with a changing load</small></span></label>
+        </fieldset>
+
+        <fieldset class="finder-step" data-step="2" hidden>
+          <legend>What matters most after the ride?</legend>
+          <label class="choice"><input type="radio" name="priority" value="light"><span><b>Easy to lift</b><small>Stairs, trains, compact storage</small></span></label>
+          <label class="choice"><input type="radio" name="priority" value="simple"><span><b>Easy to live with</b><small>Weather-ready, clean, low upkeep</small></span></label>
+          <label class="choice"><input type="radio" name="priority" value="capacity"><span><b>Ready for more</b><small>Stable racks and serious carrying</small></span></label>
+        </fieldset>
+
+        <div class="finder-actions">
+          <button type="button" class="button button--line" data-finder-back hidden>Back</button>
+          <p class="finder-error" data-finder-error role="alert"></p>
+          <button type="button" class="button button--signal" data-finder-next>Next question <span aria-hidden="true">→</span></button>
+        </div>
+
+        <section class="finder-result" data-finder-result aria-live="polite" hidden>
+          <p>Your useful starting point</p>
+          <h3 data-result-name tabindex="-1">Turn One</h3>
+          <p data-result-reason></p>
+          <div>
+            <button class="button button--signal" type="button" data-result-open>See fit & details</button>
+            <button class="button button--line" type="button" data-open-booking>Book a free test ride</button>
+          </div>
+          <button class="finder-reset" type="button" data-finder-reset>Start again</button>
+        </section>
+      </form>
+    </section>
+
+    <section class="workshop-section" id="workshop" aria-labelledby="workshop-title">
+      <header class="workshop-heading page-gutter">
+        <p class="section-index"><span>03</span> / The promise</p>
+        <div>
+          <p class="workshop-kicker">A bike is not a box on a doorstep.</p>
+          <h2 id="workshop-title">We fit the first ride—and stay for the hundredth.</h2>
+        </div>
+      </header>
+
+      <div class="service-grid page-gutter">
+        <article>
+          <span class="service-icon service-icon--fit" aria-hidden="true"></span>
+          <p class="service-number">01</p>
+          <h3>Personal fit</h3>
+          <p>Thirty measured minutes for frame, saddle, reach, and the clothes you actually ride in. Included with every bike.</p>
+        </article>
+        <article>
+          <span class="service-icon service-icon--test" aria-hidden="true"></span>
+          <p class="service-number">02</p>
+          <h3>Real test route</h3>
+          <p>Twenty traffic-calmed minutes with corners, a short climb, rough paving, and room to compare two models.</p>
+        </article>
+        <article>
+          <span class="service-icon service-icon--workshop" aria-hidden="true"></span>
+          <p class="service-number">03</p>
+          <h3>12-month care</h3>
+          <p>A 30-day settling check plus two seasonal tune-ups. Parts are extra; our workshop time is included.</p>
+        </article>
+        <article>
+          <span class="service-icon service-icon--delivery" aria-hidden="true"></span>
+          <p class="service-number">04</p>
+          <h3>Right-ride exchange</h3>
+          <p>Ride for 30 days. If the fit or use case is wrong, exchange within the Goodturn range. Clear terms, no shame.</p>
+        </article>
+      </div>
+
+      <div class="ownership-ledger page-gutter">
+        <p>Every Goodturn bike leaves with</p>
+        <ul>
+          <li>Lights, fenders, bell and lock mounts fitted</li>
+          <li>Shop pickup free · city delivery €35</li>
+          <li>30-day exchange · 5-year frame warranty</li>
+          <li>A real mechanic’s name on the setup card</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="visit-section" id="visit" aria-labelledby="visit-title">
+      <div class="visit-copy page-gutter">
+        <p class="section-index"><span>04</span> / Visit</p>
+        <h2 id="visit-title">Put your feet<br>on the pedals.</h2>
+        <p>Bring the shoes and bag you use most. We will set up two likely bikes and take the jargon out of the room.</p>
+        <button class="button button--signal" type="button" data-open-booking>Book a free 30-minute test ride</button>
+        <p class="visit-note">No card required · change or cancel any time</p>
+      </div>
+
+      <div class="visit-map" aria-label="Goodturn workshop location illustration">
+        <svg viewBox="0 0 720 520" role="img" aria-labelledby="map-title map-desc">
+          <title id="map-title">Route to Goodturn workshop</title>
+          <desc id="map-desc">A simple line map showing Goodturn near the river and tram stop.</desc>
+          <path class="map-grid" d="M40 84h640M40 180h640M40 292h640M40 420h640M128 36v448M286 36v448M456 36v448M614 36v448"></path>
+          <path class="map-river" d="M-20 390c140-92 240 75 368-20 116-86 216 18 392-88"></path>
+          <path class="map-route" d="M92 452c54-68 86-72 144-80 94-14 44-114 136-132 62-12 66-96 136-96h104"></path>
+          <g class="map-stop"><circle cx="92" cy="452" r="10"></circle><text x="112" y="458">Tram 1 / 10</text></g>
+          <g class="map-shop"><circle cx="508" cy="144" r="23"></circle><path d="M508 126v36M490 144h36"></path><text x="544" y="151">GOODTURN</text></g>
+          <text class="map-label" x="470" y="395">DÂMBOVIȚA</text>
+        </svg>
+        <div class="visit-details">
+          <address>
+            <strong>Strada Atelierului 18</strong><br>
+            Bucharest · 4 min from Tram 1 / 10
+          </address>
+          <dl>
+            <div><dt>Tue–Fri</dt><dd>10:00–19:00</dd></div>
+            <div><dt>Saturday</dt><dd>09:00–17:00</dd></div>
+            <div><dt>Sun–Mon</dt><dd>Workshop closed</dd></div>
+          </dl>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer page-gutter">
+    <div class="footer-brand">
+      <svg class="brand-mark" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="15.5"></circle><path d="M20 4.5v31M4.5 20h25.5l5.5-5.5M30 20l5.5 5.5"></path></svg>
+      <p>Good bikes.<br>Good turns.</p>
+    </div>
+    <nav aria-label="Footer navigation">
+      <a href="#bikes">Bikes</a>
+      <a href="#find">Find my ride</a>
+      <a href="#workshop">Workshop</a>
+      <a href="#visit">Visit</a>
+    </nav>
+    <div class="footer-contact">
+      <a href="mailto:hello@goodturn.example">hello@goodturn.example</a>
+      <a href="tel:+40000000000">+40 000 000 000</a>
+      <p>Tue–Sat · Bucharest</p>
+    </div>
+    <p class="benchmark-note"><b>Snowe benchmark.</b> Goodturn, its bikes, prices, policies and address are fictional. Product and campaign imagery was generated for this design evaluation; no real products are represented.</p>
+    <p class="footer-meta">© 2026 Goodturn concept <span aria-hidden="true">/</span> Built to test Snowe designer behavior</p>
+  </footer>
+
+  <dialog class="sheet product-dialog" id="product-dialog" aria-labelledby="product-dialog-title">
+    <div class="sheet-shell">
+      <button class="sheet-close" type="button" data-close-dialog aria-label="Close product details">Close <span aria-hidden="true">×</span></button>
+      <div class="product-dialog-media"><img data-dialog-image src="assets/images/turn-one.webp" width="1536" height="1024" alt=""></div>
+      <div class="product-dialog-copy">
+        <p class="dialog-role" data-dialog-role>Daily commuter</p>
+        <h2 id="product-dialog-title" data-dialog-name>Turn One</h2>
+        <p class="dialog-price" data-dialog-price>€1,290</p>
+        <p class="dialog-description" data-dialog-description></p>
+        <dl class="dialog-specs" data-dialog-specs></dl>
+        <fieldset class="size-selector">
+          <legend>Choose a starting size <button type="button" data-size-help>How sizing works</button></legend>
+          <div data-size-options></div>
+          <p data-size-guidance>We confirm size during your fit before payment.</p>
+        </fieldset>
+        <div class="buy-evidence">
+          <p><b data-dialog-stock>In stock</b><span>Free shop pickup · city delivery €35</span></p>
+          <p><b>30-day right-ride exchange</b><span>Personal fit and 12-month care included</span></p>
+        </div>
+        <p class="selection-error" data-selection-error role="alert"></p>
+        <div class="dialog-actions">
+          <button class="button button--signal" type="button" data-reserve-product>Reserve for €50</button>
+          <button class="button button--line" type="button" data-dialog-book>Book a test ride</button>
+        </div>
+        <p class="reservation-note">Refundable before collection and deducted from the bike price.</p>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog class="sheet compare-dialog" id="compare-dialog" aria-labelledby="compare-title">
+    <div class="compare-shell">
+      <button class="sheet-close" type="button" data-close-dialog aria-label="Close comparison">Close <span aria-hidden="true">×</span></button>
+      <p class="dialog-role">Side by side</p>
+      <h2 id="compare-title">Compare your city days.</h2>
+      <div class="comparison-table-wrap" data-comparison-table></div>
+    </div>
+  </dialog>
+
+  <dialog class="sheet booking-dialog" id="booking-dialog" aria-labelledby="booking-title">
+    <div class="booking-shell">
+      <button class="sheet-close" type="button" data-close-dialog aria-label="Close booking">Close <span aria-hidden="true">×</span></button>
+      <div data-booking-form-view>
+        <p class="dialog-role">Free · 30 minutes</p>
+        <h2 id="booking-title">Book a real ride.</h2>
+        <p>We will prepare two likely bikes, check your starting fit, and give you a calm neighborhood route.</p>
+        <form class="booking-form" id="booking-form">
+          <label>Bike to start with<select name="bike" required><option value="not-sure">Not sure yet</option><option value="turn-one">Turn One</option><option value="turn-step">Turn Step</option><option value="turn-cargo">Turn Cargo</option></select></label>
+          <div class="form-pair">
+            <label>Date<input type="date" name="date" required></label>
+            <label>Time<select name="time" required><option value="">Choose a time</option><option>10:00</option><option>11:30</option><option>14:00</option><option>16:30</option><option>18:00</option></select></label>
+          </div>
+          <label>Your name<input type="text" name="name" autocomplete="name" required></label>
+          <label>Email<input type="email" name="email" autocomplete="email" required></label>
+          <label class="check-label"><input type="checkbox" name="compare"><span>Prepare a second model for comparison</span></label>
+          <button class="button button--signal" type="submit">Confirm test ride</button>
+          <p>We use these details only to arrange this appointment.</p>
+        </form>
+      </div>
+      <section class="booking-success" data-booking-success aria-live="polite" hidden>
+        <p class="success-mark" aria-hidden="true">✓</p>
+        <p class="dialog-role">Ride held</p>
+        <h2 tabindex="-1">We’ll have the bike ready.</h2>
+        <p data-booking-summary></p>
+        <button class="button button--ink" type="button" data-close-dialog>Done</button>
+      </section>
+    </div>
+  </dialog>
+
+  <dialog class="sheet cart-dialog" id="cart-dialog" aria-labelledby="cart-title">
+    <div class="cart-shell">
+      <button class="sheet-close" type="button" data-close-dialog aria-label="Close reservations">Close <span aria-hidden="true">×</span></button>
+      <p class="dialog-role">Your refundable holds</p>
+      <h2 id="cart-title">Reservations</h2>
+      <div data-cart-content></div>
+    </div>
+  </dialog>
+
+  <div class="toast" role="status" aria-live="polite" aria-atomic="true" hidden></div>
+</body>
+</html>

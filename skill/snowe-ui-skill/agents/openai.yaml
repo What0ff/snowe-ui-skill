@@ -1,0 +1,4 @@
+interface:
+  display_name: "Snowe UI Skill"
+  short_description: "Design distinct, evidence-led product interfaces"
+  default_prompt: "Use $snowe-ui-skill to design and build this experience from product truth through rendered QA."

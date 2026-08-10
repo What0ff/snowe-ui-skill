@@ -1,185 +1,112 @@
 # Quality Gates
 
-Use this reference for UI review, accessibility checks, interaction validation, and pre-delivery QA.
+Use this reference to prove that the accepted design works. Quality gates protect outcomes and system integrity; they do not prescribe a style or turn every project into the same checklist.
 
-## Contents
+## Define Proof Before Polish
 
-1. Standards baseline
-2. Evaluation discipline
-3. Accessibility facts
-4. Interaction targets
-5. State coverage
-6. Responsive and theme QA
-7. Typography and localization QA
-8. Content and forms
-9. Motion and performance
-10. Bounded rendered critic
-11. Delivery evidence
+For each material decision, state what evidence could keep, revise, or reject it. Cover only applicable surfaces, but always include the primary outcome, truthful content, accessibility, responsive behavior, important states, and build/runtime integrity.
 
-## 1. Standards baseline
+Use one record:
 
-Verified against official sources on 2026-07-21:
+```text
+KEEP | REVISE | REJECT | UNKNOWN
+viewport / input / state | visible or measured evidence | consequence |
+correction or acceptance reason | rerender / retest result
+```
 
-- [WCAG 2.2 Recommendation](https://www.w3.org/TR/WCAG22/)
-- [WCAG 2.2 Understanding documents](https://www.w3.org/WAI/WCAG22/Understanding/)
-- [Apple UI Design Dos and Don’ts](https://developer.apple.com/design/tips/)
-- [Apple Human Interface Guidelines: Buttons](https://developer.apple.com/design/human-interface-guidelines/buttons)
-- [Android accessibility foundations](https://developer.android.com/design/ui/mobile/guides/foundations/accessibility)
-- [Android Material components](https://developer.android.com/develop/ui/compose/components)
-- [Android chip guidance](https://developer.android.com/develop/ui/compose/quick-guides/content/create-chip)
+`UNKNOWN` is appropriate when a font file, claim, real asset, device behavior, assistive technology, analytics result, or stakeholder fact has not been verified. It is not a passing state.
 
-Apply the standard relevant to the target platform. Product, legal, procurement, or organizational requirements may be stricter.
+## Repository and Content Integrity
 
-## 2. Evaluation discipline
+- Run the repository's actual build, typecheck, lint, tests, and format/static checks that exist.
+- Preserve framework, component, token, state, routing, data, and asset ownership unless a justified accepted decision changes them.
+- Use real or representative content early: products, prices, units, labels, long titles, empty values, errors, legal copy, names, dates, locales, and user-generated data.
+- Distinguish factual claims from fictional benchmark content, inference, and placeholder material.
+- Check failure without JavaScript/media/animation when the platform requires a meaningful fallback.
 
-Classify every check before assigning severity:
+## Accessibility and Interaction
 
-- **Invariant:** semantics, accessibility, content integrity, explicit requirements, verified brand rules, destructive-action safety, or a platform behavior the product depends on. A violated invariant can block delivery.
-- **Contextual default:** a preferred starting direction such as restrained rounding, compact controls, a solid foundation, or primary-source icon use. Depart when platform, brand, content, task, or measured usability evidence is stronger.
-- **Heuristic or diagnostic signal:** package count, class name, exact pixel value, number of cards or fonts, presence of a cool hue, gradient, shadow, `rounded-full`, or screenshot pixel delta. Investigate the rendered effect; do not fail on the signal alone.
+Verify the implemented result, not the intent:
 
-Examples:
+- semantic elements or correct native equivalents;
+- accessible names, descriptions, roles, states, relationships, and announcements;
+- keyboard access, logical focus order, visible focus, focus restoration, escape/cancel, and no traps outside intentional modal behavior;
+- target behavior and spacing suitable for the input/context;
+- text, icons, controls, statuses, charts, and focus indicators with sufficient rendered contrast for their roles;
+- meaning not dependent on color, hover, image, gesture, sound, or animation alone;
+- labels and errors that explain recovery, preserve entered data where safe, and associate with the right control;
+- zoom, text scaling, reflow, orientation, high contrast/forced colors, themes, reduced motion, and relevant assistive technologies;
+- captions, transcripts, alt text, or intentionally empty alternatives according to media purpose.
 
-| Weak proxy check | Outcome-based check |
-|------------------|---------------------|
-| “Fail whenever more than one icon source is installed” | Sources have documented roles and icons used together share compatible geometry, behavior, and optical weight |
-| “No `rounded-full` anywhere” | Full rounding belongs to a semantic, native, brand, or genuinely circular role and is not repeated as generic decoration |
-| “No blue or gradients” | Color treatment supports the brief and hierarchy without generic ambient AI glow or contrast loss |
-| “Every desktop control is 32–36px” | Visible geometry fits density and content while the applicable interaction target remains usable and non-overlapping |
-| “At most two fonts/cards/actions” | Every additional family, surface, or peer action has a clear role and the resulting hierarchy remains coherent |
-| “Screenshot differs from baseline” | The difference is explained, intended, and free of hierarchy, clipping, responsive, state, or interaction regression |
+Automated audits can find structural failures but cannot prove reading order, clarity, useful alternative text, focus behavior, or task completion. Manually exercise the primary path and recovery.
 
-Use static scans to locate risk quickly. Confirm severity from the repository context, rendered interface, interaction behavior, and applicable standards.
+For solid color pairs, use deterministic contrast calculation. For gradients, imagery, transparency, overlays, filters, video, and state changes, measure representative rendered points and test variation; a token-level pass is insufficient.
 
-## 3. Accessibility facts
+## Responsive Transformation
 
-For WCAG 2.2:
+Choose widths from content and composition pressure, not device labels alone. Inspect at least:
 
-- Normal text needs at least 4.5:1 contrast for Level AA.
-- Large text needs at least 3:1 contrast for Level AA.
-- Meaningful non-text UI components and graphical objects generally need 3:1 contrast against adjacent colors under Success Criterion 1.4.11.
-- Information must not rely on color alone.
-- Keyboard focus must be visible for Level AA.
-- Focused components must not be entirely hidden by author-created content under Success Criterion 2.4.11.
-- The specific two-CSS-pixel-perimeter and 3:1 focus appearance requirement is Success Criterion 2.4.13 at Level AAA, not AA.
-- Content must reflow without loss of information or functionality at the WCAG-defined narrow equivalent under Success Criterion 1.4.10, subject to its exceptions.
-- Text must support resizing up to 200% without loss of content or functionality under Success Criterion 1.4.4, subject to its exceptions.
-- Dragging functionality needs a single-pointer alternative under Success Criterion 2.5.7 unless dragging is essential.
-- Target Size (Minimum), Success Criterion 2.5.8 at Level AA, uses 24 by 24 CSS pixels with documented spacing and other exceptions.
-- Target Size (Enhanced), Success Criterion 2.5.5 at Level AAA, uses 44 by 44 CSS pixels with documented exceptions.
+- a narrow width;
+- a pressure/intermediate width where layout, navigation, comparison, imagery, or controls are most likely to fail;
+- a wide width;
+- relevant orientation, zoom/text scaling, and container contexts.
 
-Do not label an interface “WCAG compliant” from a palette or static screenshot alone. Conformance depends on content, semantics, interaction, focus behavior, errors, media, and the complete user flow.
+At each, verify priority and task/reading order, navigation, disclosure, comparison, form labels/errors, sticky behavior, overlays, virtual keyboards, long content, media crop, table/data alternatives, focus visibility, targets, and overflow. Page-level horizontal scrolling is a defect unless the product deliberately provides a spatial canvas; contained data regions still need understandable keyboard and touch behavior.
 
-## 4. Interaction targets
+Responsive design may reorder, change navigation or control form, alter disclosure, simplify a graphic, replace a side panel with an overlay, or move conversion support closer to the decision. It must not merely shrink the wide composition or hide required content.
 
-- Apple’s design tips specify controls of at least 44 by 44 points for accurate finger tapping.
-- Android accessibility guidance recommends touch targets of at least 48 by 48 dp.
-- A visible icon can be smaller than its hit target. Add transparent padding or platform hit slop instead of a large decorative background.
-- For web Level AA, use the WCAG 2.2 target-size rule and exceptions correctly; aim larger for primary touch interactions.
-- Keep adjacent targets sufficiently separated to reduce accidental activation.
-- Do not hide essential actions behind hover, swipe, drag, long-press, or context menus without an accessible alternative.
+## State and Content Resilience
 
-The hit target is an interaction requirement, not a justification for putting a pill behind an icon. Prefer transparent target expansion. Add a visible square, rounded, or circular surface when state, grouping, native behavior, brand language, or the control's real role calls for it—not merely to expose the target area.
+Test the states that can materially change understanding or completion:
 
-## 5. State coverage
+- default, hover, pressed, focus-visible, selected, disabled;
+- loading, progressive/partial, empty, no result, error, success;
+- validation, destructive confirmation, undo/recovery, offline/retry;
+- signed-out/permission-limited/expired states;
+- long, translated, bidirectional, missing, user-authored, and extreme-but-valid content;
+- open menus/dialogs/drawers, interrupted motion, and rapid repeated input.
 
-Validate every applicable state:
+Do not fabricate every state for every element. Trace the actual lifecycle and high-risk failures. Empty and error states must preserve context and offer the next useful action.
 
-| State | Required checks |
-|-------|-----------------|
-| Default | Label, hierarchy, semantics, contrast |
-| Hover | Pointer-only enhancement; no hidden essential action |
-| Pressed | Immediate feedback without layout shift |
-| Focus-visible | Clear indicator, correct order, not obscured |
-| Selected/current | More than color alone when ambiguity remains |
-| Disabled | Semantic disabled state and sufficient distinction |
-| Loading | Progress feedback, stable geometry, repeated action prevented |
-| Empty | Explain the state and provide the next useful action |
-| Error | State the problem and recovery path near the source |
-| Success | Confirm completion without blocking the next task |
-| Offline/timeout | Preserve user work and offer retry or fallback |
+## Visual and Brand Critique
 
-Test state combinations such as selected + focus, disabled + loading, validation error + dark mode, and long text + narrow width.
+Review the rendered whole before isolated components:
 
-## 6. Responsive and theme QA
+- Is the attention order aligned with the user decision or task?
+- Does composition remain intentional between showcase widths?
+- Are alignment, rhythm, density, type measure, and whitespace carrying hierarchy before decoration?
+- Does real content expose false symmetry, repetitive cards, weak grouping, or a generic page pattern?
+- Are type, color/material, shape, imagery/graphics, icons, and motion one thesis with explainable role boundaries?
+- Is the identity carrier distinctive, useful, and repeated with restraint?
+- Do imagery and custom assets remain truthful, well cropped, optically balanced, and coherent at actual size?
+- Are controls recognizable and important actions proportionate rather than theatrically oversized?
+- Can effects or containers be removed with no loss of meaning or identity?
 
-- Inspect the rendered interface at narrow, intermediate, and wide widths.
-- Include at least one width between named design breakpoints.
-- Test portrait and landscape when the target platform supports both.
-- Verify zoom or system text scaling, not only viewport resizing.
-- Check long localized strings, large numbers, and user-generated content.
-- Ensure fixed UI does not obscure content or keyboard focus.
-- Ensure dialogs and sheets fit short screens and remain dismissible.
-- Test light and dark themes independently.
-- Test high-contrast or forced-colors behavior where the platform supports it.
-- Do not remove browser zoom or override platform accessibility settings.
+Compare the strongest rendered challenger when a finding implicates the accepted premise. Reopen architecture or art direction rather than polishing around a structural mistake.
 
-## 7. Typography and localization QA
+## Performance and Robustness
 
-- Verify the actual licensed font files or installed dependency, required weights or variable axes, subsets, loading strategy, and supported glyphs. A retrieved font name is a proposal, not evidence.
-- Render representative content in every required script and locale, including realistic expansion, punctuation, diacritics, mixed case, and missing-glyph conditions.
-- For right-to-left or bidirectional interfaces, verify logical spacing, mirrored directional controls, mixed-script values, numerals, punctuation, reading order, focus order, and truncation in the real platform.
-- Verify fallback behavior with font loading disabled or delayed. Compare x-height, character width, weight, baseline, wrapping, hierarchy, and layout shift.
-- For data-heavy interfaces, verify tabular figures, decimals, currencies, percentages, signs, dates, times, identifiers, and large-value overflow.
-- Inspect compact, intermediate, and wide widths plus zoom or system text scaling. Reject clipping, illegible density, unstable baselines, and hierarchy that depends on one ideal string length.
-- Judge additional font families by role, script coverage, metrics, performance, and fallback behavior—not by a fixed count.
+- Reserve media space and avoid unintended layout shifts.
+- Match image format, dimensions, density, and responsive delivery to the rendered role.
+- Keep fonts, icon delivery, scripts, animation, canvas/WebGL, and third-party dependencies proportional to value.
+- Test loading sequence and interaction responsiveness on a constrained profile appropriate to the product.
+- Avoid unnecessary main-thread/layout work and clean up observers, listeners, timelines, and media.
+- Preserve a usable result when nonessential assets, fonts, effects, analytics, or animation fail.
 
-Record the tested content, scripts, files or dependency, weights, fallback, viewports, and result. Keep the status `UNKNOWN` when required font or rendered evidence is unavailable.
+Performance budgets are contextual, but unmeasured heavy decoration is not a design decision.
 
-## 8. Content and forms
+## Rendered Review Loop
 
-- Use persistent visible labels for inputs. Placeholder text is supplemental.
-- Associate errors with their fields programmatically and visually.
-- Move focus to an error summary or first invalid field only when it improves recovery and does not surprise the user.
-- Preserve entered data after validation, network errors, or navigation back.
-- Use semantic input types and autocomplete tokens where appropriate.
-- Explain required formats before submission.
-- Confirm destructive or irreversible actions, or provide a reliable undo path when appropriate.
-- Keep destructive actions spatially and visually separate from routine actions.
-- Do not use a toast as the only channel for critical or persistent information.
-- Use plain, specific language that states what happened and what the user can do next.
+1. Capture the complete key surface at narrow, pressure, and wide widths.
+2. Exercise primary conversion/task, keyboard path, open/selected/error/loading states, and reduced motion.
+3. Review whole-page hierarchy and crop, then component detail and optical alignment.
+4. Record findings with direct evidence and consequence. Avoid vague taste notes.
+5. Correct every `REJECT` and material `REVISE` in causal order: truth/architecture, task/interaction, responsive/accessibility, art direction, then polish.
+6. Rerender the affected evidence. Run another complete pass only after a material compositional change or unresolved major failure.
+7. Stop when remaining changes no longer improve a stated driver, not when the first render looks acceptable.
 
-## 9. Motion and performance
+Pixel difference proves change, not improvement. A screenshot cannot prove keyboard, motion, loading, or assistive behavior; a passing test cannot prove hierarchy, crop, or optical quality.
 
-- Give input feedback promptly.
-- Use motion to explain state change, continuity, hierarchy, or progress.
-- Keep animations interruptible and avoid blocking input while they run.
-- Prefer transform and opacity when they preserve layout stability.
-- Reserve layout space for asynchronous content and media.
-- Respect reduced-motion preferences and verify the reduced experience directly.
-- Avoid infinite decorative motion near reading, forms, and dense data.
-- Lazy-load below-the-fold media and heavy features when appropriate, but do not defer content needed for the current task.
-- Measure actual runtime behavior. Do not claim performance from framework choice or static code inspection alone.
+## Delivery Evidence
 
-## 10. Bounded rendered critic
-
-1. Render the real, functionally correct interface with representative content before visual polishing.
-2. Compare it with the selected design thesis and implementation contract; for refinement work, capture the previous interface at identical content, state, viewport, and theme.
-3. Capture compact, intermediate, and wide sizes plus applicable interaction, content, theme, zoom or text-scaling, high-contrast, and reduced-motion states.
-4. Run one full critic pass across composition, typography, density, and noise or identity. Inspect focal order at thumbnail size and alignment, spacing, type and fallback metrics, wrapping, icon optical balance, control geometry, hit areas, and surface nesting at full size.
-5. Search for repeated decorative pills, unnecessary icon containers, uncontrolled icon-source mixing, vague stock metaphors, card soup, arbitrary shadows, unrequested blue/cyan/violet luminous identity, decorative gradients, overused motifs, and generic template composition. Treat tokens, counts, hue names, and package inventory as clues; confirm harm in the render.
-6. Record each visible issue as `severity | viewport/state | evidence | task or system consequence | correction | verification`.
-7. Classify a requirement, accessibility, content, or task failure as `BLOCKER`; clear hierarchy, coherence, responsive, or identity harm as `MAJOR`; local polish as `MINOR`; and missing evidence as `UNKNOWN`.
-8. Apply the smallest coherent correction set for blockers and majors, then rerender the same evidence set and verify the recorded issues.
-
-Use browser screenshots or platform previews when available. Code review alone cannot verify perceived hierarchy, clipping, overlap, contrast after compositing, or interaction feel. A screenshot pixel delta can locate change but cannot determine design quality.
-
-Run another full critic pass only when a correction materially changes composition or a blocker or major remains. Otherwise stop after targeted verification and disclose untested evidence. Every change must answer a recorded finding; avoid tweak roulette and endless screenshot churn.
-
-## 11. Delivery evidence
-
-Report what was actually verified:
-
-- Tested viewport or device sizes
-- Themes and accessibility modes tested
-- Interaction states exercised
-- Automated checks run
-- Contrast pairs measured
-- Remaining limitations or untested platform behavior
-- Rendered-critic findings corrected and the matching rerender evidence
-- Typography files or dependencies, required scripts, fallback path, and stress content tested
-- Newly acquired icon sources: official package and installed version, license/provenance, package-manager and lockfile update, assigned role, build/bundle result, rendered compatibility, and rollback of rejected candidates
-- Confirmed project-memory decisions preserved or updated, including scope and evidence
-- Material-decision exploration ledger: declared relevant universe, authoritative sources searched, external challengers, same-context finalist renders, quality-first ranking, strongest rejected option, and only then integration-cost evidence
-
-Do not report checks that were inferred but not run. Distinguish automated validation, code inspection, and visual/manual testing.
+Report checks run, viewports and states inspected, assistive/input modes covered, important measurements, findings fixed, rerender evidence, unresolved `UNKNOWN`s, and unavailable checks. Never report compilation alone as visual QA.

@@ -1,0 +1,38 @@
+[
+  {
+    "id": "bicycle-commerce",
+    "brief": "Responsive commerce website for an independent urban bicycle retailer. First-time riders need fit and use-case confidence before buying. Show real bikes, prices, workshop service, local test rides, and a clear purchase path.",
+    "expected_signals": ["commerce"],
+    "forbidden_signals": ["service_transaction", "operations"]
+  },
+  {
+    "id": "municipal-service",
+    "brief": "Municipal online service for residents to check permit eligibility, apply, upload documents, track status, and recover from missing evidence. Multilingual responsive web, high stakes.",
+    "expected_signals": ["service_transaction", "high_stakes", "multilingual"],
+    "forbidden_signals": ["commerce", "editorial_content"]
+  },
+  {
+    "id": "pediatric-care",
+    "brief": "Pediatric care mobile app for parents to triage symptoms, book appointments, manage medication reminders, and understand when to seek urgent care.",
+    "expected_signals": ["service_transaction", "high_stakes"],
+    "forbidden_signals": ["commerce", "operations"]
+  },
+  {
+    "id": "literary-publication",
+    "brief": "Independent literary magazine platform publishing long-form fiction, criticism, themed issues, authors, archives, events, and paid membership.",
+    "expected_signals": ["editorial_content", "event_or_community"],
+    "forbidden_signals": ["service_transaction", "operations"]
+  },
+  {
+    "id": "warehouse-operations",
+    "brief": "Keyboard-first warehouse operations workspace for dispatchers managing live inventory, exceptions, transfers, receiving, and audit history on desktop.",
+    "expected_signals": ["operations", "dense_information", "keyboard_first"],
+    "forbidden_signals": ["commerce", "service_transaction"]
+  },
+  {
+    "id": "experimental-musician",
+    "brief": "Website and shop for an experimental musician: releases, performances, essays, limited physical editions, listening, and direct fan purchase. Expressive brand but no assumed animation.",
+    "expected_signals": ["commerce", "brand_expression"],
+    "forbidden_signals": ["service_transaction", "operations"]
+  }
+]

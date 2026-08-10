@@ -10,8 +10,6 @@ from pathlib import Path
 from math import log
 from collections import defaultdict
 
-from design_quality import build_visual_treatment_policy, sanitize_style_result, style_visual_traits
-
 # ============ CONFIGURATION ============
 DATA_DIR = Path(__file__).parent.parent / "data"
 MAX_RESULTS = 3
@@ -50,7 +48,7 @@ CSV_CONFIG = {
     "product": {
         "file": "products.csv",
         "search_cols": ["Product Type", "Keywords", "Primary Style Recommendation", "Key Considerations"],
-        "output_cols": ["Product Type", "Keywords", "Primary Style Recommendation", "Secondary Styles", "Landing Page Pattern", "Dashboard Style (if applicable)", "Color Palette Focus"]
+        "output_cols": ["Product Type", "Keywords", "Key Considerations", "Primary Style Recommendation", "Secondary Styles", "Landing Page Pattern", "Dashboard Style (if applicable)", "Color Palette Focus"]
     },
     "ux": {
         "file": "ux-guidelines.csv",
@@ -102,6 +100,72 @@ CSV_CONFIG = {
         "search_cols": ["Family", "Category", "Stroke", "Classifications", "Keywords", "Subsets", "Designers"],
         "output_cols": ["Family", "Category", "Stroke", "Classifications", "Styles", "Variable Axes", "Subsets", "Designers", "Popularity Rank", "Google Fonts URL"]
     }
+}
+
+# These labels make the epistemic role of bundled snapshots explicit.  The
+# catalogs help an agent discover vocabulary, constraints, and analogs; they do
+# not classify the current product or select a design on the agent's behalf.
+DOMAIN_SOURCE_ROLES = {
+    "product": (
+        "analogy evidence",
+        "Treat matches as unverified analogs. Reuse relevant concerns only; do not inherit product identity, layout, style, palette, or landing recipe.",
+    ),
+    "landing": (
+        "historical pattern examples",
+        "Section orders are examples to challenge, combine, or reject after journey and content modeling; they are not page architecture.",
+    ),
+    "style": (
+        "visual vocabulary and implementation clues",
+        "A style row can widen vocabulary but cannot establish art direction, brand fit, or rendered quality.",
+    ),
+    "color": (
+        "palette examples",
+        "Palette rows are starting evidence only. Verify brand provenance, semantic roles, rendered contrast, themes, and content context.",
+    ),
+    "typography": (
+        "font discovery snapshot",
+        "A pairing is not a selection. Verify current files, license, scripts, metrics, roles, loading, fallback, and real-content renders.",
+    ),
+    "google-fonts": (
+        "font catalog snapshot",
+        "Confirm current official metadata and actual files before choosing or loading a family.",
+    ),
+    "icon-families": (
+        "icon-source discovery snapshot",
+        "Verify the current official catalog, license, package, platform support, and rendered drawing-language fit.",
+    ),
+    "icon-candidates": (
+        "named-glyph discovery snapshot",
+        "Confirm the exact export in the selected current version and compare it at the real optical size and surface.",
+    ),
+    "icon-concepts": (
+        "metaphor prompts",
+        "Use the real object, action, mechanism, or consequence; a catalog metaphor is never mandatory.",
+    ),
+    "icons": (
+        "legacy universal-icon lookup",
+        "Use only for familiar system actions and verify the repository's actual source. Product-specific symbols require broader reasoning.",
+    ),
+    "gsap": (
+        "motion implementation examples",
+        "Retrieve only after motion has a defined communicative job and a static/reduced-motion equivalent; a snippet is not a motion decision.",
+    ),
+    "chart": (
+        "visualization guidance snapshot",
+        "Choose an encoding from the user's analytical question and representative data, then verify accessibility and edge states.",
+    ),
+    "ux": (
+        "general UX guidance",
+        "Reconcile with the real journey, current standards, repository behavior, and user evidence.",
+    ),
+    "web": (
+        "web implementation guidance",
+        "Reconcile with current standards, browser support, and the repository's actual semantics and behavior.",
+    ),
+    "react": (
+        "React performance guidance",
+        "Verify against the current framework version, official documentation, and measured runtime behavior.",
+    ),
 }
 
 STACK_CONFIG = {
@@ -306,15 +370,8 @@ def search(query, domain=None, max_results=MAX_RESULTS):
                 "file": config["file"],
             }
 
-    treatment_policy = build_visual_treatment_policy(query) if domain == "style" else {}
-    allow_luminous = bool(treatment_policy.get("allow_glow"))
-    allow_gradient = bool(treatment_policy.get("allow_gradient"))
-    allow_luminous_style = bool(treatment_policy.get("allow_glow_style"))
-    allow_gradient_style = bool(treatment_policy.get("allow_gradient_style"))
     retrieval_limit = max_results
-    if domain == "style" and not (allow_luminous_style and allow_gradient_style):
-        retrieval_limit = max(max_results * 4, 12)
-    elif domain == "icons":
+    if domain == "icons":
         # Historical icon data includes style recipes that promoted neon glow
         # and circular wrappers. Retrieve extra concrete symbols, then exclude
         # those recipes so direct lookup cannot reintroduce obsolete policy.
@@ -331,29 +388,11 @@ def search(query, domain=None, max_results=MAX_RESULTS):
         row_filter=row_filter,
     )
 
-    # Style data contains historical directions that sometimes promote
-    # full-rounding as a generic visual treatment. Apply the project-wide
-    # restrained-shape policy at retrieval time so direct style searches and
-    # design-system generation behave consistently.
+    # Return style evidence faithfully. Historical rows are explicitly labeled
+    # as vocabulary, not policy; silently rewriting or excluding them would
+    # hide the evidence and reintroduce a hard-coded aesthetic boundary.
     if domain == "style":
-        compatible_results = [
-            result
-            for result in results
-            if (allow_luminous_style or not style_visual_traits(result)["glow"])
-            and (allow_gradient_style or not style_visual_traits(result)["cool_gradient"])
-        ]
-        if compatible_results:
-            results = compatible_results
-        results = [
-            sanitize_style_result(
-                result,
-                allow_luminous=allow_luminous,
-                allow_gradient=allow_gradient,
-                allowed_gradient_roles=treatment_policy.get("gradient_roles", ()),
-                allowed_luminous_roles=treatment_policy.get("glow_roles", ()),
-            )
-            for result in results[:max_results]
-        ]
+        results = results[:max_results]
     elif domain == "icons":
         results = [
             result
@@ -361,10 +400,19 @@ def search(query, domain=None, max_results=MAX_RESULTS):
             if result.get("Category", "").casefold() not in {"style config", "guideline"}
         ][:max_results]
 
+    source_role, source_warning = DOMAIN_SOURCE_ROLES.get(
+        domain,
+        (
+            "retrieval evidence",
+            "Treat the bundled result as a snapshot and verify current facts and contextual fit before use.",
+        ),
+    )
     return {
         "domain": domain,
         "query": query,
         "file": config["file"],
+        "source_role": source_role,
+        "warning": source_warning,
         "count": len(results),
         "results": results
     }
