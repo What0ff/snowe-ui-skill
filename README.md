@@ -43,6 +43,24 @@ Goodturn, its bikes, prices, policies, address, and imagery are fictional benchm
 - [Read the rendered QA and corrections](benchmarks/bicycle-commerce/design-intelligence/goodturn-cycles/QA.md)
 - [Browse all screenshots](benchmarks/bicycle-commerce/screenshots)
 
+## Flagship expressive-motion showcase — Doppler Soda
+
+Doppler is a fictional carbonated soft-drink campaign where rich motion is justified by the product itself: carbonation pressure, a cylindrical aluminum package, and flavor change all need one continuous physical carrier. The dependency-free CSS-3D can enters with a finite release, responds to pointer and keyboard rotation, then completes a controlled turn when visitors tune one of three named flavors; the rest of the page stays deliberately still.
+
+![Doppler Soda live product and flavor motion](benchmarks/soda-campaign/screenshots/hero-motion.gif)
+
+| Wide flavor state | Mobile product state |
+| --- | --- |
+| ![Doppler Pink Noise wide product scene](benchmarks/soda-campaign/screenshots/wide-flavor.jpg) | ![Doppler Sun Shift mobile product scene](benchmarks/soda-campaign/screenshots/mobile-hero.jpg) |
+
+Doppler, its packaging, flavors, price, and campaign are fictional. Its can, labels, and graphics are original code-native assets; no AI-generated imagery is used. The animation and stills were captured from the final local browser implementation, not fabricated separately.
+
+- [Open the Doppler benchmark](benchmarks/soda-campaign/README.md)
+- [Read the selected architecture and causal decisions](benchmarks/soda-campaign/design-intelligence/DECISIONS.md)
+- [Read the motion implementation comparison](benchmarks/soda-campaign/design-intelligence/MOTION.md)
+- [Read the rendered QA and corrections](benchmarks/soda-campaign/design-intelligence/QA.md)
+- [Read why expression was justified here but rejected elsewhere](benchmarks/CROSS-BENCHMARK.md#expressive-motion-companion)
+
 ## Rendered generalization evidence — three additional experience classes
 
 Goodturn is the flagship, not the only rendered evidence. Three additional forward-tests begin from different actors, objects, stakes, content, and repeat-use conditions. None uses generated imagery or a custom asset because those choices do not improve the work; municipal and warehouse motion is limited to necessary state feedback, while the publication uses only reading progress. Together, the four benchmarks provide evidence across four materially different tested classes—not proof of universal performance or automated aesthetic quality.
@@ -141,6 +159,7 @@ snowe-ui-skill/
 │       └── contrast.py                # Exact opaque-color contrast checks
 ├── evals/designer-behavior/           # Cross-business behavioral contracts
 ├── benchmarks/bicycle-commerce/       # Rendered Goodturn forward-test
+├── benchmarks/soda-campaign/           # Expressive Doppler motion benchmark
 ├── benchmarks/forward-tests/           # Public-service, operations, and editorial evidence
 ├── scripts/browser-smoke.mjs           # Dependency-free Chrome/CDP browser checks
 └── tests/                             # Product and benchmark regression suite

@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2760" height="1600" viewBox="0 0 2760 1600" role="img" aria-labelledby="title desc">
+  <title id="title">Doppler Sun Shift can label</title>
+  <desc id="desc">Yellow carbonated soft drink label for the fictional tangerine and juniper flavor.</desc>
+  <defs>
+    <style>
+      @font-face{font-family:Unbounded;src:url('../fonts/unbounded-latin.woff2') format('woff2');font-weight:400 900}
+      .display{font-family:Unbounded,Arial Black,sans-serif;font-weight:800;letter-spacing:-9px}
+      .utility{font-family:Arial,sans-serif;font-weight:700;letter-spacing:5px}
+    </style>
+    <pattern id="signal" width="90" height="90" patternUnits="userSpaceOnUse">
+      <path d="M0 88H90" stroke="#15120a" stroke-opacity=".16" stroke-width="4"/>
+      <circle cx="8" cy="8" r="4" fill="#15120a" fill-opacity=".22"/>
+    </pattern>
+  </defs>
+  <rect width="2760" height="1600" fill="#f6df34"/>
+  <rect width="2760" height="1600" fill="url(#signal)"/>
+  <path d="M0 205h2760M0 1360h2760" stroke="#15120a" stroke-width="12"/>
+  <path d="M120 0v1600M2640 0v1600" stroke="#15120a" stroke-opacity=".26" stroke-width="3"/>
+  <g fill="none" stroke="#15120a" stroke-width="9" opacity=".9">
+    <circle cx="1380" cy="780" r="390"/>
+    <circle cx="1380" cy="780" r="330"/>
+    <circle cx="1380" cy="780" r="270"/>
+  </g>
+  <g fill="#15120a">
+    <text class="utility" x="1380" y="118" text-anchor="middle" font-size="27">CARBONATED SOFT DRINK · 330 ML</text>
+    <text class="display" x="1380" y="650" text-anchor="middle" font-size="164">DOP</text>
+    <text class="display" x="1380" y="815" text-anchor="middle" font-size="164">PLER</text>
+    <rect x="1124" y="888" width="512" height="104" rx="2"/>
+  </g>
+  <text class="utility" x="1380" y="956" text-anchor="middle" fill="#f6df34" font-size="30">SUN SHIFT · 01</text>
+  <g fill="#15120a">
+    <text class="utility" x="1380" y="1125" text-anchor="middle" font-size="30">TANGERINE · JUNIPER</text>
+    <circle cx="1380" cy="1250" r="18"/>
+    <circle cx="1330" cy="1250" r="7"/>
+    <circle cx="1430" cy="1250" r="7"/>
+    <text class="utility" x="1380" y="1470" text-anchor="middle" font-size="23">FICTIONAL CONCEPT PRODUCT</text>
+  </g>
+</svg>

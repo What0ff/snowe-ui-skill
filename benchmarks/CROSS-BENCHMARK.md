@@ -18,6 +18,21 @@ This review compares Goodturn with three forward-tests. Similarity is accepted o
 | Motion grammar | State continuity for finder, compare, sheets, cart, booking | Immediate menu/dialog/validation/result feedback only | Immediate selection/filter/dialog/toast feedback only | Reading progress plus direct menu/type/save/filter/dialog state |
 | Responsive transformation | Paired hero/product field becomes stacked inspection and full sheets | Adjacent journey/help moves after task, then one evidence order | Queue/inspector stacks; rows become records; rail becomes on demand | Spread/margins become one reading flow; issue sequence remains explicit |
 
+## Expressive-motion companion
+
+Doppler adds a fifth tested class rather than revising the four stable benchmarks. Its higher asset and motion intensity is justified by a different product truth; it is not a new default.
+
+| Decision pressure | Doppler soda campaign | Larkhaven municipal service | Relay North warehouse | Morrow literary publication |
+| --- | --- | --- | --- | --- |
+| What must be made tangible | Cold aluminum package, carbonation pressure, cylindrical label continuity, and three flavor states | Eligibility, evidence requirements, time/fee consequences, and recovery | Live exception state, affected object, ownership, history, and audited action | Authored issue voice, contribution relationships, and sustained reading |
+| Rich imagery | A code-native physical product is central; generated lifestyle imagery still loses because it cannot preserve the package across motion/state | Rejected: an image cannot prove whether a resident qualifies or which evidence is required | Rejected: imagery would displace current operational state and scan axes | Rejected: uncommissioned interpretation would compete with authorship |
+| Custom graphics | Original label textures, pressure rings, bubbles, and pack silhouettes encode package/flavor/physical behavior | Rejected: labels, sequence, and service references are clearer | Rejected: identifiers, text, and state abbreviations are faster for expert scanning | Rejected: typography, rules, and marginal relationships already carry identity |
+| Expressive motion | Earned for one rare product establishment plus user-owned can rotation and flavor continuity | Rejected: transaction urgency needs immediate forms/dialog feedback | Rejected: repeated work needs stable, immediate state with no choreography | Rejected: reading momentum needs only progress and direct saved/type states |
+| Reduced/static mode | Separate front-facing can, fixed signal field, direct flavor swap, unchanged CTA and pack builder | Same complete service path with immediate state | Same detect → inspect → act loop | Same issue/reading/membership path |
+| Cost boundary | 48/40/32 CSS segments by viewport, finite bubbles, bounded animation frames, no runtime dependency or media loop | No visual-media cost | No visual-media cost | No visual-media cost |
+
+The decisive distinction is not “campaign sites get motion.” Doppler's offer is a sensorial physical object whose package and state change are the story. Larkhaven, Relay North, and Morrow have stronger evidence, speed, and authorship outcomes when imagery/custom graphics are absent and motion is limited or omitted.
+
 ## Similarities with independent justification
 
 - All four expose visible focus, errors, dialogs, and reduced-motion equivalents because those are interaction-quality invariants, not a Snowe layout.
@@ -26,6 +41,6 @@ This review compares Goodturn with three forward-tests. Similarity is accepted o
 
 ## Hidden-template audit
 
-No universal topology, hero, card grid, CTA rhythm, imagery posture, custom-asset requirement, motion grammar, or mobile collapse pattern survived comparison. The three new benchmarks do not differ merely by palette: their primary objects, navigation, content sequence, decision moments, and responsive transformations are structurally different.
+No universal topology, hero, card grid, CTA rhythm, imagery posture, custom-asset requirement, motion grammar, or mobile collapse pattern survived comparison. Doppler's expressive product stage does not appear in the three restrained generalization benchmarks because their primary objects, navigation, content sequence, decision moments, and responsive transformations call for different evidence.
 
 The main repeated mechanism is the Decision Graph record—driver, move, consequence, evidence, risk, revisit trigger. It constrains justification without prescribing the solution. No affected benchmark required an architecture rewrite after the comparison.

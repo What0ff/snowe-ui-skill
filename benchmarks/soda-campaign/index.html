@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en" class="no-js">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Doppler is a fictional carbonated soft-drink campaign created as an expressive-motion Snowe benchmark.">
+  <meta name="theme-color" content="#f6df34">
+  <title>Doppler Soda — Catch the signal</title>
+  <link rel="preload" href="assets/fonts/unbounded-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/manrope-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="styles.css">
+  <script>document.documentElement.classList.remove("no-js");document.documentElement.classList.add("js");</script>
+</head>
+<body data-flavor="sun">
+  <a class="skip-link" href="#main">Skip to the campaign</a>
+
+  <header class="site-header" data-header>
+    <a class="brand-lockup" href="#top" aria-label="Doppler Soda home">
+      <span class="brand-lockup__word">DOPPLER</span>
+      <span class="brand-lockup__category">Soda / 330 ml</span>
+    </a>
+
+    <button class="nav-toggle" id="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Open menu">
+      <span aria-hidden="true" class="nav-toggle__lines"><i></i><i></i></span>
+      <span>Menu</span>
+    </button>
+
+    <nav class="site-nav" id="site-nav" aria-label="Campaign" data-open="false">
+      <a href="#signals">Signals</a>
+      <a href="#sensation">The sensation</a>
+      <a href="#mix">Mix a six</a>
+    </nav>
+
+    <a class="header-cta" href="#mix">Build a six <span aria-hidden="true">↘</span></a>
+  </header>
+
+  <main id="main">
+    <section class="hero" id="top" aria-labelledby="hero-title">
+      <div class="hero__grid" aria-hidden="true"></div>
+      <div class="pressure-word" aria-hidden="true">
+        <span>DOP</span><span>PLER</span>
+      </div>
+      <div class="pressure-rings pressure-rings--left" aria-hidden="true"><i></i><i></i><i></i></div>
+
+      <div class="hero__copy">
+        <p class="eyebrow"><span>Carbonated soft drink</span><span>Three flavor signals</span></p>
+        <h1 id="hero-title">Soda has<br>a signal.</h1>
+        <p class="hero__lede">Doppler is a bright interruption in cold aluminum: fruit up front, fine bubbles through the middle, and a botanical turn at the end.</p>
+
+        <div class="hero__actions">
+          <a class="button button--ink" href="#mix">Build a mixed six — €14</a>
+          <a class="text-link" href="#signals">Meet all three <span aria-hidden="true">↓</span></a>
+        </div>
+
+        <dl class="hero__facts" aria-label="Product facts">
+          <div><dt>Format</dt><dd>6 × 330 ml</dd></div>
+          <div><dt>Selected</dt><dd data-selected-name>Sun Shift</dd></div>
+          <div><dt>Blend</dt><dd data-selected-blend>Tangerine · juniper</dd></div>
+        </dl>
+      </div>
+
+      <figure class="product-stage" aria-labelledby="product-caption">
+        <div class="signal-orbit" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+        <div class="bubble-field" aria-hidden="true" data-bubbles></div>
+        <div class="can-shadow" aria-hidden="true"></div>
+
+        <div class="can-rig">
+          <div class="can-3d" id="interactive-can" tabindex="0" role="img" aria-describedby="drag-hint" aria-label="Doppler Sun Shift carbonated soft-drink can. Drag left or right, or use the arrow keys, to rotate it.">
+            <div class="can-object" data-can-object>
+              <div class="can-body" data-can-body></div>
+              <div class="can-disc can-disc--bottom" aria-hidden="true"></div>
+              <div class="condensation" aria-hidden="true">
+                <i style="--x:16%;--y:14%;--s:8px"></i><i style="--x:73%;--y:20%;--s:5px"></i>
+                <i style="--x:29%;--y:38%;--s:6px"></i><i style="--x:81%;--y:47%;--s:10px"></i>
+                <i style="--x:13%;--y:67%;--s:5px"></i><i style="--x:63%;--y:72%;--s:7px"></i>
+                <i style="--x:36%;--y:84%;--s:4px"></i><i style="--x:76%;--y:89%;--s:5px"></i>
+              </div>
+            </div>
+          </div>
+          <div class="can-lid-visual" aria-hidden="true">
+            <span class="can-lid-visual__groove"></span>
+            <span class="can-lid-visual__hardware">
+              <i class="can-lid-visual__opening"></i>
+              <i class="can-lid-visual__tab"></i>
+            </span>
+          </div>
+
+          <div class="static-can" data-static-can role="img" aria-label="Doppler Sun Shift carbonated soft-drink can">
+            <img src="assets/labels/sun-shift.svg" alt="" data-static-label width="2760" height="1600">
+            <span class="static-can__top" aria-hidden="true"><i></i></span>
+            <span class="static-can__bottom" aria-hidden="true"></span>
+            <span class="static-can__shine" aria-hidden="true"></span>
+          </div>
+        </div>
+
+        <figcaption id="product-caption">
+          <span class="product-index" data-selected-index>01 / 03</span>
+          <strong data-selected-name>Sun Shift</strong>
+          <span data-selected-blend>Tangerine · juniper</span>
+        </figcaption>
+        <p class="drag-hint" id="drag-hint"><span aria-hidden="true">↔</span> Drag the can / use arrow keys</p>
+      </figure>
+
+      <div class="flavor-selector" role="group" aria-labelledby="flavor-selector-title">
+        <p id="flavor-selector-title">Tune the flavor</p>
+        <button type="button" class="flavor-button" data-flavor-button="sun" aria-pressed="true">
+          <span class="flavor-button__index">01</span><span class="flavor-button__name">Sun Shift</span><span class="flavor-button__blend">Tangerine · juniper</span>
+        </button>
+        <button type="button" class="flavor-button" data-flavor-button="pink" aria-pressed="false">
+          <span class="flavor-button__index">02</span><span class="flavor-button__name">Pink Noise</span><span class="flavor-button__blend">Grapefruit · hibiscus</span>
+        </button>
+        <button type="button" class="flavor-button" data-flavor-button="night" aria-pressed="false">
+          <span class="flavor-button__index">03</span><span class="flavor-button__name">Night Signal</span><span class="flavor-button__blend">Black cherry · toasted spice</span>
+        </button>
+      </div>
+      <p class="sr-only" role="status" aria-live="polite" data-flavor-status>Sun Shift selected.</p>
+
+      <div class="hero__ticker" aria-hidden="true">
+        <span>FINE BUBBLES</span><i></i><span>FRUIT + BOTANICALS</span><i></i><span>SERVE COLD</span><i></i><span>FICTIONAL / FULL VOLUME</span>
+      </div>
+    </section>
+
+    <section class="signals" id="signals" aria-labelledby="signals-title">
+      <div class="section-kicker"><span>01</span><p>Three signals</p></div>
+      <div class="signals__intro">
+        <h2 id="signals-title">Same fizz.<br>Different direction.</h2>
+        <p>Each Doppler blend keeps the same crisp carbonation and changes the path around it. Pick by flavor, by color, or by the hour you are in.</p>
+      </div>
+
+      <div class="signals__layout">
+        <div class="signal-list" role="group" aria-label="Choose a Doppler flavor">
+          <button type="button" class="signal-row" data-flavor-button="sun" aria-pressed="true">
+            <span class="signal-row__index">01</span>
+            <span class="signal-row__content"><strong>Sun Shift</strong><small>Tangerine · juniper</small></span>
+            <span class="signal-row__note">Citrus first. Dry green edge.</span>
+            <span class="signal-row__arrow" aria-hidden="true">↗</span>
+          </button>
+          <button type="button" class="signal-row" data-flavor-button="pink" aria-pressed="false">
+            <span class="signal-row__index">02</span>
+            <span class="signal-row__content"><strong>Pink Noise</strong><small>Grapefruit · hibiscus</small></span>
+            <span class="signal-row__note">Tart opening. Floral echo.</span>
+            <span class="signal-row__arrow" aria-hidden="true">↗</span>
+          </button>
+          <button type="button" class="signal-row" data-flavor-button="night" aria-pressed="false">
+            <span class="signal-row__index">03</span>
+            <span class="signal-row__content"><strong>Night Signal</strong><small>Black cherry · toasted spice</small></span>
+            <span class="signal-row__note">Dark fruit. Warm finish.</span>
+            <span class="signal-row__arrow" aria-hidden="true">↗</span>
+          </button>
+        </div>
+
+        <div class="signal-poster" aria-live="off">
+          <div class="signal-poster__rings" aria-hidden="true"><i></i><i></i><i></i></div>
+          <p class="signal-poster__number" data-selected-index>01 / 03</p>
+          <img src="assets/labels/sun-shift.svg" alt="" width="2760" height="1600" data-poster-label>
+          <div class="signal-poster__copy">
+            <span>Current signal</span>
+            <strong data-selected-name>Sun Shift</strong>
+            <p data-selected-description>Tangerine arrives bright; juniper pulls the finish somewhere greener.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sensation" id="sensation" aria-labelledby="sensation-title">
+      <div class="section-kicker section-kicker--light"><span>02</span><p>The sensation</p></div>
+      <div class="sensation__header">
+        <p>One cold can.<br>Three beats.</p>
+        <h2 id="sensation-title">Open the<br>interruption.</h2>
+      </div>
+
+      <ol class="sensation-steps">
+        <li>
+          <span class="sensation-steps__number">01 / Crack</span>
+          <strong>PSST</strong>
+          <p>The tab breaks the quiet. Fine bubbles make the first move.</p>
+        </li>
+        <li>
+          <span class="sensation-steps__number">02 / Rush</span>
+          <strong>FSSSH</strong>
+          <p>Fruit crosses fast; carbonation keeps the blend sharp and moving.</p>
+        </li>
+        <li>
+          <span class="sensation-steps__number">03 / Finish</span>
+          <strong>AHH</strong>
+          <p>Juniper, hibiscus, or toasted spice leaves the final signal.</p>
+        </li>
+      </ol>
+
+      <div class="product-facts">
+        <p>Carbonated soft drink</p><p>330 ml aluminum can</p><p>Three fictional blends</p><p>Serve cold</p>
+      </div>
+    </section>
+
+    <section class="mix" id="mix" aria-labelledby="mix-title">
+      <div class="section-kicker section-kicker--light"><span>03</span><p>Compose a six</p></div>
+      <div class="mix__heading">
+        <h2 id="mix-title">Build your<br>signal.</h2>
+        <div>
+          <p>Six cans, any balance. Start with two of each, then move the mix until it sounds like your table.</p>
+          <p class="mix__price">€14 <span>/ fictional mixed six-pack</span></p>
+        </div>
+      </div>
+
+      <form class="pack-builder" id="pack-form">
+        <div class="pack-visual" aria-hidden="true">
+          <ol data-pack-slots>
+            <li data-slot="sun"><span>01</span></li><li data-slot="sun"><span>02</span></li>
+            <li data-slot="pink"><span>03</span></li><li data-slot="pink"><span>04</span></li>
+            <li data-slot="night"><span>05</span></li><li data-slot="night"><span>06</span></li>
+          </ol>
+          <p>Doppler / mixed signal</p>
+        </div>
+
+        <fieldset class="pack-controls">
+          <legend class="sr-only">Choose six Doppler cans</legend>
+          <div class="pack-row" data-pack-row="sun">
+            <span class="pack-row__swatch" aria-hidden="true"></span>
+            <span class="pack-row__name"><strong>Sun Shift</strong><small>Tangerine · juniper</small></span>
+            <div class="stepper">
+              <button type="button" data-pack-action="decrease" aria-label="Remove one Sun Shift">−</button>
+              <output data-pack-count="sun" aria-label="Sun Shift quantity">2</output>
+              <button type="button" data-pack-action="increase" aria-label="Add one Sun Shift">+</button>
+            </div>
+          </div>
+          <div class="pack-row" data-pack-row="pink">
+            <span class="pack-row__swatch" aria-hidden="true"></span>
+            <span class="pack-row__name"><strong>Pink Noise</strong><small>Grapefruit · hibiscus</small></span>
+            <div class="stepper">
+              <button type="button" data-pack-action="decrease" aria-label="Remove one Pink Noise">−</button>
+              <output data-pack-count="pink" aria-label="Pink Noise quantity">2</output>
+              <button type="button" data-pack-action="increase" aria-label="Add one Pink Noise">+</button>
+            </div>
+          </div>
+          <div class="pack-row" data-pack-row="night">
+            <span class="pack-row__swatch" aria-hidden="true"></span>
+            <span class="pack-row__name"><strong>Night Signal</strong><small>Black cherry · toasted spice</small></span>
+            <div class="stepper">
+              <button type="button" data-pack-action="decrease" aria-label="Remove one Night Signal">−</button>
+              <output data-pack-count="night" aria-label="Night Signal quantity">2</output>
+              <button type="button" data-pack-action="increase" aria-label="Add one Night Signal">+</button>
+            </div>
+          </div>
+
+          <div class="pack-summary">
+            <p><strong data-pack-total>6</strong> / 6 cans <span data-pack-guidance>Your mix is ready.</span></p>
+            <button class="button button--flavor" type="submit" data-pack-submit>Add this mix — €14 <span aria-hidden="true">↗</span></button>
+          </div>
+          <p class="pack-status" role="status" aria-live="polite" tabindex="-1" data-pack-status></p>
+        </fieldset>
+      </form>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <a class="brand-lockup brand-lockup--footer" href="#top" aria-label="Back to Doppler campaign start">
+      <span class="brand-lockup__word">DOPPLER</span><span class="brand-lockup__category">Catch the signal</span>
+    </a>
+    <p>Doppler, its packaging, blends, price, and campaign are fictional benchmark content. The can, labels, and graphics are original code-native assets; no AI-generated imagery is used. No order or payment is processed.</p>
+    <p>Expressive-motion evidence for <a href="../../README.md">Snowe UI Skill</a> · <a href="design-intelligence/DECISIONS.md">Decisions</a> · <a href="design-intelligence/QA.md">Rendered QA</a></p>
+  </footer>
+
+  <noscript><p class="noscript">Doppler's product and campaign content remain visible without JavaScript. Flavor switching, can rotation, mobile navigation, and the fictional pack confirmation require JavaScript.</p></noscript>
+  <script src="app.js"></script>
+</body>
+</html>

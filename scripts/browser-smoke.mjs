@@ -11,7 +11,9 @@ import { fileURLToPath } from "node:url";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const CAPTURE = process.argv.includes("--capture");
-const CHECKS_ONLY = process.argv.includes("--smoke") || !CAPTURE;
+const CAPTURE_SODA = process.argv.includes("--capture-soda");
+const CAPTURE_SODA_MOTION = process.argv.includes("--soda-motion-frames");
+const CHECKS_ONLY = process.argv.includes("--smoke") || (!CAPTURE && !CAPTURE_SODA && !CAPTURE_SODA_MOTION);
 const DEFAULT_VIEWPORT = { width: 1440, height: 1000 };
 const MIME = new Map([
   [".css", "text/css; charset=utf-8"],
@@ -22,6 +24,7 @@ const MIME = new Map([
   [".jpeg", "image/jpeg"],
   [".png", "image/png"],
   [".svg", "image/svg+xml"],
+  [".gif", "image/gif"],
   [".webp", "image/webp"],
   [".woff2", "font/woff2"],
 ]);
@@ -33,6 +36,14 @@ const scenarios = [
     route: "/benchmarks/bicycle-commerce/index.html",
     requiresReadyMarker: false,
     interact: interactGoodturn,
+  },
+  {
+    name: "Doppler soda campaign",
+    slug: "soda-campaign",
+    route: "/benchmarks/soda-campaign/index.html",
+    requiresReadyMarker: true,
+    interact: interactSoda,
+    reduced: auditSodaReduced,
   },
   {
     name: "Larkhaven municipal service",
@@ -227,6 +238,7 @@ async function launchBrowser(chrome, debugPort, profile) {
     "--disable-default-apps",
     "--disable-extensions",
     "--disable-features=Translate,BackForwardCache,MediaRouter",
+    "--hide-scrollbars",
     "--disable-sync",
     "--metrics-recording-only",
     "--mute-audio",
@@ -396,6 +408,24 @@ async function click(client, selector) {
   await sleep(40);
 }
 
+async function dragHorizontally(client, selector, distance) {
+  const rect = await evaluate(client, `(() => {
+    const node = document.querySelector(${JSON.stringify(selector)});
+    if (!node) return null;
+    const bounds = node.getBoundingClientRect();
+    return { x: bounds.left + bounds.width / 2, y: bounds.top + bounds.height / 2 };
+  })()`);
+  check(rect, `Missing drag target ${selector}`);
+  await client.send("Input.dispatchMouseEvent", { type: "mouseMoved", x: rect.x, y: rect.y });
+  await client.send("Input.dispatchMouseEvent", { type: "mousePressed", x: rect.x, y: rect.y, button: "left", buttons: 1, clickCount: 1 });
+  for (let step = 1; step <= 4; step += 1) {
+    await client.send("Input.dispatchMouseEvent", { type: "mouseMoved", x: rect.x + distance * step / 4, y: rect.y, button: "left", buttons: 1 });
+    await sleep(20);
+  }
+  await client.send("Input.dispatchMouseEvent", { type: "mouseReleased", x: rect.x + distance, y: rect.y, button: "left", buttons: 0, clickCount: 1 });
+  await sleep(500);
+}
+
 async function setValue(client, selector, value) {
   const found = await evaluate(client, `(() => {
     const node = document.querySelector(${JSON.stringify(selector)});
@@ -436,6 +466,77 @@ async function interactGoodturn(client) {
   result = await evaluate(client, `({ open: document.querySelector("#compare-dialog").open, rows: document.querySelectorAll("[data-comparison-table] tbody tr").length })`);
   check(result.open && result.rows >= 2, "Goodturn: comparison dialog failed");
   await click(client, "#compare-dialog [data-close-dialog]");
+}
+
+async function interactSoda(client) {
+  await evaluate(client, `document.querySelector("#interactive-can").focus()`);
+  const beforeYaw = await evaluate(client, `document.querySelector("[data-can-object]").style.getPropertyValue("--yaw")`);
+  await key(client, "ArrowRight");
+  await sleep(300);
+  const afterYaw = await evaluate(client, `document.querySelector("[data-can-object]").style.getPropertyValue("--yaw")`);
+  check(beforeYaw !== afterYaw, "Doppler: keyboard can rotation did not update the product orientation");
+
+  const beforeDragYaw = await evaluate(client, `document.querySelector("[data-can-object]").style.getPropertyValue("--yaw")`);
+  await dragHorizontally(client, "#interactive-can", 84);
+  const afterDragYaw = await evaluate(client, `document.querySelector("[data-can-object]").style.getPropertyValue("--yaw")`);
+  check(beforeDragYaw !== afterDragYaw, "Doppler: pointer drag did not rotate the product");
+
+  await click(client, '.flavor-button[data-flavor-button="pink"]');
+  await sleep(760);
+  let result = await evaluate(client, `({
+    flavor: document.body.dataset.flavor,
+    pressed: document.querySelector('.flavor-button[data-flavor-button="pink"]').getAttribute("aria-pressed"),
+    synced: document.querySelector('.signal-row[data-flavor-button="pink"]').getAttribute("aria-pressed"),
+    label: document.querySelector("#interactive-can").getAttribute("aria-label"),
+    live: document.querySelector("[data-flavor-status]").textContent,
+    yaw: Number.parseFloat(document.querySelector("[data-can-object]").style.getPropertyValue("--yaw")),
+  })`);
+  check(result.flavor === "pink" && result.pressed === "true" && result.synced === "true", "Doppler: flavor state did not synchronize");
+  check(result.label.includes("Pink Noise") && result.live.includes("Grapefruit"), "Doppler: selected product name/blend was not announced");
+  check(Math.abs(result.yaw % 360) < 0.2, `Doppler: flavor rotation did not settle on the package face (${result.yaw})`);
+
+  await click(client, '[data-pack-row="sun"] [data-pack-action="decrease"]');
+  result = await evaluate(client, `({ total: document.querySelector("[data-pack-total]").textContent, disabled: document.querySelector("[data-pack-submit]").disabled, guidance: document.querySelector("[data-pack-guidance]").textContent })`);
+  check(result.total === "5" && result.disabled && result.guidance.includes("1 space"), "Doppler: pack removal/validation state failed");
+  await click(client, '[data-pack-row="pink"] [data-pack-action="increase"]');
+  await click(client, "[data-pack-submit]");
+  result = await evaluate(client, `({
+    total: document.querySelector("[data-pack-total]").textContent,
+    disabled: document.querySelector("[data-pack-submit]").disabled,
+    status: document.querySelector("[data-pack-status]").textContent,
+    pink: document.querySelector('[data-pack-count="pink"]').textContent,
+  })`);
+  check(result.total === "6" && !result.disabled && result.pink === "3", "Doppler: pack composition did not return to six cans");
+  check(result.status.includes("Signal packed") && result.status.includes("no order or payment"), "Doppler: honest conversion confirmation failed");
+  await sleep(260);
+  result = await evaluate(client, `({
+    active: document.getAnimations().filter((animation) => animation.playState === "running" || animation.playState === "pending").length,
+    bubbles: document.querySelectorAll(".bubble").length,
+  })`);
+  check(result.active === 0 && result.bubbles === 0, `Doppler: transient motion did not stop (animations ${result.active}, bubbles ${result.bubbles})`);
+}
+
+async function auditSodaReduced(client) {
+  let result = await evaluate(client, `(() => {
+    const threeD = document.querySelector(".can-3d");
+    const staticCan = document.querySelector(".static-can");
+    return {
+      reduced: matchMedia("(prefers-reduced-motion: reduce)").matches,
+      threeD: getComputedStyle(threeD).display,
+      staticCan: getComputedStyle(staticCan).display,
+      staticLabel: document.querySelector("[data-static-label]").getAttribute("src"),
+    };
+  })()`);
+  check(result.reduced && result.threeD === "none" && result.staticCan !== "none", "Doppler: reduced mode did not select the static product composition");
+  await click(client, '.flavor-button[data-flavor-button="night"]');
+  result = await evaluate(client, `({
+    flavor: document.body.dataset.flavor,
+    label: document.querySelector("[data-static-label]").getAttribute("src"),
+    pressed: document.querySelector('.flavor-button[data-flavor-button="night"]').getAttribute("aria-pressed"),
+    active: document.getAnimations().filter((animation) => animation.playState === "running" || animation.playState === "pending").length,
+  })`);
+  check(result.flavor === "night" && result.label.endsWith("night-signal.svg") && result.pressed === "true", "Doppler: reduced flavor state lost product identity");
+  check(result.active === 0, `Doppler: reduced flavor interaction started ${result.active} animations`);
 }
 
 async function interactMunicipal(client) {
@@ -520,6 +621,7 @@ async function interactLiterary(client) {
 async function exerciseMobileNavigation(client, scenario) {
   const definitions = {
     "bicycle-commerce": [".menu-button", "#mobile-menu", "hidden"],
+    "soda-campaign": ["#nav-toggle", "#site-nav", "data"],
     "municipal-service": ["#nav-toggle", "#service-nav", "data"],
     "warehouse-operations": ["#rail-toggle", "#app-rail", "data"],
     "literary-publication": ["#issue-toggle", "#publication-nav", "data"],
@@ -532,6 +634,11 @@ async function exerciseMobileNavigation(client, scenario) {
     return { expanded: button.getAttribute("aria-expanded"), visible: ${JSON.stringify(mode)} === "hidden" ? !target.hidden : target.dataset.open === "true" };
   })()`);
   check(state.expanded === "true" && state.visible, `${scenario.name}: mobile navigation did not open`);
+  if (scenario.slug === "soda-campaign") {
+    check(await evaluate(client, `document.activeElement === document.querySelector("#site-nav a")`), "Doppler: mobile navigation did not hand focus to the first destination");
+    await key(client, "Escape");
+    check(await evaluate(client, `document.querySelector("#nav-toggle").getAttribute("aria-expanded") === "false" && document.activeElement?.id === "nav-toggle"`), "Doppler: mobile navigation Escape/focus restoration failed");
+  }
 }
 
 async function runSmoke(client, origin) {
@@ -541,6 +648,21 @@ async function runSmoke(client, origin) {
       for (const viewport of [DEFAULT_VIEWPORT, { width: 900, height: 900 }, { width: 390, height: 844 }]) {
         await navigate(client, origin, scenario, viewport);
         await commonAudit(client, scenario, viewport, false);
+        if (scenario.slug === "soda-campaign") {
+          const expectedPanels = viewport.width === 1440 ? 48 : viewport.width === 900 ? 40 : 32;
+          check(await evaluate(client, `document.querySelectorAll(".can-panel").length === ${expectedPanels}`), `Doppler: expected ${expectedPanels} can segments at ${viewport.width}px`);
+          const lid = await evaluate(client, `(() => {
+            const can = document.querySelector("#interactive-can");
+            const rim = document.querySelector(".can-lid-visual");
+            return {
+              topLayers: document.querySelectorAll(".can-lid-visual, .can-disc--top").length,
+              widthDelta: Math.abs(can.offsetWidth - rim.offsetWidth),
+              leftDelta: Math.abs(can.offsetLeft - rim.offsetLeft),
+              attached: rim.offsetTop <= 1 && rim.offsetTop + rim.offsetHeight > 0,
+            };
+          })()`);
+          check(lid.topLayers === 1 && lid.widthDelta < 2 && lid.leftDelta < 2 && lid.attached, `Doppler: product lid layer is duplicated, detached, or misaligned at ${viewport.width}px`);
+        }
         if (viewport.width === 390) await exerciseMobileNavigation(client, scenario);
       }
       await navigate(client, origin, scenario, DEFAULT_VIEWPORT);
@@ -548,6 +670,7 @@ async function runSmoke(client, origin) {
       await commonAudit(client, scenario, DEFAULT_VIEWPORT, false);
       await navigate(client, origin, scenario, { width: 390, height: 844 }, true);
       await commonAudit(client, scenario, { width: 390, height: 844 }, true);
+      if (scenario.reduced) await scenario.reduced(client);
       passes.push(`${scenario.name}: wide/intermediate/mobile, interactions, reduced motion`);
     } catch (error) {
       failures.push(`${scenario.name}: ${error.message}`);
@@ -568,6 +691,16 @@ async function screenshot(client, filename, fullPage = false) {
     captureBeyondViewport: fullPage,
     fromSurface: true,
     ...(clip ? { clip } : {}),
+  });
+  await writeFile(filename, Buffer.from(data, "base64"));
+}
+
+async function screenshotPng(client, filename) {
+  const { data } = await client.send("Page.captureScreenshot", {
+    format: "png",
+    captureBeyondViewport: false,
+    fromSurface: true,
+    optimizeForSpeed: true,
   });
   await writeFile(filename, Buffer.from(data, "base64"));
 }
@@ -623,6 +756,62 @@ async function captureLiterary(client, origin, scenario) {
   await screenshot(client, path.join(dir, "mobile-membership.jpg"));
 }
 
+async function captureSoda(client, origin, scenario) {
+  const dir = path.join(ROOT, "benchmarks/soda-campaign/screenshots");
+  await mkdir(dir, { recursive: true });
+
+  await navigate(client, origin, scenario, DEFAULT_VIEWPORT);
+  await sleep(1_100);
+  await commonAudit(client, scenario, DEFAULT_VIEWPORT, false);
+  await screenshot(client, path.join(dir, "wide-overview.jpg"), true);
+  await screenshot(client, path.join(dir, "wide-hero.jpg"));
+
+  await click(client, '.flavor-button[data-flavor-button="pink"]');
+  await sleep(780);
+  await screenshot(client, path.join(dir, "wide-flavor.jpg"));
+
+  await navigate(client, origin, scenario, { width: 900, height: 1000 });
+  await sleep(1_100);
+  await commonAudit(client, scenario, { width: 900, height: 1000 }, false);
+  await screenshot(client, path.join(dir, "intermediate.jpg"));
+
+  await navigate(client, origin, scenario, { width: 390, height: 844 });
+  await sleep(1_100);
+  await commonAudit(client, scenario, { width: 390, height: 844 }, false);
+  await screenshot(client, path.join(dir, "mobile-hero.jpg"));
+  await evaluate(client, `document.querySelector(".product-stage").scrollIntoView({ block: "start" })`);
+  await click(client, '.flavor-button[data-flavor-button="night"]');
+  await sleep(780);
+  await screenshot(client, path.join(dir, "mobile-interaction.jpg"));
+
+  await navigate(client, origin, scenario, DEFAULT_VIEWPORT, true);
+  await commonAudit(client, scenario, DEFAULT_VIEWPORT, true);
+  await screenshot(client, path.join(dir, "reduced-motion.jpg"));
+}
+
+async function captureSodaMotionFrames(client, origin, scenario) {
+  const configured = process.env.SODA_MOTION_DIR;
+  check(configured, "Set SODA_MOTION_DIR to an empty temporary directory for --soda-motion-frames");
+  const dir = path.resolve(configured);
+  await mkdir(dir, { recursive: true });
+  await navigate(client, origin, scenario, { width: 900, height: 700 });
+  await sleep(1_100);
+  await commonAudit(client, scenario, { width: 900, height: 700 }, false);
+
+  const fps = 12;
+  const frameCount = 72;
+  const started = Date.now();
+  for (let frame = 0; frame < frameCount; frame += 1) {
+    if (frame === 6) await click(client, '.flavor-button[data-flavor-button="pink"]');
+    if (frame === 26) await click(client, '.flavor-button[data-flavor-button="night"]');
+    if (frame === 46) await click(client, '.flavor-button[data-flavor-button="sun"]');
+    await screenshotPng(client, path.join(dir, `frame-${String(frame).padStart(3, "0")}.png`));
+    const target = started + ((frame + 1) * 1000 / fps);
+    await sleep(Math.max(0, target - Date.now()));
+  }
+  passes.push(`${frameCount} Doppler motion frames captured from the live browser implementation`);
+}
+
 async function runCaptures(client, origin) {
   await Promise.all([
     "municipal-service",
@@ -633,7 +822,8 @@ async function runCaptures(client, origin) {
   await captureMunicipal(client, origin, bySlug.get("municipal-service"));
   await captureWarehouse(client, origin, bySlug.get("warehouse-operations"));
   await captureLiterary(client, origin, bySlug.get("literary-publication"));
-  passes.push("18 forward-test screenshots captured from validated browser states");
+  await captureSoda(client, origin, bySlug.get("soda-campaign"));
+  passes.push("18 forward-test and 7 Doppler screenshots captured from validated browser states");
 }
 
 async function main() {
@@ -651,6 +841,13 @@ async function main() {
     await configureClient(client, origin);
     if (CHECKS_ONLY) await runSmoke(client, origin);
     if (CAPTURE && failures.length === 0) await runCaptures(client, origin);
+    if (CAPTURE_SODA && failures.length === 0) {
+      await captureSoda(client, origin, scenarios.find((scenario) => scenario.slug === "soda-campaign"));
+      passes.push("7 Doppler screenshots captured from validated browser states");
+    }
+    if (CAPTURE_SODA_MOTION && failures.length === 0) {
+      await captureSodaMotionFrames(client, origin, scenarios.find((scenario) => scenario.slug === "soda-campaign"));
+    }
   } finally {
     if (client) {
       try {
