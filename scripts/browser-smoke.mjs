@@ -528,15 +528,21 @@ async function auditSodaReduced(client) {
     };
   })()`);
   check(result.reduced && result.threeD === "none" && result.staticCan !== "none", "Doppler: reduced mode did not select the static product composition");
-  await click(client, '.flavor-button[data-flavor-button="night"]');
-  result = await evaluate(client, `({
-    flavor: document.body.dataset.flavor,
-    label: document.querySelector("[data-static-label]").getAttribute("src"),
-    pressed: document.querySelector('.flavor-button[data-flavor-button="night"]').getAttribute("aria-pressed"),
-    active: document.getAnimations().filter((animation) => animation.playState === "running" || animation.playState === "pending").length,
-  })`);
+  result = await evaluate(client, `(() => {
+    const button = document.querySelector('.flavor-button[data-flavor-button="night"]');
+    button.click();
+    return {
+      flavor: document.body.dataset.flavor,
+      label: document.querySelector("[data-static-label]").getAttribute("src"),
+      pressed: button.getAttribute("aria-pressed"),
+      active: document.getAnimations().filter((animation) => animation.playState === "running" || animation.playState === "pending").length,
+    };
+  })()`);
   check(result.flavor === "night" && result.label.endsWith("night-signal.svg") && result.pressed === "true", "Doppler: reduced flavor state lost product identity");
-  check(result.active === 0, `Doppler: reduced flavor interaction started ${result.active} animations`);
+  check(result.active === 0, `Doppler: reduced flavor interaction immediately started ${result.active} animations`);
+  await sleep(40);
+  const settledAnimations = await evaluate(client, `document.getAnimations().filter((animation) => animation.playState === "running" || animation.playState === "pending").length`);
+  check(settledAnimations === 0, `Doppler: reduced flavor interaction started ${settledAnimations} animations`);
 }
 
 async function interactMunicipal(client) {

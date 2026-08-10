@@ -99,6 +99,11 @@ class SodaBenchmarkTests(unittest.TestCase):
         ):
             self.assertIn(marker, self.js)
         self.assertIn("@media (prefers-reduced-motion: reduce)", self.css)
+        reduced_css = self.css.split("@media (prefers-reduced-motion: reduce)", 1)[1].split(
+            "@media (forced-colors: active)", 1
+        )[0]
+        self.assertIn("transition: none !important;", reduced_css)
+        self.assertNotIn("transition-duration:", reduced_css)
         self.assertIn("@media (max-width: 760px)", self.css)
         self.assertIn("@media (max-width: 1120px)", self.css)
         self.assertIn("data-static-can", self.html)
