@@ -16,6 +16,7 @@ No third-party Python packages are required for the runtime or tests.
 python -m unittest discover -s tests -v
 python -m compileall -q skill/snowe-ui-skill/scripts
 python evals/designer-behavior/run_eval.py
+python scripts/install_skill.py --help
 ```
 
 Rendered benchmark changes also require Node 22 plus a local Chrome/Chromium smoke pass:
@@ -32,8 +33,9 @@ node scripts/browser-smoke.mjs --smoke
 - `skill/snowe-ui-skill/scripts/` — deterministic retrieval, open decision
   support, and low-level validators.
 - `skill/snowe-ui-skill/data/` — remaining optional retrieval evidence catalogs.
-- `evals/` and `benchmarks/` — behavioral contracts and rendered forward-tests.
+- `evals/` — deterministic packet/repository contracts; `benchmarks/` — rendered and browser-regression forward-tests.
 - `tests/` — product, safety, packaging, and benchmark regression coverage.
+- `scripts/install_skill.py` — exact standalone-skill installation and update helper.
 
 Keep repository-facing documentation outside the installable skill directory.
 The exception is `LICENSE`, which remains inside the skill so copied installs
@@ -65,9 +67,11 @@ Keep pull requests narrow and explain:
 - the checks that were executed;
 - any remaining uncertainty or trade-off.
 
-UI guidance changes should include a realistic example showing how an agent's
-decision improves. Large behavioral changes should include regression tests or
-an evaluation fixture.
+UI guidance changes should include evidence appropriate to the claim. Large
+contract changes should include regression tests or a deterministic evaluation
+fixture. Claims about real-agent improvement additionally require reproducible
+host/model provenance, observed reference loading, repeated runs, and a control;
+rendered examples alone are not causal evidence.
 
 By contributing, you agree that your contribution is licensed under the
 repository's MIT License.

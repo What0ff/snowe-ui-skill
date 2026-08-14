@@ -23,7 +23,7 @@ from contrast import (  # noqa: E402
     contrast_ratio,
     parse_opaque_color,
 )
-from core import CSV_CONFIG, DOMAIN_SOURCE_ROLES, search  # noqa: E402
+from core import AVAILABLE_STACKS, CSV_CONFIG, DOMAIN_SOURCE_ROLES, search, search_stack  # noqa: E402
 from decision_packet import (  # noqa: E402
     DecisionPacketGenerator,
     format_packet_json,
@@ -123,6 +123,44 @@ class SkillPackageTests(unittest.TestCase):
         self.assertIn("Do not average taste into a number", text)
         self.assertIn("Cross-Scenario Comparison", text)
         self.assertIn("wide / pressure / narrow", text)
+
+    def test_repository_evidence_layers_do_not_claim_agent_causation(self):
+        readme = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
+        evaluation = (REPO_ROOT / "evals" / "designer-behavior" / "README.md").read_text(encoding="utf-8")
+        benchmark_docs = "\n".join(
+            path.read_text(encoding="utf-8")
+            for path in (
+                REPO_ROOT / "benchmarks" / "bicycle-commerce" / "README.md",
+                REPO_ROOT / "benchmarks" / "forward-tests" / "README.md",
+                REPO_ROOT / "benchmarks" / "soda-campaign" / "README.md",
+            )
+        )
+        for phrase in (
+            "Deterministic contract regression",
+            "Rendered/browser regression evidence",
+            "Observed real-agent behavior",
+        ):
+            self.assertIn(phrase, readme)
+        self.assertIn("does not invoke Codex", evaluation)
+        self.assertIn("No reproducible observed-agent evaluation is currently committed", evaluation)
+        self.assertIn("does not measure causal model improvement", benchmark_docs)
+        self.assertIn("do not measure real-agent generalization", benchmark_docs)
+        self.assertIn("does not establish causal model improvement", benchmark_docs)
+        self.assertNotIn("Snowe created the positioning", readme)
+
+        completed = subprocess.run(
+            [sys.executable, str(REPO_ROOT / "evals" / "designer-behavior" / "run_eval.py")],
+            cwd=REPO_ROOT,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            check=False,
+        )
+        self.assertEqual(0, completed.returncode, completed.stderr)
+        scope = json.loads(completed.stdout)["evidence_scope"]
+        self.assertEqual("MEASURED", scope["deterministic_contracts"]["status"])
+        self.assertEqual("SEPARATE", scope["rendered_browser_regressions"]["status"])
+        self.assertEqual("NOT_MEASURED", scope["observed_real_agent_behavior"]["status"])
 
 
 class DecisionPacketTests(unittest.TestCase):
@@ -406,6 +444,29 @@ class RetrievalTests(unittest.TestCase):
         self.assertTrue(result["results"])
         self.assertTrue(all(set(item) == {"Product Type", "Keywords"} for item in result["results"]))
 
+    def test_every_stack_exposes_role_boundary_and_documentation_coverage(self):
+        for stack in AVAILABLE_STACKS:
+            result = search_stack("accessibility interface", stack, 1)
+            with self.subTest(stack=stack):
+                self.assertIn("source_role", result)
+                self.assertIn("warning", result)
+                self.assertIn("documentation_coverage", result)
+                coverage = result["documentation_coverage"]
+                self.assertEqual(result["count"], coverage["returned_rows"])
+                self.assertEqual(
+                    result["count"],
+                    coverage["docs_urls_present"] + coverage["docs_urls_missing"],
+                )
+                self.assertIn("primary documentation", result["warning"])
+
+    def test_stack_rows_without_docs_url_are_reported_as_unsourced(self):
+        result = search_stack("dialog focus restoration", "react", 1)
+        self.assertEqual(1, result["count"])
+        self.assertEqual(1, result["documentation_coverage"]["docs_urls_missing"])
+        self.assertEqual("", result["results"][0]["Docs URL"])
+        self.assertIn("no Docs URL", result["warning"])
+        self.assertIn("unsourced bundled guidance", result["warning"])
+
     def test_semantic_domain_detection_is_unavailable(self):
         result = search("platform audit history store application", None, 3)
         self.assertIn("explicit evidence domain is required", result["error"])
@@ -555,6 +616,98 @@ class AssetQualityTests(unittest.TestCase):
             self.assertIn("Forbidden", errors)
             self.assertIn("must not embed text", errors)
 
+    def test_svg_rejects_event_handlers_and_nonlocal_uri_references(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            root = Path(temporary_directory)
+            svg = root / "icon.svg"
+            metadata = root / "icon.json"
+            svg.write_text(
+                '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" '
+                'xml:base="https://example.com/" onload="alert(1)">'
+                '<a href="javascript:alert(1)"><path style="fill:currentColor" d="M2 2h20v20H2z"/></a>'
+                '<use href="sprite.svg#shape"/></svg>',
+                encoding="utf-8",
+            )
+            metadata.write_text(json.dumps(self.metadata()), encoding="utf-8")
+            result = validate_svg_asset(svg, metadata)
+            self.assertFalse(result["valid"])
+            errors = " ".join(result["errors"])
+            self.assertIn("Event-handler attributes are not allowed", errors)
+            self.assertIn("URI references must be non-empty local fragments", errors)
+            self.assertIn("xml:base is not allowed", errors)
+            self.assertIn("Inline style attributes are not allowed", errors)
+
+            completed = subprocess.run(
+                [sys.executable, str(SCRIPTS / "asset_quality.py"), str(svg), "--metadata", str(metadata)],
+                cwd=REPO_ROOT,
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+                check=False,
+            )
+            self.assertNotEqual(0, completed.returncode)
+            self.assertTrue(completed.stdout.startswith("FAIL:"), completed.stdout)
+
+    def test_svg_rejects_external_css_and_document_type_declarations(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            root = Path(temporary_directory)
+            svg = root / "icon.svg"
+            metadata = root / "icon.json"
+            svg.write_text(
+                '<?xml-stylesheet href="https://example.com/theme.css"?>'
+                '<!DOCTYPE svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">'
+                '<style>.shape { fill: url(https://example.com/paint.svg#tone); }</style>'
+                '<animate attributeName="opacity" values="0;1" dur="1s"/>'
+                '<path class="shape" d="M2 2h20v20H2z"/></svg>',
+                encoding="utf-8",
+            )
+            metadata.write_text(json.dumps(self.metadata()), encoding="utf-8")
+            result = validate_svg_asset(svg, metadata)
+            self.assertFalse(result["valid"])
+            errors = " ".join(result["errors"])
+            self.assertIn("DOCTYPE, ENTITY, and xml-stylesheet declarations are not allowed", errors)
+            self.assertIn("Forbidden embedded or executable element: <animate>", errors)
+            self.assertIn("CSS reference must be a non-empty local fragment", errors)
+
+    def test_metadata_requires_meaningful_provenance_and_matching_grid(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            root = Path(temporary_directory)
+            svg = root / "icon.svg"
+            metadata = root / "icon.json"
+            svg.write_text(
+                '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">'
+                '<path fill="currentColor" d="M2 2h20v20H2z"/></svg>',
+                encoding="utf-8",
+            )
+            value = self.metadata()
+            value.update({"grid": "999 x 999", "source": "", "license": "unknown", "accessibility_owner": "TBD"})
+            metadata.write_text(json.dumps(value), encoding="utf-8")
+            result = validate_svg_asset(svg, metadata)
+            self.assertFalse(result["valid"])
+            errors = " ".join(result["errors"])
+            self.assertIn("source", errors)
+            self.assertIn("license", errors)
+            self.assertIn("accessibility_owner", errors)
+            self.assertIn("does not match viewBox", errors)
+
+    def test_metadata_rejects_nonpositive_or_duplicate_target_sizes(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            root = Path(temporary_directory)
+            svg = root / "icon.svg"
+            metadata = root / "icon.json"
+            svg.write_text(
+                '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">'
+                '<path fill="currentColor" d="M2 2h20v20H2z"/></svg>',
+                encoding="utf-8",
+            )
+            value = self.metadata()
+            value["target_sizes"] = [16, 20, 24, 24]
+            metadata.write_text(json.dumps(value), encoding="utf-8")
+            self.assertIn("duplicate", " ".join(validate_svg_asset(svg, metadata)["errors"]))
+            value["target_sizes"] = [16, 20, -24]
+            metadata.write_text(json.dumps(value), encoding="utf-8")
+            self.assertIn("positive finite", " ".join(validate_svg_asset(svg, metadata)["errors"]))
+
     def test_monochrome_contract_rejects_hard_coded_paint(self):
         with tempfile.TemporaryDirectory() as temporary_directory:
             root = Path(temporary_directory)
@@ -616,6 +769,23 @@ class CliTests(unittest.TestCase):
         result = self.run_cli("platform audit history")
         self.assertNotEqual(0, result.returncode)
         self.assertIn("--domain is required", result.stderr)
+
+    def test_stack_cli_prints_and_serializes_its_evidence_boundary(self):
+        text_result = self.run_cli(
+            "dialog focus restoration", "--stack", "react", "--max-results", "1"
+        )
+        self.assertEqual(0, text_result.returncode, text_result.stderr)
+        self.assertIn("**Source role:**", text_result.stdout)
+        self.assertIn("**Use boundary:**", text_result.stdout)
+        self.assertIn("no Docs URL", text_result.stdout)
+
+        json_result = self.run_cli(
+            "dialog focus restoration", "--stack", "react", "--max-results", "1", "--json"
+        )
+        self.assertEqual(0, json_result.returncode, json_result.stderr)
+        payload = json.loads(json_result.stdout)
+        self.assertEqual(1, payload["documentation_coverage"]["docs_urls_missing"])
+        self.assertIn("primary documentation", payload["warning"])
 
     def test_analog_query_is_explicit_and_packet_only(self):
         rejected = self.run_cli("bicycle", "--analog-query", "cycling")

@@ -10,9 +10,9 @@ It is not a layout, style, or landing-page recipe chooser. The remaining optiona
 
 > Snowe UI Skill is an independent community project. It is not affiliated with or endorsed by OpenAI.
 
-## Flagship showcase — Goodturn Cycles
+## Flagship rendered forward-test — Goodturn Cycles
 
-The flagship end-to-end behavioral benchmark is a fictional Bucharest city-bike workshop. Snowe created the positioning, site architecture, three-bike assortment, visual system, imagery strategy, custom icon family, responsive transformations, interaction model, and conversion paths from an open brief.
+The flagship rendered forward-test is a fictional Bucharest city-bike workshop developed by applying Snowe's architecture-first workflow. Its checked-in decisions, implementation, screenshots, and browser states demonstrate one authored outcome; they do not isolate Snowe as the cause or predict another agent run.
 
 ![Goodturn Cycles wide homepage](benchmarks/bicycle-commerce/screenshots/desktop-home.jpg)
 
@@ -35,7 +35,7 @@ Important product decisions remain usable as real states, not presentation-only 
 | --- | --- |
 | ![Goodturn bicycle comparison](benchmarks/bicycle-commerce/screenshots/desktop-compare.jpg) | ![Goodturn mobile product sheet](benchmarks/bicycle-commerce/screenshots/mobile-product-sheet.jpg) |
 
-Goodturn, its bikes, prices, policies, address, and imagery are fictional benchmark content. The product and campaign images were generated and art-directed for this evaluation; they do not represent real products.
+Goodturn, its bikes, prices, policies, address, and imagery are fictional benchmark content. The product and campaign images were generated and art-directed for this forward-test; they do not represent real products.
 
 - [Open the benchmark](benchmarks/bicycle-commerce/README.md)
 - [Read the accepted causal decisions](benchmarks/bicycle-commerce/design-intelligence/goodturn-cycles/DECISIONS.md)
@@ -63,9 +63,9 @@ Doppler, its packaging, flavors, price, and campaign are fictional. Its can, lab
 - [Read the rendered QA and corrections](benchmarks/soda-campaign/design-intelligence/QA.md)
 - [Read why expression was justified here but rejected elsewhere](benchmarks/CROSS-BENCHMARK.md#expressive-motion-companion)
 
-## Rendered generalization evidence — three additional experience classes
+## Rendered coverage — three additional experience classes
 
-Goodturn is the flagship, not the only rendered evidence. Three additional forward-tests begin from different actors, objects, stakes, content, and repeat-use conditions. None uses generated imagery or a custom asset because those choices do not improve the work; municipal and warehouse motion is limited to necessary state feedback, while the publication uses only reading progress. Together, the four benchmarks provide evidence across four materially different tested classes—not proof of universal performance or automated aesthetic quality.
+Goodturn is the flagship, not the only rendered regression. Three additional forward-tests begin from different actors, objects, stakes, content, and repeat-use conditions. None uses generated imagery or a custom asset because those choices do not improve the work; municipal and warehouse motion is limited to necessary state feedback, while the publication uses only reading progress. Together, these four non-motion-focused implementations cover four materially different authored classes; Doppler adds a fifth expressive-motion regression. They do not prove universal performance, automated aesthetic quality, or causal model improvement.
 
 | Experience | Causal architecture | Interaction posture |
 |---|---|---|
@@ -159,11 +159,13 @@ snowe-ui-skill/
 │       ├── decision_packet.py         # Open architecture-first inquiry
 │       ├── asset_quality.py           # SVG structure/provenance validation
 │       └── contrast.py                # Exact opaque-color contrast checks
-├── evals/designer-behavior/           # Cross-business behavioral contracts
+├── evals/designer-behavior/           # Deterministic cross-business contracts
 ├── benchmarks/bicycle-commerce/       # Rendered Goodturn forward-test
 ├── benchmarks/soda-campaign/           # Expressive Doppler motion benchmark
 ├── benchmarks/forward-tests/           # Public-service, operations, and editorial evidence
-├── scripts/browser-smoke.mjs           # Dependency-free Chrome/CDP browser checks
+├── scripts/
+│   ├── install_skill.py                # Exact standalone install/update helper
+│   └── browser-smoke.mjs               # Dependency-free Chrome/CDP browser checks
 └── tests/                             # Product and benchmark regression suite
 ```
 
@@ -171,25 +173,44 @@ Repository documentation, evaluations, benchmarks, and development tooling stay 
 
 ## Installation
 
-### Codex on Windows
+[Current Codex documentation](https://developers.openai.com/codex/skills/) loads user-authored standalone skills from `$HOME/.agents/skills` and supports installing skills from other repositories through `$skill-installer`. Snowe is currently distributed as one standalone skill, not as a plugin.
+
+### Install through Codex
+
+Ask the built-in installer:
+
+```text
+Use $skill-installer to install skill/snowe-ui-skill from https://github.com/What0ff/snowe-ui-skill.
+```
+
+### Reproducible clone, install, and update
+
+The repository installer uses only Python 3.11+ standard-library modules. It stages a complete copy beside the destination, replaces the previous install only after staging succeeds, removes obsolete files instead of nesting directories, and restores the previous install if activation fails.
+
+On Windows:
 
 ```powershell
 git clone https://github.com/What0ff/snowe-ui-skill.git
-Copy-Item -Recurse -Force `
-  .\snowe-ui-skill\skill\snowe-ui-skill `
-  "$env:USERPROFILE\.codex\skills\snowe-ui-skill"
+python .\snowe-ui-skill\scripts\install_skill.py
 ```
 
-### Codex on macOS or Linux
+On macOS or Linux:
 
 ```bash
 git clone https://github.com/What0ff/snowe-ui-skill.git
-mkdir -p "${CODEX_HOME:-$HOME/.codex}/skills"
-cp -R snowe-ui-skill/skill/snowe-ui-skill \
-  "${CODEX_HOME:-$HOME/.codex}/skills/snowe-ui-skill"
+python3 snowe-ui-skill/scripts/install_skill.py
 ```
 
-Restart Codex or begin a new task so the skill catalog is refreshed. For another compatible runtime, copy `skill/snowe-ui-skill/` into its skill directory; the folder containing `SKILL.md` is the installable unit.
+Update the clone and rerun the same installer; repeated runs replace the destination exactly:
+
+```bash
+git -C snowe-ui-skill pull --ff-only
+python3 snowe-ui-skill/scripts/install_skill.py
+```
+
+Use `--destination /path/to/skills/snowe-ui-skill` for another compatible runtime. The destination must be the final `snowe-ui-skill` directory. Codex normally detects skill changes automatically; restart it if the updated skill does not appear.
+
+If an older Snowe version was copied to `~/.codex/skills/snowe-ui-skill`, verify the new `.agents/skills` install and then remove or disable the legacy copy yourself. The installer intentionally does not delete a legacy location that may contain user changes; keeping both can expose duplicate skill names.
 
 ## Usage
 
@@ -270,7 +291,7 @@ Run the full regression suite:
 python -m unittest discover -s tests -v
 ```
 
-Run the cross-business behavior evaluation:
+Run the deterministic cross-business contract regression:
 
 ```bash
 python evals/designer-behavior/run_eval.py
@@ -288,11 +309,16 @@ Run the dependency-free rendered smoke layer with Node 22 and a local Chrome/Chr
 node scripts/browser-smoke.mjs --smoke
 ```
 
-CI runs compile and unit regressions on Python 3.11/3.13 across Ubuntu and Windows, the multilingual/generalization behavior evaluation, and the Chrome smoke.
+Repository validation keeps three evidence layers distinct:
 
-- Unit tests and the behavioral eval protect runtime, epistemic, packaging, and benchmark contracts; they do not score taste.
-- Browser smoke executes the four tested benchmarks and checks for runtime errors, broken assets, horizontal overflow, menu/dialog behavior, focus handoff, critical interactions, responsive states, and reduced-motion regressions.
-- Rendered captures, decision records, and QA notes provide comparative evidence for human visual judgment. They do not certify aesthetic quality or universal performance.
+- **Deterministic contract regression:** unit tests and `run_eval.py` exercise packet, retrieval, packaging, and authored routing-fixture invariants. They do not invoke a model or observe which references an agent loads.
+- **Rendered/browser regression evidence:** five checked-in implementations, captures, decision records, QA notes, and browser smoke protect known states and support human comparison. They do not establish that Snowe caused the outcomes or will generalize them.
+- **Observed real-agent behavior:** the repository does not currently claim this layer. Establishing it requires reproducible prompts, repository/model/tool provenance, actual reference-load traces, repeated runs, and an appropriate control.
+
+CI runs compile and unit regressions on Python 3.11/3.13 across Ubuntu and Windows, the deterministic contract regression, and the Chrome smoke on Ubuntu and Windows.
+
+- No automated check scores taste or certifies aesthetic quality.
+- Browser smoke executes all five rendered benchmarks and checks for runtime errors, broken assets, horizontal overflow, menu/dialog behavior, focus handoff, critical interactions, responsive states, and reduced-motion regressions.
 
 ## Design principles
 

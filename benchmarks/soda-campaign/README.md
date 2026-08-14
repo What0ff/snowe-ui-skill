@@ -1,6 +1,6 @@
 # Doppler Soda — flagship expressive-motion benchmark
 
-Doppler is a fictional carbonated soft-drink campaign created as rendered evidence of Snowe's expressive-motion capability. It is a static, dependency-free HTML/CSS/JavaScript experience: no build, backend, CDN, analytics, or runtime network service is required.
+Doppler is a fictional carbonated soft-drink campaign that exercises Snowe's expressive-motion guidance as a rendered/browser regression. It is a static, dependency-free HTML/CSS/JavaScript experience: no build, backend, CDN, analytics, or runtime network service is required. It demonstrates one authored implementation and does not establish causal model improvement or predict another agent run.
 
 ### [Open the live interactive Doppler experience →](https://what0ff.github.io/snowe-ui-skill/)
 

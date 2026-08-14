@@ -153,6 +153,12 @@ _STACK_COLS = {
 }
 
 AVAILABLE_STACKS = list(STACK_CONFIG.keys())
+STACK_SOURCE_ROLE = "caller-selected bundled stack implementation-guidance snapshot"
+STACK_WARNING = (
+    "Treat results as advisory prompts, not current platform or API truth. "
+    "Verify material and version-sensitive claims against the target repository and current primary documentation. "
+    "A returned Docs URL is a discovery pointer, not proof of source primacy or freshness."
+)
 
 
 # ============ BM25 IMPLEMENTATION ============
@@ -361,12 +367,27 @@ def search_stack(query, stack, max_results=MAX_RESULTS):
         return {"error": f"Stack file not found: {filepath}", "stack": stack}
 
     results = _search_csv(filepath, _STACK_COLS["search_cols"], _STACK_COLS["output_cols"], query, max_results)
+    docs_urls_present = sum(bool(str(row.get("Docs URL", "")).strip()) for row in results)
+    docs_urls_missing = len(results) - docs_urls_present
+    warning = STACK_WARNING
+    if docs_urls_missing:
+        warning += (
+            f" {docs_urls_missing} of {len(results)} returned row(s) have no Docs URL and remain unsourced "
+            "bundled guidance until independently verified."
+        )
 
     return {
         "domain": "stack",
         "stack": stack,
         "query": query,
         "file": STACK_CONFIG[stack]["file"],
+        "source_role": STACK_SOURCE_ROLE,
+        "warning": warning,
+        "documentation_coverage": {
+            "returned_rows": len(results),
+            "docs_urls_present": docs_urls_present,
+            "docs_urls_missing": docs_urls_missing,
+        },
         "count": len(results),
         "results": results
     }

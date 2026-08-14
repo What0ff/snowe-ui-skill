@@ -1,6 +1,6 @@
 # Snowe rendered forward-tests
 
-These prototypes provide rendered evidence about whether the architecture-first Decision Graph generalizes beyond Goodturn. They are fictional, dependency-free HTML/CSS/JavaScript experiences with real content shapes, interactions, responsive transformations, decisions, QA, and browser captures. They cover three materially different tested classes; they do not certify universal performance or aesthetic quality.
+These prototypes exercise the architecture-first Decision Graph beyond Goodturn. They are fictional, dependency-free HTML/CSS/JavaScript experiences with real content shapes, interactions, responsive transformations, decisions, QA, and browser captures. They cover three materially different authored classes and protect known rendered/browser states; they do not measure real-agent generalization, causal improvement, universal performance, or aesthetic quality.
 
 | Experience | Organizing logic | Deliberate absence |
 |---|---|---|

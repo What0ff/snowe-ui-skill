@@ -35,7 +35,7 @@ jobs:
         run: python -m unittest discover -s tests -v
 
   designer-behavior:
-    name: Designer behavior boundaries
+    name: Deterministic designer contracts
     runs-on: ubuntu-latest
 
     steps:
@@ -47,13 +47,17 @@ jobs:
         with:
           python-version: "3.13"
 
-      - name: Run multilingual and generalization evaluation
+      - name: Run deterministic multilingual and boundary contracts
         run: python evals/designer-behavior/run_eval.py
 
   browser-smoke:
-    name: Rendered benchmark smoke
-    runs-on: ubuntu-latest
+    name: Rendered benchmark smoke on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 5
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
 
     steps:
       - name: Check out repository

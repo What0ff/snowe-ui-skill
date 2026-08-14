@@ -1,6 +1,6 @@
 # Goodturn Cycles — Bicycle Commerce Benchmark
 
-Goodturn is the first complete rendered forward-test for the redesigned Snowe designer behavior. It is a fictional independent city-bike workshop in Bucharest with a deliberately small range, personal fitting, free test rides, workshop care, a refundable reservation path, and a human-scale retail visit.
+Goodturn is the first complete rendered forward-test produced under Snowe's redesigned workflow. It is a fictional independent city-bike workshop in Bucharest with a deliberately small range, personal fitting, free test rides, workshop care, a refundable reservation path, and a human-scale retail visit. The artifact exercises the workflow and protects known rendered states; it does not measure causal model improvement or predict another agent run.
 
 ![Goodturn Cycles homepage](screenshots/desktop-home.jpg)
 

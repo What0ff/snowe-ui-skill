@@ -79,6 +79,39 @@ function sleep(milliseconds) {
   return new Promise((resolve) => setTimeout(resolve, milliseconds));
 }
 
+function waitForChildExit(child, timeoutMilliseconds) {
+  if (!child || child.exitCode !== null || child.signalCode !== null) return Promise.resolve(true);
+  return new Promise((resolve) => {
+    const onExit = () => {
+      clearTimeout(timer);
+      resolve(true);
+    };
+    const timer = setTimeout(() => {
+      child.off("exit", onExit);
+      resolve(false);
+    }, timeoutMilliseconds);
+    child.once("exit", onExit);
+  });
+}
+
+async function stopBrowserProcess(browser) {
+  const child = browser?.child;
+  if (!child || await waitForChildExit(child, 5_000)) return;
+  child.kill();
+  if (!await waitForChildExit(child, 5_000)) {
+    throw new Error(`Chrome process ${child.pid} did not exit after forced termination.`);
+  }
+}
+
+async function removeTemporaryProfile(profile) {
+  await rm(profile, {
+    recursive: true,
+    force: true,
+    maxRetries: 12,
+    retryDelay: 100,
+  });
+}
+
 function resolveChrome() {
   const configured = process.env.CHROME_PATH;
   const directCandidates = configured ? [configured] : [];
@@ -408,6 +441,15 @@ async function click(client, selector) {
   await sleep(40);
 }
 
+async function waitForExpression(client, expression, timeoutMilliseconds = 1_000) {
+  const deadline = Date.now() + timeoutMilliseconds;
+  while (Date.now() < deadline) {
+    if (await evaluate(client, expression)) return true;
+    await sleep(25);
+  }
+  return false;
+}
+
 async function dragHorizontally(client, selector, distance) {
   const rect = await evaluate(client, `(() => {
     const node = document.querySelector(${JSON.stringify(selector)});
@@ -641,7 +683,10 @@ async function exerciseMobileNavigation(client, scenario) {
   })()`);
   check(state.expanded === "true" && state.visible, `${scenario.name}: mobile navigation did not open`);
   if (scenario.slug === "soda-campaign") {
-    check(await evaluate(client, `document.activeElement === document.querySelector("#site-nav a")`), "Doppler: mobile navigation did not hand focus to the first destination");
+    check(
+      await waitForExpression(client, `document.activeElement === document.querySelector("#site-nav a")`),
+      "Doppler: mobile navigation did not hand focus to the first destination",
+    );
     await key(client, "Escape");
     check(await evaluate(client, `document.querySelector("#nav-toggle").getAttribute("aria-expanded") === "false" && document.activeElement?.id === "nav-toggle"`), "Doppler: mobile navigation Escape/focus restoration failed");
   }
@@ -835,12 +880,14 @@ async function runCaptures(client, origin) {
 async function main() {
   const chrome = resolveChrome();
   const profile = mkdtempSync(path.join(tmpdir(), "snowe-browser-smoke-"));
-  const debugPort = await reservePort();
-  const { server, port } = await startStaticServer();
-  const origin = `http://127.0.0.1:${port}`;
+  let server;
   let browser;
   let client;
   try {
+    const debugPort = await reservePort();
+    const started = await startStaticServer();
+    server = started.server;
+    const origin = `http://127.0.0.1:${started.port}`;
     browser = await launchBrowser(chrome, debugPort, profile);
     client = new CdpClient(browser.target.webSocketDebuggerUrl);
     await client.connect();
@@ -857,22 +904,37 @@ async function main() {
   } finally {
     if (client) {
       try {
-        await client.send("Browser.close");
+        await Promise.race([
+          client.send("Browser.close"),
+          sleep(3_000).then(() => { throw new Error("Timed out requesting Browser.close"); }),
+        ]);
       } catch {
         // The browser may already be closing after a failed run.
       }
     }
     client?.close();
-    if (browser?.child && browser.child.exitCode === null) {
-      await Promise.race([
-        new Promise((resolve) => browser.child.once("exit", resolve)),
-        sleep(1_000),
-      ]);
-      if (browser.child.exitCode === null) browser.child.kill();
+    const cleanupErrors = [];
+    try {
+      await stopBrowserProcess(browser);
+    } catch (error) {
+      cleanupErrors.push(error);
     }
-    server.closeAllConnections?.();
-    await new Promise((resolve) => server.close(resolve));
-    await rm(profile, { recursive: true, force: true });
+    try {
+      if (server) {
+        server.closeAllConnections?.();
+        await new Promise((resolve, reject) => server.close((error) => error ? reject(error) : resolve()));
+      }
+    } catch (error) {
+      cleanupErrors.push(error);
+    }
+    try {
+      await removeTemporaryProfile(profile);
+    } catch (error) {
+      cleanupErrors.push(error);
+    }
+    if (cleanupErrors.length) {
+      throw new AggregateError(cleanupErrors, "Browser smoke cleanup failed.");
+    }
   }
 
   for (const message of passes) process.stdout.write(`PASS ${message}\n`);

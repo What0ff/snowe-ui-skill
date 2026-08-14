@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""Behavioral contracts for Snowe's open, generalizable design practice.
+"""Deterministic contracts for Snowe's open design practice.
 
-The runner checks epistemic boundaries and metamorphic behavior. It never
-scores creativity, taste, or a preferred layout. Rendered cross-benchmark
-evidence remains a separate proof surface.
+The runner checks packet/repository epistemic boundaries and metamorphic
+invariants. It never invokes a model or skill host and never scores creativity,
+taste, or a preferred layout. Rendered/browser regressions and observed-agent
+behavior are separate evidence surfaces.
 """
 
 from __future__ import annotations
@@ -274,7 +275,21 @@ def evaluate() -> dict[str, Any]:
     )
 
     return {
-        "method": "behavioral and metamorphic findings; no creativity, taste, layout, or style score",
+        "method": "deterministic contract and metamorphic checks; no model or skill-host invocation and no creativity, taste, layout, or style score",
+        "evidence_scope": {
+            "deterministic_contracts": {
+                "status": "MEASURED",
+                "covers": "packet output, repository boundaries, and authored progressive-disclosure fixtures",
+            },
+            "rendered_browser_regressions": {
+                "status": "SEPARATE",
+                "covers": "checked-in implementations and known browser states outside this runner",
+            },
+            "observed_real_agent_behavior": {
+                "status": "NOT_MEASURED",
+                "requires": "reproducible host/model runs, actual reference-load traces, repeated runs, and a control",
+            },
+        },
         "findings": findings,
         "manual_proof_still_required": [
             "causally different rendered architectures across real scenario classes",

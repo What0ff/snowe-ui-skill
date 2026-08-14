@@ -42,7 +42,7 @@ Decision moments:
 - Deliberate 1440 × 1000, 900 × 1000, and 390 × 844 compositions.
 - Semantic controls, visible focus, accessible names and states, keyboard operation, mobile navigation, no horizontal page overflow, and no action that depends only on drag, hover, color, image, or animation.
 - Local assets with license/provenance records and a final 5–10 second browser-captured README preview.
-- Existing tests, behavior evaluation, compile checks, browser smoke, and benchmarks remain green.
+- Existing tests, deterministic contract regression, compile checks, browser smoke, and benchmarks remain green.
 
 ## Explicit non-goals
 
@@ -50,4 +50,3 @@ Decision moments:
 - No imitation of an existing beverage campaign or packaging system.
 - No soda-specific rule, style catalog, motion recipe, dependency, or specialist reference added to Snowe.
 - No claim that one rendered campaign establishes universal aesthetic quality.
-

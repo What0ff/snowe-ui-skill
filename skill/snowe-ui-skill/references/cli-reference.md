@@ -129,6 +129,8 @@ angular, laravel, javafx, wpf, winui, avalonia, uno, uwp
 
 Use the repository's actual stack. Stack rows are bundled implementation guidance, not proof of current API behavior; check current official documentation when versions, platform behavior, or dependencies can have changed.
 
+Every stack response includes the same top-level evidence boundary as domain retrieval plus `documentation_coverage` counts for returned rows with and without a `Docs URL`. A URL is only a discovery pointer; it does not prove that the source is primary or current. When any returned row has no URL, both text and JSON output say that the row remains unsourced bundled guidance until independently verified.
+
 ## Validate Custom SVG Structure
 
 Prepare an SVG and adjacent JSON metadata, then run:
@@ -163,7 +165,7 @@ Required metadata fields:
 }
 ```
 
-Ordinary interface icons must declare 16, 20, and 24 px targets unless their real documented component uses another role. The validator checks metadata, XML/viewBox, unsafe/embedded content, external references, interface color behavior, and structural warnings. It does not prove recognition, optical balance, provenance truth, license validity, or coherence. Complete the rendered neighbor comparison in [iconography-system.md](iconography-system.md).
+Ordinary interface icons must declare unique positive 16, 20, and 24 px targets unless their real documented component uses another role. Required metadata strings must be specific and non-empty; placeholders such as `unknown` or `TBD` fail, and the declared grid must match the SVG `viewBox`. The validator rejects event handlers, scripting/link/animation/embed/style elements, inline styles, `xml:base`, document/entity/stylesheet declarations, non-local URI/CSS references, invalid interface color behavior, and malformed drawing-language contracts. Local fragment references such as `url(#gradient)` remain valid only without a base override. It does not prove recognition, optical balance, provenance truth, license validity, or coherence. Complete the rendered neighbor comparison in [iconography-system.md](iconography-system.md).
 
 ## Check an Exact Opaque Color Pair
 

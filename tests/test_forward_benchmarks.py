@@ -164,8 +164,12 @@ class ForwardBenchmarkTests(unittest.TestCase):
         self.assertIn("python evals/designer-behavior/run_eval.py", workflow)
         self.assertIn("node scripts/browser-smoke.mjs --smoke", workflow)
         self.assertIn("actions/setup-node@v4", workflow)
+        browser_job = workflow.split("  browser-smoke:", 1)[1]
+        self.assertIn("os: [ubuntu-latest, windows-latest]", browser_job)
         self.assertIn('from "node:http"', smoke)
         self.assertIn("prefers-reduced-motion", smoke)
+        self.assertIn("await stopBrowserProcess(browser)", smoke)
+        self.assertIn("maxRetries: 12", smoke)
         self.assertNotIn("playwright", smoke.casefold())
 
 
