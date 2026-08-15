@@ -79,16 +79,20 @@ class InstallationTests(unittest.TestCase):
             destination = root / "skills" / "snowe-ui-skill"
             destination.mkdir(parents=True)
             (destination / "SKILL.md").write_text("old", encoding="utf-8")
+            destination_argument = destination.parent / "path-alias" / ".." / destination.name
+            resolved_destination = destination_argument.resolve(strict=False)
+            staging = resolved_destination.parent / f".{INSTALLER.PRODUCT_NAME}.installing"
+            self.assertNotEqual(destination_argument, resolved_destination)
             real_rename = INSTALLER._rename
 
             def fail_staging_activation(source_path: Path, destination_path: Path) -> None:
-                if source_path.name == ".snowe-ui-skill.installing" and destination_path == destination:
+                if source_path == staging and destination_path == resolved_destination:
                     raise OSError("simulated activation failure")
                 real_rename(source_path, destination_path)
 
             with patch.object(INSTALLER, "_rename", side_effect=fail_staging_activation):
                 with self.assertRaisesRegex(OSError, "simulated activation failure"):
-                    INSTALLER.install_skill(source, destination)
+                    INSTALLER.install_skill(source, destination_argument)
 
             self.assertEqual("old", (destination / "SKILL.md").read_text(encoding="utf-8"))
             self.assertFalse((destination.parent / ".snowe-ui-skill.installing").exists())
