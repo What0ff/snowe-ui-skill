@@ -163,6 +163,11 @@ class ForwardBenchmarkTests(unittest.TestCase):
         smoke = (ROOT / "scripts" / "browser-smoke.mjs").read_text(encoding="utf-8")
         self.assertIn("python evals/designer-behavior/run_eval.py", workflow)
         self.assertIn("node scripts/browser-smoke.mjs --smoke", workflow)
+        self.assertIn("repository-context:", workflow)
+        self.assertIn(
+            "python scripts/check_contributor_context.py --require-tracked", workflow
+        )
+        self.assertIn("python scripts/atlas/generate_atlas.py --check", workflow)
         self.assertIn("actions/setup-node@v4", workflow)
         browser_job = workflow.split("  browser-smoke:", 1)[1]
         self.assertIn("os: [ubuntu-latest, windows-latest]", browser_job)

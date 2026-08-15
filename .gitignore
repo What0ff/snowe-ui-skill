@@ -1,6 +1,19 @@
-# Agent and AI-runtime configuration
-AGENTS.md
-**/AGENTS.md
+# Durable repository guidance is public. These negations also override broad
+# workstation-level AI ignores for repository-scoped contributor instructions.
+!/AGENTS.md
+!**/AGENTS.md
+!/.github/copilot-instructions.md
+!/.github/instructions/
+!/.github/instructions/**
+!/.github/prompts/
+!/.github/prompts/**
+!/docs/atlas/
+!/docs/atlas/**
+!/scripts/atlas/
+!/scripts/atlas/**
+!/scripts/check_contributor_context.py
+
+# Maintainer-local agent/runtime configuration remains private.
 agents/
 **/agents/
 .agents/
@@ -23,9 +36,6 @@ CODEX.md
 **/CODEX.md
 GEMINI.md
 **/GEMINI.md
-.github/copilot-instructions.md
-.github/instructions/
-.github/prompts/
 .cursor/
 **/.cursor/
 .windsurf/
@@ -33,15 +43,25 @@ GEMINI.md
 .roo/
 **/.roo/
 
-# Installable skill metadata is product code, not local AI-development context.
+# Exact public exceptions: installable metadata and one repository-maintenance
+# skill. Other .agents content remains local unless deliberately allowlisted.
 !/skill/snowe-ui-skill/agents/
 !/skill/snowe-ui-skill/agents/openai.yaml
+!/.agents/
+/.agents/*
+!/.agents/skills/
+/.agents/skills/*
+!/.agents/skills/atlas-maintainer/
+!/.agents/skills/atlas-maintainer/**
 
-# AI-assisted development context and generated project memory
-docs/atlas/
-scripts/atlas/
+# Maintainer-local task/session state and generated working context.
 work/
 outputs/
+logs/
+generated-context/
+generated_context/
+CURRENT_TASK.md
+**/CURRENT_TASK.md
 PROJECT-MEMORY.md
 **/PROJECT-MEMORY.md
 HANDOFF.md

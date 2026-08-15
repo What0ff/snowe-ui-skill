@@ -10,6 +10,25 @@ permissions:
   contents: read
 
 jobs:
+  repository-context:
+    name: Public contributor context
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Verify public/private context boundary
+        run: python scripts/check_contributor_context.py --require-tracked
+
+      - name: Verify structural atlas freshness
+        run: python scripts/atlas/generate_atlas.py --check
+
   test:
     name: Python ${{ matrix.python-version }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}

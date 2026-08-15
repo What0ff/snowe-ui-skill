@@ -148,6 +148,10 @@ Specialist references are loaded only when the decision needs them. A project do
 
 ```text
 snowe-ui-skill/
+├── AGENTS.md                           # Repository-wide contributor/agent guide
+├── CONTRIBUTING.md                     # Human contribution workflow
+├── .agents/skills/atlas-maintainer/     # Repository-only context maintenance workflow
+├── docs/atlas/                         # Durable public architecture and task router
 ├── skill/snowe-ui-skill/             # Installable product
 │   ├── SKILL.md                       # Core workflow and reference router
 │   ├── agents/openai.yaml             # Skill interface metadata
@@ -164,12 +168,14 @@ snowe-ui-skill/
 ├── benchmarks/soda-campaign/           # Expressive Doppler motion benchmark
 ├── benchmarks/forward-tests/           # Public-service, operations, and editorial evidence
 ├── scripts/
+│   ├── atlas/generate_atlas.py          # Deterministic public repository map
+│   ├── check_contributor_context.py     # Public/private boundary validation
 │   ├── install_skill.py                # Exact standalone install/update helper
 │   └── browser-smoke.mjs               # Dependency-free Chrome/CDP browser checks
 └── tests/                             # Product and benchmark regression suite
 ```
 
-Repository documentation, evaluations, benchmarks, and development tooling stay outside the installable skill directory.
+Repository documentation, evaluations, benchmarks, and development tooling stay outside the installable skill directory. A fresh clone includes the durable contributor context above; maintainer-local checkpoints, logs, working output, and personal AI configuration remain ignored and are never required for contribution.
 
 ## Installation
 
@@ -303,6 +309,13 @@ Compile-check the installable runtime:
 python -m compileall -q skill/snowe-ui-skill/scripts
 ```
 
+Validate the public contributor-context boundary and structural atlas:
+
+```bash
+python scripts/check_contributor_context.py
+python scripts/atlas/generate_atlas.py --check
+```
+
 Run the dependency-free rendered smoke layer with Node 22 and a local Chrome/Chromium installation:
 
 ```bash
@@ -315,7 +328,7 @@ Repository validation keeps three evidence layers distinct:
 - **Rendered/browser regression evidence:** five checked-in implementations, captures, decision records, QA notes, and browser smoke protect known states and support human comparison. They do not establish that Snowe caused the outcomes or will generalize them.
 - **Observed real-agent behavior:** the repository does not currently claim this layer. Establishing it requires reproducible prompts, repository/model/tool provenance, actual reference-load traces, repeated runs, and an appropriate control.
 
-CI runs compile and unit regressions on Python 3.11/3.13 across Ubuntu and Windows, the deterministic contract regression, and the Chrome smoke on Ubuntu and Windows.
+CI runs compile and unit regressions on Python 3.11/3.13 across Ubuntu and Windows, the deterministic contract regression, the Chrome smoke on Ubuntu and Windows, and a fresh-checkout contributor-context/atlas contract.
 
 - No automated check scores taste or certifies aesthetic quality.
 - Browser smoke executes all five rendered benchmarks and checks for runtime errors, broken assets, horizontal overflow, menu/dialog behavior, focus handoff, critical interactions, responsive states, and reduced-motion regressions.
@@ -331,7 +344,7 @@ CI runs compile and unit regressions on Python 3.11/3.13 across Ubuntu and Windo
 
 ## Contributing
 
-Contributions are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) before submitting a change. Security issues should follow [SECURITY.md](SECURITY.md).
+Contributions are welcome. Read the public [repository guide](AGENTS.md) and [contribution workflow](CONTRIBUTING.md), then navigate durable architecture from [the atlas index](docs/atlas/00_README.md). Security issues should follow [SECURITY.md](SECURITY.md).
 
 ## License
 
