@@ -1,8 +1,14 @@
 {
   "name": "test-ride",
+  "asset_type": "interface-icon",
   "role": "interface icon",
   "grid": 24,
-  "live_area": "2.25..21.75 with circular overshoot",
+  "live_area": {
+    "min_x": 1.25,
+    "min_y": 6.5,
+    "max_x": 22.75,
+    "max_y": 20.75
+  },
   "drawing_language": {
     "mode": "stroke",
     "stroke_width": 1.75,
@@ -11,8 +17,24 @@
     "corner_language": "measured mechanical geometry with open joints",
     "detail_budget": "two wheels and minimum frame skeleton at 16 px"
   },
-  "target_sizes": [16, 20, 24, 28],
+  "target_sizes": [16, 20, 24, 28, 32],
   "source": "repository-owned custom drawing for Goodturn Cycles benchmark",
   "license": "project-owned benchmark asset",
-  "accessibility_owner": "owning labelled service item; SVG is decorative"
+  "accessibility_owner": "owning labelled service item; SVG is decorative",
+  "provenance": {
+    "kind": "original",
+    "creator": "Snowe UI Skill benchmark authors",
+    "source_ref": "benchmarks/bicycle-commerce/design-intelligence/goodturn-cycles/ASSETS.md",
+    "reviewed": "2026-08-23",
+    "sha256": "4952da1e8f6a424ff6431b326ac47d9021355c7ebcecd155cdcfec20cda2d6e6"
+  },
+  "evidence": {
+    "source": {
+      "kind": "local",
+      "path": "../../design-intelligence/goodturn-cycles/ASSETS.md",
+      "sha256": "3c67f5b0f9c9d54494f693c7e5177204e6155d23f6dcabf03f04e63365a04fad",
+      "locator": "#custom-symbol-family"
+    },
+    "license": {"path": "../../../../LICENSE", "sha256": "0cd15032a964eb7b46b1bb74f96b89ed411a33fcd6b877925f5ced02ec8a9c87"}
+  }
 }

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import csv
+import hashlib
 import json
 import re
 import subprocess
@@ -142,7 +143,9 @@ class SkillPackageTests(unittest.TestCase):
         ):
             self.assertIn(phrase, readme)
         self.assertIn("does not invoke Codex", evaluation)
-        self.assertIn("No reproducible observed-agent evaluation is currently committed", evaluation)
+        self.assertIn("bounded read-only records", evaluation)
+        self.assertIn("evidence for those runs only", evaluation)
+        self.assertIn("the sample is small", evaluation)
         self.assertIn("does not measure causal model improvement", benchmark_docs)
         self.assertIn("do not measure real-agent generalization", benchmark_docs)
         self.assertIn("does not establish causal model improvement", benchmark_docs)
@@ -161,6 +164,20 @@ class SkillPackageTests(unittest.TestCase):
         self.assertEqual("MEASURED", scope["deterministic_contracts"]["status"])
         self.assertEqual("SEPARATE", scope["rendered_browser_regressions"]["status"])
         self.assertEqual("NOT_MEASURED", scope["observed_real_agent_behavior"]["status"])
+
+    def test_host_probe_methodology_hash_matches_named_commit(self):
+        host_probes = (REPO_ROOT / "evals" / "designer-behavior" / "HOST-PROBES.md").read_text(
+            encoding="utf-8"
+        )
+        commit_match = re.search(r"Repository commit: `([0-9a-f]{40})`", host_probes)
+        hash_match = re.search(r"committed methodology SHA-256 was `([0-9a-f]{64})`", host_probes)
+        self.assertIsNotNone(commit_match)
+        self.assertIsNotNone(hash_match)
+        committed = subprocess.check_output(
+            ["git", "show", f"{commit_match.group(1)}:skill/snowe-ui-skill/SKILL.md"],
+            cwd=REPO_ROOT,
+        )
+        self.assertEqual(hash_match.group(1), hashlib.sha256(committed).hexdigest())
 
 
 class DecisionPacketTests(unittest.TestCase):
@@ -444,6 +461,23 @@ class RetrievalTests(unittest.TestCase):
         self.assertTrue(result["results"])
         self.assertTrue(all(set(item) == {"Product Type", "Keywords"} for item in result["results"]))
 
+    def test_chart_results_withhold_unsupported_precision(self):
+        result = search("trend over time", "chart", 3)
+        withheld = {
+            "Data Volume Threshold",
+            "Color Guidance",
+            "Accessibility Grade",
+            "Library Recommendation",
+            "Interactive Level",
+            "When to Use",
+            "When NOT to Use",
+        }
+        self.assertTrue(result["results"])
+        self.assertTrue(all(withheld.isdisjoint(item) for item in result["results"]))
+        self.assertIn("unsourced", result["source_role"])
+        self.assertIn("intentionally not returned", result["warning"])
+        self.assertIn("primary sources", result["warning"])
+
     def test_every_stack_exposes_role_boundary_and_documentation_coverage(self):
         for stack in AVAILABLE_STACKS:
             result = search_stack("accessibility interface", stack, 1)
@@ -550,12 +584,17 @@ class ContrastTests(unittest.TestCase):
 
 
 class AssetQualityTests(unittest.TestCase):
+    VALID_SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 15h18M6 15l2-6h8l2 6"/></svg>'
+    SOURCE_RECORD = b"Local source record for the asset-quality probe.\n"
+    LICENSE_RECORD = b"Local license record for the asset-quality probe.\n"
+
     def metadata(self):
         return {
             "name": "cargo-rack",
+            "asset_type": "interface-icon",
             "role": "interface icon",
             "grid": "24 x 24",
-            "live_area": "2..22 with optical overshoot",
+            "live_area": {"min_x": 2, "min_y": 8, "max_x": 22, "max_y": 16},
             "drawing_language": {
                 "mode": "stroke",
                 "stroke_width": 1.75,
@@ -568,18 +607,41 @@ class AssetQualityTests(unittest.TestCase):
             "source": "repository-owned custom drawing",
             "license": "project-owned",
             "accessibility_owner": "owning labeled button; SVG decorative",
+            "provenance": {
+                "kind": "original",
+                "creator": "test fixture author",
+                "source_ref": "tests/test_snowe_ui_skill.py",
+                "reviewed": "2026-08-23",
+                "sha256": hashlib.sha256(self.VALID_SVG.encode("utf-8")).hexdigest(),
+            },
+            "evidence": {
+                "source": {
+                    "kind": "local",
+                    "path": "source-record.md",
+                    "sha256": hashlib.sha256(self.SOURCE_RECORD).hexdigest(),
+                    "locator": "#cargo-rack",
+                },
+                "license": {
+                    "path": "license-record.txt",
+                    "sha256": hashlib.sha256(self.LICENSE_RECORD).hexdigest(),
+                },
+            },
         }
+
+    def write_metadata(self, root: Path, value: dict) -> Path:
+        (root / "source-record.md").write_bytes(self.SOURCE_RECORD)
+        (root / "license-record.txt").write_bytes(self.LICENSE_RECORD)
+        metadata = root / "icon.json"
+        metadata.write_text(json.dumps(value), encoding="utf-8")
+        return metadata
 
     def test_valid_custom_icon_passes_structure_but_warns_about_optics(self):
         with tempfile.TemporaryDirectory() as temporary_directory:
             root = Path(temporary_directory)
             svg = root / "icon.svg"
             metadata = root / "icon.json"
-            svg.write_text(
-                '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 15h18M6 15l2-6h8l2 6"/></svg>',
-                encoding="utf-8",
-            )
-            metadata.write_text(json.dumps(self.metadata()), encoding="utf-8")
+            svg.write_text(self.VALID_SVG, encoding="utf-8")
+            self.write_metadata(root, self.metadata())
             result = validate_svg_asset(svg, metadata)
             self.assertTrue(result["valid"], result["errors"])
             self.assertIn("optical balance", " ".join(result["warnings"]))
@@ -595,7 +657,7 @@ class AssetQualityTests(unittest.TestCase):
             )
             value = self.metadata()
             value["target_sizes"] = [24]
-            metadata.write_text(json.dumps(value), encoding="utf-8")
+            self.write_metadata(root, value)
             result = validate_svg_asset(svg, metadata)
             self.assertFalse(result["valid"])
             self.assertIn("16, 20, and 24", " ".join(result["errors"]))
@@ -609,12 +671,12 @@ class AssetQualityTests(unittest.TestCase):
                 '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><image href="https://example.com/a.png"/><text x="2" y="12">A</text></svg>',
                 encoding="utf-8",
             )
-            metadata.write_text(json.dumps(self.metadata()), encoding="utf-8")
+            self.write_metadata(root, self.metadata())
             result = validate_svg_asset(svg, metadata)
             self.assertFalse(result["valid"])
             errors = " ".join(result["errors"])
-            self.assertIn("Forbidden", errors)
-            self.assertIn("must not embed text", errors)
+            self.assertIn("Unsupported or externally dependent element: <image>", errors)
+            self.assertIn("Unsupported or externally dependent element: <text>", errors)
 
     def test_svg_rejects_event_handlers_and_nonlocal_uri_references(self):
         with tempfile.TemporaryDirectory() as temporary_directory:
@@ -628,12 +690,12 @@ class AssetQualityTests(unittest.TestCase):
                 '<use href="sprite.svg#shape"/></svg>',
                 encoding="utf-8",
             )
-            metadata.write_text(json.dumps(self.metadata()), encoding="utf-8")
+            self.write_metadata(root, self.metadata())
             result = validate_svg_asset(svg, metadata)
             self.assertFalse(result["valid"])
             errors = " ".join(result["errors"])
             self.assertIn("Event-handler attributes are not allowed", errors)
-            self.assertIn("URI references must be non-empty local fragments", errors)
+            self.assertIn("References are not allowed in self-contained icons", errors)
             self.assertIn("xml:base is not allowed", errors)
             self.assertIn("Inline style attributes are not allowed", errors)
 
@@ -661,13 +723,13 @@ class AssetQualityTests(unittest.TestCase):
                 '<path class="shape" d="M2 2h20v20H2z"/></svg>',
                 encoding="utf-8",
             )
-            metadata.write_text(json.dumps(self.metadata()), encoding="utf-8")
+            self.write_metadata(root, self.metadata())
             result = validate_svg_asset(svg, metadata)
             self.assertFalse(result["valid"])
             errors = " ".join(result["errors"])
             self.assertIn("DOCTYPE, ENTITY, and xml-stylesheet declarations are not allowed", errors)
-            self.assertIn("Forbidden embedded or executable element: <animate>", errors)
-            self.assertIn("CSS reference must be a non-empty local fragment", errors)
+            self.assertIn("Unsupported or externally dependent element: <animate>", errors)
+            self.assertIn("CSS/SVG references are not allowed", errors)
 
     def test_metadata_requires_meaningful_provenance_and_matching_grid(self):
         with tempfile.TemporaryDirectory() as temporary_directory:
@@ -681,7 +743,7 @@ class AssetQualityTests(unittest.TestCase):
             )
             value = self.metadata()
             value.update({"grid": "999 x 999", "source": "", "license": "unknown", "accessibility_owner": "TBD"})
-            metadata.write_text(json.dumps(value), encoding="utf-8")
+            self.write_metadata(root, value)
             result = validate_svg_asset(svg, metadata)
             self.assertFalse(result["valid"])
             errors = " ".join(result["errors"])
@@ -702,10 +764,10 @@ class AssetQualityTests(unittest.TestCase):
             )
             value = self.metadata()
             value["target_sizes"] = [16, 20, 24, 24]
-            metadata.write_text(json.dumps(value), encoding="utf-8")
+            self.write_metadata(root, value)
             self.assertIn("duplicate", " ".join(validate_svg_asset(svg, metadata)["errors"]))
             value["target_sizes"] = [16, 20, -24]
-            metadata.write_text(json.dumps(value), encoding="utf-8")
+            self.write_metadata(root, value)
             self.assertIn("positive finite", " ".join(validate_svg_asset(svg, metadata)["errors"]))
 
     def test_monochrome_contract_rejects_hard_coded_paint(self):
@@ -719,7 +781,7 @@ class AssetQualityTests(unittest.TestCase):
             )
             value = self.metadata()
             value["drawing_language"]["mode"] = "fill"
-            metadata.write_text(json.dumps(value), encoding="utf-8")
+            self.write_metadata(root, value)
             result = validate_svg_asset(svg, metadata)
             self.assertFalse(result["valid"])
             self.assertIn("currentColor", " ".join(result["errors"]))
@@ -764,6 +826,27 @@ class CliTests(unittest.TestCase):
         result = self.run_cli("test", "--persist")
         self.assertNotEqual(0, result.returncode)
         self.assertIn("require --decision-packet", result.stderr)
+
+    def test_persisted_json_stdout_stays_machine_readable_and_reports_identity_manifest(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            result = self.run_cli(
+                "Open journey inquiry",
+                "--decision-packet",
+                "--persist",
+                "--project-name",
+                "Structured Probe",
+                "--output-dir",
+                temporary_directory,
+                "--format",
+                "json",
+            )
+            self.assertEqual(0, result.returncode, result.stderr)
+            payload = json.loads(result.stdout)
+            self.assertEqual("Structured Probe", payload["project_name"])
+            self.assertNotIn("Design intelligence persisted", result.stdout)
+            self.assertIn("PROJECT.json", result.stderr)
+            project = Path(temporary_directory) / "design-intelligence" / "structured-probe"
+            self.assertTrue((project / "PROJECT.json").is_file())
 
     def test_local_search_requires_explicit_domain(self):
         result = self.run_cli("platform audit history")

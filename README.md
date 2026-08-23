@@ -4,7 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-111827.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB.svg)](https://www.python.org/)
 
-Snowe is an architecture-first design skill for Codex and compatible `SKILL.md` runtimes. It helps an agent frame the real product and business problem, synthesize materially different experience directions, choose through causal evidence, implement in the target repository, and improve the result through rendered critique.
+Snowe is a consequence-calibrated design skill for Codex and compatible `SKILL.md` runtimes. It keeps bounded corrections local, widens shared-system work only to affected consumers, and opens full product or journey architecture only when material uncertainty warrants it. For open work, it helps an agent frame the real product and business problem, synthesize materially different experience directions, choose through causal evidence, implement in the target repository, and improve the result through rendered critique.
 
 It is not a layout, style, or landing-page recipe chooser. The remaining optional local evidence catalogs support explicit retrieval and analogy; they do not classify the brief or define the solution space.
 
@@ -108,7 +108,7 @@ The transformations remain causally different: the service becomes one evidence 
 
 Snowe gives the agent freedom to invent a solution absent from local patterns, while making that freedom accountable:
 
-- product truth and the whole user journey precede pages and styling;
+- the actual owner, affected invariant, consumers, and consequence determine the smallest responsible process; whole-journey framing is reserved for live whole-system uncertainty;
 - high-leverage choices use a causal record: `driver → design move → expected consequence → evidence → risk → revisit trigger`;
 - site/page candidates differ in topology, navigation, sequence, disclosure, interaction, or conversion—not only visual tokens;
 - art direction is derived from the product's real objects, content, workflow, audience, language, and place;
@@ -124,23 +124,23 @@ Snowe gives the agent freedom to invent a solution absent from local patterns, w
 
 ```mermaid
 flowchart LR
-    A["Product truth"] --> B["Open causal decisions"]
-    B --> C["Synthesize experience architectures"]
-    C --> D["Prototype risky slices"]
-    D --> E["Choose art direction"]
-    E --> F["Decide imagery, custom assets, and motion"]
-    F --> G["Implementation contract"]
-    G --> H["Build in the real repository"]
-    H --> I["Wide / pressure / narrow rendered QA"]
-    I -->|"material weakness"| B
-    I -->|"verified"| J["Evidence-backed delivery"]
+    A["Inspect actual owner, consumers, consequence, and uncertainty"] --> B{"Smallest responsible depth"}
+    B -->|"Direct"| C["Repair and prove the affected invariant"]
+    B -->|"Focused"| D["Compare the affected decision and sibling consumers"]
+    B -->|"Portfolio"| E["Frame product / journey and compare architectures"]
+    C --> F["Implement in the real repository"]
+    D --> F
+    E --> F
+    F --> G["Render the states and viewports that can change the decision"]
+    G -->|"new material uncertainty"| B
+    G -->|"verified"| H["Evidence-backed delivery"]
 ```
 
 Snowe scales the inquiry to the consequence:
 
-- **Direct** for a narrow defect or routine state inside a coherent system.
-- **Focused** for a material decision inside an established product.
-- **Portfolio** for a new product, site, page family, identity, or unresolved high-impact architecture.
+- **Direct** for a bounded invariant inside a coherent system, including a narrow high-consequence correction when the owner and answer are known. Consequence raises the proof floor without automatically widening the process.
+- **Focused** for one material choice or a local symptom owned by a shared mechanism inside an established product.
+- **Portfolio** only when inspection reveals material uncertainty in goals, topology, journey, content relationships, interaction, responsive transformation, or system contracts.
 
 Specialist references are loaded only when the decision needs them. A project does not execute every workflow as a checklist.
 
@@ -160,10 +160,12 @@ snowe-ui-skill/
 │   └── scripts/
 │       ├── search.py                  # CLI entrypoint
 │       ├── core.py                    # BM25 retrieval and evidence roles
-│       ├── decision_packet.py         # Open architecture-first inquiry
+│       ├── decision_packet.py         # Portfolio/open-inquiry packet and persistence
 │       ├── asset_quality.py           # SVG structure/provenance validation
+│       ├── icon_review.py             # Self-contained icon decision comparison
 │       └── contrast.py                # Exact opaque-color contrast checks
 ├── evals/designer-behavior/           # Deterministic cross-business contracts
+├── evals/icon-decisions/               # Existing/custom/no-icon operational proof
 ├── benchmarks/bicycle-commerce/       # Rendered Goodturn forward-test
 ├── benchmarks/soda-campaign/           # Expressive Doppler motion benchmark
 ├── benchmarks/forward-tests/           # Public-service, operations, and editorial evidence
@@ -191,7 +193,7 @@ Use $skill-installer to install skill/snowe-ui-skill from https://github.com/Wha
 
 ### Reproducible clone, install, and update
 
-The repository installer uses only Python 3.11+ standard-library modules. It stages a complete copy beside the destination, replaces the previous install only after staging succeeds, removes obsolete files instead of nesting directories, and restores the previous install if activation fails.
+The repository installer uses only Python 3.11+ standard-library modules. It requires a self-contained regular source tree, serializes concurrent swaps with an OS lock, stages a complete copy beside the destination, revalidates that staged tree immediately before activation, preserves an interrupted previous tree until staging succeeds, revalidates the activated destination before reporting success, replaces obsolete files instead of nesting directories, and restores the previous install if activation fails. Destination symlinks, Windows junctions, and other reparse points are rejected. An existing final path is replaced only when it is a fully regular Snowe install whose `SKILL.md` frontmatter declares `name: snowe-ui-skill`; an unrecognized file, directory, or different skill is refused untouched. Fixed-name transient paths without current-run ownership are preserved by quarantine instead of recursively deleted, and cleanup is bound to the transient filesystem identity.
 
 On Windows:
 
@@ -228,6 +230,8 @@ Use $snowe-ui-skill to design and build a new commerce experience from product t
 Use $snowe-ui-skill to rethink this service's information architecture and navigation before changing its visual system.
 
 Use $snowe-ui-skill to review this existing product, preserve what works, and fix the most consequential UX and visual-quality failures.
+
+Use $snowe-ui-skill to correct this one component's spacing and render the affected state; keep the intervention local unless inspection exposes a shared owner or material contract uncertainty.
 ```
 
 The skill can design or critique web, mobile, and desktop experiences; establish site/page architecture and navigation; create art direction and design systems; decide typography, color/material, imagery, custom graphics, icons, motion, interactions, and responsive behavior; implement the result; and run rendered review.
@@ -245,7 +249,7 @@ python skill/snowe-ui-skill/scripts/search.py \
 
 `--domain` is required for catalog retrieval. Current domains are `chart`, `product`, `ux`, `icons`, `icon-families`, `icon-concepts`, `icon-candidates`, `react`, `web`, and `google-fonts`; stack guidance uses the separate `--stack` option.
 
-Open a decision packet without selecting a layout, style, palette, font, image, or motion recipe:
+For a Portfolio/open-inquiry task, open a decision packet without selecting a layout, style, palette, font, image, or motion recipe. Direct corrections skip this packet, and ordinary Focused work uses a compact affected-decision record:
 
 ```bash
 python skill/snowe-ui-skill/scripts/search.py \
@@ -277,15 +281,26 @@ python skill/snowe-ui-skill/scripts/search.py \
   --output-dir /path/to/project
 ```
 
-Persistence writes under `design-intelligence/<project>/`: `BRIEF.md` is regenerated from the current packet, `DECISIONS.md` is created only when absent and then preserved, and `--page` adds or refreshes a page inquiry without prescribing a page type or section order.
+Persistence requires the explicit `--project-name` identity and writes under `design-intelligence/<project>/`: `PROJECT.json` binds that identity to the slug, one project lock serializes manifest, brief, ledger, and page publication, `BRIEF.md` is atomically regenerated from the current packet, `DECISIONS.md` is created only when absent and then preserved byte-for-byte, and `--page` adds or atomically refreshes an identity-checked page inquiry without prescribing a page type or section order. Page identity and parent-directory checks run before BRIEF publication and again immediately before page publication. Slug collisions, Windows-reserved identities, symlink/junction/reparse paths, and shared-hardlink PROJECT/DECISIONS files are refused rather than overwritten.
 
 `--design-system` remains a compatibility alias for `--decision-packet`; it no longer invokes the removed recipe generator. See `python skill/snowe-ui-skill/scripts/search.py --help` for all domains and stacks.
+
+For a material custom-icon decision, validate exact SVG structure/provenance and generate a self-contained existing/custom/no-icon comparison before inspecting the winner and closest rejected alternative in the real host component:
+
+```bash
+python skill/snowe-ui-skill/scripts/asset_quality.py \
+  path/to/icon.svg --metadata path/to/icon.metadata.json
+python skill/snowe-ui-skill/scripts/icon_review.py \
+  path/to/manifest.json --output path/to/comparison.html --json
+```
+
+The [checked icon decision proof](evals/icon-decisions/README.md) demonstrates all three valid outcomes: an existing glyph wins, custom work wins, and visible text/no icon wins. Structural validation and browser rendering do not certify recognition, optical balance, metaphor, or taste.
 
 ## Optional local evidence
 
 The remaining optional local evidence catalogs include caller-requested product analog terms, Google Fonts metadata, UX and web implementation guidance, chart guidance, stack-specific references, icon families/concepts, and curated icon candidates.
 
-These records can expand vocabulary, reveal alternatives, provide counterexamples, or route current research. They are not product classification, current market truth, conversion proof, or an authoritative list of allowable designs.
+These records can expand vocabulary, reveal alternatives, provide counterexamples, or route current research. They are not product classification, current market truth, conversion proof, or an authoritative list of allowable designs. Chart retrieval intentionally withholds the bundled snapshot's unsupported exact volume thresholds, threshold-bearing use/avoid prose, palette values, accessibility grades, library recommendations, and interaction prescriptions; returned encoding and accessibility notes remain unsourced prompts until verified against representative data, the target implementation, and primary sources.
 
 Layout, landing, style-combination, palette, typography-pairing, and motion-preset catalogs were removed: even labeled as historical evidence, they encoded ready-made solutions and unsupported suitability claims. Git history preserves the old rows; the installable skill does not return them.
 
@@ -322,16 +337,18 @@ Run the dependency-free rendered smoke layer with Node 22 and a local Chrome/Chr
 node scripts/browser-smoke.mjs --smoke
 ```
 
+For a bounded Direct/Focused browser check, run only the affected implementation instead of the full portfolio, for example `node scripts/browser-smoke.mjs --smoke --scenario municipal-service`. Supported slugs are `bicycle-commerce`, `soda-campaign`, `municipal-service`, `warehouse-operations`, `literary-publication`, and `icon-decisions`; the unfiltered command remains the canonical full regression.
+
 Repository validation keeps three evidence layers distinct:
 
 - **Deterministic contract regression:** unit tests and `run_eval.py` exercise packet, retrieval, packaging, and authored routing-fixture invariants. They do not invoke a model or observe which references an agent loads.
-- **Rendered/browser regression evidence:** five checked-in implementations, captures, decision records, QA notes, and browser smoke protect known states and support human comparison. They do not establish that Snowe caused the outcomes or will generalize them.
-- **Observed real-agent behavior:** the repository does not currently claim this layer. Establishing it requires reproducible prompts, repository/model/tool provenance, actual reference-load traces, repeated runs, and an appropriate control.
+- **Rendered/browser regression evidence:** five checked-in implementations, captures, decision records, QA notes, the representative icon decision sheet, and browser smoke protect known states and support human comparison. They do not establish that Snowe caused the outcomes or will generalize them.
+- **Observed real-agent behavior:** [the bounded 2026-08-23 host probes](evals/designer-behavior/HOST-PROBES.md) record exact tasks, commit, configured model/reasoning, tool context, actual reference loads, process depth, proof, and an honest pre-change control. The sample is small, token totals were unavailable, and repeated model-run variance was not established, so this layer is evidence for these runs only—not causation or generalization.
 
 CI runs compile and unit regressions on Python 3.11/3.13 across Ubuntu and Windows, the deterministic contract regression, the Chrome smoke on Ubuntu and Windows, and a fresh-checkout contributor-context/atlas contract.
 
 - No automated check scores taste or certifies aesthetic quality.
-- Browser smoke executes all five rendered benchmarks and checks for runtime errors, broken assets, horizontal overflow, menu/dialog behavior, focus handoff, critical interactions, responsive states, and reduced-motion regressions.
+- Browser smoke executes all five rendered benchmarks plus the icon decision comparison and checks for runtime errors, broken assets, horizontal overflow, menu/dialog behavior, focus handoff, critical interactions, responsive states, reduced-motion regressions, declared icon target sizes, exact repository-derived source/selector bindings, and the selected Goodturn/Larkhaven host outcomes.
 
 ## Design principles
 

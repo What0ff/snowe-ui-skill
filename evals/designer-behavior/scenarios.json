@@ -140,5 +140,151 @@
       "not_needed": ["cli-reference.md", "iconography-system.md"],
       "reason": "The active work is cross-scenario evidence, not asset production or local retrieval."
     }
+  ],
+  "scope_calibration": [
+    {
+      "id": "trivial-visual-correction",
+      "task": "Correct a two-pixel spacing defect in one existing button state while preserving the accepted component contract.",
+      "observed": {
+        "consequence": "button label and action alignment remain visually stable",
+        "affected_invariant": "the accepted button spacing token is applied in the target state",
+        "owner": "button component",
+        "shared_consumers": false,
+        "focused_choice": false,
+        "consequence_class": "bounded",
+        "material_uncertainty": [],
+        "uncertainty_surface": {"user_goals": false, "topology": false, "journey": false, "content_object_relationships": false, "interaction_contracts": false, "responsive_transformations": false, "system_contracts": false}
+      },
+      "expected": {
+        "depth": "Direct",
+        "loaded_references": ["quality-gates.md"],
+        "skipped_references": ["exploration-protocol.md", "experience-architecture.md", "art-direction-gate.md", "design-foundations.md", "imagery-and-assets.md", "iconography-system.md", "motion-and-interaction.md", "research-and-evidence.md", "designer-evaluation.md", "cli-reference.md"],
+        "skipped_process": ["decision packet", "broad research", "candidate generation", "architecture work", "asset exploration", "motion exploration", "designer evaluation"],
+        "artifacts": ["depth record", "affected invariant", "rendered state"],
+        "delivery": ["calibrated depth and loaded/skipped routes", "owner and affected invariant", "implementation scope", "affected states and proof", "corrections after review", "remaining unknowns", "executed evidence versus inference"],
+        "stop_evidence": "rendered affected state confirms the invariant",
+        "escalation_evidence": "new owner, sibling consumer, or material contract uncertainty"
+      }
+    },
+    {
+      "id": "narrow-accessibility-defect",
+      "task": "Restore focus to the invoking control after one existing dialog closes without changing the product's visual system.",
+      "observed": {
+        "consequence": "a keyboard user can continue from the invoking control after dismissal",
+        "affected_invariant": "dialog close restores focus to the invoking control",
+        "owner": "dialog focus controller",
+        "shared_consumers": false,
+        "focused_choice": false,
+        "consequence_class": "bounded",
+        "material_uncertainty": [],
+        "uncertainty_surface": {"user_goals": false, "topology": false, "journey": false, "content_object_relationships": false, "interaction_contracts": false, "responsive_transformations": false, "system_contracts": false}
+      },
+      "expected": {
+        "depth": "Direct",
+        "loaded_references": ["quality-gates.md"],
+        "skipped_references": ["exploration-protocol.md", "experience-architecture.md", "art-direction-gate.md", "design-foundations.md", "imagery-and-assets.md", "iconography-system.md", "motion-and-interaction.md", "research-and-evidence.md", "designer-evaluation.md", "cli-reference.md"],
+        "skipped_process": ["decision packet", "broad research", "candidate generation", "architecture work", "asset exploration", "motion exploration", "designer evaluation"],
+        "artifacts": ["depth record", "affected invariant", "rendered state"],
+        "delivery": ["calibrated depth and loaded/skipped routes", "owner and affected invariant", "implementation scope", "affected states and proof", "corrections after review", "remaining unknowns", "executed evidence versus inference"],
+        "stop_evidence": "keyboard and rendered focus proof closes the invariant",
+        "escalation_evidence": "the focus controller is shared by sibling dialogs or the contract remains unknown"
+      }
+    },
+    {
+      "id": "shared-owner-component-symptom",
+      "task": "A compact notification appears clipped in one card; inspection shows the shared notification primitive and its overflow contract serve several surfaces.",
+      "observed": {
+        "consequence": "notifications remain readable and unclipped across consuming surfaces",
+        "affected_invariant": "the shared notification overflow contract preserves readable content",
+        "owner": "shared notification primitive",
+        "shared_consumers": true,
+        "focused_choice": false,
+        "consequence_class": "bounded",
+        "material_uncertainty": ["sibling rendering behavior"],
+        "uncertainty_surface": {"user_goals": false, "topology": false, "journey": false, "content_object_relationships": false, "interaction_contracts": false, "responsive_transformations": false, "system_contracts": false}
+      },
+      "expected": {
+        "depth": "Focused",
+        "loaded_references": ["exploration-protocol.md", "quality-gates.md"],
+        "skipped_references": ["experience-architecture.md", "art-direction-gate.md", "design-foundations.md", "imagery-and-assets.md", "iconography-system.md", "motion-and-interaction.md", "research-and-evidence.md", "designer-evaluation.md", "cli-reference.md"],
+        "skipped_process": ["decision packet", "broad research", "whole-journey framing", "Portfolio candidate set", "unrelated asset exploration", "unrelated motion exploration", "designer evaluation"],
+        "artifacts": ["depth record", "shared-system proof", "baseline and challenger", "sibling-context render"],
+        "delivery": ["calibrated depth and loaded/skipped routes", "affected causal decision", "baseline and closest challenger", "representative sibling contexts when shared", "implementation scope", "affected states and proof", "corrections after review", "remaining unknowns", "executed evidence versus inference"],
+        "stop_evidence": "baseline/challenger renders preserve the shared contract in representative sibling contexts",
+        "escalation_evidence": "proof exposes material uncertainty in goals, topology, journey, content, interaction, responsive, or system contracts"
+      }
+    },
+    {
+      "id": "medium-established-feature",
+      "task": "Add saved filters to an established warehouse workspace while preserving its accepted objects, route, keyboard model, and responsive transformation.",
+      "observed": {
+        "consequence": "dispatchers can recover repeated filter views without losing task context",
+        "affected_invariant": "saved-filter discovery and persistence preserve the accepted workflow",
+        "owner": "existing filter bar and persistence adapter",
+        "shared_consumers": true,
+        "focused_choice": true,
+        "consequence_class": "bounded",
+        "material_uncertainty": [],
+        "uncertainty_surface": {"user_goals": false, "topology": false, "journey": false, "content_object_relationships": false, "interaction_contracts": false, "responsive_transformations": false, "system_contracts": false}
+      },
+      "expected": {
+        "depth": "Focused",
+        "loaded_references": ["exploration-protocol.md", "quality-gates.md"],
+        "skipped_references": ["experience-architecture.md", "art-direction-gate.md", "design-foundations.md", "imagery-and-assets.md", "iconography-system.md", "motion-and-interaction.md", "research-and-evidence.md", "designer-evaluation.md", "cli-reference.md"],
+        "skipped_process": ["decision packet", "broad research", "whole-journey framing", "Portfolio candidate set", "unrelated asset exploration", "unrelated motion exploration", "designer evaluation"],
+        "artifacts": ["depth record", "causal decision record", "baseline and challenger", "affected responsive render"],
+        "delivery": ["calibrated depth and loaded/skipped routes", "affected causal decision", "baseline and closest challenger", "representative sibling contexts when shared", "implementation scope", "affected states and proof", "corrections after review", "remaining unknowns", "executed evidence versus inference"],
+        "stop_evidence": "the affected workflow and responsive proof close the placement/disclosure choice",
+        "escalation_evidence": "the feature changes the accepted object model, journey, interaction contract, or responsive transformation"
+      }
+    },
+    {
+      "id": "open-journey-architecture",
+      "task": "Reorganize a municipal permit journey across eligibility, evidence, submission, recovery, and status for residents and assisted-service staff.",
+      "observed": {
+        "consequence": "residents can complete and recover a permit submission without avoidable delay",
+        "affected_invariant": "eligibility, evidence, submission, recovery, and status remain coherent across the journey",
+        "owner": "multiple journey and service owners",
+        "shared_consumers": true,
+        "focused_choice": true,
+        "consequence_class": "open-system",
+        "material_uncertainty": ["user goals", "topology", "journey", "content/object relationships", "interaction contracts", "responsive transformations", "system contracts"],
+        "uncertainty_surface": {"user_goals": true, "topology": true, "journey": true, "content_object_relationships": true, "interaction_contracts": true, "responsive_transformations": true, "system_contracts": true}
+      },
+      "expected": {
+        "depth": "Portfolio",
+        "loaded_references": ["exploration-protocol.md", "experience-architecture.md", "designer-evaluation.md", "quality-gates.md"],
+        "skipped_references": ["art-direction-gate.md", "design-foundations.md", "imagery-and-assets.md", "iconography-system.md", "motion-and-interaction.md", "research-and-evidence.md", "cli-reference.md"],
+        "skipped_process": ["broad research", "unrelated imagery exploration", "unrelated custom icon work", "unrelated motion exploration"],
+        "artifacts": ["depth record", "whole-journey model", "structurally different candidates", "proof slice", "strongest rejected alternative"],
+        "delivery": ["calibrated depth and loaded/skipped routes", "chosen architecture and thesis", "material causal decisions", "strongest rejected alternative", "external evidence that changed the outcome, if any", "asset and motion decisions when live", "implementation scope", "rendered proof slices", "accessibility and performance checks", "corrections after review", "remaining unknowns", "executed evidence versus inference"],
+        "stop_evidence": "whole-journey proof and implementation contract close the material uncertainties",
+        "escalation_evidence": "new material uncertainty or failed proof slice reopens the relevant decision"
+      }
+    },
+    {
+      "id": "narrow-high-consequence-correction",
+      "task": "Repair focus-indicator clipping on one accepted medication-dose confirmation control without changing its learned action, content, or workflow.",
+      "observed": {
+        "consequence": "a keyboard user can verify the active dose-confirmation control before committing a medication action",
+        "affected_invariant": "the complete focus indicator remains visible at zoom and high contrast in every confirmation state",
+        "owner": "dose-confirmation control",
+        "shared_consumers": false,
+        "focused_choice": false,
+        "consequence_class": "high-consequence",
+        "material_uncertainty": [],
+        "uncertainty_surface": {"user_goals": false, "topology": false, "journey": false, "content_object_relationships": false, "interaction_contracts": false, "responsive_transformations": false, "system_contracts": false}
+      },
+      "expected": {
+        "depth": "Direct",
+        "loaded_references": ["quality-gates.md"],
+        "skipped_references": ["exploration-protocol.md", "experience-architecture.md", "art-direction-gate.md", "design-foundations.md", "imagery-and-assets.md", "iconography-system.md", "motion-and-interaction.md", "research-and-evidence.md", "designer-evaluation.md", "cli-reference.md"],
+        "skipped_process": ["decision packet", "broad research", "candidate generation", "architecture work", "asset exploration", "motion exploration", "designer evaluation"],
+        "artifacts": ["depth record", "affected invariant", "rendered state", "high-consequence proof"],
+        "delivery": ["calibrated depth and loaded/skipped routes", "owner and affected invariant", "implementation scope", "affected states and proof", "corrections after review", "remaining unknowns", "executed evidence versus inference"],
+        "stop_evidence": "keyboard, zoom, high-contrast, adverse-state, and rollback checks close the exact confirmation-control invariant",
+        "escalation_evidence": "the repair exposes a shared owner or uncertainty in medication action semantics, recovery, or system contracts"
+      }
+    }
   ]
 }

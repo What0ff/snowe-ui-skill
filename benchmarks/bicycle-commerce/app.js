@@ -85,12 +85,24 @@
     document.body.classList.add("is-locked");
   }
 
-  function closeMobileMenu() {
+  function closeMobileMenu({ restoreFocus = false } = {}) {
     const button = $(".menu-button");
     const menu = $("#mobile-menu");
+    const active = document.activeElement;
+    const focusInside = menu.contains(active);
+    const activeHref = active?.closest?.("a")?.getAttribute("href");
     button.setAttribute("aria-expanded", "false");
     button.setAttribute("aria-label", "Open menu");
     menu.hidden = true;
+    const menuIsHidden = menu.hidden || getComputedStyle(menu).display === "none";
+    if (restoreFocus || (focusInside && menuIsHidden)) {
+      const buttonIsVisible = getComputedStyle(button).display !== "none";
+      const desktopMatch = activeHref
+        ? $$(".primary-nav a").find((link) => link.getAttribute("href") === activeHref)
+        : null;
+      const focusTarget = buttonIsVisible ? button : desktopMatch || $(".primary-nav a");
+      if (focusTarget && document.activeElement !== focusTarget) focusTarget.focus();
+    }
   }
 
   function showToast(message) {
@@ -113,12 +125,20 @@
   menuButton.addEventListener("click", () => {
     const menu = $("#mobile-menu");
     const willOpen = menu.hidden;
+    if (!willOpen) {
+      closeMobileMenu({ restoreFocus: true });
+      return;
+    }
     menu.hidden = !willOpen;
     menuButton.setAttribute("aria-expanded", String(willOpen));
     menuButton.setAttribute("aria-label", willOpen ? "Close menu" : "Open menu");
     if (willOpen) $("a", menu).focus();
   });
   $$("#mobile-menu a").forEach((link) => link.addEventListener("click", closeMobileMenu));
+  document.addEventListener("keydown", (event) => {
+    const menu = $("#mobile-menu");
+    if (event.key === "Escape" && !menu.hidden) closeMobileMenu({ restoreFocus: true });
+  });
   window.addEventListener("resize", () => {
     if (window.innerWidth > 980) closeMobileMenu();
   });

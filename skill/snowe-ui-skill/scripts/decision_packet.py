@@ -12,7 +12,12 @@ verified evidence and performs the actual design synthesis.
 from __future__ import annotations
 
 import json
+import math
+import os
 import re
+import stat
+import uuid
+from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable
@@ -21,6 +26,210 @@ from core import search
 
 
 SCHEMA_VERSION = "3.0"
+PROJECT_MANIFEST_FILENAME = "PROJECT.json"
+PROJECT_MANIFEST_VERSION = "1"
+PROJECT_MANIFEST_MAX_BYTES = 1_000_000
+PROJECT_MANIFEST_MAX_DEPTH = 128
+DEFAULT_PROJECT_NAME = "Untitled design inquiry"
+
+
+class ProjectManifestCorrupt(ValueError):
+    """An interrupted manifest has no complete identity claim."""
+
+
+def _absolute_lexical_path(path: str | Path) -> Path:
+    return Path(os.path.abspath(os.fspath(Path(path).expanduser())))
+
+
+def _is_reparse_path(path: Path) -> bool:
+    """Detect symlinks and Windows junction/reparse points without following them."""
+    try:
+        information = os.lstat(path)
+    except FileNotFoundError:
+        return False
+    attributes = getattr(information, "st_file_attributes", 0)
+    reparse_flag = getattr(stat, "FILE_ATTRIBUTE_REPARSE_POINT", 0)
+    return stat.S_ISLNK(information.st_mode) or bool(attributes & reparse_flag)
+
+
+def _reject_reparse_chain(path: Path, label: str) -> None:
+    current = _absolute_lexical_path(path)
+    while True:
+        if _is_reparse_path(current):
+            raise ValueError(f"{label} must not contain a symlink, junction, or reparse point: {current}")
+        parent = current.parent
+        if parent == current:
+            return
+        current = parent
+
+
+def _stat_identity(information: os.stat_result) -> tuple[int, int] | None:
+    try:
+        device = int(information.st_dev)
+        inode = int(information.st_ino)
+    except (AttributeError, TypeError, ValueError):
+        return None
+    return None if inode == 0 else (device, inode)
+
+
+def _shared_regular_file(path: Path) -> bool:
+    try:
+        information = os.lstat(path)
+    except FileNotFoundError:
+        return False
+    return stat.S_ISREG(information.st_mode) and int(getattr(information, "st_nlink", 1)) > 1
+
+
+def _project_manifest_tree_error(value: Any) -> str | None:
+    """Return a deterministic safety error for decoded manifest values."""
+    pending: list[tuple[Any, int]] = [(value, 0)]
+    while pending:
+        current, depth = pending.pop()
+        if depth > PROJECT_MANIFEST_MAX_DEPTH:
+            return (
+                "Project identity manifest exceeds the deterministic "
+                f"{PROJECT_MANIFEST_MAX_DEPTH}-level JSON nesting limit"
+            )
+        if isinstance(current, str):
+            if any(0xD800 <= ord(character) <= 0xDFFF for character in current):
+                return "Project identity manifest contains unpaired Unicode surrogate code points"
+        elif isinstance(current, float) and not math.isfinite(current):
+            return "Project identity manifest contains a non-finite JSON number"
+        elif isinstance(current, dict):
+            for key, child in current.items():
+                if any(0xD800 <= ord(character) <= 0xDFFF for character in key):
+                    return "Project identity manifest contains unpaired Unicode surrogate code points"
+                pending.append((child, depth + 1))
+        elif isinstance(current, list):
+            pending.extend((child, depth + 1) for child in current)
+    return None
+
+
+@contextmanager
+def _persistence_lock(root: Path, project_slug: str):
+    """Serialize all state changes for one persisted project identity."""
+    storage_root = root / "design-intelligence"
+    storage_root.mkdir(parents=True, exist_ok=True)
+    _reject_reparse_chain(storage_root, "Persistence state path")
+    lock_path = storage_root / f".{project_slug}.persist.lock"
+    if _is_reparse_path(lock_path):
+        raise ValueError(f"Persistence lock must not be a symlink, junction, or reparse point: {lock_path}")
+    flags = os.O_CREAT | os.O_RDWR
+    if hasattr(os, "O_BINARY"):
+        flags |= os.O_BINARY
+    if hasattr(os, "O_NOFOLLOW"):
+        flags |= os.O_NOFOLLOW
+    existing_identity = None
+    try:
+        existing_information = os.lstat(lock_path)
+    except FileNotFoundError:
+        existing_information = None
+    if existing_information is not None:
+        if _is_reparse_path(lock_path):
+            raise ValueError(f"Persistence lock must not be a symlink, junction, or reparse point: {lock_path}")
+        if not stat.S_ISREG(existing_information.st_mode):
+            raise ValueError(f"Persistence lock must be a regular file: {lock_path}")
+        if int(getattr(existing_information, "st_nlink", 1)) > 1:
+            raise ValueError(f"Persistence lock must not be a shared hardlink: {lock_path}")
+        existing_identity = _stat_identity(existing_information)
+    descriptor = os.open(lock_path, flags, 0o600)
+    handle = os.fdopen(descriptor, "r+b", buffering=0)
+    locked = False
+    try:
+        opened_information = os.fstat(handle.fileno())
+        if _is_reparse_path(lock_path):
+            raise ValueError(f"Persistence lock must not be a symlink, junction, or reparse point: {lock_path}")
+        if not stat.S_ISREG(opened_information.st_mode):
+            raise ValueError(f"Persistence lock must be a regular file: {lock_path}")
+        if int(getattr(opened_information, "st_nlink", 1)) > 1:
+            raise ValueError(f"Persistence lock must not be a shared hardlink: {lock_path}")
+        if existing_identity is not None and _stat_identity(opened_information) != existing_identity:
+            raise ValueError(f"Persistence lock changed identity before it could be opened safely: {lock_path}")
+        if os.name == "nt":
+            import msvcrt
+
+            if os.fstat(handle.fileno()).st_size == 0:
+                handle.write(b"\0")
+            handle.seek(0)
+            try:
+                msvcrt.locking(handle.fileno(), msvcrt.LK_LOCK, 1)
+            except OSError as error:
+                raise RuntimeError(f"Another persistence operation is active for {project_slug!r}") from error
+        else:
+            import fcntl
+
+            try:
+                fcntl.flock(handle.fileno(), fcntl.LOCK_EX)
+            except OSError as error:
+                raise RuntimeError(f"Another persistence operation is active for {project_slug!r}") from error
+        locked = True
+        yield
+    finally:
+        if locked:
+            if os.name == "nt":
+                import msvcrt
+
+                handle.seek(0)
+                msvcrt.locking(handle.fileno(), msvcrt.LK_UNLCK, 1)
+            else:
+                import fcntl
+
+                fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+        handle.close()
+
+
+def _write_complete_temp(path: Path, content: str) -> Path:
+    _reject_reparse_chain(path.parent, "Persisted output path")
+    temporary = path.with_name(f".{path.name}.tmp-{uuid.uuid4().hex}")
+    created = False
+    try:
+        with temporary.open("x", encoding="utf-8", newline="\n") as handle:
+            created = True
+            handle.write(content)
+            handle.flush()
+            os.fsync(handle.fileno())
+        return temporary
+    except BaseException:
+        if created:
+            try:
+                # unlink() removes the temporary directory entry itself and
+                # does not follow a path that was replaced with a symlink.
+                temporary.unlink()
+            except FileNotFoundError:
+                pass
+            except OSError as cleanup_error:
+                raise OSError(
+                    f"Temporary persistence output could not be cleaned safely: {temporary}"
+                ) from cleanup_error
+        raise
+
+
+def _atomic_write_text(path: Path, content: str) -> None:
+    """Replace a generated inquiry without following a target hardlink."""
+    _reject_reparse_chain(path, "Persisted output path")
+    temporary = _write_complete_temp(path, content)
+    try:
+        _reject_reparse_chain(path, "Persisted output path")
+        os.replace(temporary, path)
+    finally:
+        if temporary.exists():
+            temporary.unlink()
+
+
+def _atomic_create_text(path: Path, content: str) -> bool:
+    """Publish complete bytes only when the identity/ledger path is absent."""
+    _reject_reparse_chain(path, "Persisted output path")
+    temporary = _write_complete_temp(path, content)
+    try:
+        _reject_reparse_chain(path, "Persisted output path")
+        try:
+            os.link(temporary, path, follow_symlinks=False)
+        except FileExistsError:
+            return False
+        return True
+    finally:
+        if temporary.exists():
+            temporary.unlink()
 
 
 def _as_string_list(value: Any, field: str) -> list[str]:
@@ -176,7 +385,7 @@ class DecisionPacketGenerator:
 
         return {
             "schema_version": SCHEMA_VERSION,
-            "project_name": project_name or "Untitled design inquiry",
+            "project_name": project_name or DEFAULT_PROJECT_NAME,
             "brief": brief,
             "situation": {
                 "framing_status": "UNRESOLVED" if context["status"] == "NOT_PROVIDED" else "PARTIALLY_DECLARED",
@@ -476,6 +685,26 @@ def slugify_name(value: str, fallback: str = "default") -> str:
     return normalized[:80] or fallback
 
 
+_WINDOWS_RESERVED_NAMES = {
+    "CON",
+    "PRN",
+    "AUX",
+    "NUL",
+    *(f"COM{index}" for index in range(1, 10)),
+    *(f"LPT{index}" for index in range(1, 10)),
+}
+
+
+def _persisted_slug(value: str, fallback: str, label: str) -> str:
+    """Return a portable persisted component, rejecting Windows device names."""
+    slug = slugify_name(value, fallback)
+    if slug.split(".", 1)[0].upper() in _WINDOWS_RESERVED_NAMES:
+        raise ValueError(
+            f"{label} identity produces the Windows-reserved path component {slug!r}; choose another identity."
+        )
+    return slug
+
+
 def format_decision_journal(project_name: str) -> str:
     timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     return (
@@ -493,10 +722,12 @@ def format_decision_journal(project_name: str) -> str:
 
 
 def format_page_inquiry(page_name: str, page_brief: str | None = None) -> str:
-    title = page_name.replace("-", " ").replace("_", " ").strip().title() or "Page"
+    identity = _page_identity(page_name)
+    title = _page_title(identity)
     brief = page_brief or "UNKNOWN — derive from the verified project brief and journey"
     return (
         f"# {title} — Page Inquiry\n\n"
+        f"**Page identity:** {json.dumps(identity, ensure_ascii=False)}\n\n"
         f"**Page brief:** {brief}\n\n"
         "> This file does not prescribe a page type or section order. Resolve the page job from the journey and real content.\n\n"
         "## Page job\n\n"
@@ -514,44 +745,382 @@ def format_page_inquiry(page_name: str, page_brief: str | None = None) -> str:
     )
 
 
+def _page_identity(page_name: str) -> str:
+    identity = str(page_name or "").strip() or "Untitled page"
+    if not identity.isprintable():
+        raise ValueError("Page identity must contain printable characters only.")
+    return identity
+
+
+def _page_title(page_name: str) -> str:
+    return page_name.replace("-", " ").replace("_", " ").strip().title() or "Page"
+
+
+def _project_identity(packet: dict[str, Any], explicit_identity: str | None = None) -> str:
+    """Resolve an explicit, stable identity for persisted project state.
+
+    The packet's fallback title is useful for ephemeral output, but it is not
+    an identity. Persistence must never derive a project directory from the
+    brief because that can silently reuse another project's durable ledger.
+    """
+    candidate = explicit_identity if explicit_identity is not None else packet.get("project_name")
+    if not isinstance(candidate, str) or not candidate.strip():
+        raise ValueError(
+            "Persistence requires an explicit project identity; provide --project-name (or packet project_name)."
+        )
+    identity = candidate.strip()
+    if not identity.isprintable():
+        raise ValueError("Persisted project identity must contain printable characters only.")
+    if explicit_identity is None and identity == DEFAULT_PROJECT_NAME:
+        raise ValueError(
+            "Persistence requires an explicit project identity; provide --project-name."
+        )
+
+    packet_name = packet.get("project_name")
+    if packet_name is not None and (
+        not isinstance(packet_name, str) or packet_name.strip() != identity
+    ):
+        raise ValueError(
+            "Packet project_name does not match the requested persisted project identity."
+        )
+    return identity
+
+
+def _project_manifest(identity: str, project_slug: str) -> dict[str, str]:
+    return {
+        "schema_version": PROJECT_MANIFEST_VERSION,
+        "project_name": identity,
+        "project_slug": project_slug,
+    }
+
+
+def _read_project_manifest(manifest_path: Path, identity: str, project_slug: str) -> None:
+    """Validate an existing manifest without modifying any project files."""
+    if _is_reparse_path(manifest_path) or not manifest_path.is_file():
+        raise ValueError(
+            f"Project identity manifest is not a regular file: {manifest_path}"
+        )
+    if _shared_regular_file(manifest_path):
+        raise ValueError(
+            f"Project identity manifest must not be a shared hardlink/inode: {manifest_path}"
+        )
+    try:
+        if manifest_path.stat().st_size > PROJECT_MANIFEST_MAX_BYTES:
+            raise ProjectManifestCorrupt(
+                "Project identity manifest exceeds the deterministic "
+                f"{PROJECT_MANIFEST_MAX_BYTES}-byte safety limit: {manifest_path}"
+            )
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    except ProjectManifestCorrupt:
+        raise
+    except RecursionError as error:
+        raise ProjectManifestCorrupt(
+            "Project identity manifest exceeds the deterministic "
+            f"{PROJECT_MANIFEST_MAX_DEPTH}-level JSON nesting limit: {manifest_path}"
+        ) from error
+    # ``json.loads`` also raises a plain ValueError when CPython's bounded
+    # integer-string conversion rejects an oversized numeric token. Treat all
+    # parser ValueErrors as corrupt persisted bytes; identity collisions are
+    # checked only after parsing and therefore remain fail-closed below.
+    except (ValueError, UnicodeError) as error:
+        raise ProjectManifestCorrupt(
+            f"Project identity manifest is unreadable or invalid: {manifest_path}"
+        ) from error
+    except OSError as error:
+        raise ValueError(f"Project identity manifest cannot be read safely: {manifest_path}") from error
+    tree_error = _project_manifest_tree_error(manifest)
+    if tree_error:
+        raise ProjectManifestCorrupt(f"{tree_error}: {manifest_path}")
+    expected = _project_manifest(identity, project_slug)
+    if manifest != expected:
+        recorded_name = manifest.get("project_name") if isinstance(manifest, dict) else None
+        raise ValueError(
+            "Project identity collision: "
+            f"slug '{project_slug}' is already owned by {recorded_name!r}; "
+            f"refusing to overwrite {manifest_path.parent / 'BRIEF.md'} or inherit its DECISIONS.md."
+        )
+
+
+def _legacy_project_identity_matches(project_dir: Path, identity: str) -> bool:
+    """Recognize only explicit metadata when upgrading pre-manifest state."""
+    decisions_path = project_dir / "DECISIONS.md"
+    if decisions_path.is_symlink() or not decisions_path.is_file() or _shared_regular_file(decisions_path):
+        return False
+    try:
+        decisions = decisions_path.read_text(encoding="utf-8")
+    except OSError:
+        return False
+    match = re.search(r"(?m)^Project:\s*(.*?)\s*$", decisions)
+    if not match:
+        return False
+    recorded_identity = match.group(1).strip()
+    if recorded_identity != identity:
+        raise ValueError(
+            "Project identity collision: existing DECISIONS.md records "
+            f"{recorded_identity!r}, not {identity!r}."
+        )
+
+    brief_path = project_dir / "BRIEF.md"
+    if brief_path.exists() or brief_path.is_symlink():
+        if brief_path.is_symlink() or not brief_path.is_file():
+            raise ValueError(f"Cannot validate legacy project identity from {brief_path}")
+        try:
+            brief = brief_path.read_text(encoding="utf-8")
+        except OSError as error:
+            raise ValueError(f"Cannot validate legacy project identity from {brief_path}") from error
+        brief_match = re.search(r"(?m)^\*\*Project:\*\*\s*(.*?)\s*$", brief)
+        if not brief_match or brief_match.group(1).strip() != identity:
+            raise ValueError(
+                "Project identity collision: existing BRIEF.md does not record "
+                f"{identity!r}; refusing to replace it."
+            )
+    return True
+
+
+def _prepare_project_manifest(
+    project_dir: Path,
+    identity: str,
+    project_slug: str,
+    root: Path,
+) -> tuple[Path, bool, list[Path]]:
+    """Validate project ownership before the first replaceable file write.
+
+    A non-empty directory from an older/unmanaged writer is intentionally not
+    guessed at. Refusing it is safer than treating a brief or ledger as proof
+    of identity. Empty directories can be claimed by creating the manifest.
+    """
+    _reject_reparse_chain(project_dir, "Persisted project path")
+    resolved_project_dir = project_dir.resolve(strict=False)
+    if not resolved_project_dir.is_relative_to(root):
+        raise ValueError("Persisted project path must remain inside the selected output directory.")
+    if project_dir.is_symlink():
+        raise ValueError(f"Refusing to persist through a project-directory symlink: {project_dir}")
+
+    manifest_path = project_dir / PROJECT_MANIFEST_FILENAME
+    def runtime_artifact(entry: Path) -> bool:
+        name = entry.name
+        recognized = bool(
+            re.fullmatch(r"\.PROJECT\.json\.tmp-[0-9a-f]{32}", name)
+            or re.fullmatch(r"PROJECT\.json\.corrupt-[0-9a-f]{32}", name)
+        )
+        return recognized and entry.is_file() and not _is_reparse_path(entry)
+
+    if manifest_path.exists() or manifest_path.is_symlink():
+        try:
+            _read_project_manifest(manifest_path, identity, project_slug)
+        except ProjectManifestCorrupt:
+            runtime_artifacts = [
+                entry for entry in project_dir.iterdir()
+                if entry != manifest_path and runtime_artifact(entry)
+            ]
+            other_entries = [
+                entry for entry in project_dir.iterdir()
+                if entry != manifest_path and not runtime_artifact(entry)
+            ]
+            legacy_match = _legacy_project_identity_matches(project_dir, identity)
+            if other_entries and not legacy_match:
+                raise
+            quarantined = manifest_path.with_name(
+                f"{manifest_path.name}.corrupt-{uuid.uuid4().hex}"
+            )
+            manifest_path.rename(quarantined)
+            recovered = [quarantined, *runtime_artifacts]
+        else:
+            return manifest_path, False, []
+    else:
+        recovered = []
+
+    if project_dir.exists() and not recovered:
+        if not project_dir.is_dir():
+            raise ValueError(f"Project path is not a directory: {project_dir}")
+        # Exact project metadata in the old durable ledger is sufficient for
+        # a one-time manifest claim; no brief vocabulary is inferred.
+        legacy_identity_matches = _legacy_project_identity_matches(project_dir, identity)
+        if not legacy_identity_matches:
+            try:
+                entries = list(project_dir.iterdir())
+            except OSError as error:
+                raise ValueError(f"Cannot inspect existing project directory: {project_dir}") from error
+            recovery_artifacts = [entry for entry in entries if runtime_artifact(entry)]
+            existing = next((entry for entry in entries if entry not in recovery_artifacts), None)
+            if existing is not None:
+                raise ValueError(
+                    f"Project directory lacks {PROJECT_MANIFEST_FILENAME}; refusing to overwrite existing state: {project_dir}"
+                )
+            recovered.extend(recovery_artifacts)
+
+    # Creation is intentionally exclusive. If another process claims the
+    # slug between validation and this write, validate its identity rather
+    # than overwrite it.
+    project_dir.mkdir(parents=True, exist_ok=True)
+    _reject_reparse_chain(project_dir, "Persisted project path")
+    manifest = _project_manifest(identity, project_slug)
+    manifest_content = json.dumps(manifest, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
+    if not _atomic_create_text(manifest_path, manifest_content):
+        _read_project_manifest(manifest_path, identity, project_slug)
+        return manifest_path, False, recovered
+    return manifest_path, True, recovered
+
+
+def _validate_project_outputs(project_dir: Path, page: str | None) -> None:
+    """Reject symlinked output targets before replacing any inquiry file."""
+    _reject_reparse_chain(project_dir, "Persisted project path")
+    paths = [project_dir / "BRIEF.md", project_dir / "DECISIONS.md"]
+    if page:
+        pages_dir = project_dir / "pages"
+        _validate_pages_parent(project_dir, pages_dir)
+        page_path = pages_dir / f"{_persisted_slug(page, 'page', 'Page')}.md"
+        paths.append(page_path)
+    for path in paths:
+        if _is_reparse_path(path):
+            raise ValueError(f"Refusing to replace a symlinked or reparse-point persisted file: {path}")
+        if path.exists() and path.is_dir():
+            raise ValueError(f"Persisted output path is a directory, not a file: {path}")
+        if path.name == "DECISIONS.md" and _shared_regular_file(path):
+            raise ValueError(f"DECISIONS.md must not be a shared hardlink/inode: {path}")
+    if page and page_path.exists():
+        # This is deliberately part of the preflight, before BRIEF.md can be
+        # regenerated. A rejected page claim must not partially update a project.
+        _validate_page_identity(page_path, page)
+
+
+def _validate_page_identity(page_path: Path, page_name: str) -> None:
+    """Prevent two exact page identities from sharing one normalized slug."""
+    if not page_path.exists():
+        return
+    identity = _page_identity(page_name)
+    expected_heading = f"# {_page_title(identity)} — Page Inquiry"
+    try:
+        lines = page_path.read_text(encoding="utf-8").splitlines()
+        first_line = lines[0]
+    except (OSError, UnicodeDecodeError, IndexError) as error:
+        raise ValueError(f"Existing page inquiry cannot prove its identity: {page_path}") from error
+    marker = next((line.removeprefix("**Page identity:** ") for line in lines if line.startswith("**Page identity:** ")), None)
+    recorded_identity: str | None = None
+    if marker is not None:
+        try:
+            parsed = json.loads(marker)
+        except json.JSONDecodeError as error:
+            raise ValueError(f"Existing page inquiry has invalid identity metadata: {page_path}") from error
+        if isinstance(parsed, str):
+            recorded_identity = parsed
+    elif first_line == expected_heading and identity == _page_title(identity):
+        # One-time compatibility for the old friendly-title format. Slug-like,
+        # case-variant, and punctuation-variant inputs cannot safely claim it.
+        recorded_identity = identity
+    if first_line != expected_heading or recorded_identity != identity:
+        raise ValueError(
+            f"Page identity collision: slug '{page_path.stem}' is already owned by another page; "
+            f"refusing to overwrite {page_path}."
+        )
+
+
+def _validate_pages_parent(project_dir: Path, pages_dir: Path) -> None:
+    """Revalidate the page parent immediately before any page publication."""
+    _reject_reparse_chain(pages_dir, "Persisted pages path")
+    if _is_reparse_path(pages_dir) or (pages_dir.exists() and not pages_dir.is_dir()):
+        raise ValueError(f"Refusing to persist through an invalid pages path: {pages_dir}")
+    project_resolved = project_dir.resolve(strict=False)
+    pages_resolved = pages_dir.resolve(strict=False)
+    if not pages_resolved.is_relative_to(project_resolved):
+        raise ValueError(f"Persisted pages path must remain inside the project directory: {pages_dir}")
+
+
 def persist_decision_packet(
     packet: dict[str, Any],
     page: str | None = None,
     output_dir: str | None = None,
     page_brief: str | None = None,
+    project_identity: str | None = None,
 ) -> dict[str, Any]:
-    root = Path(output_dir or ".").resolve()
-    project_slug = slugify_name(packet.get("project_name") or packet.get("brief") or "project")
+    root = _absolute_lexical_path(output_dir or ".")
+    _reject_reparse_chain(root, "Selected output directory")
+    identity = _project_identity(packet, project_identity)
+    project_slug = _persisted_slug(identity, "default", "Project")
+    page_slug = _persisted_slug(page, "page", "Page") if page else None
+    # Validate all caller-provided text before claiming a project directory or
+    # publishing its manifest. This keeps an encoding failure from looking
+    # like a successfully persisted, but incomplete, identity.
+    brief_content = format_packet_markdown(packet)
+    brief_content.encode("utf-8")
+    decisions_content = format_decision_journal(identity)
+    decisions_content.encode("utf-8")
+    if isinstance(page_brief, str):
+        page_brief.encode("utf-8")
     project_dir = root / "design-intelligence" / project_slug
-    project_dir.mkdir(parents=True, exist_ok=True)
+    with _persistence_lock(root, project_slug):
+        # All identity and parent checks happen before BRIEF publication.  The
+        # project lock also makes corrupt-manifest recovery and page claims
+        # deterministic across concurrent callers in this process tree.
+        _validate_project_outputs(project_dir, page)
+        page_content: str | None = None
+        if page:
+            # Formatting is caller-controlled and may execute hooks in an
+            # embedding host. Complete and encode it before claiming the
+            # project manifest so a hook or Unicode failure cannot publish
+            # shared state without its page inquiry.
+            page_content = format_page_inquiry(page, page_brief)
+            page_content.encode("utf-8")
+            _validate_pages_parent(project_dir, project_dir / "pages")
+            _validate_project_outputs(project_dir, page)
+        manifest_path, manifest_created, recovered_manifests = _prepare_project_manifest(
+            project_dir, identity, project_slug, root
+        )
+        # Revalidate the identity inode after the claim boundary; a path swap
+        # between preparation and output publication must not turn a shared
+        # PROJECT.json into an accepted project owner.
+        _read_project_manifest(manifest_path, identity, project_slug)
+        _validate_project_outputs(project_dir, page)
 
-    created_or_updated: list[str] = []
-    preserved: list[str] = []
+        created_or_updated: list[str] = []
+        preserved: list[str] = []
+        if manifest_created:
+            created_or_updated.append(str(manifest_path))
+        else:
+            preserved.append(str(manifest_path))
+        preserved.extend(str(path) for path in recovered_manifests)
 
-    brief_path = project_dir / "BRIEF.md"
-    brief_path.write_text(format_packet_markdown(packet), encoding="utf-8")
-    created_or_updated.append(str(brief_path))
+        brief_path = project_dir / "BRIEF.md"
+        _atomic_write_text(brief_path, brief_content)
+        created_or_updated.append(str(brief_path))
 
-    decisions_path = project_dir / "DECISIONS.md"
-    try:
-        with decisions_path.open("x", encoding="utf-8") as handle:
-            handle.write(format_decision_journal(packet.get("project_name", "Project")))
-        created_or_updated.append(str(decisions_path))
-    except FileExistsError:
-        preserved.append(str(decisions_path))
+        decisions_path = project_dir / "DECISIONS.md"
+        if _atomic_create_text(decisions_path, decisions_content):
+            created_or_updated.append(str(decisions_path))
+        else:
+            # The exclusive link claim can race a foreign writer. Recheck the
+            # ledger inode before treating it as preserved state.
+            if _shared_regular_file(decisions_path):
+                raise ValueError(f"DECISIONS.md must not be a shared hardlink/inode: {decisions_path}")
+            preserved.append(str(decisions_path))
 
-    if page:
-        pages_dir = project_dir / "pages"
-        pages_dir.mkdir(parents=True, exist_ok=True)
-        page_path = pages_dir / f"{slugify_name(page, 'page')}.md"
-        page_path.write_text(format_page_inquiry(page, page_brief), encoding="utf-8")
-        created_or_updated.append(str(page_path))
+        if page:
+            pages_dir = project_dir / "pages"
+            pages_dir.mkdir(parents=True, exist_ok=True)
+            _validate_pages_parent(project_dir, pages_dir)
+            page_path = pages_dir / f"{page_slug}.md"
+            if page_content is None:  # pragma: no cover - page preflight is unconditional
+                raise RuntimeError("Page inquiry was not prepared before publication.")
+            # The formatter already ran during preflight. Revalidate the
+            # parent/output after all intervening work and immediately before
+            # atomic publication.
+            _validate_pages_parent(project_dir, pages_dir)
+            _validate_project_outputs(project_dir, page)
+            if page_path.exists():
+                _validate_page_identity(page_path, page)
+                _atomic_write_text(page_path, page_content)
+            elif not _atomic_create_text(page_path, page_content):
+                # Another process claimed the normalized slug after our absence
+                # check. Its complete identity record must agree before update.
+                _validate_page_identity(page_path, page)
+                _atomic_write_text(page_path, page_content)
+            created_or_updated.append(str(page_path))
 
-    return {
-        "design_intelligence_dir": str(project_dir),
-        "created_or_updated_files": created_or_updated,
-        "preserved_files": preserved,
-    }
+        return {
+            "design_intelligence_dir": str(project_dir),
+            "created_or_updated_files": created_or_updated,
+            "preserved_files": preserved,
+        }
 
 
 def generate_decision_packet(
@@ -573,7 +1142,13 @@ def generate_decision_packet(
         analog_query=analog_query,
     )
     if persist:
-        persist_decision_packet(packet, page=page, output_dir=output_dir, page_brief=page_brief)
+        persist_decision_packet(
+            packet,
+            page=page,
+            output_dir=output_dir,
+            page_brief=page_brief,
+            project_identity=project_name,
+        )
     if output_format == "json":
         return format_packet_json(packet)
     return format_packet_markdown(packet)

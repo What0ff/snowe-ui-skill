@@ -1,0 +1,30 @@
+{
+  "name": "custom-orbit-close",
+  "asset_type": "interface-icon",
+  "role": "custom close-icon challenger",
+  "grid": 24,
+  "live_area": {"min_x": 2.5, "min_y": 2.5, "max_x": 21.5, "max_y": 21.5},
+  "drawing_language": {
+    "mode": "stroke",
+    "stroke_width": 1.75,
+    "linecap": "round",
+    "linejoin": "round",
+    "corner_language": "rounded enclosing ring and diagonal terminals",
+    "detail_budget": "ring plus two crossing diagonals at 16 px"
+  },
+  "target_sizes": [16, 20, 24],
+  "source": "repository-owned custom challenger drawn for rejection proof",
+  "license": "project-owned repository evaluation asset",
+  "accessibility_owner": "owning icon button supplies the accessible Close label; SVG is decorative",
+  "provenance": {
+    "kind": "original",
+    "creator": "Snowe UI Skill evaluation authors",
+    "source_ref": "evals/icon-decisions/assets/custom-orbit-close.source.md#orbit-close",
+    "reviewed": "2026-08-23",
+    "sha256": "6d234a50eae15f70e60826fc53191f899e2d31964852ee93a89aed525a67428a"
+  },
+  "evidence": {
+    "source": {"kind": "local", "path": "custom-orbit-close.source.md", "sha256": "4d4e357d05b2d8182964bb5d34e893d29f1734a365e381c962fef43c9ed212ea", "locator": "#orbit-close"},
+    "license": {"path": "../../../LICENSE", "sha256": "0cd15032a964eb7b46b1bb74f96b89ed411a33fcd6b877925f5ced02ec8a9c87"}
+  }
+}

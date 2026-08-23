@@ -56,8 +56,8 @@ This benchmark is a fictional business. Product names, specifications, prices, p
 
 - **Status / scope:** ACCEPTED / brand mark and service icons
 - **Driver:** generic icon libraries cannot carry Goodturn’s measurement/route identity, but custom symbols must not reduce recognition.
-- **Decision:** draw a code-native wordmark symbol plus four 24-grid service icons using one mechanical stroke language. Use custom work only for fit, test ride, workshop, and delivery/exchange roles; familiar close, menu, plus/minus, and navigation controls remain conventional text or simple universal symbols.
-- **Expected consequence:** product-specific character appears at meaningful service moments without making routine controls novel.
+- **Decision:** draw a code-native wordmark symbol plus three product-specific 24-grid service icons for fit, test ride, and workshop. Use the pinned external Lucide `Repeat 2` glyph for exchange after the custom crate/delivery challenger proved semantically wrong. Familiar close, menu, plus/minus, and navigation controls remain conventional text or simple universal symbols.
+- **Expected consequence:** product-specific character appears where the metaphor is genuinely specific, while the learned exchange action remains immediately recognizable.
 - **Risk:** small bicycle-derived symbols lose clarity at 16px.
 - **Revisit trigger:** target-size neighbor comparison is weaker than visible text or an established symbol.
 

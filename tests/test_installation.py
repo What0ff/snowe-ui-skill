@@ -60,7 +60,7 @@ class InstallationTests(unittest.TestCase):
             destination.parent.mkdir(parents=True)
             previous = destination.parent / ".snowe-ui-skill.previous"
             previous.mkdir()
-            (previous / "SKILL.md").write_text("old", encoding="utf-8")
+            (previous / "SKILL.md").write_text("---\nname: snowe-ui-skill\n---\nold\n", encoding="utf-8")
             staging = destination.parent / ".snowe-ui-skill.installing"
             staging.mkdir()
             (staging / "partial.txt").write_text("partial", encoding="utf-8")
@@ -78,7 +78,7 @@ class InstallationTests(unittest.TestCase):
             source = self.make_source(root, "replacement")
             destination = root / "skills" / "snowe-ui-skill"
             destination.mkdir(parents=True)
-            (destination / "SKILL.md").write_text("old", encoding="utf-8")
+            (destination / "SKILL.md").write_text("---\nname: snowe-ui-skill\n---\nold\n", encoding="utf-8")
             destination_argument = destination.parent / "path-alias" / ".." / destination.name
             resolved_destination = destination_argument.resolve(strict=False)
             staging = resolved_destination.parent / f".{INSTALLER.PRODUCT_NAME}.installing"
@@ -94,7 +94,7 @@ class InstallationTests(unittest.TestCase):
                 with self.assertRaisesRegex(OSError, "simulated activation failure"):
                     INSTALLER.install_skill(source, destination_argument)
 
-            self.assertEqual("old", (destination / "SKILL.md").read_text(encoding="utf-8"))
+            self.assertIn("old", (destination / "SKILL.md").read_text(encoding="utf-8"))
             self.assertFalse((destination.parent / ".snowe-ui-skill.installing").exists())
             self.assertFalse((destination.parent / ".snowe-ui-skill.previous").exists())
 
@@ -104,10 +104,10 @@ class InstallationTests(unittest.TestCase):
             source = self.make_source(root, "replacement")
             destination = root / "skills" / "snowe-ui-skill"
             destination.mkdir(parents=True)
-            (destination / "SKILL.md").write_text("old", encoding="utf-8")
+            (destination / "SKILL.md").write_text("---\nname: snowe-ui-skill\n---\nold\n", encoding="utf-8")
 
             def fail_after_partial_copy(_source: Path, staging: Path, **_options) -> None:
-                staging.mkdir()
+                staging.mkdir(exist_ok=True)
                 (staging / "partial.txt").write_text("partial", encoding="utf-8")
                 raise OSError("simulated staging failure")
 
@@ -115,9 +115,28 @@ class InstallationTests(unittest.TestCase):
                 with self.assertRaisesRegex(OSError, "simulated staging failure"):
                     INSTALLER.install_skill(source, destination)
 
-            self.assertEqual("old", (destination / "SKILL.md").read_text(encoding="utf-8"))
+            self.assertIn("old", (destination / "SKILL.md").read_text(encoding="utf-8"))
             self.assertFalse((destination.parent / ".snowe-ui-skill.installing").exists())
             self.assertFalse((destination.parent / ".snowe-ui-skill.previous").exists())
+
+    def test_staging_failure_preserves_interrupted_previous_tree(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            root = Path(temporary_directory)
+            source = self.make_source(root, "replacement")
+            destination = root / "skills" / "snowe-ui-skill"
+            destination.parent.mkdir(parents=True)
+            previous = destination.parent / ".snowe-ui-skill.previous"
+            previous.mkdir()
+            (previous / "SKILL.md").write_text("---\nname: snowe-ui-skill\n---\nold install\n", encoding="utf-8")
+            (previous / "user-data.txt").write_bytes(b"foreign bytes")
+
+            with patch.object(INSTALLER.shutil, "copytree", side_effect=OSError("simulated staging failure")):
+                with self.assertRaisesRegex(OSError, "simulated staging failure"):
+                    INSTALLER.install_skill(source, destination)
+
+            self.assertFalse(destination.exists())
+            self.assertIn("old install", (previous / "SKILL.md").read_text(encoding="utf-8"))
+            self.assertEqual(b"foreign bytes", (previous / "user-data.txt").read_bytes())
 
     def test_overlapping_source_and_destination_are_rejected(self):
         with tempfile.TemporaryDirectory() as temporary_directory:

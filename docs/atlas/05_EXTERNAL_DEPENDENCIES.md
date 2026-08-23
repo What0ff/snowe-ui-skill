@@ -7,7 +7,7 @@
 | Python 3.11+ | README, contributor docs, CI matrix | Runs retrieval, decision packets, validators, eval runner, atlas generator, and tests. |
 | Python standard library | Imports and absence of package manifests | `argparse`, `csv`, `json`, `pathlib`, `re`, XML parsing, `unittest`, and related modules. |
 
-There is no `pyproject.toml`, `requirements.txt`, lockfile, package manifest, virtual-environment bootstrap, or third-party product/test package.
+There is no `pyproject.toml`, `requirements.txt`, package-manager lockfile, package manifest, virtual-environment bootstrap, or third-party product/test package. The short-lived installer and per-project persistence locks plus atomic filesystem operations use only operating-system facilities exposed by the standard library.
 
 `scripts/install_skill.py` is a repository-only Python standard-library installer. It copies the existing installable directory exactly to `$HOME/.agents/skills/snowe-ui-skill` by default, supports an explicit compatible-host destination, and does not add an installable-product dependency or package format.
 
@@ -25,7 +25,7 @@ Goodturn additionally commits:
 
 - Barlow Condensed and Manrope WOFF2 plus OFL texts;
 - four generated WebP images reviewed in layout;
-- four custom SVG icons plus JSON provenance/drawing-language metadata;
+- three original custom SVG icons plus pinned Lucide Repeat2 and X SVGs, JSON provenance/drawing-language/structured-evidence metadata, and the Lucide license notice;
 - nine JPEG browser captures.
 
 The three forward-tests intentionally use no image or custom-asset files; their identity comes from content, typography, state, structure, and interaction. Each commits six JPEG captures.
@@ -34,11 +34,13 @@ Doppler commits local Unbounded/Manrope WOFF2 files and OFL texts, three origina
 
 Image generation and external research created Goodturn evidence during development. Doppler's final GIF was encoded from Chrome-captured local frames with a host-provided image encoder; Pillow is not a repository runtime/test dependency. Reproducing those development artifacts requires a capable host, but using/testing the committed benchmarks does not.
 
+The repository-only icon-decision proof includes pinned Lucide X, Ruler, and BadgeCheck SVG bytes plus local Lucide license records, one original rejection challenger with a local source record, and the existing Goodturn fit asset. Their metadata binds structured local source/license bytes and official HTTPS source revisions; external URL truth remains explicitly unverified. No runtime fetch occurs.
+
 ## Repository browser infrastructure
 
 `scripts/browser-smoke.mjs` requires Node 22 and a locally installed Chrome/Chromium only when running rendered smoke or captures. It uses Node built-ins (`http`, `fs`, `child_process`, `os`, `path`, global `fetch`/`WebSocket`) and Chrome DevTools Protocol directly. It does not use npm, Playwright, Selenium, chromedriver, or a downloaded browser.
 
-The script starts a loopback-only temporary HTTP server, an isolated temporary browser profile, and a random debug port. Cleanup requests graceful browser close, waits for exit, forces and awaits termination when necessary, closes the server, and uses bounded retries for transient profile locks; remaining cleanup errors fail the command. `CHROME_PATH` can select a nonstandard browser executable. `--capture-soda` writes the seven final Doppler JPEG states; `--soda-motion-frames` writes 72 raw browser frames to the explicitly supplied `SODA_MOTION_DIR` and does not itself encode the committed GIF.
+The script starts a loopback-only temporary HTTP server, an isolated temporary browser profile, and a random debug port. Cleanup requests graceful browser close, waits for exit, forces and awaits termination when necessary, closes the server, and uses bounded retries for transient profile locks; remaining cleanup errors fail the command. `CHROME_PATH` can select a nonstandard browser executable. `--scenario <slug>` can focus smoke on one supported benchmark/proof; `--capture-goodturn-workshop` refreshes the Goodturn workshop evidence after icon changes; `--capture-soda` writes the seven final Doppler JPEG states; `--soda-motion-frames` writes 72 raw browser frames to the explicitly supplied `SODA_MOTION_DIR` and does not itself encode the committed GIF.
 
 This is repository validation infrastructure, not an installable-skill dependency.
 
@@ -70,9 +72,9 @@ Its minimal workflow permissions are `contents: read`, `pages: write`, and `id-t
 - Missing configured CSV returns an error dictionary.
 - Invalid icon-candidate family/subject fails boundedly rather than broadening lookup.
 - Invalid persistence flag combinations exit before writes.
-- Existing `DECISIONS.md` is preserved and reported.
-- Invalid/placeholder SVG metadata, active/unsafe/non-local SVG content, or an invalid opaque pair exits nonzero with explicit failures.
-- Installer staging failure leaves the existing destination untouched; activation failure restores it; successful reinstall removes stale files rather than nesting another product directory.
+- Project/page identity collisions, Windows-reserved identities, redirected/shared persistence targets, and competing page claims fail before replaceable inquiry writes; corrupt-manifest recovery is serialized and existing `DECISIONS.md` bytes are preserved and reported.
+- Invalid/placeholder/contradictory SVG metadata, digest mismatch, active/unsafe/external/malformed/deep/extreme/invisible/clipped SVG content, redirected asset/manifest paths, output aliases, an inconsistent icon comparison, or an invalid opaque pair exits nonzero with explicit failures.
+- Installer lock contention, unsafe source/destination/transient paths, and invalid staged or activated copies fail boundedly; staging failure preserves the existing destination or recognizable interrupted previous tree, activation failure safely restores it, and successful reinstall removes stale files rather than nesting another product directory.
 - Missing agent host disables skill activation/research/generation but not local Python commands.
 - Missing Chrome/Chromium makes browser smoke fail with an explicit `CHROME_PATH` instruction; committed captures/tests remain available.
 - Missing/ignored durable contributor files, tracked private state, or a stale structural atlas fails the repository-context CI job before those defects can become accepted public guidance.

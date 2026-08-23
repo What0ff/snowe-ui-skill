@@ -1173,7 +1173,7 @@ a {
 .service-icon--fit { -webkit-mask-image: url("assets/icons/fit.svg"); mask-image: url("assets/icons/fit.svg"); }
 .service-icon--test { -webkit-mask-image: url("assets/icons/test-ride.svg"); mask-image: url("assets/icons/test-ride.svg"); }
 .service-icon--workshop { -webkit-mask-image: url("assets/icons/workshop.svg"); mask-image: url("assets/icons/workshop.svg"); }
-.service-icon--delivery { -webkit-mask-image: url("assets/icons/delivery.svg"); mask-image: url("assets/icons/delivery.svg"); }
+.service-icon--exchange { -webkit-mask-image: url("assets/icons/exchange.svg"); mask-image: url("assets/icons/exchange.svg"); }
 
 .service-number {
   margin: 2rem 0 .7rem;
@@ -1485,10 +1485,19 @@ a {
   text-transform: uppercase;
 }
 
-.sheet-close span {
-  font-size: 1.2rem;
-  font-weight: 400;
-  line-height: .8;
+.sheet-close-icon {
+  display: block;
+  flex: 0 0 1.25rem;
+  width: 1.25rem;
+  height: 1.25rem;
+  background: currentColor;
+  -webkit-mask: url("assets/icons/lucide-x.svg") center / contain no-repeat;
+  mask: url("assets/icons/lucide-x.svg") center / contain no-repeat;
+}
+
+.sheet-close:disabled {
+  cursor: not-allowed;
+  opacity: .46;
 }
 
 .sheet-shell {

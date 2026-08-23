@@ -27,8 +27,16 @@ REQUIRED_PUBLIC_PATHS = (
     "docs/atlas/06_GOTCHAS.md",
     "docs/atlas/07_TEST_MATRIX.md",
     "docs/atlas/repo-map.md",
+    "evals/designer-behavior/HOST-PROBES.md",
+    "evals/icon-decisions/README.md",
+    "evals/icon-decisions/comparison.html",
+    "evals/icon-decisions/manifest.json",
     "scripts/atlas/generate_atlas.py",
     "scripts/check_contributor_context.py",
+    "skill/snowe-ui-skill/scripts/icon_review.py",
+    "tests/test_icon_workflow.py",
+    "tests/test_runtime_hardening.py",
+    "tests/test_scope_contract.py",
 )
 
 PUBLIC_IGNORE_PROBES = (

@@ -95,12 +95,34 @@ resolveForm.addEventListener("submit", (event) => {
   applyFilters();
 });
 
+function closeRailNavigation({ restoreFocus = false } = {}) {
+  const focusInside = rail.contains(document.activeElement);
+  railToggle.setAttribute("aria-expanded", "false");
+  railToggle.textContent = "Nav";
+  rail.dataset.open = "false";
+  const railIsHidden = getComputedStyle(rail).display === "none";
+  if ((restoreFocus || (focusInside && railIsHidden)) && document.activeElement !== railToggle) railToggle.focus();
+}
+
 railToggle.addEventListener("click", () => {
   const open = railToggle.getAttribute("aria-expanded") !== "true";
-  railToggle.setAttribute("aria-expanded", String(open)); railToggle.textContent = open ? "Close" : "Nav"; rail.dataset.open = String(open);
+  if (!open) {
+    closeRailNavigation({ restoreFocus: true });
+    return;
+  }
+  railToggle.setAttribute("aria-expanded", "true");
+  railToggle.textContent = "Close";
+  rail.dataset.open = "true";
+  rail.querySelector("a")?.focus();
 });
+rail.querySelectorAll("a").forEach((link) => link.addEventListener("click", () => closeRailNavigation()));
 
 document.addEventListener("keydown", (event) => {
+  if (resolveDialog.open) return;
+  if (event.key === "Escape" && railToggle.getAttribute("aria-expanded") === "true") {
+    closeRailNavigation({ restoreFocus: true });
+    return;
+  }
   if (event.target.matches("input, textarea") || resolveDialog.open) return;
   const visible = visibleRows();
   const current = visible.indexOf(rows[selected]);
@@ -108,6 +130,10 @@ document.addEventListener("keydown", (event) => {
   if (event.key.toLowerCase() === "j" && visible.length) { event.preventDefault(); setDetail(visible[Math.min(current + 1, visible.length - 1)], true); }
   if (event.key.toLowerCase() === "k" && visible.length) { event.preventDefault(); setDetail(visible[Math.max(current - 1, 0)], true); }
   if (event.key.toLowerCase() === "e") { event.preventDefault(); resolveDialog.showModal(); }
+});
+
+window.addEventListener("resize", () => {
+  if (window.innerWidth > 760 && railToggle.getAttribute("aria-expanded") === "true") closeRailNavigation();
 });
 
 setDetail(rows[0]);

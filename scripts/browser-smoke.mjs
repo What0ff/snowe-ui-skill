@@ -13,7 +13,13 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const CAPTURE = process.argv.includes("--capture");
 const CAPTURE_SODA = process.argv.includes("--capture-soda");
 const CAPTURE_SODA_MOTION = process.argv.includes("--soda-motion-frames");
-const CHECKS_ONLY = process.argv.includes("--smoke") || (!CAPTURE && !CAPTURE_SODA && !CAPTURE_SODA_MOTION);
+const CAPTURE_GOODTURN = process.argv.includes("--capture-goodturn-workshop");
+const CHECKS_ONLY = process.argv.includes("--smoke") || (!CAPTURE && !CAPTURE_SODA && !CAPTURE_SODA_MOTION && !CAPTURE_GOODTURN);
+const SCENARIO_OPTION_INDEX = process.argv.indexOf("--scenario");
+const REQUESTED_SCENARIO = SCENARIO_OPTION_INDEX >= 0 ? process.argv[SCENARIO_OPTION_INDEX + 1] : null;
+if (SCENARIO_OPTION_INDEX >= 0 && (!REQUESTED_SCENARIO || REQUESTED_SCENARIO.startsWith("--"))) {
+  throw new Error("--scenario requires one benchmark slug or icon-decisions");
+}
 const DEFAULT_VIEWPORT = { width: 1440, height: 1000 };
 const MIME = new Map([
   [".css", "text/css; charset=utf-8"],
@@ -359,8 +365,39 @@ async function setViewport(client, { width, height }, reducedMotion = false) {
   });
   await client.send("Emulation.setEmulatedMedia", {
     media: "screen",
-    features: [{ name: "prefers-reduced-motion", value: reducedMotion ? "reduce" : "no-preference" }],
+    features: [
+      { name: "prefers-reduced-motion", value: reducedMotion ? "reduce" : "no-preference" },
+      { name: "forced-colors", value: "none" },
+    ],
   });
+}
+
+async function setForcedColors(client, active) {
+  await client.send("Emulation.setEmulatedMedia", {
+    media: "screen",
+    features: [
+      { name: "prefers-reduced-motion", value: "no-preference" },
+      { name: "forced-colors", value: active ? "active" : "none" },
+    ],
+  });
+  await sleep(40);
+}
+
+async function movePointerToSelector(client, selector) {
+  const rect = await evaluate(client, `(() => {
+    const node = document.querySelector(${JSON.stringify(selector)});
+    if (!node) return null;
+    const bounds = node.getBoundingClientRect();
+    return { x: bounds.left + bounds.width / 2, y: bounds.top + bounds.height / 2, width: bounds.width, height: bounds.height };
+  })()`);
+  check(rect && rect.width > 0 && rect.height > 0, `Missing or invisible hover target ${selector}`);
+  await client.send("Input.dispatchMouseEvent", { type: "mouseMoved", x: rect.x, y: rect.y });
+  await sleep(40);
+}
+
+async function movePointerAway(client) {
+  await client.send("Input.dispatchMouseEvent", { type: "mouseMoved", x: 1, y: 1 });
+  await sleep(20);
 }
 
 async function navigate(client, origin, scenario, viewport = DEFAULT_VIEWPORT, reducedMotion = false) {
@@ -489,6 +526,24 @@ async function key(client, keyValue, code = keyValue) {
 }
 
 async function interactGoodturn(client) {
+  const iconState = await evaluate(client, `(() => {
+    const articles = [...document.querySelectorAll(".service-grid article")];
+    const exchange = articles.find((article) => article.querySelector("h3")?.textContent.trim() === "Right-ride exchange");
+    const icon = exchange?.querySelector(".service-icon--exchange");
+    const rect = icon?.getBoundingClientRect();
+    const style = icon ? getComputedStyle(icon) : null;
+    return {
+      count: document.querySelectorAll(".service-icon").length,
+      exchangeClass: Boolean(icon),
+      width: rect?.width || 0,
+      height: rect?.height || 0,
+      mask: style?.maskImage || style?.webkitMaskImage || "",
+    };
+  })()`);
+  check(
+    iconState.count === 4 && iconState.exchangeClass && iconState.width >= 31 && iconState.height >= 31 && iconState.mask.includes("exchange.svg"),
+    `Goodturn: rendered exchange icon is missing, mis-sized, or unbound (${JSON.stringify(iconState)})`,
+  );
   await click(client, "[data-finder-next]");
   let result = await evaluate(client, `({ error: document.querySelector("[data-finder-error]").textContent.trim(), step: document.querySelector("[data-step]:not([hidden])")?.dataset.step })`);
   check(result.error && result.step === "0", "Goodturn: finder did not preserve the unanswered step");
@@ -668,13 +723,13 @@ async function interactLiterary(client) {
 
 async function exerciseMobileNavigation(client, scenario) {
   const definitions = {
-    "bicycle-commerce": [".menu-button", "#mobile-menu", "hidden"],
+    "bicycle-commerce": [".menu-button", "#mobile-menu", "hidden", ".cart-button"],
     "soda-campaign": ["#nav-toggle", "#site-nav", "data"],
-    "municipal-service": ["#nav-toggle", "#service-nav", "data"],
-    "warehouse-operations": ["#rail-toggle", "#app-rail", "data"],
-    "literary-publication": ["#issue-toggle", "#publication-nav", "data"],
+    "municipal-service": ["#nav-toggle", "#service-nav", "data", "#language-toggle"],
+    "warehouse-operations": ["#rail-toggle", "#app-rail", "data", "#refresh-queue"],
+    "literary-publication": ["#issue-toggle", "#publication-nav", "data", ".membership-open"],
   };
-  const [toggle, target, mode] = definitions[scenario.slug];
+  const [toggle, target, mode, outside] = definitions[scenario.slug];
   await click(client, toggle);
   const state = await evaluate(client, `(() => {
     const button = document.querySelector(${JSON.stringify(toggle)});
@@ -689,11 +744,90 @@ async function exerciseMobileNavigation(client, scenario) {
     );
     await key(client, "Escape");
     check(await evaluate(client, `document.querySelector("#nav-toggle").getAttribute("aria-expanded") === "false" && document.activeElement?.id === "nav-toggle"`), "Doppler: mobile navigation Escape/focus restoration failed");
+    return;
   }
+
+  check(
+    await evaluate(client, `document.querySelector(${JSON.stringify(target)}).contains(document.activeElement)`),
+    `${scenario.name}: opening mobile navigation did not focus its first destination`,
+  );
+  await key(client, "Escape");
+  const closed = await evaluate(client, `(() => {
+    const button = document.querySelector(${JSON.stringify(toggle)});
+    const target = document.querySelector(${JSON.stringify(target)});
+    return {
+      expanded: button.getAttribute("aria-expanded"),
+      visible: ${JSON.stringify(mode)} === "hidden" ? !target.hidden : target.dataset.open === "true",
+      focusRestored: document.activeElement === button,
+      focusInside: target.contains(document.activeElement),
+    };
+  })()`);
+  check(closed.expanded === "false" && !closed.visible && closed.focusRestored && !closed.focusInside, `${scenario.name}: mobile navigation Escape/focus restoration failed (${JSON.stringify(closed)})`);
+
+  await click(client, toggle);
+  await click(client, `${target} a`);
+  const activated = await evaluate(client, `(() => {
+    const button = document.querySelector(${JSON.stringify(toggle)});
+    const target = document.querySelector(${JSON.stringify(target)});
+    return {
+      expanded: button.getAttribute("aria-expanded"),
+      visible: ${JSON.stringify(mode)} === "hidden" ? !target.hidden : target.dataset.open === "true",
+      focusInsideHiddenNavigation: target.contains(document.activeElement) && getComputedStyle(target).display === "none",
+    };
+  })()`);
+  check(activated.expanded === "false" && !activated.visible && !activated.focusInsideHiddenNavigation, `${scenario.name}: destination activation left mobile navigation open or focus hidden (${JSON.stringify(activated)})`);
+
+  await click(client, toggle);
+  check(
+    await evaluate(client, `document.querySelector(${JSON.stringify(target)}).contains(document.activeElement)`),
+    `${scenario.name}: could not establish focus inside mobile navigation before breakpoint transition`,
+  );
+  await setViewport(client, DEFAULT_VIEWPORT);
+  await waitForExpression(client, `document.querySelector(${JSON.stringify(toggle)}).getAttribute("aria-expanded") === "false"`);
+  const insideBreakpoint = await evaluate(client, `(() => {
+    const target = document.querySelector(${JSON.stringify(target)});
+    const active = document.activeElement;
+    const rect = active?.getBoundingClientRect?.();
+    return {
+      activeTag: active?.tagName,
+      activeVisible: Boolean(rect && rect.width > 0 && rect.height > 0),
+      focusInside: target.contains(active),
+    };
+  })()`);
+  check(insideBreakpoint.activeTag !== "BODY" && insideBreakpoint.activeVisible, `${scenario.name}: focus inside mobile navigation was lost at the desktop breakpoint (${JSON.stringify(insideBreakpoint)})`);
+
+  await setViewport(client, { width: 390, height: 844 });
+  await click(client, toggle);
+  const focusedOutside = await evaluate(client, `(() => {
+    const outside = document.querySelector(${JSON.stringify(outside)});
+    outside?.focus();
+    return document.activeElement === outside;
+  })()`);
+  check(focusedOutside, `${scenario.name}: could not establish focus outside mobile navigation`);
+  await setViewport(client, DEFAULT_VIEWPORT);
+  await waitForExpression(client, `document.querySelector(${JSON.stringify(toggle)}).getAttribute("aria-expanded") === "false"`);
+  const breakpoint = await evaluate(client, `(() => {
+    const button = document.querySelector(${JSON.stringify(toggle)});
+    const target = document.querySelector(${JSON.stringify(target)});
+    const outside = document.querySelector(${JSON.stringify(outside)});
+    return {
+      expanded: button.getAttribute("aria-expanded"),
+      focusOutside: document.activeElement === outside,
+      focusInside: target.contains(document.activeElement),
+    };
+  })()`);
+  check(breakpoint.expanded === "false" && breakpoint.focusOutside && !breakpoint.focusInside, `${scenario.name}: desktop breakpoint closure stole focus or left it in navigation (${JSON.stringify(breakpoint)})`);
 }
 
 async function runSmoke(client, origin) {
-  for (const scenario of scenarios) {
+  const available = new Set([...scenarios.map((scenario) => scenario.slug), "icon-decisions"]);
+  if (REQUESTED_SCENARIO && !available.has(REQUESTED_SCENARIO)) {
+    throw new Error(`Unknown --scenario ${REQUESTED_SCENARIO}; expected one of: ${[...available].join(", ")}`);
+  }
+  const activeScenarios = REQUESTED_SCENARIO
+    ? scenarios.filter((scenario) => scenario.slug === REQUESTED_SCENARIO)
+    : scenarios;
+  for (const scenario of activeScenarios) {
     process.stdout.write(`CHECK ${scenario.name}\n`);
     try {
       for (const viewport of [DEFAULT_VIEWPORT, { width: 900, height: 900 }, { width: 390, height: 844 }]) {
@@ -725,6 +859,555 @@ async function runSmoke(client, origin) {
       passes.push(`${scenario.name}: wide/intermediate/mobile, interactions, reduced motion`);
     } catch (error) {
       failures.push(`${scenario.name}: ${error.message}`);
+    }
+  }
+
+  async function loadIconManifest(client) {
+    return evaluate(client, `(async () => {
+      const manifestUrl = new URL("/evals/icon-decisions/manifest.json", location.origin);
+      const response = await fetch(manifestUrl);
+      if (!response.ok) throw new Error("icon decision manifest returned HTTP " + response.status);
+      if (response.url !== manifestUrl.href) throw new Error("icon decision manifest followed an unexpected redirect");
+      return response.json();
+    })()`);
+  }
+
+  async function inspectIconContextSource(client, context) {
+    return evaluate(client, `(async () => {
+      const context = ${JSON.stringify(context)};
+      const manifestUrl = new URL("/evals/icon-decisions/manifest.json", location.origin);
+      const sourceUrl = new URL(context.context_evidence.source, manifestUrl);
+      const response = await fetch(sourceUrl);
+      const buffer = await response.arrayBuffer();
+      const source = new TextDecoder().decode(buffer);
+      const digestBytes = new Uint8Array(await crypto.subtle.digest("SHA-256", buffer));
+      const digest = [...digestBytes].map((value) => value.toString(16).padStart(2, "0")).join("");
+      let contextFound = false;
+      let hostFound = false;
+      let selectorError = "";
+      let label = "";
+      let visibleLabel = "";
+      try {
+        const parsed = new DOMParser().parseFromString(source, "text/html");
+        const contextNode = parsed.querySelector(context.context_evidence.selector);
+        const hostNode = parsed.querySelector(context.host_proof.target_selector);
+        contextFound = Boolean(contextNode);
+        hostFound = Boolean(hostNode);
+        const labelNode = context.host_proof.label_selector === "self"
+          ? hostNode
+          : hostNode?.querySelector(context.host_proof.label_selector);
+        label = hostNode?.getAttribute("aria-label")?.trim() || labelNode?.textContent?.trim() || "";
+        visibleLabel = hostNode?.textContent?.trim() || "";
+      } catch (error) {
+        selectorError = error.message;
+      }
+      return {
+        id: context.id,
+        source: sourceUrl.pathname,
+        responseUrl: response.url,
+        route: context.host_proof.route,
+        status: response.status,
+        responseBound: response.url === sourceUrl.href,
+        contextFound,
+        hostFound,
+        selector: context.context_evidence.selector,
+        hostSelector: context.host_proof.target_selector,
+        digest,
+        expectedDigest: context.context_evidence.source_sha256,
+        label,
+        expectedLabel: context.host_proof.expected_label,
+        visibleLabel,
+        expectedVisibleLabel: context.host_proof.expected_visible_label || "",
+        selectorError,
+      };
+    })()`);
+  }
+
+  async function inspectIconCandidateBytes(client, candidate) {
+    return evaluate(client, `(async () => {
+      const candidate = ${JSON.stringify({
+        id: candidate.id,
+        kind: candidate.kind,
+        asset: candidate.asset || "",
+        metadata: candidate.metadata || "",
+        asset_sha256: candidate.asset_sha256 || "",
+        source: candidate.source,
+        license: candidate.license,
+      })};
+      if (candidate.kind === "none") {
+        return { candidate: candidate.id, kind: candidate.kind, valid: true, painted: null, paintError: "" };
+      }
+      const manifestUrl = new URL("/evals/icon-decisions/manifest.json", location.origin);
+      const assetUrl = new URL(candidate.asset, manifestUrl);
+      const metadataUrl = new URL(candidate.metadata, manifestUrl);
+      const [assetResponse, metadataResponse] = await Promise.all([fetch(assetUrl), fetch(metadataUrl)]);
+      const responseBound = assetResponse.url === assetUrl.href && metadataResponse.url === metadataUrl.href;
+      if (!assetResponse.ok || !metadataResponse.ok || !responseBound) {
+        return {
+          candidate: candidate.id,
+          kind: candidate.kind,
+          valid: false,
+          assetStatus: assetResponse.status,
+          metadataStatus: metadataResponse.status,
+          assetPath: assetUrl.pathname,
+          metadataPath: metadataUrl.pathname,
+          responseBound,
+          assetResponseUrl: assetResponse.url,
+          metadataResponseUrl: metadataResponse.url,
+          paintError: "candidate asset or metadata did not return HTTP 2xx without a redirect",
+        };
+      }
+      const assetBuffer = await assetResponse.arrayBuffer();
+      const digestBytes = new Uint8Array(await crypto.subtle.digest("SHA-256", assetBuffer));
+      const digest = [...digestBytes].map((value) => value.toString(16).padStart(2, "0")).join("");
+      let metadata = null;
+      let metadataError = "";
+      try {
+        metadata = JSON.parse(await metadataResponse.text());
+      } catch (error) {
+        metadataError = error.message;
+      }
+      let painted = false;
+      let paintError = "";
+      let paintMethod = "";
+      try {
+        const blob = new Blob([assetBuffer], { type: "image/svg+xml" });
+        const objectUrl = URL.createObjectURL(blob);
+        try {
+          const image = new Image();
+          image.decoding = "async";
+          image.src = objectUrl;
+          await image.decode();
+          const canvas = document.createElement("canvas");
+          canvas.width = 64;
+          canvas.height = 64;
+          const context2d = canvas.getContext("2d", { willReadFrequently: true });
+          if (!context2d) throw new Error("2D canvas context unavailable");
+          context2d.clearRect(0, 0, canvas.width, canvas.height);
+          context2d.drawImage(image, 0, 0, canvas.width, canvas.height);
+          const pixels = context2d.getImageData(0, 0, canvas.width, canvas.height).data;
+          painted = Array.from({ length: pixels.length / 4 }, (_, index) => pixels[index * 4 + 3]).some((alpha) => alpha > 0);
+          paintMethod = "same-origin SVG decoded into a cleared canvas; at least one alpha channel is nonzero";
+        } finally {
+          URL.revokeObjectURL(objectUrl);
+        }
+      } catch (error) {
+        paintError = error.message;
+      }
+      const metadataProvenance = metadata?.provenance || {};
+      const metadataMatches = Boolean(
+        metadata
+        && metadata.name === candidate.id
+        && metadata.source === candidate.source
+        && metadata.license === candidate.license
+        && metadataProvenance.sha256 === digest
+        && metadataProvenance.kind === (candidate.kind === "custom" ? "original" : metadataProvenance.kind)
+      );
+      const valid = Boolean(
+        digest === candidate.asset_sha256
+        && metadataMatches
+        && !metadataError
+        && painted
+        && !paintError
+      );
+      return {
+        candidate: candidate.id,
+        kind: candidate.kind,
+        valid,
+        assetPath: assetUrl.pathname,
+        metadataPath: metadataUrl.pathname,
+        responseBound,
+        assetResponseUrl: assetResponse.url,
+        metadataResponseUrl: metadataResponse.url,
+        assetStatus: assetResponse.status,
+        metadataStatus: metadataResponse.status,
+        digest,
+        expectedManifestDigest: candidate.asset_sha256,
+        metadataDigest: metadataProvenance.sha256 || "",
+        metadataMatches,
+        metadataError,
+        painted,
+        paintMethod,
+        paintError,
+      };
+    })()`);
+  }
+
+  async function inspectIconHost(client, context) {
+    return evaluate(client, `(() => {
+      const proof = ${JSON.stringify(context.host_proof)};
+      const target = document.querySelector(proof.target_selector);
+      const labelNode = proof.label_selector === "self" ? target : target?.querySelector(proof.label_selector);
+      const label = target?.getAttribute("aria-label")?.trim() || labelNode?.textContent?.trim() || "";
+      const icon = target?.querySelector(proof.icon_selector);
+      const iconBounds = icon?.getBoundingClientRect();
+      const targetBounds = target?.getBoundingClientRect();
+      const style = icon ? getComputedStyle(icon) : null;
+      const targetStyle = target ? getComputedStyle(target) : null;
+      const styleSignature = targetStyle ? {
+        opacity: targetStyle.opacity,
+        cursor: targetStyle.cursor,
+        color: targetStyle.color,
+        backgroundColor: targetStyle.backgroundColor,
+        borderColor: targetStyle.borderColor,
+        outlineColor: targetStyle.outlineColor,
+        filter: targetStyle.filter,
+      } : null;
+      const darkSurface = proof.dark_surface_selector ? target?.closest(proof.dark_surface_selector) : null;
+      const maskValue = style?.maskImage || style?.webkitMaskImage || "none";
+      const maskMatch = String(maskValue).match(/url\\((?:["']?)([^"')]+)(?:["']?)\\)/);
+      let maskPath = "";
+      if (maskMatch) {
+        try { maskPath = new URL(maskMatch[1], location.href).pathname; } catch { maskPath = maskMatch[1]; }
+      }
+      return {
+        found: Boolean(target),
+        label,
+        visibleText: target?.textContent?.trim() || "",
+        styleSignature,
+        targetWidth: targetBounds?.width || 0,
+        targetHeight: targetBounds?.height || 0,
+        iconWidth: iconBounds?.width || 0,
+        iconHeight: iconBounds?.height || 0,
+        iconVisible: Boolean(icon && style?.display !== "none" && iconBounds?.width > 0 && iconBounds?.height > 0),
+        vectorChildren: target?.querySelectorAll("svg, img, picture").length ?? -1,
+        mask: maskValue,
+        maskPath,
+        backgroundImage: targetStyle?.backgroundImage || "none",
+        darkSurfaceFound: Boolean(darkSurface),
+        darkSurfaceBackground: darkSurface ? getComputedStyle(darkSurface).backgroundColor : "",
+      };
+    })()`);
+  }
+
+  async function renderIconHostCandidate(client, context, candidate, state) {
+    const candidateUrl = candidate.asset
+      ? new URL(candidate.asset, "http://icon-review.invalid/evals/icon-decisions/manifest.json").pathname
+      : "";
+    if (state === "hover") await movePointerToSelector(client, context.host_proof.target_selector);
+    return evaluate(client, `(async () => {
+      const proof = ${JSON.stringify(context.host_proof)};
+      const candidate = ${JSON.stringify({ id: candidate.id, kind: candidate.kind, visible_label: candidate.visible_label || "" })};
+      const state = ${JSON.stringify(state)};
+      const candidatePath = ${JSON.stringify(candidateUrl)};
+      const target = document.querySelector(proof.target_selector);
+      const frame = () => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      const maskPath = (value) => {
+        const match = String(value || "").match(/url\\((?:["']?)([^"')]+)(?:["']?)\\)/);
+        if (!match) return "";
+        try { return new URL(match[1], location.href).pathname; } catch { return match[1]; }
+      };
+      if (!target) return { found: false, candidate: candidate.id, kind: candidate.kind };
+      if (candidatePath) {
+        const assetResponse = await fetch(candidatePath);
+        if (!assetResponse.ok) return { found: true, candidate: candidate.id, kind: candidate.kind, assetStatus: assetResponse.status };
+      }
+      if (proof.strategy === "service-mask" || proof.strategy === "icon-owner") {
+        const icon = target.querySelector(proof.icon_selector);
+        if (!icon) return { found: true, candidate: candidate.id, kind: candidate.kind, iconFound: false };
+        const priorStyle = icon.getAttribute("style");
+        let addedText = null;
+        if (candidate.kind === "none") {
+          icon.style.display = "none";
+          if (proof.strategy === "icon-owner") {
+            addedText = document.createTextNode(candidate.visible_label || "");
+            target.appendChild(addedText);
+          }
+        } else {
+          icon.style.display = "block";
+          icon.style.maskImage = \`url("\${candidatePath}")\`;
+          icon.style.webkitMaskImage = \`url("\${candidatePath}")\`;
+        }
+        await frame();
+        const bounds = icon.getBoundingClientRect();
+        const style = getComputedStyle(icon);
+        const result = {
+          found: true,
+          candidate: candidate.id,
+          kind: candidate.kind,
+          iconFound: true,
+          iconVisible: style.display !== "none" && bounds.width > 0 && bounds.height > 0,
+          width: bounds.width,
+          height: bounds.height,
+          overflow: 0,
+          maskPath: maskPath(style.maskImage || style.webkitMaskImage),
+          expectedPath: candidatePath,
+          visibleText: target.textContent.trim(),
+        };
+        if (addedText) addedText.remove();
+        if (priorStyle === null) icon.removeAttribute("style"); else icon.setAttribute("style", priorStyle);
+        return result;
+      }
+      const clone = target.cloneNode(true);
+      clone.removeAttribute("id");
+      clone.dataset.iconReviewCandidate = candidate.id;
+      clone.querySelectorAll("svg, img, picture").forEach((node) => node.remove());
+      if (candidate.kind === "none") {
+        clone.replaceChildren(document.createTextNode(candidate.visible_label || clone.textContent.trim() || ""));
+      } else {
+        const icon = document.createElement("span");
+        icon.className = "icon-review-host-icon";
+        icon.setAttribute("aria-hidden", "true");
+        icon.style.cssText = "display:inline-block;flex:none;width:1.25rem;height:1.25rem;background:currentColor;-webkit-mask:center / contain no-repeat;mask:center / contain no-repeat;";
+        icon.style.maskImage = \`url("\${candidatePath}")\`;
+        icon.style.webkitMaskImage = \`url("\${candidatePath}")\`;
+        if (proof.strategy === "dialog-clone") clone.replaceChildren(icon, document.createTextNode("Close"));
+        else clone.prepend(icon);
+      }
+      target.parentElement.appendChild(clone);
+      if (state === "focus") clone.focus();
+      await frame();
+      const bounds = clone.getBoundingClientRect();
+      const icon = clone.querySelector(".icon-review-host-icon");
+      const iconBounds = icon?.getBoundingClientRect();
+      const result = {
+        found: true,
+        candidate: candidate.id,
+        kind: candidate.kind,
+        iconFound: Boolean(icon),
+        iconVisible: Boolean(icon && iconBounds.width > 0 && iconBounds.height > 0),
+        width: bounds.width,
+        height: bounds.height,
+        iconWidth: iconBounds?.width || 0,
+        iconHeight: iconBounds?.height || 0,
+        overflow: Math.max(0, bounds.left * -1, bounds.right - innerWidth),
+        maskPath: maskPath(icon ? getComputedStyle(icon).maskImage || getComputedStyle(icon).webkitMaskImage : ""),
+        expectedPath: candidatePath,
+        text: clone.textContent.trim(),
+        visibleText: clone.textContent.trim(),
+        focused: document.activeElement === clone,
+        disabled: clone.matches(":disabled"),
+        styleSignature: (() => {
+          const style = getComputedStyle(clone);
+          return {
+            opacity: style.opacity,
+            cursor: style.cursor,
+            color: style.color,
+            backgroundColor: style.backgroundColor,
+            borderColor: style.borderColor,
+            outlineColor: style.outlineColor,
+            filter: style.filter,
+          };
+        })(),
+      };
+      clone.remove();
+      return result;
+    })()`);
+  }
+
+  async function runIconHostProof(client, origin, context) {
+    const proof = context.host_proof;
+    const scenario = scenarios.find((item) => item.slug === proof.scenario);
+    check(scenario && scenario.route === proof.route, `Icon review: host proof route is not bound to scenario ${proof.scenario}`);
+    const comparisonStates = new Set(context.states);
+    const mappedComparisonStates = new Set(Object.keys(proof.state_map || {}));
+    const exercisedHostStates = new Set(proof.states);
+    const expectedStateMap = Object.fromEntries(
+      context.states.map((state) => [state, state === "high-contrast" ? "forced-colors" : state]),
+    );
+    check(
+      mappedComparisonStates.size === comparisonStates.size
+        && [...comparisonStates].every((state) => mappedComparisonStates.has(state))
+        && exercisedHostStates.size === Object.keys(proof.state_map || {}).length
+        && [...exercisedHostStates].every((state) => Object.values(proof.state_map || {}).includes(state))
+        && (!Object.prototype.hasOwnProperty.call(proof.state_map || {}, "high-contrast") || proof.state_map["high-contrast"] === "forced-colors"),
+      `Icon review: ${context.id} comparison states are not mapped one-to-one to exercised host states`,
+    );
+    check(
+      Object.keys(expectedStateMap).length === Object.keys(proof.state_map || {}).length
+        && Object.entries(expectedStateMap).every(([comparisonState, hostState]) => proof.state_map[comparisonState] === hostState),
+      `Icon review: ${context.id} comparison states do not use canonical host-state bindings`,
+    );
+    const candidatesById = new Map(context.candidates.map((candidate) => [candidate.id, candidate]));
+    const hostCandidates = [context.selected, ...proof.challenger_ids].map((id) => candidatesById.get(id));
+    check(hostCandidates.every(Boolean), `Icon review: host proof names an unknown candidate in ${context.id}`);
+    const candidateProofs = new Map();
+    for (const candidate of hostCandidates) {
+      const candidateProof = await inspectIconCandidateBytes(client, candidate);
+      check(candidateProof.valid, `Icon review: ${context.id} candidate bytes/metadata/paint proof failed for ${candidate.id} (${JSON.stringify(candidateProof)})`);
+      candidateProofs.set(candidate.id, candidateProof);
+    }
+    const styleChanged = (before, after) => {
+      const keys = ["opacity", "cursor", "color", "backgroundColor", "borderColor", "outlineColor", "filter"];
+      return Boolean(before && after && keys.some((key) => before[key] !== after[key]));
+    };
+    for (const viewport of proof.viewports) {
+      await navigate(client, origin, scenario, { width: viewport.width, height: viewport.height });
+      if (proof.open_selector) {
+        await click(client, proof.open_selector);
+        await waitFor(client, "document.querySelector('dialog[open]')", `${context.id} host dialog`);
+      }
+      const baseline = await inspectIconHost(client, context);
+      check(baseline.found && baseline.label === proof.expected_label, `Icon review: ${context.id} host target/label mismatch at ${viewport.name} (${JSON.stringify(baseline)})`);
+      if (proof.strategy === "button-clone") {
+        check(baseline.visibleText === proof.expected_visible_label,
+          `Icon review: ${context.id} visible action text is not bound to the owning control at ${viewport.name} (${JSON.stringify(baseline)})`);
+      }
+      if (viewport.expected_icon_size != null && context.selected) {
+        const selected = candidatesById.get(context.selected);
+        if (selected?.kind === "custom" || selected?.kind === "existing") {
+          check(Math.abs(baseline.iconWidth - viewport.expected_icon_size) < 0.2 && Math.abs(baseline.iconHeight - viewport.expected_icon_size) < 0.2,
+            `Icon review: ${context.id} selected host icon size mismatch at ${viewport.name} (${JSON.stringify(baseline)})`);
+        }
+      }
+      const selected = candidatesById.get(context.selected);
+      if ((proof.strategy === "service-mask" || proof.strategy === "icon-owner") && selected?.kind !== "none") {
+        const expectedPath = new URL(selected.asset, "http://icon-review.invalid/evals/icon-decisions/manifest.json").pathname;
+        check(baseline.maskPath === expectedPath, `Icon review: ${context.id} selected host mask is not bound to its manifest asset at ${viewport.name} (${JSON.stringify(baseline)})`);
+      }
+      if (selected?.kind === "none" && proof.strategy !== "dialog-clone") {
+        check(baseline.vectorChildren === 0 && baseline.mask === "none" && baseline.backgroundImage === "none",
+          `Icon review: ${context.id} selected no-icon host is not actually text-only at ${viewport.name} (${JSON.stringify(baseline)})`);
+      }
+      for (const state of proof.states) {
+        if (state === "forced-colors") await setForcedColors(client, true);
+        else await setForcedColors(client, false);
+        if (state === "hover") await movePointerToSelector(client, proof.target_selector);
+        else await movePointerAway(client);
+        if (state === "focus") {
+          const focused = await evaluate(client, `(() => { const node = document.querySelector(${JSON.stringify(proof.target_selector)}); node?.focus(); return { focused: Boolean(node && document.activeElement === node), same: document.activeElement === node, matches: Boolean(node?.matches(":focus")), active: document.activeElement?.outerHTML?.slice(0, 180) || "", target: node?.outerHTML?.slice(0, 180) || "" }; })()`);
+          check(focused.focused, `Icon review: ${context.id} host focus state did not focus its target at ${viewport.name} (${JSON.stringify(focused)})`);
+        }
+        if (state === "disabled") {
+          const disabled = await evaluate(client, `(() => { const node = document.querySelector(${JSON.stringify(proof.target_selector)}); if (!(node instanceof HTMLButtonElement)) return false; node.disabled = true; return node.matches(":disabled"); })()`);
+          check(disabled, `Icon review: ${context.id} host disabled state is not represented by the owning button at ${viewport.name}`);
+        }
+        const stateView = await inspectIconHost(client, context);
+        check(stateView.found && stateView.label === proof.expected_label, `Icon review: ${context.id} host ${state} state lost its target/label at ${viewport.name} (${JSON.stringify(stateView)})`);
+        if (proof.strategy === "button-clone" && state !== "forced-colors") {
+          check(stateView.visibleText === proof.expected_visible_label,
+            `Icon review: ${context.id} visible action text changed in ${state} at ${viewport.name} (${JSON.stringify(stateView)})`);
+        }
+        if (state === "disabled") {
+          check(styleChanged(baseline.styleSignature, stateView.styleSignature),
+            `Icon review: ${context.id} disabled state has no observable style treatment at ${viewport.name} (${JSON.stringify({ baseline: baseline.styleSignature, disabled: stateView.styleSignature })})`);
+        }
+        if (state === "dark") {
+          check(stateView.darkSurfaceFound && stateView.darkSurfaceBackground === proof.expected_dark_background,
+            `Icon review: ${context.id} dark-state proof is not bound to the declared host surface at ${viewport.name} (${JSON.stringify(stateView)})`);
+        }
+        for (const candidate of hostCandidates) {
+          const rendered = await renderIconHostCandidate(client, context, candidate, state);
+          check(rendered.found && rendered.assetStatus === undefined, `Icon review: ${context.id} host candidate could not load ${candidate.id} in ${state} at ${viewport.name} (${JSON.stringify(rendered)})`);
+          if (candidate.kind === "none") {
+            check(!rendered.iconVisible && rendered.overflow <= 1, `Icon review: ${context.id} no-icon candidate is not text-only/contained in ${state} at ${viewport.name} (${JSON.stringify(rendered)})`);
+            if (proof.strategy === "button-clone") {
+              check(rendered.visibleText === proof.expected_visible_label,
+                `Icon review: ${context.id} no-icon candidate ${candidate.id} changed the owning control text in ${state} at ${viewport.name} (${JSON.stringify(rendered)})`);
+            }
+          } else {
+            check(rendered.iconVisible && rendered.maskPath === rendered.expectedPath && rendered.overflow <= 1,
+              `Icon review: ${context.id} host candidate ${candidate.id} did not render its exact local asset in ${state} at ${viewport.name} (${JSON.stringify(rendered)})`);
+          }
+          if (state === "focus" && proof.strategy !== "service-mask" && proof.strategy !== "icon-owner") {
+            check(rendered.focused, `Icon review: ${context.id} candidate ${candidate.id} did not render in focus state at ${viewport.name}`);
+          }
+          if (state === "disabled" && proof.strategy !== "service-mask" && proof.strategy !== "icon-owner") {
+            check(rendered.disabled, `Icon review: ${context.id} candidate ${candidate.id} did not render in disabled state at ${viewport.name}`);
+            check(styleChanged(baseline.styleSignature, rendered.styleSignature),
+              `Icon review: ${context.id} candidate ${candidate.id} disabled clone has no observable style treatment at ${viewport.name} (${JSON.stringify({ baseline: baseline.styleSignature, disabled: rendered.styleSignature })})`);
+          }
+          if (candidate.kind === "none" && proof.strategy === "icon-owner") {
+            check(rendered.visibleText === candidate.visible_label,
+              `Icon review: ${context.id} no-icon owner candidate ${candidate.id} did not render its visible label at ${viewport.name}`);
+          }
+        }
+        if (state === "disabled") {
+          await evaluate(client, `(() => { const node = document.querySelector(${JSON.stringify(proof.target_selector)}); if (node instanceof HTMLButtonElement) node.disabled = false; })()`);
+        }
+        await movePointerAway(client);
+      }
+      await setForcedColors(client, false);
+      check(diagnostics.exceptions.length === 0 && diagnostics.consoleErrors.length === 0 && diagnostics.failedRequests.length === 0 && diagnostics.badResponses.length === 0,
+        `Icon review: ${context.id} host proof emitted diagnostics at ${viewport.name} (${JSON.stringify(diagnostics)})`);
+    }
+  }
+
+  if (!REQUESTED_SCENARIO || REQUESTED_SCENARIO === "icon-decisions") {
+    process.stdout.write("CHECK Icon decision comparison\n");
+    try {
+      const comparisonScenario = {
+        name: "Icon decision comparison",
+        route: "/evals/icon-decisions/comparison.html",
+        requiresReadyMarker: false,
+      };
+      await navigate(client, origin, comparisonScenario, DEFAULT_VIEWPORT);
+      const iconManifest = await loadIconManifest(client);
+      const expectedSelected = iconManifest.contexts.map((context) => context.selected).filter(Boolean).sort();
+      const expectedNoIconIds = iconManifest.contexts.flatMap((context) => context.candidates.filter((candidate) => candidate.kind === "none").map((candidate) => candidate.id));
+      const expectedCandidateCount = iconManifest.contexts.reduce((total, context) => total + context.candidates.length, 0);
+      const closeTextId = iconManifest.contexts[0]?.candidates.find((candidate) => candidate.kind === "none")?.id || "";
+      for (const viewport of [DEFAULT_VIEWPORT, { width: 390, height: 844 }]) {
+        await navigate(client, origin, comparisonScenario, viewport);
+        const report = await evaluate(client, `(() => {
+          const selected = [...document.querySelectorAll(".candidate--selected")].map((node) => node.dataset.candidate);
+          const iconSizes = [...document.querySelectorAll(".icon")].map((node) => {
+            const expected = Number.parseFloat(getComputedStyle(node).getPropertyValue("--icon-size"));
+            const bounds = node.getBoundingClientRect();
+            const svg = node.querySelector("svg")?.getBoundingClientRect();
+            return { expected, width: bounds.width, height: bounds.height, svgWidth: svg?.width || 0, svgHeight: svg?.height || 0 };
+          });
+          const unnamedButtons = [...document.querySelectorAll("button")].filter((button) =>
+            !(button.getAttribute("aria-label") || button.textContent || "").trim()
+          ).length;
+          const resources = performance.getEntriesByType("resource").map((entry) => entry.name);
+          const noIconIds = ${JSON.stringify(expectedNoIconIds)};
+          const noIconCards = [...document.querySelectorAll("article.candidate")].filter((card) => noIconIds.includes(card.dataset.candidate));
+          const closeText = document.querySelector('[data-candidate="${closeTextId}"] button')?.innerText.trim();
+          const stateCoverage = ${JSON.stringify(iconManifest.contexts)}.every((context) => {
+            const section = document.getElementById(context.id);
+            const states = new Set([...section.querySelectorAll(".state-label")].map((node) => node.textContent.trim()));
+            return context.states.every((state) => states.has(state));
+          });
+          return {
+            title: document.title,
+            contexts: document.querySelectorAll("section.context").length,
+            candidates: document.querySelectorAll("article.candidate").length,
+            selected,
+            iconSizes,
+            unnamedButtons,
+            noIconCardsWithoutSvg: noIconCards.length === noIconIds.length && noIconCards.every((card) => !card.querySelector("svg")),
+            closeText,
+            stateCoverage,
+            scripts: document.querySelectorAll("script").length,
+            externalResources: resources.filter((url) => !url.startsWith(location.origin)),
+            overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+          };
+        })()`);
+        check(report.title.includes("representative controls"), "Icon review: evidence boundary is missing from the title");
+        check(report.contexts === iconManifest.contexts.length && report.candidates === expectedCandidateCount, `Icon review: manifest/comparison counts differ (${JSON.stringify(report)})`);
+        check(JSON.stringify(report.selected.sort()) === JSON.stringify(expectedSelected), `Icon review: selected decisions do not match the checked manifest (${report.selected.join(", ")})`);
+        check(report.iconSizes.length > 0 && report.iconSizes.every((size) =>
+          Number.isFinite(size.expected)
+          && Math.abs(size.width - size.expected) < 0.2
+          && Math.abs(size.height - size.expected) < 0.2
+          && Math.abs(size.svgWidth - size.expected) < 0.2
+          && Math.abs(size.svgHeight - size.expected) < 0.2
+        ), "Icon review: one or more SVGs did not render at the declared target size");
+        check(report.unnamedButtons === 0 && report.noIconCardsWithoutSvg && report.closeText === "Close" && report.stateCoverage, "Icon review: a no-icon, accessible-name, or declared-state comparison is misleading");
+        check(report.scripts === 0 && report.externalResources.length === 0, `Icon review: generated evidence is not self-contained (${report.externalResources.join(", ")})`);
+        check(report.overflow <= 1, `Icon review: ${report.overflow}px horizontal overflow at ${viewport.width}px`);
+        check(diagnostics.exceptions.length === 0, `Icon review: runtime exceptions: ${diagnostics.exceptions.join(" | ")}`);
+        check(diagnostics.consoleErrors.length === 0, `Icon review: console errors: ${diagnostics.consoleErrors.join(" | ")}`);
+        check(diagnostics.failedRequests.length === 0, `Icon review: failed requests: ${diagnostics.failedRequests.join(" | ")}`);
+        check(diagnostics.badResponses.length === 0, `Icon review: HTTP failures: ${diagnostics.badResponses.join(" | ")}`);
+      }
+
+      const contextBindings = await Promise.all(iconManifest.contexts.map((context) => inspectIconContextSource(client, context)));
+      check(
+        contextBindings.length === iconManifest.contexts.length
+          && contextBindings.every((binding) => binding.status === 200 && binding.contextFound && binding.hostFound
+            && binding.selector === binding.hostSelector && binding.source === binding.route
+            && binding.responseBound
+            && binding.digest === binding.expectedDigest && binding.label === binding.expectedLabel
+            && (!binding.expectedVisibleLabel || binding.visibleLabel === binding.expectedVisibleLabel)
+            && !binding.selectorError),
+        `Icon review: repository-derived context source/digest/selector/label binding failed (${JSON.stringify(contextBindings)})`,
+      );
+      for (const context of iconManifest.contexts) await runIconHostProof(client, origin, context);
+      passes.push(`Icon decision comparison: ${iconManifest.contexts.length} contexts, ${expectedCandidateCount} candidates, digest-bound host selectors and candidate bytes/metadata, nontransparent asset paint, selected and rejected candidates rendered in owning hosts, declared states, exact wide/mobile viewports, containment`);
+    } catch (error) {
+      failures.push(`Icon decision comparison: ${error.message}`);
     }
   }
 }
@@ -863,6 +1546,34 @@ async function captureSodaMotionFrames(client, origin, scenario) {
   passes.push(`${frameCount} Doppler motion frames captured from the live browser implementation`);
 }
 
+async function captureGoodturnWorkshop(client, origin, scenario) {
+  const viewport = { width: 1425, height: 990 };
+  await navigate(client, origin, scenario, viewport);
+  await commonAudit(client, scenario, viewport, false);
+  await evaluate(client, `(() => {
+    document.documentElement.style.scrollBehavior = "auto";
+    document.querySelector("#workshop").scrollIntoView({ block: "start", behavior: "instant" });
+  })()`);
+  await waitFor(client, `(() => {
+    const top = document.querySelector("#workshop").getBoundingClientRect().top;
+    return top >= 0 && top < 100;
+  })()`, "Goodturn workshop capture position");
+  const exchange = await evaluate(client, `(() => {
+    const icon = document.querySelector(".service-icon--exchange");
+    const bounds = icon?.getBoundingClientRect();
+    const style = icon ? getComputedStyle(icon) : null;
+    return {
+      bound: Boolean(icon),
+      width: bounds?.width || 0,
+      height: bounds?.height || 0,
+      mask: style?.maskImage || style?.webkitMaskImage || "",
+    };
+  })()`);
+  check(exchange.bound && exchange.width >= 31 && exchange.height >= 31 && exchange.mask.includes("exchange.svg"), `Goodturn capture: exchange icon is not rendered (${JSON.stringify(exchange)})`);
+  await screenshot(client, path.join(ROOT, "benchmarks/bicycle-commerce/screenshots/desktop-workshop.jpg"));
+  passes.push("Goodturn workshop screenshot captured from the validated 1425 × 990 host state");
+}
+
 async function runCaptures(client, origin) {
   await Promise.all([
     "municipal-service",
@@ -900,6 +1611,9 @@ async function main() {
     }
     if (CAPTURE_SODA_MOTION && failures.length === 0) {
       await captureSodaMotionFrames(client, origin, scenarios.find((scenario) => scenario.slug === "soda-campaign"));
+    }
+    if (CAPTURE_GOODTURN && failures.length === 0) {
+      await captureGoodturnWorkshop(client, origin, scenarios.find((scenario) => scenario.slug === "bicycle-commerce"));
     }
   } finally {
     if (client) {

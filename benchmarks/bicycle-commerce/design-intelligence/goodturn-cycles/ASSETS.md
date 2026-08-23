@@ -22,8 +22,10 @@ mode: monochrome stroke; currentColor
 stroke: 1.75; round caps/joins; small mechanical corners
 primitives: wheels/circles, measured verticals, route turns, open tool geometry
 detail budget: one primary object plus at most one semantic modifier at 16px
-target sizes: 16, 20, 24, and 28px service display
+target sizes: 16, 20, 24, 28, and the implemented 32px service display
 accessibility: owning labeled component; SVG decorative
 ```
 
 The family must pass `asset_quality.py`, then be reviewed beside real labels and controls. A passing SVG result is not optical acceptance.
+
+The fit, test-route, and workshop symbols remain repository-owned custom drawings. The former custom cargo/delivery glyph was rejected for `Right-ride exchange`: its crate-and-wheels silhouette described delivery, not exchange. The pinned Lucide `Repeat 2` glyph won at the real 32px service-card size and at 16/20/24px because its opposing directional paths preserve the familiar exchange metaphor. Its exact upstream source, SHA-256 binding, and ISC notice are stored beside `exchange.svg`. This external exception is intentionally not relabeled as custom work.

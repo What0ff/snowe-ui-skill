@@ -38,16 +38,19 @@ The absence of deleted recipe catalogs is an intentional source-of-truth decisio
 
 `decision_packet.py` writes beneath the caller-selected root:
 
+- `design-intelligence/<project>/PROJECT.json` — atomic source of exact printable project identity for the slug;
 - `design-intelligence/<project>/BRIEF.md` — replaceable current inquiry;
 - `design-intelligence/<project>/DECISIONS.md` — durable create-once accepted-decision ledger;
-- `design-intelligence/<project>/pages/<page>.md` — replaceable open page inquiry.
+- `design-intelligence/<project>/pages/<page>.md` — identity-bound replaceable open page inquiry.
 
-The generator owns replaceable inquiry files. Existing `DECISIONS.md` owns accepted evidence and is preserved. Explicit current requirements or verified evidence can supersede it only through an explicit `SUPERSEDED` record.
+The exact explicit project/page identities own slug claims; a Windows-reserved or different identity that normalizes to the same slug is rejected, not permission to overwrite. A short-lived per-project lock serializes claims and recovery. The generator owns atomically replaceable inquiry files only after identity preflight and immediate parent revalidation. Existing `DECISIONS.md` owns accepted evidence and is preserved byte-for-byte. Explicit current requirements or verified evidence can supersede it only through an explicit `SUPERSEDED` record.
 
 ## Repository evaluation state
 
-- `evals/designer-behavior/scenarios.json` is deterministic scenario/route-fixture input; `run_eval.py` is the packet/repository contract runner; `EVIDENCE-AUDIT.md` is the legacy-field decision record. None is observed real-agent evidence.
-- `benchmarks/bicycle-commerce/{index.html,styles.css,app.js}` are Goodturn implementation truth; its `design-intelligence/`, assets, and screenshots preserve design/rendered evidence.
+- `evals/designer-behavior/scenarios.json` is deterministic scenario/route-fixture input; `run_eval.py` is the packet/repository/scope-contract runner; `EVIDENCE-AUDIT.md` is the legacy-field decision record. None is observed real-agent evidence.
+- `evals/designer-behavior/HOST-PROBES.md` is bounded observed-host evidence for explicitly recorded GPT-5.6 Luna/max tasks, tool/context conditions, task/diff fingerprints, loaded references, process depth, timing, and uncertainty. It is not deterministic runner output, a transcript, a representative model sample, or causal proof.
+- `evals/icon-decisions/manifest.json`, exact local SVG/metadata/license files, and deterministically generated `comparison.html` are operational icon-decision evidence. The manifest owns the selected/rejected human judgment; validators own only structure, exact-byte/declared-metadata/context binding, and comparison consistency; browser smoke owns route/selector/label/viewport/state reachability, exact local candidate rendering, and containment. The benchmark HTML/CSS remains implementation truth.
+- `benchmarks/bicycle-commerce/{index.html,styles.css,app.js}` are Goodturn implementation truth; its `design-intelligence/`, assets, and screenshots preserve design/rendered evidence. Its exchange mark is now a pinned Lucide Repeat2 SVG with exact external provenance/license metadata; the product-specific fit mark remains original custom work and is the custom-wins case in the operational icon proof.
 - `benchmarks/soda-campaign/{index.html,styles.css,app.js}` are Doppler implementation truth; its six `design-intelligence/` records, local fonts/SVG labels, seven JPEGs, and browser-derived GIF preserve candidate, provenance, motion, and corrected rendered evidence.
 - `benchmarks/forward-tests/manifest.json` is the comparison metadata/source for required scenario outcomes and screenshot names.
 - Each forward-test's HTML/CSS/JS is implementation truth; `DECISIONS.md` records causal choices; `QA.md` records browser findings/fixes; `screenshots/*.jpg` is final visual evidence.
@@ -67,8 +70,9 @@ The generator owns replaceable inquiry files. Existing `DECISIONS.md` owns accep
 - If a CSV header and configuration disagree, runtime follows configuration strings; fix the intended schema/config and add a regression.
 - If a retrieved row conflicts with verified evidence, verified evidence wins; the row remains only a bounded snapshot.
 - If a new packet conflicts with existing `DECISIONS.md`, do not overwrite the ledger; reconcile explicitly.
+- If project/page identity and a normalized slug disagree, reject the write; do not infer that similar labels denote the same project or page. A torn project manifest is recoverable only through the bounded source-verified path implemented by persistence.
 - If screenshots/QA contradict current HTML/CSS/JS, implementation is current truth and visual evidence must be rerendered.
 - If cross-benchmark comparison finds similarity without causal justification, change the decision mechanism and rerun affected benchmarks; do not add cosmetic anti-template rules.
-- Structural SVG validation cannot override a weak rendered icon; optical review can reject a structurally valid asset.
+- Structural SVG validation and exact-byte metadata binding cannot establish source/license truth or override a weak rendered icon; real-context optical review can reject a structurally valid custom asset, keep a compatible existing glyph, or keep no icon.
 
 There is no database, migration system, service state, browser storage, environment configuration model, runtime network cache, queue, or shared memory in the installable product.

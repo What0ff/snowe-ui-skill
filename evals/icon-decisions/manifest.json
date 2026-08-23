@@ -1,0 +1,217 @@
+{
+  "schema_version": "1.0",
+  "title": "Icon decisions in representative controls",
+  "contexts": [
+    {
+      "id": "dialog-close",
+      "role": "Close a Goodturn product dialog",
+      "component": "icon-button",
+      "label": "Close product details",
+      "detail": "Familiar system action in a compact modal header",
+      "sizes": [16, 20, 24],
+      "states": ["default", "hover", "focus", "disabled", "high-contrast"],
+      "selected": "lucide-x",
+      "verdict": "KEEP",
+      "decision_evidence": "The conventional X keeps the strongest silhouette at 16 px and matches learned close behavior. The custom ring adds visual mass and falsely suggests a status badge, so custom work is rejected.",
+      "context_evidence": {
+        "basis": "repository-derived",
+        "source": "../../benchmarks/bicycle-commerce/index.html",
+        "source_sha256": "3be5069ff59db9cea26b8d4794c9b138ca891593732f55b1fa74fdde9152c466",
+        "selector": "#product-dialog .sheet-close",
+        "viewport": "Goodturn product dialog at 1440 × 900 and 390 × 844 plus 16, 20, and 24 px comparison targets"
+      },
+      "host_proof": {
+        "scenario": "bicycle-commerce",
+        "route": "/benchmarks/bicycle-commerce/index.html",
+        "target_selector": "#product-dialog .sheet-close",
+        "label_selector": "self",
+        "icon_selector": ".sheet-close-icon",
+        "strategy": "icon-owner",
+        "open_selector": "[data-open-product=\"turn-one\"]",
+        "expected_label": "Close product details",
+        "states": ["default", "hover", "focus", "disabled", "forced-colors"],
+        "state_map": {
+          "default": "default",
+          "hover": "hover",
+          "focus": "focus",
+          "disabled": "disabled",
+          "high-contrast": "forced-colors"
+        },
+        "viewports": [
+          {"name": "wide", "width": 1440, "height": 900, "expected_icon_size": 20},
+          {"name": "mobile", "width": 390, "height": 844, "expected_icon_size": 20}
+        ],
+        "challenger_ids": ["custom-orbit-close", "close-text"]
+      },
+      "candidates": [
+        {
+          "id": "lucide-x",
+          "name": "Lucide X",
+          "kind": "existing",
+          "asset": "../../benchmarks/bicycle-commerce/assets/icons/lucide-x.svg",
+          "asset_sha256": "4a9cdab38fbb96162e7dace28e33f4ca0e49d8963a6162abc3d4691b7d675117",
+          "metadata": "../../benchmarks/bicycle-commerce/assets/icons/lucide-x.metadata.json",
+          "source": "Lucide X SVG at pinned upstream revision",
+          "license": "Lucide ISC / Feather-derived icons MIT; see LUCIDE_LICENSE.txt",
+          "rationale": "Direct learned symbol, open silhouette, and family-ready 24-grid construction."
+        },
+        {
+          "id": "custom-orbit-close",
+          "name": "Orbit close challenger",
+          "kind": "custom",
+          "asset": "assets/custom-orbit-close.svg",
+          "asset_sha256": "6d234a50eae15f70e60826fc53191f899e2d31964852ee93a89aed525a67428a",
+          "metadata": "assets/custom-orbit-close.metadata.json",
+          "source": "repository-owned custom challenger drawn for rejection proof",
+          "license": "project-owned repository evaluation asset",
+          "rationale": "REJECT: the enclosing circle crowds the diagonals at 16 px and implies a badge or bounded status without adding meaning."
+        },
+        {
+          "id": "close-text",
+          "name": "Visible Close text",
+          "kind": "none",
+          "visible_label": "Close",
+          "source": "No asset; semantic button text",
+          "license": "Not applicable",
+          "rationale": "Clear but consumes unnecessary header width for a universally learned close action in this context."
+        }
+      ]
+    },
+    {
+      "id": "bicycle-fit",
+      "role": "Explain Goodturn bicycle-fit service",
+      "component": "service-item",
+      "label": "Personal fit",
+      "detail": "Thirty measured minutes for frame, saddle, reach, and the clothes you actually ride in.",
+      "sizes": [16, 20, 24, 28, 32],
+      "states": ["default", "dark", "high-contrast"],
+      "selected": "fit",
+      "verdict": "KEEP",
+      "decision_evidence": "At Goodturn's implemented 32 px size, the custom ruler-plus-frame mark connects measurement to bicycle setup and fits the neighboring service family better than the generic ruler. The 16 and 20 px rows expose its small-size risk; the visible label remains the semantic owner.",
+      "context_evidence": {
+        "basis": "repository-derived",
+        "source": "../../benchmarks/bicycle-commerce/index.html",
+        "source_sha256": "3be5069ff59db9cea26b8d4794c9b138ca891593732f55b1fa74fdde9152c466",
+        "selector": ".service-grid article:first-child",
+        "viewport": "1440 × 900 host render plus 16, 20, 24, 28, and 32 px comparison targets"
+      },
+      "host_proof": {
+        "scenario": "bicycle-commerce",
+        "route": "/benchmarks/bicycle-commerce/index.html",
+        "target_selector": ".service-grid article:first-child",
+        "label_selector": "h3",
+        "icon_selector": ".service-icon--fit",
+        "strategy": "service-mask",
+        "expected_label": "Personal fit",
+        "states": ["default", "dark", "forced-colors"],
+        "state_map": {
+          "default": "default",
+          "dark": "dark",
+          "high-contrast": "forced-colors"
+        },
+        "dark_surface_selector": "#workshop",
+        "expected_dark_background": "rgb(21, 26, 23)",
+        "viewports": [
+          {"name": "wide", "width": 1440, "height": 900, "expected_icon_size": 32},
+          {"name": "mobile", "width": 390, "height": 844, "expected_icon_size": 28}
+        ],
+        "challenger_ids": ["lucide-ruler", "fit-no-icon"]
+      },
+      "candidates": [
+        {
+          "id": "lucide-ruler",
+          "name": "Lucide Ruler",
+          "kind": "existing",
+          "asset": "assets/lucide-ruler.svg",
+          "asset_sha256": "af9710f70510217ef33773d502d0be2425c3a9cb1e3294ace27da9f0b4c8850b",
+          "metadata": "assets/lucide-ruler.metadata.json",
+          "source": "Lucide Ruler SVG at pinned upstream revision",
+          "license": "Lucide ISC; see ../LUCIDE_LICENSE.txt",
+          "rationale": "Recognizable measurement symbol, but it does not distinguish fit setup from generic sizing or workshop measurement."
+        },
+        {
+          "id": "fit",
+          "name": "Goodturn fit frame",
+          "kind": "custom",
+          "asset": "../../benchmarks/bicycle-commerce/assets/icons/fit.svg",
+          "asset_sha256": "4a735fe31c899d27d9e02e70186531ac78dc8613be7715e65caed1ffe2457e77",
+          "metadata": "../../benchmarks/bicycle-commerce/assets/icons/fit.metadata.json",
+          "source": "repository-owned custom drawing for Goodturn Cycles benchmark",
+          "license": "project-owned benchmark asset",
+          "rationale": "SELECTED at the implemented 32 px host size: ruler ticks and the minimum frame triangle connect measurement to bicycle setup without secondary decoration."
+        },
+        {
+          "id": "fit-no-icon",
+          "name": "Label only",
+          "kind": "none",
+          "source": "No asset; visible service label and explanation",
+          "license": "Not applicable",
+          "rationale": "Semantically sufficient, but the selected small custom family materially reinforces Goodturn's measurement/service identity here."
+        }
+      ]
+    },
+    {
+      "id": "eligibility-action",
+      "role": "Start a municipal eligibility check",
+      "component": "labeled-button",
+      "label": "Check and continue",
+      "detail": "High-stakes action before any eligibility outcome exists",
+      "sizes": [16, 20, 24],
+      "states": ["default", "focus", "disabled", "high-contrast"],
+      "selected": "eligibility-no-icon",
+      "verdict": "KEEP",
+      "decision_evidence": "Visible action text is complete. A badge-check icon visually implies verified eligibility before the service has checked evidence, so no icon is the more truthful and accessible outcome.",
+      "context_evidence": {
+        "basis": "repository-derived",
+        "source": "../../benchmarks/forward-tests/municipal-service/index.html",
+        "source_sha256": "8b732c33358ee058b8f5964a64390a853cb24e7669bddcbd0fdceb6b53ab698a",
+        "selector": "#eligibility-form .primary-action",
+        "viewport": "390 × 844 and 1440 × 900 host renders plus 16, 20, and 24 px comparison targets"
+      },
+      "host_proof": {
+        "scenario": "municipal-service",
+        "route": "/benchmarks/forward-tests/municipal-service/index.html",
+        "target_selector": "#eligibility-form .primary-action",
+        "label_selector": "self",
+        "icon_selector": "svg, img, picture",
+        "strategy": "button-clone",
+        "expected_label": "Check and continue",
+        "expected_visible_label": "Check and continue",
+        "states": ["default", "focus", "disabled", "forced-colors"],
+        "state_map": {
+          "default": "default",
+          "focus": "focus",
+          "disabled": "disabled",
+          "high-contrast": "forced-colors"
+        },
+        "viewports": [
+          {"name": "wide", "width": 1440, "height": 900},
+          {"name": "mobile", "width": 390, "height": 844}
+        ],
+        "challenger_ids": ["lucide-badge-check"]
+      },
+      "candidates": [
+        {
+          "id": "lucide-badge-check",
+          "name": "Lucide Badge Check",
+          "kind": "existing",
+          "asset": "assets/lucide-badge-check.svg",
+          "asset_sha256": "52d60a49661538a74fdd1c15b04ad90ea4d01321344f88f5973d611be9b62284",
+          "metadata": "assets/lucide-badge-check.metadata.json",
+          "source": "Lucide Badge Check SVG at pinned upstream revision",
+          "license": "Lucide ISC; see ../LUCIDE_LICENSE.txt",
+          "rationale": "REJECT: the verified badge describes a successful outcome, not the action that begins an eligibility check."
+        },
+        {
+          "id": "eligibility-no-icon",
+          "name": "Action text only",
+          "kind": "none",
+          "visible_label": "Check and continue",
+          "source": "No asset; semantic button text",
+          "license": "Not applicable",
+          "rationale": "SELECTED: exact verb and object communicate the action without asserting a result or adding scanning noise."
+        }
+      ]
+    }
+  ]
+}

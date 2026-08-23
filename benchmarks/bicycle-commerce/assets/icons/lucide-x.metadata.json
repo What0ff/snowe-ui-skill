@@ -1,0 +1,30 @@
+{
+  "name": "lucide-x",
+  "asset_type": "interface-icon",
+  "role": "existing-library close icon used by the product dialog owner",
+  "grid": 24,
+  "live_area": {"min_x": 5, "min_y": 5, "max_x": 19, "max_y": 19},
+  "drawing_language": {
+    "mode": "stroke",
+    "stroke_width": 2,
+    "linecap": "round",
+    "linejoin": "round",
+    "corner_language": "Lucide rounded monoline terminals",
+    "detail_budget": "two crossing diagonal strokes at 16 px"
+  },
+  "target_sizes": [16, 20, 24],
+  "source": "Lucide X SVG at pinned upstream revision",
+  "license": "Lucide ISC / Feather-derived icons MIT; see LUCIDE_LICENSE.txt",
+  "accessibility_owner": "owning dialog button supplies the accessible Close label; masked SVG is decorative",
+  "provenance": {
+    "kind": "external",
+    "creator": "Lucide Icons and Contributors",
+    "source_ref": "https://github.com/lucide-icons/lucide/blob/33a44aa8b0b43d9b0ed14eb08860a1b5550a1573/icons/x.svg",
+    "reviewed": "2026-08-23",
+    "sha256": "4a9cdab38fbb96162e7dace28e33f4ca0e49d8963a6162abc3d4691b7d675117"
+  },
+  "evidence": {
+    "source": {"kind": "external", "verification": "unverified"},
+    "license": {"path": "LUCIDE_LICENSE.txt", "sha256": "a02c3c61f49b98d60d8961e80250078aa3d88c2a438d4b94dad42f08dccb331f"}
+  }
+}

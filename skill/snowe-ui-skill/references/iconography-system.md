@@ -88,7 +88,7 @@ accessibility ownership, provenance, license, and maintainer
 
 The grid is a construction aid, not the optical result. Curves may overshoot; asymmetrical subjects may need asymmetric padding; diagonals and circles often need visual compensation. Equal numeric boxes do not guarantee equal perceived size.
 
-Build a family proof with unlike subjects: one simple orthogonal icon, one circular or curved icon, one diagonal/asymmetric icon, and one dense domain-specific icon. This exposes a weak language earlier than polishing a single favorable symbol.
+When the change introduces or materially extends a family, build a proof with unlike subjects: one simple orthogonal icon, one circular or curved icon, one diagonal/asymmetric icon, and one dense domain-specific icon. This exposes a weak language earlier than polishing a single favorable symbol. A single bounded icon correction does not need a ceremonial family workshop; compare it against the established neighbors and the strongest exact alternative at its real sizes.
 
 ## Construct and Iterate
 
@@ -119,7 +119,31 @@ Validate structure and provenance:
 python <skill-directory>/scripts/asset_quality.py path/to/icon.svg --metadata path/to/icon.metadata.json
 ```
 
-Metadata requires the icon role, grid/live area, drawing language, target sizes, source/license, and accessibility owner. A passing validator proves only the declared structural contract. It cannot certify beauty, recognition, optical balance, or family coherence.
+Metadata requires the icon role, grid/live area, drawing language, target sizes, source/license, accessibility owner, and structured local evidence bindings. Local source and license records must resolve from metadata-relative paths to safe regular files whose exact bytes match their digests; external source URLs remain explicitly unverified. A passing validator proves only the declared structural contract. It cannot certify beauty, recognition, optical balance, or family coherence.
+
+The validator accepts a strict self-contained interface-icon subset. It rejects nested viewports, executable or linked content, embedded text/raster content, URI/local-fragment dependencies, transforms/masks/filters/clipping, unknown attributes, malformed or clipped geometry, collapsed root dimensions, non-`currentColor` paint, asset-level muted opacity, unsupported miter joins, and metadata/provenance contradictions. The exact schema and boundary are in [cli-reference.md](cli-reference.md).
+
+## Operational Candidate Comparison
+
+When the outcome is genuinely unresolved, compare only the strongest plausible existing, custom, and visible-text/no-icon alternatives. A familiar routine action in an accepted family can stay Direct; do not manufacture challengers after the answer is already learned and contextually sound.
+
+For a material icon decision, the standard-library helper generates a self-contained representative-control matrix after validating each SVG and cross-binding its metadata:
+
+```text
+python <skill-directory>/scripts/icon_review.py \
+  path/to/manifest.json --output path/to/comparison.html --json
+```
+
+Declare the role, component type, visible label/content, target sizes, relevant states, candidates, context evidence, current verdict, and selected candidate. Use `repository-derived` context evidence only when the named source file and selector exist and a candidate is selected; otherwise label unresolved evidence `representative`. For repository-derived proof, map every comparison state to exactly one exercised host state (including `high-contrast` → `forced-colors`) and bind the selected candidate to the actual owning host when the owner can be exercised. The matrix is useful for like-for-like size/state comparison but is not a substitute for the actual host component.
+
+Inspect the generated matrix at wide and narrow viewports, then inspect claimed winners and close losers in the real UI at every implemented size and relevant default, focus, selected, disabled, light, dark, and high-contrast state. Record four evidence categories separately:
+
+- deterministic contract: SVG/metadata/manifest structure, exact SVG-byte binding, structured source/license byte bindings, and explicit comparison-state→host-state coverage;
+- rendered/browser regression: what the comparison sheet and host component actually render;
+- current source evidence: official asset bytes, version/revision, and license where external; external URL truth remains unverified until current primary-source review;
+- human visual judgment: recognition, silhouette, optical center, weight, negative space, metaphor, and neighboring fit.
+
+The checked source-repository proof under `evals/icon-decisions/` demonstrates all three legitimate outcomes: an existing glyph wins and custom is rejected, custom wins for a product-specific mechanism, and visible text/no icon wins because an icon would assert the wrong state.
 
 ## Recognizability and Optical Review
 

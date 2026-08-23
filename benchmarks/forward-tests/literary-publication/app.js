@@ -13,9 +13,34 @@ const membershipResult = document.querySelector("#membership-result");
 const membershipOpeners = [...document.querySelectorAll(".membership-open")];
 let lastMembershipOpener = membershipOpeners[0];
 
+function closePublicationNavigation({ restoreFocus = false } = {}) {
+  const focusInside = publicationNav.contains(document.activeElement);
+  issueToggle.setAttribute("aria-expanded", "false");
+  issueToggle.textContent = "Contents";
+  publicationNav.dataset.open = "false";
+  const navIsHidden = getComputedStyle(publicationNav).display === "none";
+  if ((restoreFocus || (focusInside && navIsHidden)) && document.activeElement !== issueToggle) issueToggle.focus();
+}
+
 issueToggle.addEventListener("click", () => {
   const open = issueToggle.getAttribute("aria-expanded") !== "true";
-  issueToggle.setAttribute("aria-expanded", String(open)); issueToggle.textContent = open ? "Close" : "Contents"; publicationNav.dataset.open = String(open);
+  if (!open) {
+    closePublicationNavigation({ restoreFocus: true });
+    return;
+  }
+  issueToggle.setAttribute("aria-expanded", "true");
+  issueToggle.textContent = "Close";
+  publicationNav.dataset.open = "true";
+  publicationNav.querySelector("a")?.focus();
+});
+publicationNav.querySelectorAll("a").forEach((link) => link.addEventListener("click", () => closePublicationNavigation()));
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && issueToggle.getAttribute("aria-expanded") === "true") closePublicationNavigation({ restoreFocus: true });
+});
+
+window.addEventListener("resize", () => {
+  if (window.innerWidth > 640 && issueToggle.getAttribute("aria-expanded") === "true") closePublicationNavigation();
 });
 
 function updateProgress() {

@@ -36,8 +36,10 @@ snowe-ui-skill/
 │       └── screenshots/
 ├── docs/  # public repository documentation and atlas
 │   └── atlas/
-├── evals/  # deterministic cross-scenario contracts
-│   └── designer-behavior/
+├── evals/  # deterministic behavior contracts and bounded operational proofs
+│   ├── designer-behavior/
+│   └── icon-decisions/
+│       └── assets/
 ├── scripts/  # repository maintenance tooling
 │   └── atlas/
 ├── skill/  # installable product boundary
@@ -46,7 +48,7 @@ snowe-ui-skill/
 │       ├── data/  # bundled retrieval evidence and analog catalogs
 │       │   └── stacks/
 │       ├── references/  # progressive-disclosure UI guidance
-│       └── scripts/  # standard-library retrieval, decision support, and validators
+│       └── scripts/  # standard-library retrieval, decision support, SVG validation, and icon comparison
 └── tests/  # unittest product and benchmark regression coverage
 ```
 
@@ -66,8 +68,9 @@ snowe-ui-skill/
 | --- | --- |
 | `skill/snowe-ui-skill/SKILL.md` | Agent-runtime activation metadata and workflow router |
 | `skill/snowe-ui-skill/scripts/search.py` | Local evidence-search and decision-packet CLI |
-| `skill/snowe-ui-skill/scripts/decision_packet.py` | Open architecture-first inquiry and persistence API |
-| `skill/snowe-ui-skill/scripts/asset_quality.py` | Custom SVG structure/provenance validator |
+| `skill/snowe-ui-skill/scripts/decision_packet.py` | Portfolio/open-inquiry generation and identity-bound persistence API |
+| `skill/snowe-ui-skill/scripts/asset_quality.py` | Strict self-contained SVG structure/provenance validator |
+| `skill/snowe-ui-skill/scripts/icon_review.py` | Deterministic icon decision/context comparison builder |
 | `skill/snowe-ui-skill/scripts/contrast.py` | Exact opaque-color contrast checker |
 | `evals/designer-behavior/run_eval.py` | Cross-business deterministic-contract regression |
 | `benchmarks/bicycle-commerce/index.html` | Rendered bicycle-commerce forward-test |
@@ -77,6 +80,9 @@ snowe-ui-skill/
 | `tests/test_snowe_ui_skill.py` | Skill/runtime unittest regression suite |
 | `tests/test_bicycle_benchmark.py` | Benchmark artifact and UX-contract suite |
 | `tests/test_installation.py` | Standalone install/update and recovery regression suite |
+| `tests/test_scope_contract.py` | Process-depth proportionality and escalation regression suite |
+| `tests/test_icon_workflow.py` | Icon lifecycle, context proof, and SVG safety regression suite |
+| `tests/test_runtime_hardening.py` | Persistence identity/race and runtime failure regression suite |
 | `.github/workflows/ci.yml` | Cross-platform runtime, browser, and context validation workflow |
 | `scripts/atlas/generate_atlas.py` | Structural atlas write/check command |
 
@@ -86,17 +92,17 @@ The generated map itself is excluded from the counts.
 
 | Extension | Files |
 | --- | --- |
-| `.md` | 51 |
+| `.md` | 54 |
 | `.jpg` | 34 |
 | `.csv` | 32 |
-| `.py` | 14 |
-| `.svg` | 7 |
-| `.json` | 6 |
+| `.py` | 18 |
+| `.json` | 12 |
+| `.svg` | 12 |
+| `.html` | 6 |
+| `.txt` | 6 |
 | `.woff2` | 6 |
 | `.css` | 5 |
-| `.html` | 5 |
 | `.js` | 5 |
-| `.txt` | 4 |
 | `.webp` | 4 |
 | `[no extension]` | 4 |
 | `.yml` | 2 |
@@ -109,15 +115,17 @@ The generated map itself is excluded from the counts.
 | Task | Start here |
 | --- | --- |
 | Understand contributor workflow or context boundaries | `AGENTS.md` |
-| Understand agent activation and UI workflow | `skill/snowe-ui-skill/SKILL.md` |
+| Understand agent activation, process depth, and UI workflow | `skill/snowe-ui-skill/SKILL.md` |
 | Change detailed design guidance (follow routing links in SKILL.md) | `skill/snowe-ui-skill/references/` |
 | Change CLI options or output dispatch | `skill/snowe-ui-skill/scripts/search.py` |
 | Change domains, stacks, BM25 retrieval, or result filtering | `skill/snowe-ui-skill/scripts/core.py` |
-| Change open inquiry generation, analog filtering, or persisted decision files | `skill/snowe-ui-skill/scripts/decision_packet.py` |
+| Change open inquiry generation, analog filtering, or identity-bound decision persistence | `skill/snowe-ui-skill/scripts/decision_packet.py` |
 | Change custom SVG validation | `skill/snowe-ui-skill/scripts/asset_quality.py` |
+| Change icon need, custom/existing/no-icon comparison, or context proof | `skill/snowe-ui-skill/scripts/icon_review.py` |
 | Change exact color/contrast validation | `skill/snowe-ui-skill/scripts/contrast.py` |
 | Change a runtime dataset or schema (verify configured headers) | `skill/snowe-ui-skill/scripts/core.py` |
-| Change cross-business deterministic contracts | `evals/designer-behavior/` |
+| Change process-depth contracts or inspect bounded observed-host probes | `evals/designer-behavior/` |
+| Change the operational icon decision proof | `evals/icon-decisions/` |
 | Change or inspect the rendered bicycle benchmark | `benchmarks/bicycle-commerce/` |
 | Change standalone installation or update behavior | `scripts/install_skill.py` |
 | Add or focus regression coverage | `tests/` |
@@ -131,7 +139,9 @@ The generated map itself is excluded from the counts.
 | --- | --- |
 | `skill/snowe-ui-skill/` | This is the copied installable unit; repository-only files must stay outside it. |
 | `skill/snowe-ui-skill/scripts/core.py` | CSV headers, evidence-role labels, stack URL coverage, and icon-source boundaries are public contracts. |
-| `skill/snowe-ui-skill/scripts/decision_packet.py` | Persistence regenerates BRIEF/page inquiries but must preserve existing DECISIONS.md. |
+| `skill/snowe-ui-skill/scripts/decision_packet.py` | Identity manifests, atomic inquiry writes, race handling, containment, and byte-preserved DECISIONS.md form one persistence contract. |
+| `skill/snowe-ui-skill/scripts/asset_quality.py` | A structural PASS requires a strict self-contained SVG/metadata subset but can never certify visual or provenance truth. |
+| `skill/snowe-ui-skill/scripts/icon_review.py` | Comparison sheets bind exact assets, metadata, source/license text, UI-context selectors, decisions, and rejected alternatives. |
 | `skill/snowe-ui-skill/data/*.csv` | Schemas are accessed by exact header strings; malformed quoting or renamed columns can silently empty fields. |
 | `benchmarks/bicycle-commerce/assets/` | Generated media, local fonts/licenses, SVGs, and provenance metadata must stay coherent with the benchmark disclosure. |
 | `scripts/install_skill.py` | Successful updates exactly replace the final skill directory; staging, containment, recovery, and rollback must remain intact. |

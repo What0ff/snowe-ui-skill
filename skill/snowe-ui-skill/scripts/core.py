@@ -12,6 +12,19 @@ from collections import defaultdict
 DATA_DIR = Path(__file__).parent.parent / "data"
 MAX_RESULTS = 3
 
+
+def validate_max_results(value):
+    """Return a valid result limit or reject an unsafe slicing value.
+
+    ``bool`` is deliberately rejected even though it subclasses ``int``.  A
+    non-positive limit is not a useful empty-result request here: passing it
+    through to a slice can turn a caller mistake into an unbounded or
+    surprising evidence lookup (for example, ``ranked[:-1]``).
+    """
+    if isinstance(value, bool) or not isinstance(value, int) or value <= 0:
+        raise ValueError("max_results must be a positive integer")
+    return value
+
 ICON_CANDIDATE_FAMILY_ALIASES = {
     "lucide": "Lucide",
     "tabler": "Tabler Icons",
@@ -26,7 +39,20 @@ CSV_CONFIG = {
     "chart": {
         "file": "charts.csv",
         "search_cols": ["Data Type", "Keywords", "Best Chart Type", "When to Use", "When NOT to Use", "Accessibility Notes"],
-        "output_cols": ["Data Type", "Keywords", "Best Chart Type", "Secondary Options", "When to Use", "When NOT to Use", "Data Volume Threshold", "Color Guidance", "Accessibility Grade", "Accessibility Notes", "A11y Fallback", "Library Recommendation", "Interactive Level"]
+        # Keep retrieval to discovery prompts the bundled snapshot can support.
+        # Exact data-volume thresholds, threshold-bearing use/avoid prose,
+        # palette values, accessibility grades, library recommendations, and
+        # interaction prescriptions are withheld:
+        # none of those time-sensitive or context-dependent claims carries a
+        # primary-source citation in the catalog.
+        "output_cols": [
+            "Data Type",
+            "Keywords",
+            "Best Chart Type",
+            "Secondary Options",
+            "Accessibility Notes",
+            "A11y Fallback",
+        ]
     },
     "product": {
         "file": "products.csv",
@@ -104,8 +130,10 @@ DOMAIN_SOURCE_ROLES = {
         "Use only for familiar system actions and verify the repository's actual source. Product-specific symbols require broader reasoning.",
     ),
     "chart": (
-        "visualization guidance snapshot",
-        "Choose an encoding from the user's analytical question and representative data, then verify accessibility and edge states.",
+        "unsourced visualization-discovery snapshot",
+        "Treat returned encodings, limitations, and accessibility notes as prompts only. "
+        "Choose from the user's analytical question and representative data; verify semantics, accessibility, performance, edge states, and current library support with the target implementation and primary sources. "
+        "Unsupported exact thresholds, palette values, accessibility grades, library recommendations, and interaction prescriptions are intentionally not returned.",
     ),
     "ux": (
         "general UX guidance",
@@ -233,6 +261,7 @@ def _load_csv(filepath):
 
 def _search_csv(filepath, search_cols, output_cols, query, max_results, row_filter=None):
     """Core search function using BM25"""
+    validate_max_results(max_results)
     if not filepath.exists():
         return []
 
@@ -260,6 +289,7 @@ def _search_csv(filepath, search_cols, output_cols, query, max_results, row_filt
 
 def search(query, domain=None, max_results=MAX_RESULTS):
     """Search one caller-selected evidence domain without semantic inference."""
+    validate_max_results(max_results)
     if domain is None:
         return {
             "error": "An explicit evidence domain is required; automatic semantic domain detection is intentionally unavailable",
@@ -358,6 +388,7 @@ def search(query, domain=None, max_results=MAX_RESULTS):
 
 def search_stack(query, stack, max_results=MAX_RESULTS):
     """Search stack-specific guidelines"""
+    validate_max_results(max_results)
     if stack not in STACK_CONFIG:
         return {"error": f"Unknown stack: {stack}. Available: {', '.join(AVAILABLE_STACKS)}"}
 

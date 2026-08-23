@@ -1,0 +1,35 @@
+{
+  "name": "exchange",
+  "asset_type": "interface-icon",
+  "role": "existing-library exchange-service icon",
+  "grid": 24,
+  "live_area": {
+    "min_x": 1,
+    "min_y": 5,
+    "max_x": 23,
+    "max_y": 19
+  },
+  "drawing_language": {
+    "mode": "stroke",
+    "stroke_width": 2,
+    "linecap": "round",
+    "linejoin": "round",
+    "corner_language": "Lucide rounded monoline terminals",
+    "detail_budget": "two directional exchange paths remain recognizable with the service label at 16 px"
+  },
+  "target_sizes": [16, 20, 24, 28, 32],
+  "source": "Lucide Repeat 2 SVG at pinned upstream revision",
+  "license": "Lucide ISC; see LUCIDE_LICENSE.txt",
+  "accessibility_owner": "owning labelled service item; SVG is decorative",
+  "provenance": {
+    "kind": "external",
+    "creator": "Lucide Icons and Contributors",
+    "source_ref": "https://github.com/lucide-icons/lucide/blob/33a44aa8b0b43d9b0ed14eb08860a1b5550a1573/icons/repeat-2.svg",
+    "reviewed": "2026-08-23",
+    "sha256": "788912bbfdeab0401a36e29cde95ef594b59957a13d3e08a392d10f59c49e7da"
+  },
+  "evidence": {
+    "source": {"kind": "external", "verification": "unverified"},
+    "license": {"path": "LUCIDE_LICENSE.txt", "sha256": "a02c3c61f49b98d60d8961e80250078aa3d88c2a438d4b94dad42f08dccb331f"}
+  }
+}

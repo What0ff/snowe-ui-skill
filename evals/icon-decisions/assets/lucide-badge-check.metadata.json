@@ -1,0 +1,30 @@
+{
+  "name": "lucide-badge-check",
+  "asset_type": "interface-icon",
+  "role": "existing-library eligibility-action challenger",
+  "grid": 24,
+  "live_area": {"min_x": 0.9, "min_y": 0.9, "max_x": 23.1, "max_y": 23.1},
+  "drawing_language": {
+    "mode": "stroke",
+    "stroke_width": 2,
+    "linecap": "round",
+    "linejoin": "round",
+    "corner_language": "Lucide rounded verification seal",
+    "detail_budget": "one seal silhouette and check at 16 px"
+  },
+  "target_sizes": [16, 20, 24],
+  "source": "Lucide Badge Check SVG at pinned upstream revision",
+  "license": "Lucide ISC; see ../LUCIDE_LICENSE.txt",
+  "accessibility_owner": "owning labelled action supplies meaning; SVG is decorative",
+  "provenance": {
+    "kind": "external",
+    "creator": "Lucide Icons and Contributors",
+    "source_ref": "https://github.com/lucide-icons/lucide/blob/33a44aa8b0b43d9b0ed14eb08860a1b5550a1573/icons/badge-check.svg",
+    "reviewed": "2026-08-23",
+    "sha256": "52d60a49661538a74fdd1c15b04ad90ea4d01321344f88f5973d611be9b62284"
+  },
+  "evidence": {
+    "source": {"kind": "external", "verification": "unverified"},
+    "license": {"path": "../LUCIDE_LICENSE.txt", "sha256": "a02c3c61f49b98d60d8961e80250078aa3d88c2a438d4b94dad42f08dccb331f"}
+  }
+}

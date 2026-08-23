@@ -1,18 +1,40 @@
 {
   "name": "fit",
+  "asset_type": "interface-icon",
   "role": "interface icon",
   "grid": 24,
-  "live_area": "2.5..21.25 with 0.25 optical compensation",
+  "live_area": {
+    "min_x": 1.5,
+    "min_y": 1.5,
+    "max_x": 19,
+    "max_y": 22.25
+  },
   "drawing_language": {
     "mode": "stroke",
     "stroke_width": 1.75,
     "linecap": "round",
     "linejoin": "round",
     "corner_language": "measured mechanical geometry with small open corners",
-    "detail_budget": "ruler plus one frame triangle, recognizable with label at 16 px"
+    "detail_budget": "ruler plus one frame triangle; no secondary decoration"
   },
-  "target_sizes": [16, 20, 24, 28],
+  "target_sizes": [16, 20, 24, 28, 32],
   "source": "repository-owned custom drawing for Goodturn Cycles benchmark",
   "license": "project-owned benchmark asset",
-  "accessibility_owner": "owning labelled service item; SVG is decorative"
+  "accessibility_owner": "owning labelled service item; SVG is decorative",
+  "provenance": {
+    "kind": "original",
+    "creator": "Snowe UI Skill benchmark authors",
+    "source_ref": "benchmarks/bicycle-commerce/design-intelligence/goodturn-cycles/ASSETS.md",
+    "reviewed": "2026-08-23",
+    "sha256": "4a735fe31c899d27d9e02e70186531ac78dc8613be7715e65caed1ffe2457e77"
+  },
+  "evidence": {
+    "source": {
+      "kind": "local",
+      "path": "../../design-intelligence/goodturn-cycles/ASSETS.md",
+      "sha256": "3c67f5b0f9c9d54494f693c7e5177204e6155d23f6dcabf03f04e63365a04fad",
+      "locator": "#custom-symbol-family"
+    },
+    "license": {"path": "../../../../LICENSE", "sha256": "0cd15032a964eb7b46b1bb74f96b89ed411a33fcd6b877925f5ced02ec8a9c87"}
+  }
 }

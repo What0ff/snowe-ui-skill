@@ -79,6 +79,7 @@ input[type="radio"] { width: 1.15rem; height: 1.15rem; accent-color: var(--green
 .primary-action, .secondary-action { display: inline-flex; min-height: 48px; align-items: center; justify-content: center; width: fit-content; border: 2px solid var(--green-dark); padding: .72rem 1.1rem; font-weight: 800; text-decoration: none; cursor: pointer; }
 .primary-action { background: var(--green-dark); color: white; }
 .primary-action:hover { background: #061f18; }
+.primary-action:disabled { cursor: not-allowed; opacity: .55; }
 .secondary-action { background: transparent; color: var(--green-dark); }
 .secondary-action:hover { background: var(--mint); }
 .error-summary { margin: 1.4rem 0 .5rem; padding: 1rem 1.2rem; border-left: 6px solid var(--red); background: #fae8e5; }

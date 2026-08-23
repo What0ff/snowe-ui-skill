@@ -27,11 +27,34 @@ const ro = {
 };
 const english = new Map([...document.querySelectorAll("[data-i18n]")].map((node) => [node.dataset.i18n, node.textContent]));
 
+function closeServiceNavigation({ restoreFocus = false } = {}) {
+  const focusInside = serviceNav.contains(document.activeElement);
+  navToggle.setAttribute("aria-expanded", "false");
+  navToggle.textContent = "Menu";
+  serviceNav.dataset.open = "false";
+  const navIsHidden = getComputedStyle(serviceNav).display === "none";
+  if ((restoreFocus || (focusInside && navIsHidden)) && document.activeElement !== navToggle) navToggle.focus();
+}
+
 navToggle.addEventListener("click", () => {
   const open = navToggle.getAttribute("aria-expanded") !== "true";
-  navToggle.setAttribute("aria-expanded", String(open));
-  navToggle.textContent = open ? "Close" : "Menu";
-  serviceNav.dataset.open = String(open);
+  if (!open) {
+    closeServiceNavigation({ restoreFocus: true });
+    return;
+  }
+  navToggle.setAttribute("aria-expanded", "true");
+  navToggle.textContent = "Close";
+  serviceNav.dataset.open = "true";
+  serviceNav.querySelector("a")?.focus();
+});
+serviceNav.querySelectorAll("a").forEach((link) => link.addEventListener("click", () => closeServiceNavigation()));
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && navToggle.getAttribute("aria-expanded") === "true") closeServiceNavigation({ restoreFocus: true });
+});
+
+window.addEventListener("resize", () => {
+  if (window.innerWidth > 860 && navToggle.getAttribute("aria-expanded") === "true") closeServiceNavigation();
 });
 
 languageToggle.addEventListener("click", () => {

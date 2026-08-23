@@ -20,23 +20,25 @@ The runner checks raw decision packets for:
 - local evidence being retrieved without opt-in or changing reasoning when absent;
 - coherent-system preservation;
 - task-specific progressive-disclosure traces;
+- consequence/change-surface consistency, including a high-consequence proof floor that does not force unrelated process breadth;
 - reintroduction of classifier tables or obsolete recipe datasets.
 
 These are deterministic contract checks, not observed agent behavior or aesthetic certification. A `KEEP` means the generated packet and repository fixtures preserve the asserted boundary; it does not mean an interface is good or that an agent followed the route.
 
-## Authored progressive-disclosure fixtures
+## Authored scope-calibration fixtures
 
-The scenarios declare references that are causally relevant for representative work:
+Six probes encode materially different observed change surfaces and the expected smallest responsible process:
 
-| Task | Needed | Intentionally not loaded |
-|---|---|---|
-| Restore focus after an existing dialog closes | `quality-gates.md` | architecture, imagery, motion, designer evaluation |
-| Reorganize a municipal permit journey | exploration + experience architecture | iconography, imagery, motion |
-| Decide whether a dense warehouse workspace needs imagery | imagery/assets until no image wins | iconography, motion, designer evaluation |
-| Choose a familiar close glyph in an existing family | iconography | imagery, art direction, architecture |
-| Compare rendered products for unexplained repetition | designer evaluation | CLI retrieval, iconography |
+| Probe | Expected depth | Required proof | Intentionally skipped |
+|---|---|---|---|
+| Two-pixel state spacing correction | Direct | affected owner/invariant and rendered state | packet, research, candidates, architecture, assets, motion, full evaluation |
+| Existing dialog focus-restoration defect | Direct | keyboard and rendered focus proof | unrelated visual/system ceremony |
+| Local clipping symptom owned by a shared notification primitive | Focused | baseline/challenger across representative siblings | whole-journey framing and Portfolio candidates |
+| Saved filters in an established warehouse workflow | Focused | affected causal choice and responsive workflow proof | unrelated architecture/assets/motion |
+| Open municipal eligibility-to-status journey | Portfolio | whole-journey model, structural alternatives, risky proof slice | unrelated imagery/icons/motion |
+| Focus clipping on a medication confirmation control | Direct with high-consequence proof | keyboard, zoom, contrast/adverse state, and rollback checks | unrelated research, architecture, and candidate work |
 
-The runner verifies that every declared fixture has a reason, a small relevant set, and no overlap between needed and excluded references. It does not run an agent or observe actual file loading. It does not reward a minimum file count; relevance is the boundary.
+The runner checks internal consistency between observed owner/consumers/uncertainty/consequence and the authored depth, reference, artifact, delivery, stop, and escalation record. Each trace explicitly declares every documented whole-system uncertainty dimension as a boolean; the runner never maps task text or free-form uncertainty phrases to those fields. Direct delivery is limited to the owner, invariant, affected implementation/states/proof, corrections, and unknowns; the Delivery section is structurally closed so an appended global Portfolio obligation fails. Metamorphic tests reject unjustified widening, every documented form of consequential flattening, and a high-consequence Direct route without its higher proof floor. It still does not run an agent or observe actual file loading. It does not reward a minimum file or token count; responsibility to the actual consequence is the boundary.
 
 ## Rendered and browser regression evidence
 
@@ -48,4 +50,6 @@ Goodturn, Doppler, and the municipal, warehouse, and literary forward-tests prov
 
 ## Observed real-agent behavior
 
-No reproducible observed-agent evaluation is currently committed. A future claim in this layer must record the exact prompt, target repository commit, model and reasoning configuration, tool access, references actually loaded, output and rendered result, repeated-run variance, and an appropriate no-Snowe or alternate-workflow control. Until then, the deterministic and rendered layers must not be described as causal model evidence.
+The bounded read-only records in [HOST-PROBES.md](HOST-PROBES.md) cover the six calibrated scopes plus an exact committed-methodology control and the unfamiliar-project discovery failure/correction. They record task, commit, configured model/reasoning, tool context, actual reference loading, packet/research/candidate use, process depth, proof, observable time, uncertainty, and dirty-worktree fingerprints.
+
+They remain evidence for those runs only. The host did not expose token totals or independent runtime model identity, the sample is small, several tasks use supplied host facts, and repeated agent-run variance was not established. The pre-change control also stayed Direct, which rejects a universal “old Snowe always widened” claim. Deterministic and rendered layers therefore remain non-causal; no host probe is an aesthetic or generalization certificate.

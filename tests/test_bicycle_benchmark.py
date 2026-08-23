@@ -121,13 +121,16 @@ class BicycleBenchmarkTests(unittest.TestCase):
         self.assertIn("min-width: 44px", self.css)
         self.assertNotRegex(self.css, r"url\([\"']?https?://")
 
-    def test_custom_icons_pass_structural_and_provenance_validation(self):
+    def test_service_icons_pass_structural_and_provenance_validation(self):
         icon_root = BENCHMARK / "assets" / "icons"
-        for name in ("fit", "test-ride", "workshop", "delivery"):
+        for name in ("fit", "test-ride", "workshop", "exchange"):
             result = validate_svg_asset(icon_root / f"{name}.svg", icon_root / f"{name}.metadata.json")
             self.assertTrue(result["valid"], result["errors"])
             metadata = json.loads((icon_root / f"{name}.metadata.json").read_text(encoding="utf-8"))
             self.assertTrue({16, 20, 24}.issubset(metadata["target_sizes"]))
+        exchange = json.loads((icon_root / "exchange.metadata.json").read_text(encoding="utf-8"))
+        self.assertEqual("external", exchange["provenance"]["kind"])
+        self.assertTrue((icon_root / "LUCIDE_LICENSE.txt").is_file())
 
     def test_design_trace_records_rejected_alternative_and_rendered_learning(self):
         record = BENCHMARK / "design-intelligence" / "goodturn-cycles"

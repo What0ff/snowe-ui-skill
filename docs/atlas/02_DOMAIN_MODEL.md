@@ -12,6 +12,7 @@
 | Pressure inquiry | Generic prompt to discover consequential pressures; not a keyword-derived answer. | packet `situation.pressure_inquiry` |
 | Local analog | At most three caller-requested product rows labelled `UNVERIFIED_ANALOG`; lexical evidence, not classification. | packet `local_evidence` |
 | Causal decision | `driver → design move → expected consequence → evidence → risk → revisit trigger`. | `SKILL.md`, packet `decision_graph` |
+| Depth record | Evidence-bound `Direct | Focused | Portfolio` route naming consequence, affected invariant, owner/consumers, exact loaded/skipped references and skipped processes, artifacts, proof stop, and escalation trigger. | `SKILL.md`, scope scenarios/tests |
 | Rendered finding | `KEEP`, `REVISE`, `REJECT`, or `UNKNOWN` tied to viewport/state evidence. | `designer-evaluation.md`, benchmark QA |
 | Accepted decision ledger | Durable project decisions under `design-intelligence/<slug>/DECISIONS.md`. | `persist_decision_packet` |
 | Atlas | Public durable repository navigation/facts under `docs/atlas/`; unrelated to project design intelligence or private task memory. | root `AGENTS.md` |
@@ -31,6 +32,8 @@
 ```
 
 Every live domain has an epistemic role and use boundary. Product output is only `Product Type` plus `Keywords`. Icon lookup removes legacy style/guideline rows. `icon-candidates` additionally requires exactly one named supported family and a real subject.
+
+Chart retrieval is a visualization-discovery snapshot. Output deliberately withholds unsupported exact data-volume thresholds, color prescriptions, accessibility grades, library recommendations, and interaction levels rather than presenting catalog fields as measured authority.
 
 `search_stack(query, stack, max_results)` returns:
 
@@ -70,15 +73,16 @@ Forbidden premature-selection keys in evaluation include `pattern`, `section_ord
 
 ## Persistence contract
 
-For `design-intelligence/<project-slug>/`:
+Persistence requires an explicit printable, non-Windows-reserved project identity and serializes one normalized project slug with a short-lived OS lock. For `design-intelligence/<project-slug>/`:
 
 | File | Write behavior |
 |---|---|
-| `BRIEF.md` | Regenerated from the current packet. |
+| `PROJECT.json` | Atomic identity manifest; an exact matching project can resume, a slug collision is rejected, and a recoverable torn manifest can be regenerated only when the existing directory is consistent with the same explicit identity. |
+| `BRIEF.md` | Atomically regenerated from the current packet without following redirected/shared-file targets. |
 | `DECISIONS.md` | Exclusive-create only; existing bytes are preserved. |
-| `pages/<page-slug>.md` | Created/overwritten as an open inquiry with no prescribed page type or section order. |
+| `pages/<page-slug>.md` | Atomically identity-claimed/updated as an open inquiry with no prescribed page type or section order; a colliding or racing page identity is rejected. |
 
-`slugify_name` case-folds Unicode, converts non-word runs/underscores to collapsed dashes, trims to 80 characters, and applies a fallback. Tests verify traversal-like project/page names remain under the requested root.
+`slugify_name` case-folds Unicode, converts non-word runs/underscores to collapsed dashes, trims to 80 characters, and applies a fallback. Identity manifests prevent distinct printable names from silently sharing that slug. Page identity is preflighted before `BRIEF.md` can change and its parent is revalidated immediately before publication. Tests verify traversal-like and reserved names fail safely, redirected path chains/shared-file targets are refused, corrupt-manifest recovery is serialized, and competing page claims cannot overwrite each other.
 
 Decision-ledger statuses are `PROPOSED`, `ACCEPTED`, and `SUPERSEDED`. Packet status `OPEN` and rendered `KEEP | REVISE | REJECT | UNKNOWN` are separate contracts.
 
@@ -101,3 +105,9 @@ Live configuration, not directory presence, defines runtime inputs:
 | `data/stacks/*.csv` | 22 files | Explicit stack guidance. |
 
 `landing.csv`, `styles.csv`, `colors.csv`, `typography.csv`, and `motion.csv` were deleted because they contained solution-shaped recipes or unsupported suitability/conversion claims. `products.csv` was reduced to lexical taxonomy. `evals/designer-behavior/EVIDENCE-AUDIT.md` records field-level rationale.
+
+## Custom-icon contracts
+
+An SVG metadata document declares exact required fields for name, UI role, source/license text, accessibility ownership, grid/live area, drawing language, target sizes, original/external provenance, and structured evidence. Provenance includes the exact SVG-byte SHA-256 digest; local source/license evidence resolves through metadata-relative safe regular-file paths and exact digests, while external source evidence is explicitly `unverified`. A matching digest proves byte binding only, not current external source or license truth.
+
+`evals/icon-decisions/manifest.json` records representative UI contexts, exact local sources and SHA-256 digests, route/selector/label bindings, exact wide/mobile host viewports, a canonical comparison-state→host-state map (same-name states except `high-contrast` → `forced-colors`), applicable host states, candidates of kind `existing | custom | none`, one selected outcome, and human-authored `KEEP | REJECT` decision evidence. Repository-derived host proof requires a selected candidate; unresolved `REJECT | UNKNOWN` contexts remain representative evidence. Dark host evidence additionally binds its owning surface and computed background. The comparison builder rejects malformed/deep/extreme-number inputs, uninspectable or redirected paths, duplicate names, invalid selections/verdicts, incomplete challenger coverage, missing target sizes, state-label swaps, structured evidence/source-license disagreement with SVG metadata, custom assets without original provenance, output/input aliases, and non-deterministic checked output. These deterministic contracts do not certify recognition, optical balance, metaphor, or neighboring-UI fit.
