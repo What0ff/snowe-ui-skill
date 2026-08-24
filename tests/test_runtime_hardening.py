@@ -148,7 +148,12 @@ class PersistenceIdentityTests(unittest.TestCase):
             )
 
             self.assertEqual(accepted, (project / "DECISIONS.md").read_bytes())
-            self.assertIn(str(project / "PROJECT.json"), result["created_or_updated_files"])
+            self.assertTrue(
+                any(
+                    os.path.samefile(project / "PROJECT.json", reported)
+                    for reported in result["created_or_updated_files"]
+                )
+            )
 
     def test_page_slug_collision_is_rejected_without_replacing_first_page(self):
         with tempfile.TemporaryDirectory() as temporary_directory:
@@ -589,7 +594,10 @@ class PersistenceIdentityTests(unittest.TestCase):
             self.assertTrue((project / "PROJECT.json").is_file())
             self.assertEqual(b"complete but unpublished", temporary.read_bytes())
             self.assertEqual(b"preserved prior corrupt manifest", corrupt.read_bytes())
-            self.assertTrue({str(temporary), str(corrupt)}.issubset(result["preserved_files"]))
+            for expected in (temporary, corrupt):
+                self.assertTrue(
+                    any(os.path.samefile(expected, reported) for reported in result["preserved_files"])
+                )
 
             impostor_root = root / "other"
             impostor = impostor_root / "design-intelligence" / "north-star"
@@ -904,7 +912,7 @@ class InstallerOwnershipTests(unittest.TestCase):
 
             def replace_before_activation(path: Path, target: Path, role: str, token: str) -> bool:
                 nonlocal replaced
-                if path == staging and role == "staging" and not replaced:
+                if role == "staging" and not replaced and os.path.samefile(path, staging):
                     replaced = True
                     real_rename(staging, moved_original)
                     staging.mkdir()
@@ -916,6 +924,7 @@ class InstallerOwnershipTests(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, "changed identity"):
                     INSTALLER.install_skill(source, destination)
 
+            self.assertTrue(replaced)
             self.assertIn("old install", (destination / "SKILL.md").read_text(encoding="utf-8"))
             quarantined = next(destination.parent.glob(".snowe-ui-skill.installing.unowned-*"))
             self.assertEqual(b"foreign staging bytes", (quarantined / "foreign.txt").read_bytes())
@@ -1186,7 +1195,7 @@ class InstallerOwnershipTests(unittest.TestCase):
                 INSTALLER.install_skill(source, destination)
 
             self.assertEqual([source.resolve(), source.resolve()], validated[:2])
-            self.assertEqual(destination.parent, validated[2].parent)
+            self.assertTrue(os.path.samefile(destination.parent, validated[2].parent))
             self.assertIn("installing", validated[2].name)
             self.assertTrue((destination / "SKILL.md").is_file())
 
@@ -1207,7 +1216,12 @@ class InstallerOwnershipTests(unittest.TestCase):
 
             def replace_activation(source_path: Path, destination_path: Path) -> None:
                 nonlocal redirect_kind
-                if source_path == staging and destination_path == destination:
+                if (
+                    staging.exists()
+                    and os.path.samefile(source_path, staging)
+                    and destination_path.name == destination.name
+                    and os.path.samefile(destination_path.parent, destination.parent)
+                ):
                     real_rename(source_path, attacker_copy)
                     redirect_kind = create_directory_redirect(staging, outside)
                 real_rename(source_path, destination_path)
@@ -1216,6 +1230,8 @@ class InstallerOwnershipTests(unittest.TestCase):
                 with patch.object(INSTALLER, "_rename", side_effect=replace_activation):
                     with self.assertRaisesRegex(ValueError, "symlink|junction|reparse"):
                         INSTALLER.install_skill(source, destination)
+                self.assertIsNotNone(redirect_kind)
+                self.assertTrue(attacker_copy.is_dir())
                 self.assertIn("old install", (destination / "SKILL.md").read_text(encoding="utf-8"))
                 self.assertEqual("keep", (outside / "sentinel.txt").read_text(encoding="utf-8"))
             finally:
