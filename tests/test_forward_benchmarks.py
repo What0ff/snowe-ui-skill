@@ -175,7 +175,37 @@ class ForwardBenchmarkTests(unittest.TestCase):
         self.assertIn("prefers-reduced-motion", smoke)
         self.assertIn("await stopBrowserProcess(browser)", smoke)
         self.assertIn("maxRetries: 12", smoke)
+        self.assertIn("Cleanup cause ${index + 1}", smoke)
+        self.assertIn("formatError(error)", smoke)
         self.assertNotIn("playwright", smoke.casefold())
+
+    def test_ci_supplies_historical_evidence_and_measures_settled_geometry(self):
+        workflow = (ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
+        smoke = (ROOT / "scripts" / "browser-smoke.mjs").read_text(encoding="utf-8")
+
+        python_job = workflow.split("  test:", 1)[1].split("  designer-behavior:", 1)[0]
+        checkout_step = python_job.split("      - name: Check out repository", 1)[1].split(
+            "      - name:", 1
+        )[0]
+        self.assertIn("uses: actions/checkout@v4", checkout_step)
+        self.assertIn("fetch-depth: 0", checkout_step)
+        self.assertEqual(1, workflow.count("fetch-depth: 0"))
+
+        settle_call = "await waitForOwningDialogMotionToSettle(client, proof.target_selector"
+        baseline_call = "const baseline = await inspectIconHost(client, context)"
+        settle_helper = smoke.split("async function waitForOwningDialogMotionToSettle", 1)[1].split(
+            "async function setViewport", 1
+        )[0]
+        self.assertIn('target?.closest("dialog[open]")', settle_helper)
+        self.assertIn("element.getAnimations()", settle_helper)
+        self.assertIn("const deadline = Date.now() + timeout", settle_helper)
+        self.assertIn("stableSamples", settle_helper)
+        self.assertNotIn("requestAnimationFrame", settle_helper)
+        self.assertIn(settle_call, smoke)
+        self.assertLess(smoke.index(settle_call), smoke.index(baseline_call))
+        self.assertIn(
+            "Math.abs(baseline.iconWidth - viewport.expected_icon_size) < 0.2", smoke
+        )
 
 
 if __name__ == "__main__":

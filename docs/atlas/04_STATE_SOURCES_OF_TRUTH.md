@@ -43,7 +43,7 @@ The absence of deleted recipe catalogs is an intentional source-of-truth decisio
 - `design-intelligence/<project>/DECISIONS.md` — durable create-once accepted-decision ledger;
 - `design-intelligence/<project>/pages/<page>.md` — identity-bound replaceable open page inquiry.
 
-The exact explicit project/page identities own slug claims; a Windows-reserved or different identity that normalizes to the same slug is rejected, not permission to overwrite. A short-lived per-project lock serializes claims and recovery. The generator owns atomically replaceable inquiry files only after identity preflight and immediate parent revalidation. Existing `DECISIONS.md` owns accepted evidence and is preserved byte-for-byte. Explicit current requirements or verified evidence can supersede it only through an explicit `SUPERSEDED` record.
+The exact explicit project/page identities own slug claims; a Windows-reserved or different identity that normalizes to the same slug is rejected, not permission to overwrite. Windows 8.3 names are expanded to a shared long lexical spelling without resolving reparse targets, then both spellings are rechecked before lexical containment, locking, or writes. A short-lived per-project lock serializes claims and recovery. The generator owns atomically replaceable inquiry files only after identity preflight and immediate parent revalidation. Existing `DECISIONS.md` owns accepted evidence and is preserved byte-for-byte. Explicit current requirements or verified evidence can supersede it only through an explicit `SUPERSEDED` record.
 
 ## Repository evaluation state
 

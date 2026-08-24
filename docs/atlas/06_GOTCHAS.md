@@ -43,13 +43,13 @@
 ## Persistence and paths
 
 - Re-running persistence atomically replaces `BRIEF.md` and a matching requested page inquiry but preserves `DECISIONS.md` via exclusive creation.
-- Project/page names are identities as well as path inputs. `PROJECT.json` and embedded page identity prevent distinct printable values from silently sharing a normalized slug; nonprintable or Windows-reserved identities, redirected path chains, external hardlink targets, and competing slug claims are rejected before replaceable inquiry writes.
+- Project/page names are identities as well as path inputs. `PROJECT.json` and embedded page identity prevent distinct printable values from silently sharing a normalized slug; nonprintable or Windows-reserved identities, redirected path chains, external hardlink targets, and competing slug claims are rejected before replaceable inquiry writes. Expand Windows 8.3 aliases to their long lexical spelling without resolving redirect targets, recheck both spellings after expansion, and keep containment lexical.
 - A bounded torn-manifest recovery path must never infer identity from a slug alone. Keep the per-project lock, page preflight, and immediate parent revalidation: there is no database or multi-file transaction, so these serialize known races while preserving per-file atomicity.
 
 ## Validators
 
 - `asset_quality.py` approves only a strict self-contained structural/declared-provenance contract under explicit byte/depth/node and arc-magnitude budgets. It requires structured source/license evidence bound to metadata-relative safe regular files (or an explicitly `unverified` external source), and rejects redirected input chains, placeholder/extra/contradictory metadata, exact-byte digest mismatch, grid/live-area/viewBox mismatch, active/embedded/external/style/namespace/link content, unsupported transforms/paint, malformed/non-finite/extreme/clipped/empty geometry, embedded text/raster, and artwork that deterministically collapses at its smallest declared target. It still cannot validate current external source/license truth, recognition, metaphor, silhouette, optical balance, or family/UI fit.
-- `icon_review.py` binds exact candidates, metadata, structured source/license evidence, sizes, canonical comparison→host state maps (same-name states except `high-contrast` → `forced-colors`), context source digests/routes/selectors/labels/viewports, verdict, selection, and all non-selected alternatives into a deterministic representative sheet. Repository-derived host proof requires a selected candidate; unresolved `REJECT | UNKNOWN` contexts must remain representative. It rejects malformed/extreme numeric input, uninspectable or redirected paths, state-label swaps, and output/input aliases. It does not choose the winner and is not a pixel-identical host renderer. Inspect the winner and closest rejected alternative in the real owning component; custom, existing, modified surrounding UI, and no icon remain valid outcomes.
+- `icon_review.py` binds exact candidates, metadata, structured source/license evidence, sizes, canonical comparison→host state maps (same-name states except `high-contrast` → `forced-colors`), context source digests/routes/selectors/labels/viewports, verdict, selection, and all non-selected alternatives into a deterministic LF-normalized representative sheet. Repository-derived host proof requires a selected candidate; unresolved `REJECT | UNKNOWN` contexts must remain representative. It rejects malformed/extreme numeric input, uninspectable or redirected paths, state-label swaps, and output/input aliases. It does not choose the winner and is not a pixel-identical host renderer. Inspect the winner and closest rejected alternative in the real owning component; custom, existing, modified surrounding UI, and no icon remain valid outcomes.
 - `contrast.py` accepts exact opaque colors. It does not composite alpha, gradients, images, blend modes, overlays, or state opacity.
 
 ## Benchmark and browser evidence
@@ -57,6 +57,7 @@
 - All five businesses are fictional. Their artifacts are rendered/browser regressions, not observed-agent or causal model evidence. Goodturn generated imagery is not engineering truth; keep its disclosure, local font licenses, original-asset metadata, and pinned Lucide source/license metadata distinct.
 - Forward-test screenshot filenames are a manifest/test contract. Rerun `node scripts/browser-smoke.mjs --capture` after material visual changes.
 - Browser smoke uses system Chrome CDP and catches runtime/interaction failures, not taste. Manual in-app review remains necessary for composition and optical hierarchy.
+- Measure final component geometry only after the scoped owning transition has stopped and its bounds are stable; ancestor transforms make otherwise correct descendants appear fractionally smaller during entry motion.
 - Keep selector scopes specific: the warehouse first pass showed how shared `[data-filter]` attributes on controls and rows can corrupt state.
 - Model durable object state explicitly: setting `hidden` before a recomputation can be undone, as the initial resolution flow demonstrated.
 - Check inherited responsive grid placement at every breakpoint; the literary tablet membership placement initially leaked into phone order without causing overflow.
@@ -65,7 +66,7 @@
 ## Installer boundary
 
 - The repository installer owns a short-lived destination lock and per-run transient staging/backup claims. It preserves recognizable interrupted previous state until staging succeeds and must never treat a forgeable stale marker as permission for recursive deletion.
-- Validate the source, completed staging tree, and activated destination. Copy or rename success alone is not proof that a concurrent path swap stayed safe. The post-swap checks are still path-based; complete protection against a hostile same-user TOCTOU adversary would require platform-specific secure directory handles.
+- Validate the source, completed staging tree, and activated destination. Expand Windows short names through the longest existing ancestor without resolving reparse targets, then recheck both original and long lexical spellings before containment, locking, and swaps so aliases cannot bypass overlap checks or split ownership identity. Copy or rename success alone is not proof that a concurrent path swap stayed safe. The post-swap checks are still path-based; complete protection against a hostile same-user TOCTOU adversary would require platform-specific secure directory handles.
 
 ## Current validation gaps
 

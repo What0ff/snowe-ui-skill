@@ -85,6 +85,16 @@ function sleep(milliseconds) {
   return new Promise((resolve) => setTimeout(resolve, milliseconds));
 }
 
+function formatError(error) {
+  const primary = error?.stack || error?.message || String(error);
+  if (!(error instanceof AggregateError)) return primary;
+  const details = Array.from(error.errors || [], (item, index) => {
+    const message = item?.stack || item?.message || String(item);
+    return `Cleanup cause ${index + 1}: ${message}`;
+  });
+  return [primary, ...details].join("\n");
+}
+
 function waitForChildExit(child, timeoutMilliseconds) {
   if (!child || child.exitCode !== null || child.signalCode !== null) return Promise.resolve(true);
   return new Promise((resolve) => {
@@ -349,6 +359,37 @@ async function waitFor(client, expression, description, timeout = 5_000) {
   const deadline = Date.now() + timeout;
   while (Date.now() < deadline) {
     if (await evaluate(client, `Boolean(${expression})`)) return;
+    await sleep(50);
+  }
+  throw new Error(`Timed out waiting for ${description}`);
+}
+
+async function waitForOwningDialogMotionToSettle(client, targetSelector, description, timeout = 5_000) {
+  const serializedTargetSelector = JSON.stringify(targetSelector);
+  const deadline = Date.now() + timeout;
+  let previousBounds = null;
+  let stableSamples = 0;
+
+  while (Date.now() < deadline) {
+    const state = await evaluate(client, `(() => {
+      const target = document.querySelector(${serializedTargetSelector});
+      const element = target?.closest("dialog[open]");
+      if (!element) return null;
+      void getComputedStyle(element).transform;
+      const bounds = element.getBoundingClientRect();
+      return {
+        bounds: [bounds.x, bounds.y, bounds.width, bounds.height],
+        activeMotion: element.getAnimations().some((animation) =>
+          animation.pending || animation.playState === "running" || animation.playState === "paused"
+        ),
+      };
+    })()`);
+    check(state, `Missing owning dialog while waiting for ${description}: ${targetSelector}`);
+    const boundsStable = previousBounds !== null
+      && state.bounds.every((value, index) => Math.abs(value - previousBounds[index]) < 0.01);
+    stableSamples = !state.activeMotion && boundsStable ? stableSamples + 1 : 0;
+    if (stableSamples >= 2) return;
+    previousBounds = state.bounds;
     await sleep(50);
   }
   throw new Error(`Timed out waiting for ${description}`);
@@ -1235,7 +1276,13 @@ async function runSmoke(client, origin) {
       await navigate(client, origin, scenario, { width: viewport.width, height: viewport.height });
       if (proof.open_selector) {
         await click(client, proof.open_selector);
-        await waitFor(client, "document.querySelector('dialog[open]')", `${context.id} host dialog`);
+        const serializedTargetSelector = JSON.stringify(proof.target_selector);
+        await waitFor(
+          client,
+          `document.querySelector(${serializedTargetSelector})?.closest("dialog[open]")`,
+          `${context.id} owning host dialog`,
+        );
+        await waitForOwningDialogMotionToSettle(client, proof.target_selector, `${context.id} owning host dialog motion`);
       }
       const baseline = await inspectIconHost(client, context);
       check(baseline.found && baseline.label === proof.expected_label, `Icon review: ${context.id} host target/label mismatch at ${viewport.name} (${JSON.stringify(baseline)})`);
@@ -1657,6 +1704,6 @@ async function main() {
 }
 
 main().catch((error) => {
-  process.stderr.write(`Browser smoke infrastructure failed: ${error.stack || error.message}\n`);
+  process.stderr.write(`Browser smoke infrastructure failed: ${formatError(error)}\n`);
   process.exitCode = 1;
 });

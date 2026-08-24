@@ -54,7 +54,7 @@ The CLI excludes domain/packet mode. `core.search_stack` loads one configured st
 **Trigger:** `--decision-packet --persist [--page ...] [--output-dir ...]`.
 
 1. CLI constraints reject persistence/page/output flags outside packet mode.
-2. A printable, non-Windows-reserved explicit project identity is slugged and resolved beneath the requested output root; symlink/junction/reparse chains and external shared-file targets are rejected.
+2. A printable, non-Windows-reserved explicit project identity is slugged beneath the requested output root; on Windows, 8.3 names are expanded to their long lexical spelling without resolving reparse targets, both spellings are rechecked, and lexical containment prevents false escapes; external shared-file targets are rejected.
 3. A per-project OS lock serializes identity claims, torn-manifest recovery, and subsequent writes.
 4. Existing project and requested-page identities are preflighted before any replaceable inquiry write. `PROJECT.json` atomically claims the slug; exact identity can resume, while distinct identities that collapse to the same slug fail without modifying existing files.
 5. `BRIEF.md` is atomically regenerated and `DECISIONS.md` is exclusive-created; an existing ledger is reported as preserved byte-for-byte.
@@ -65,7 +65,7 @@ The CLI excludes domain/packet mode. `core.search_stack` loads one configured st
 ## 6. Low-level validators
 
 - `asset_quality.py <svg> --metadata <json>` rejects redirected input paths, returns structured read/decode failures, binds the exact SVG bytes to declared original/external provenance, parses a strict self-contained monochrome/current-color subset under explicit byte/depth/node budgets, checks metadata/drawing language, grid/live-area/viewBox, bounded finite geometry, painted visibility, clipping bounds, unique target sizes, and small-target viability, and rejects active/embedded/external content, malformed or extreme path/arc data, unsafe namespaces/links/styles/transforms/paint. It returns an optical-QA warning even on structural pass.
-- `icon_review.py <manifest> --output <html>` validates typed representative contexts, exact source digests/routes/selectors/labels, wide/mobile host viewports, applicable host states, existing/custom/no-icon alternatives, complete non-selected candidate coverage, SVG metadata/source/license consistency, selection/verdict coherence, safe local paths, and output/input non-aliasing, then emits a deterministic self-contained comparison sheet. The sheet and validator do not choose or visually approve the winner; inspect the claimed winner and closest rejection in the real host.
+- `icon_review.py <manifest> --output <html>` validates typed representative contexts, exact source digests/routes/selectors/labels, wide/mobile host viewports, applicable host states, existing/custom/no-icon alternatives, complete non-selected candidate coverage, SVG metadata/source/license consistency, selection/verdict coherence, safe local paths, and output/input non-aliasing, then emits a deterministic LF-normalized self-contained comparison sheet on every platform. The sheet and validator do not choose or visually approve the winner; inspect the claimed winner and closest rejection in the real host.
 - `contrast.py <foreground> <background> [--minimum N]` parses exact opaque CSS colors, computes relative luminance/ratio, and returns `PASS` or `FAIL`.
 
 These are deterministic structural evidence, not rendered design approval.

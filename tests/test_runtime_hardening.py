@@ -60,6 +60,25 @@ def remove_directory_redirect(path: Path, is_junction: bool) -> None:
         path.unlink()
 
 
+def windows_short_path(path: Path) -> Path:
+    """Return a real Windows short-name alias or the unchanged path."""
+    import ctypes
+    from ctypes import wintypes
+
+    get_short_path_name = ctypes.WinDLL("kernel32", use_last_error=True).GetShortPathNameW
+    get_short_path_name.argtypes = [wintypes.LPCWSTR, wintypes.LPWSTR, wintypes.DWORD]
+    get_short_path_name.restype = wintypes.DWORD
+    requested = os.fspath(path)
+    size = int(get_short_path_name(requested, None, 0))
+    if size == 0:
+        raise OSError(ctypes.get_last_error(), f"Cannot obtain a short path for {path}")
+    buffer = ctypes.create_unicode_buffer(size)
+    written = int(get_short_path_name(requested, buffer, size))
+    if written == 0 or written >= size:
+        raise OSError(ctypes.get_last_error(), f"Cannot obtain a stable short path for {path}")
+    return Path(buffer.value)
+
+
 class PersistenceIdentityTests(unittest.TestCase):
     def test_persistence_requires_identity_before_creating_output(self):
         with tempfile.TemporaryDirectory() as temporary_directory:
@@ -637,6 +656,62 @@ class PersistenceIdentityTests(unittest.TestCase):
                 if redirect_kind is not None and (pages.exists() or pages.is_symlink()):
                     remove_directory_redirect(pages, redirect_kind)
 
+    @unittest.skipUnless(os.name == "nt", "Windows alias race probe")
+    def test_output_root_redirect_inserted_during_alias_normalization_is_rejected(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            parent = Path(temporary_directory)
+            selected_root = parent / "selected-output"
+            selected_root.mkdir()
+            outside = parent / "outside"
+            outside.mkdir()
+            sentinel = outside / "sentinel.txt"
+            sentinel.write_bytes(b"outside bytes")
+            packet = DecisionPacketGenerator().generate("Brief", "North Star")
+            real_long_name = decision_packet_module._windows_long_path_name
+            redirect_kind: bool | None = None
+
+            def insert_redirect(path: Path, label: str) -> Path:
+                nonlocal redirect_kind
+                result = real_long_name(path, label)
+                if label == "Selected output directory" and redirect_kind is None:
+                    selected_root.rmdir()
+                    redirect_kind = create_directory_redirect(selected_root, outside)
+                return result
+
+            try:
+                with patch.object(
+                    decision_packet_module,
+                    "_windows_long_path_name",
+                    side_effect=insert_redirect,
+                ):
+                    with self.assertRaisesRegex(ValueError, "symlink|junction|reparse"):
+                        persist_decision_packet(packet, output_dir=selected_root)
+                self.assertEqual(b"outside bytes", sentinel.read_bytes())
+                self.assertFalse((outside / "design-intelligence").exists())
+            finally:
+                if redirect_kind is not None and (selected_root.exists() or selected_root.is_symlink()):
+                    remove_directory_redirect(selected_root, redirect_kind)
+
+    @unittest.skipUnless(os.name == "nt", "Windows 8.3 alias probe")
+    def test_windows_short_alias_preserves_persistence_root_and_lock_identity(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            long_root = Path(temporary_directory).resolve()
+            short_root = windows_short_path(long_root)
+            if os.path.normcase(os.fspath(short_root)) == os.path.normcase(os.fspath(long_root)):
+                self.skipTest("the temporary volume did not provide a distinct 8.3 alias")
+
+            result = persist_decision_packet(
+                DecisionPacketGenerator().generate("Alias brief", "Alias Project"),
+                output_dir=short_root,
+            )
+            project = Path(result["design_intelligence_dir"])
+            self.assertTrue(project.resolve().is_relative_to(long_root))
+
+            with decision_packet_module._persistence_lock(long_root, "alias-lock"):
+                with self.assertRaisesRegex(RuntimeError, "Another persistence operation"):
+                    with decision_packet_module._persistence_lock(short_root, "alias-lock"):
+                        pass
+
 
 class RetrievalLimitTests(unittest.TestCase):
     def test_public_apis_reject_bool_non_int_and_non_positive_limits(self):
@@ -979,7 +1054,7 @@ class InstallerOwnershipTests(unittest.TestCase):
             self.assertEqual("keep", (target / "sentinel.txt").read_text(encoding="utf-8"))
             quarantined = next(destination.parent.glob(".snowe-ui-skill.installing.unowned-*"))
             self.assertTrue(quarantined.is_symlink())
-            self.assertEqual(target, quarantined.resolve())
+            self.assertTrue(os.path.samefile(target, quarantined))
 
     def test_forged_owner_marker_cannot_authorize_recursive_deletion(self):
         with tempfile.TemporaryDirectory() as temporary_directory:
@@ -1063,6 +1138,38 @@ class InstallerOwnershipTests(unittest.TestCase):
                 if source_link.exists() or source_link.is_symlink():
                     remove_directory_redirect(source_link, redirect_kind)
 
+    @unittest.skipUnless(os.name == "nt", "Windows source race probe")
+    def test_source_redirect_inserted_after_staging_claim_is_rejected_before_copy(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            root = Path(temporary_directory)
+            source = self.make_source(root)
+            preserved_source = root / "preserved-source"
+            outside = root / "outside-source"
+            outside.mkdir()
+            sentinel = outside / "sentinel.txt"
+            sentinel.write_bytes(b"outside source bytes")
+            destination = root / "skills" / "snowe-ui-skill"
+            real_bind = INSTALLER._bind_owner_slot
+            redirect_kind: bool | None = None
+
+            def swap_source_after_claim(*args, **kwargs):
+                nonlocal redirect_kind
+                result = real_bind(*args, **kwargs)
+                source.rename(preserved_source)
+                redirect_kind = create_directory_redirect(source, outside)
+                return result
+
+            try:
+                with patch.object(INSTALLER, "_bind_owner_slot", side_effect=swap_source_after_claim):
+                    with self.assertRaisesRegex(ValueError, "Skill source.*(symlink|junction|reparse)"):
+                        INSTALLER.install_skill(source, destination)
+                self.assertFalse(destination.exists())
+                self.assertEqual(b"outside source bytes", sentinel.read_bytes())
+                self.assertTrue((preserved_source / "SKILL.md").is_file())
+            finally:
+                if redirect_kind is not None and (source.exists() or source.is_symlink()):
+                    remove_directory_redirect(source, redirect_kind)
+
     def test_staged_tree_is_revalidated_before_activation(self):
         with tempfile.TemporaryDirectory() as temporary_directory:
             root = Path(temporary_directory)
@@ -1078,9 +1185,9 @@ class InstallerOwnershipTests(unittest.TestCase):
             with patch.object(INSTALLER, "_validate_source_tree", side_effect=record_validation):
                 INSTALLER.install_skill(source, destination)
 
-            self.assertEqual(source.resolve(), validated[0])
-            self.assertEqual(destination.parent, validated[1].parent)
-            self.assertIn("installing", validated[1].name)
+            self.assertEqual([source.resolve(), source.resolve()], validated[:2])
+            self.assertEqual(destination.parent, validated[2].parent)
+            self.assertIn("installing", validated[2].name)
             self.assertTrue((destination / "SKILL.md").is_file())
 
     def test_activation_reparse_is_rejected_and_previous_install_restored(self):
@@ -1126,6 +1233,78 @@ class InstallerOwnershipTests(unittest.TestCase):
                 with self.assertRaisesRegex(RuntimeError, "Another Snowe installation"):
                     INSTALLER.install_skill(source, destination)
 
+    @unittest.skipUnless(os.name == "nt", "Windows alias race probe")
+    def test_destination_redirect_inserted_during_alias_normalization_is_rejected(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            root = Path(temporary_directory)
+            source = self.make_source(root)
+            destination = root / "skills" / "snowe-ui-skill"
+            destination.parent.mkdir()
+            outside = root / "outside" / "snowe-ui-skill"
+            outside.mkdir(parents=True)
+            (outside / "SKILL.md").write_text(
+                "---\nname: snowe-ui-skill\n---\nexternal install\n",
+                encoding="utf-8",
+            )
+            sentinel = outside / "sentinel.txt"
+            sentinel.write_bytes(b"outside bytes")
+            real_long_name = INSTALLER._windows_long_path_name
+            redirect_kind: bool | None = None
+
+            def insert_redirect(path: Path, label: str) -> Path:
+                nonlocal redirect_kind
+                result = real_long_name(path, label)
+                if label == "Destination" and redirect_kind is None:
+                    redirect_kind = create_directory_redirect(destination, outside)
+                return result
+
+            try:
+                with patch.object(INSTALLER, "_windows_long_path_name", side_effect=insert_redirect):
+                    with self.assertRaisesRegex(ValueError, "symlink|junction|reparse"):
+                        INSTALLER.install_skill(source, destination)
+                self.assertEqual(b"outside bytes", sentinel.read_bytes())
+                self.assertIn("external install", (outside / "SKILL.md").read_text(encoding="utf-8"))
+            finally:
+                if redirect_kind is not None and (destination.exists() or destination.is_symlink()):
+                    remove_directory_redirect(destination, redirect_kind)
+
+    @unittest.skipUnless(os.name == "nt", "Windows 8.3 alias probe")
+    def test_windows_short_alias_preserves_overlap_and_install_lock_identity(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            long_root = Path(temporary_directory).resolve()
+            short_root = windows_short_path(long_root)
+            if os.path.normcase(os.fspath(short_root)) == os.path.normcase(os.fspath(long_root)):
+                self.skipTest("the temporary volume did not provide a distinct 8.3 alias")
+
+            source = self.make_source(long_root)
+            nested_destination = short_root / source.relative_to(long_root) / "snowe-ui-skill"
+            with self.assertRaisesRegex(ValueError, "must not contain or replace"):
+                INSTALLER.install_skill(source, nested_destination)
+
+            destination = short_root / "skills" / "snowe-ui-skill"
+            (long_root / "skills").mkdir()
+            with INSTALLER._installation_lock(long_root / "skills"):
+                with self.assertRaisesRegex(RuntimeError, "Another Snowe installation"):
+                    INSTALLER.install_skill(source, destination)
+
+    @unittest.skipUnless(os.name == "nt", "Windows final-component 8.3 alias probe")
+    def test_existing_destination_accepts_its_real_final_short_alias(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            root = Path(temporary_directory).resolve()
+            source = self.make_source(root)
+            destination = root / "skills" / "snowe-ui-skill"
+            INSTALLER.install_skill(source, destination)
+            short_destination = windows_short_path(destination)
+            if os.path.normcase(short_destination.name) == os.path.normcase(destination.name):
+                self.skipTest("the temporary volume did not provide a final-component 8.3 alias")
+
+            stale = destination / "stale.txt"
+            stale.write_bytes(b"remove on exact update")
+            result = INSTALLER.install_skill(source, short_destination)
+            self.assertEqual("updated", result["operation"])
+            self.assertFalse(stale.exists())
+            self.assertTrue(os.path.samefile(destination, Path(result["destination"])))
+
     @unittest.skipUnless(os.name == "nt", "Windows junction probe")
     def test_destination_junction_is_rejected_without_touching_target(self):
         with tempfile.TemporaryDirectory() as temporary_directory:
@@ -1145,8 +1324,9 @@ class InstallerOwnershipTests(unittest.TestCase):
             if created.returncode != 0:
                 self.skipTest(f"junction creation unavailable: {created.stderr or created.stdout}")
             try:
+                junction_argument = windows_short_path(destination)
                 with self.assertRaisesRegex(ValueError, "symlink|junction|reparse"):
-                    INSTALLER.install_skill(source, destination)
+                    INSTALLER.install_skill(source, junction_argument)
                 self.assertEqual(b"keep", (outside / "sentinel.txt").read_bytes())
             finally:
                 os.rmdir(destination)

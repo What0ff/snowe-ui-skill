@@ -119,6 +119,56 @@ def _reject_reparse_chain(path: Path, label: str) -> None:
         current = parent
 
 
+def _windows_long_path_name(path: Path, label: str) -> Path:
+    """Expand Windows short names without resolving a reparse target."""
+    import ctypes
+    from ctypes import wintypes
+
+    get_long_path_name = ctypes.WinDLL("kernel32", use_last_error=True).GetLongPathNameW
+    get_long_path_name.argtypes = [wintypes.LPCWSTR, wintypes.LPWSTR, wintypes.DWORD]
+    get_long_path_name.restype = wintypes.DWORD
+    requested = os.fspath(path)
+    size = int(get_long_path_name(requested, None, 0))
+    if size == 0:
+        error = ctypes.get_last_error()
+        raise ValueError(f"{label} aliases cannot be inspected safely: {path} (Windows error {error})")
+    for _ in range(2):
+        buffer = ctypes.create_unicode_buffer(size)
+        written = int(get_long_path_name(requested, buffer, size))
+        if written == 0:
+            error = ctypes.get_last_error()
+            raise ValueError(f"{label} aliases cannot be inspected safely: {path} (Windows error {error})")
+        if written < size:
+            return Path(buffer.value)
+        size = written
+    raise ValueError(f"{label} aliases changed while they were being inspected: {path}")
+
+
+def _normalize_lexical_aliases(path: Path, label: str) -> Path:
+    """Normalize lexical aliases while preserving every reparse component."""
+    absolute = Path(os.path.abspath(os.fspath(path)))
+    if os.name != "nt":
+        return absolute
+
+    existing = absolute
+    suffix: list[str] = []
+    while True:
+        try:
+            os.lstat(existing)
+            break
+        except FileNotFoundError:
+            parent = existing.parent
+            if parent == existing:
+                raise ValueError(f"{label} has no inspectable existing ancestor: {path}")
+            suffix.append(existing.name)
+            existing = parent
+        except OSError as error:
+            raise ValueError(f"{label} aliases cannot be inspected safely: {existing}") from error
+
+    normalized = _windows_long_path_name(existing, label)
+    return normalized.joinpath(*reversed(suffix))
+
+
 def _validate_source_tree(source: Path) -> None:
     """Require the installable product to be a self-contained regular tree.
 
@@ -570,16 +620,23 @@ def _validated_paths(source: str | Path, destination: str | Path) -> tuple[Path,
     # junction/symlink and could make an external tree look self-contained.
     source_lexical = Path(os.path.abspath(os.fspath(Path(source).expanduser())))
     _reject_reparse_chain(source_lexical, "Skill source")
-    source_path = source_lexical.resolve(strict=True)
-    destination_path = Path(os.path.abspath(os.fspath(Path(destination).expanduser())))
+    source_path = _normalize_lexical_aliases(source_lexical, "Skill source")
+    _reject_reparse_chain(source_lexical, "Skill source")
+    _reject_reparse_chain(source_path, "Skill source")
+    destination_lexical = Path(os.path.abspath(os.fspath(Path(destination).expanduser())))
     if not source_path.is_dir() or not _has_product_identity(source_path / "SKILL.md"):
         raise ValueError(
             f"Skill source must be a directory containing a valid Snowe SKILL.md: {source_path}"
         )
     _validate_source_tree(source_path)
-    if destination_path.name != PRODUCT_NAME:
-        raise ValueError(f"Destination must end with {PRODUCT_NAME!r}: {destination_path}")
+    _reject_reparse_chain(destination_lexical, "Destination")
+    # Expand Windows 8.3 spellings without resolving junction/symlink targets,
+    # then recheck both spellings to close a redirect inserted during lookup.
+    destination_path = _normalize_lexical_aliases(destination_lexical, "Destination")
+    _reject_reparse_chain(destination_lexical, "Destination")
     _reject_reparse_chain(destination_path, "Destination")
+    if os.path.normcase(destination_path.name) != os.path.normcase(PRODUCT_NAME):
+        raise ValueError(f"Destination must end with {PRODUCT_NAME!r}: {destination_lexical}")
     if (
         source_path == destination_path
         or destination_path.is_relative_to(source_path)
@@ -622,6 +679,8 @@ def _install_skill_locked(source_path: Path, destination_path: Path) -> dict[str
             token,
             expected_identity=_filesystem_identity(staging),
         )
+        _reject_reparse_chain(source_path, "Skill source")
+        _validate_source_tree(source_path)
         shutil.copytree(source_path, staging, symlinks=True, dirs_exist_ok=True, ignore=COPY_IGNORE)
         # Revalidate the copied bytes immediately before activation. This
         # closes the source-change window between the initial walk and copy;

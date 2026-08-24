@@ -7,7 +7,7 @@
 | Python 3.11+ | README, contributor docs, CI matrix | Runs retrieval, decision packets, validators, eval runner, atlas generator, and tests. |
 | Python standard library | Imports and absence of package manifests | `argparse`, `csv`, `json`, `pathlib`, `re`, XML parsing, `unittest`, and related modules. |
 
-There is no `pyproject.toml`, `requirements.txt`, package-manager lockfile, package manifest, virtual-environment bootstrap, or third-party product/test package. The short-lived installer and per-project persistence locks plus atomic filesystem operations use only operating-system facilities exposed by the standard library.
+There is no `pyproject.toml`, `requirements.txt`, package-manager lockfile, package manifest, virtual-environment bootstrap, or third-party product/test package. The short-lived installer and per-project persistence locks plus atomic filesystem operations use only operating-system facilities exposed by the standard library. On Windows, the repository installer and installable persistence runtime call `GetLongPathNameW` through `ctypes` to expand 8.3 spellings without resolving reparse targets; this is a built-in Kernel32 facility, not a package dependency.
 
 `scripts/install_skill.py` is a repository-only Python standard-library installer. It copies the existing installable directory exactly to `$HOME/.agents/skills/snowe-ui-skill` by default, supports an explicit compatible-host destination, and does not add an installable-product dependency or package format.
 
@@ -52,6 +52,8 @@ This is repository validation infrastructure, not an installable-skill dependenc
 - `actions/setup-python@v5` with 3.11/3.13 on Ubuntu/Windows;
 - `actions/setup-node@v4` with Node 22 for Ubuntu and Windows browser smoke;
 - the system Chrome/Chromium available on each GitHub-hosted runner.
+
+The Python matrix checks out complete Git history because the regression suite verifies the exact historical methodology commit recorded by `evals/designer-behavior/HOST-PROBES.md`. Other jobs retain the default bounded checkout because they do not read historical objects. Browser host-size assertions poll the owning dialog's scoped motion and stable bounds before measuring descendants; they continue to measure rendered geometry with the strict size tolerance rather than suppressing motion or widening the assertion.
 
 Its public contributor-context job uses only Python 3.13 standard-library code plus Git already present in the checkout environment. It runs `scripts/check_contributor_context.py --require-tracked` and the atlas freshness check; neither command adds an installable-product dependency.
 

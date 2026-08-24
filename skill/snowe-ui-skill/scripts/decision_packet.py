@@ -63,6 +63,56 @@ def _reject_reparse_chain(path: Path, label: str) -> None:
         current = parent
 
 
+def _windows_long_path_name(path: Path, label: str) -> Path:
+    """Expand Windows short names without resolving a reparse target."""
+    import ctypes
+    from ctypes import wintypes
+
+    get_long_path_name = ctypes.WinDLL("kernel32", use_last_error=True).GetLongPathNameW
+    get_long_path_name.argtypes = [wintypes.LPCWSTR, wintypes.LPWSTR, wintypes.DWORD]
+    get_long_path_name.restype = wintypes.DWORD
+    requested = os.fspath(path)
+    size = int(get_long_path_name(requested, None, 0))
+    if size == 0:
+        error = ctypes.get_last_error()
+        raise ValueError(f"{label} aliases cannot be inspected safely: {path} (Windows error {error})")
+    for _ in range(2):
+        buffer = ctypes.create_unicode_buffer(size)
+        written = int(get_long_path_name(requested, buffer, size))
+        if written == 0:
+            error = ctypes.get_last_error()
+            raise ValueError(f"{label} aliases cannot be inspected safely: {path} (Windows error {error})")
+        if written < size:
+            return Path(buffer.value)
+        size = written
+    raise ValueError(f"{label} aliases changed while they were being inspected: {path}")
+
+
+def _normalize_lexical_aliases(path: Path, label: str) -> Path:
+    """Normalize lexical aliases while preserving every reparse component."""
+    absolute = _absolute_lexical_path(path)
+    if os.name != "nt":
+        return absolute
+
+    existing = absolute
+    suffix: list[str] = []
+    while True:
+        try:
+            os.lstat(existing)
+            break
+        except FileNotFoundError:
+            parent = existing.parent
+            if parent == existing:
+                raise ValueError(f"{label} has no inspectable existing ancestor: {path}")
+            suffix.append(existing.name)
+            existing = parent
+        except OSError as error:
+            raise ValueError(f"{label} aliases cannot be inspected safely: {existing}") from error
+
+    normalized = _windows_long_path_name(existing, label)
+    return normalized.joinpath(*reversed(suffix))
+
+
 def _stat_identity(information: os.stat_result) -> tuple[int, int] | None:
     try:
         device = int(information.st_dev)
@@ -890,8 +940,10 @@ def _prepare_project_manifest(
     of identity. Empty directories can be claimed by creating the manifest.
     """
     _reject_reparse_chain(project_dir, "Persisted project path")
-    resolved_project_dir = project_dir.resolve(strict=False)
-    if not resolved_project_dir.is_relative_to(root):
+    _reject_reparse_chain(root, "Selected output directory")
+    lexical_project_dir = _absolute_lexical_path(project_dir)
+    lexical_root = _absolute_lexical_path(root)
+    if not lexical_project_dir.is_relative_to(lexical_root):
         raise ValueError("Persisted project path must remain inside the selected output directory.")
     if project_dir.is_symlink():
         raise ValueError(f"Refusing to persist through a project-directory symlink: {project_dir}")
@@ -1020,9 +1072,9 @@ def _validate_pages_parent(project_dir: Path, pages_dir: Path) -> None:
     _reject_reparse_chain(pages_dir, "Persisted pages path")
     if _is_reparse_path(pages_dir) or (pages_dir.exists() and not pages_dir.is_dir()):
         raise ValueError(f"Refusing to persist through an invalid pages path: {pages_dir}")
-    project_resolved = project_dir.resolve(strict=False)
-    pages_resolved = pages_dir.resolve(strict=False)
-    if not pages_resolved.is_relative_to(project_resolved):
+    lexical_project = _absolute_lexical_path(project_dir)
+    lexical_pages = _absolute_lexical_path(pages_dir)
+    if not lexical_pages.is_relative_to(lexical_project):
         raise ValueError(f"Persisted pages path must remain inside the project directory: {pages_dir}")
 
 
@@ -1033,7 +1085,11 @@ def persist_decision_packet(
     page_brief: str | None = None,
     project_identity: str | None = None,
 ) -> dict[str, Any]:
-    root = _absolute_lexical_path(output_dir or ".")
+    root_lexical = _absolute_lexical_path(output_dir or ".")
+    _reject_reparse_chain(root_lexical, "Selected output directory")
+    root = _normalize_lexical_aliases(root_lexical, "Selected output directory")
+    # Alias expansion must never erase a redirect inserted during inspection.
+    _reject_reparse_chain(root_lexical, "Selected output directory")
     _reject_reparse_chain(root, "Selected output directory")
     identity = _project_identity(packet, project_identity)
     project_slug = _persisted_slug(identity, "default", "Project")

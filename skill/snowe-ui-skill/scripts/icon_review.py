@@ -72,9 +72,9 @@ def _reject_reparse_chain(path: Path, label: str) -> None:
 def _atomic_write_text(path: Path, content: str) -> None:
     temporary = path.with_name(f".{path.name}.tmp-{uuid.uuid4().hex}")
     try:
-        # Match the checked-out comparison artifact's platform newline policy;
-        # Git normalizes the repository blob while Windows worktrees use CRLF.
-        with temporary.open("x", encoding="utf-8") as handle:
+        # The repository declares LF for text artifacts. Disable platform
+        # newline translation so regeneration is byte-identical everywhere.
+        with temporary.open("x", encoding="utf-8", newline="\n") as handle:
             handle.write(content)
             handle.flush()
             os.fsync(handle.fileno())
