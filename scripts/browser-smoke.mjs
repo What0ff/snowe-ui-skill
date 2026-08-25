@@ -113,8 +113,8 @@ function waitForChildExit(child, timeoutMilliseconds) {
 async function stopBrowserProcess(browser) {
   const child = browser?.child;
   if (!child || await waitForChildExit(child, 5_000)) return;
-  child.kill();
-  if (!await waitForChildExit(child, 5_000)) {
+  child.kill("SIGKILL");
+  if (!await waitForChildExit(child, 10_000)) {
     throw new Error(`Chrome process ${child.pid} did not exit after forced termination.`);
   }
 }
@@ -823,6 +823,18 @@ async function exerciseMobileNavigation(client, scenario) {
     await evaluate(client, `document.querySelector(${JSON.stringify(target)}).contains(document.activeElement)`),
     `${scenario.name}: could not establish focus inside mobile navigation before breakpoint transition`,
   );
+  if (scenario.slug === "bicycle-commerce") {
+    check(
+      await evaluate(client, `(() => {
+        const target = document.querySelector(${JSON.stringify(target)});
+        const active = document.activeElement;
+        if (!target.contains(active)) return false;
+        active.blur();
+        return document.activeElement === document.body;
+      })()`),
+      "Goodturn: could not model user-agent focus invalidation before breakpoint closure",
+    );
+  }
   await setViewport(client, DEFAULT_VIEWPORT);
   await waitForExpression(client, `document.querySelector(${JSON.stringify(toggle)}).getAttribute("aria-expanded") === "false"`);
   const insideBreakpoint = await evaluate(client, `(() => {
@@ -831,11 +843,19 @@ async function exerciseMobileNavigation(client, scenario) {
     const rect = active?.getBoundingClientRect?.();
     return {
       activeTag: active?.tagName,
+      activeHref: active?.closest?.("a")?.getAttribute("href"),
       activeVisible: Boolean(rect && rect.width > 0 && rect.height > 0),
       focusInside: target.contains(active),
+      focusInPrimaryNavigation: Boolean(document.querySelector(".primary-nav")?.contains(active)),
     };
   })()`);
   check(insideBreakpoint.activeTag !== "BODY" && insideBreakpoint.activeVisible, `${scenario.name}: focus inside mobile navigation was lost at the desktop breakpoint (${JSON.stringify(insideBreakpoint)})`);
+  if (scenario.slug === "bicycle-commerce") {
+    check(
+      insideBreakpoint.focusInPrimaryNavigation && insideBreakpoint.activeHref === "#bikes",
+      `Goodturn: breakpoint closure did not preserve the focused destination (${JSON.stringify(insideBreakpoint)})`,
+    );
+  }
 
   await setViewport(client, { width: 390, height: 844 });
   await click(client, toggle);

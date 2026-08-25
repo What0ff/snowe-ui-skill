@@ -77,6 +77,7 @@
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
   const euro = new Intl.NumberFormat("en-IE", { style: "currency", currency: "EUR", maximumFractionDigits: 0 });
   let toastTimer;
+  let lastMobileMenuFocus = null;
 
   function openDialog(dialog) {
     const current = $("dialog[open]");
@@ -89,8 +90,9 @@
     const button = $(".menu-button");
     const menu = $("#mobile-menu");
     const active = document.activeElement;
-    const focusInside = menu.contains(active);
-    const activeHref = active?.closest?.("a")?.getAttribute("href");
+    const focusSource = menu.contains(active) ? active : lastMobileMenuFocus;
+    const focusInside = Boolean(focusSource && menu.contains(focusSource));
+    const activeHref = focusSource?.closest?.("a")?.getAttribute("href");
     button.setAttribute("aria-expanded", "false");
     button.setAttribute("aria-label", "Open menu");
     menu.hidden = true;
@@ -103,6 +105,7 @@
       const focusTarget = buttonIsVisible ? button : desktopMatch || $(".primary-nav a");
       if (focusTarget && document.activeElement !== focusTarget) focusTarget.focus();
     }
+    lastMobileMenuFocus = null;
   }
 
   function showToast(message) {
@@ -122,17 +125,25 @@
 
   // Mobile navigation preserves the same journey without duplicating page state.
   const menuButton = $(".menu-button");
+  const mobileMenu = $("#mobile-menu");
+  document.addEventListener("focusin", (event) => {
+    if (mobileMenu.hidden) return;
+    if (mobileMenu.contains(event.target)) {
+      lastMobileMenuFocus = event.target;
+    } else if (event.target !== document.body && event.target !== document.documentElement) {
+      lastMobileMenuFocus = null;
+    }
+  });
   menuButton.addEventListener("click", () => {
-    const menu = $("#mobile-menu");
-    const willOpen = menu.hidden;
+    const willOpen = mobileMenu.hidden;
     if (!willOpen) {
       closeMobileMenu({ restoreFocus: true });
       return;
     }
-    menu.hidden = !willOpen;
+    mobileMenu.hidden = !willOpen;
     menuButton.setAttribute("aria-expanded", String(willOpen));
     menuButton.setAttribute("aria-label", willOpen ? "Close menu" : "Open menu");
-    if (willOpen) $("a", menu).focus();
+    if (willOpen) $("a", mobileMenu).focus();
   });
   $$("#mobile-menu a").forEach((link) => link.addEventListener("click", closeMobileMenu));
   document.addEventListener("keydown", (event) => {

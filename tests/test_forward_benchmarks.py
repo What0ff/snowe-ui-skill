@@ -174,6 +174,7 @@ class ForwardBenchmarkTests(unittest.TestCase):
         self.assertIn('from "node:http"', smoke)
         self.assertIn("prefers-reduced-motion", smoke)
         self.assertIn("await stopBrowserProcess(browser)", smoke)
+        self.assertIn('child.kill("SIGKILL")', smoke)
         self.assertIn("maxRetries: 12", smoke)
         self.assertIn("Cleanup cause ${index + 1}", smoke)
         self.assertIn("formatError(error)", smoke)
