@@ -909,6 +909,70 @@ async function inspectIconCellContainment(client) {
   })()`);
 }
 
+async function inspectRenderedType(client, selector) {
+  await evaluate(client, `(async () => {
+    document.querySelector(${JSON.stringify(selector)})?.getBoundingClientRect();
+    await document.fonts.ready;
+    await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+  })()`);
+  const { root } = await client.send("DOM.getDocument");
+  const { nodeId } = await client.send("DOM.querySelector", { nodeId: root.nodeId, selector });
+  check(nodeId > 0, `Typography: missing owner ${selector}`);
+  const { fonts } = await client.send("CSS.getPlatformFontsForNode", { nodeId });
+  const requested = await evaluate(client, `(() => {
+    const node = document.querySelector(${JSON.stringify(selector)}), style = getComputedStyle(node);
+    return { family: style.fontFamily, weight: style.fontWeight, style: style.fontStyle };
+  })()`);
+  return { selector, requested, rendered: fonts.filter(font => font.glyphCount > 0) };
+}
+
+async function auditGoodturnTypography(client, probe) {
+  // Explicit roles from Goodturn's accepted --display/--body owners, not a global font-count rule.
+  await client.send("DOM.enable");
+  await client.send("CSS.enable");
+  const roles = [
+    { selector: "#hero-title", family: "Barlow Condensed" },
+    { selector: ".hero-lede", family: "Manrope" },
+    { selector: '.filter-button[data-filter="all"]', family: "Manrope" },
+  ];
+  // The bundled variable Manrope face is reported as "Manrope ExtraLight" by Windows Chrome.
+  // Its internal family name is not evidence that a requested 400 weight renders at 200.
+  const renderedNames = { "Barlow Condensed": ["Barlow Condensed"], Manrope: ["Manrope", "Manrope ExtraLight"] };
+  const matches = (report, family) => report.requested.family.includes(family)
+    && report.rendered.length > 0
+    && report.rendered.every(font => font.isCustomFont && renderedNames[family].includes(font.familyName));
+  for (const role of roles) {
+    const report = await inspectRenderedType(client, role.selector);
+    check(matches(report, role.family), `Typography role drift: ${JSON.stringify(report)}`);
+  }
+  if (!probe) return;
+  const original = await evaluate(client, `(() => {
+    const node = document.querySelector('.hero-lede');
+    return { text: node.textContent, style: node.getAttribute('style') };
+  })()`);
+  try {
+    await evaluate(client, "document.querySelector('.hero-lede').style.fontFamily = 'Georgia, serif'");
+    check(!matches(await inspectRenderedType(client, ".hero-lede"), "Manrope"), "Typography: missed same-role family mutation");
+    await evaluate(client, `(() => {
+      const node = document.querySelector('.hero-lede');
+      node.style.fontFamily = 'Manrope, sans-serif';
+      node.textContent = 'Workspace Привет';
+    })()`);
+    const partial = await inspectRenderedType(client, ".hero-lede");
+    check(partial.requested.family.includes("Manrope") && !matches(partial, "Manrope")
+      && partial.rendered.some(font => font.isCustomFont && renderedNames.Manrope.includes(font.familyName))
+      && partial.rendered.some(font => !font.isCustomFont),
+    `Typography: missed per-glyph fallback behind a correct family declaration (${JSON.stringify(partial)})`);
+  } finally {
+    await evaluate(client, `(() => {
+      const node = document.querySelector('.hero-lede'), original = ${JSON.stringify(original)};
+      node.textContent = original.text;
+      if (original.style === null) node.removeAttribute('style'); else node.setAttribute('style', original.style);
+    })()`);
+  }
+  check(matches(await inspectRenderedType(client, ".hero-lede"), "Manrope"), "Typography: failed to restore the original role after probes");
+}
+
 async function runSmoke(client, origin) {
   const available = new Set([...scenarios.map((scenario) => scenario.slug), "icon-decisions"]);
   if (REQUESTED_SCENARIO && !available.has(REQUESTED_SCENARIO)) {
@@ -923,6 +987,7 @@ async function runSmoke(client, origin) {
       for (const viewport of [DEFAULT_VIEWPORT, { width: 900, height: 900 }, { width: 390, height: 844 }]) {
         await navigate(client, origin, scenario, viewport);
         await commonAudit(client, scenario, viewport, false);
+        if (scenario.slug === "bicycle-commerce") await auditGoodturnTypography(client, viewport.width === 1440);
         if (scenario.slug === "soda-campaign") {
           const expectedPanels = viewport.width === 1440 ? 48 : viewport.width === 900 ? 40 : 32;
           check(await evaluate(client, `document.querySelectorAll(".can-panel").length === ${expectedPanels}`), `Doppler: expected ${expectedPanels} can segments at ${viewport.width}px`);

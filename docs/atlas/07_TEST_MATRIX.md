@@ -104,6 +104,8 @@ Additional bounded local probes in that README cover stale-source detection, exp
 
 ### Low-level assets
 
+Goodturn's normal browser smoke also checks actual rendered custom faces for its heading, body and filter-control roles at 1440/900/390 using CDP `CSS.getPlatformFontsForNode`. At the wide viewport it temporarily changes the body face, then inserts mixed Latin/Cyrillic text into the Latin-subset owner while keeping the correct CSS family declaration. Both mismatches must be detected and the original text/style restored. Font loading and two paint frames settle before querying glyph use. The bundled variable Manrope reports an internal family name of `Manrope ExtraLight` on Windows Chrome; this is mapped separately from its CSS alias, without interpreting that name as the actual weight. These are authored face/role/fallback regression checks, not automatic aesthetic or variable-axis certification.
+
 The icon comparison additionally checks preview, glyph and text containment within state cells at 1440, 900 and 390 widths. A temporary narrow-column mutation reproduces the original service-copy overflow and must be detected; it is removed before host proof. Document-wide overflow alone is insufficient. Service and labelled-action state rows use their candidate's full available width; compact icon controls retain a state grid.
 
 For scoped correction and backing evidence:

@@ -36,7 +36,17 @@ Inventory:
 
 Define role contracts before family names. A display face may create authorship, a text face may disappear into reading, and a numeric or mono role may support comparison—but every additional family must earn its semantic or brand role.
 
+Keep a compact role map in the existing implementation/decision record: `role → family stack → real weights/styles/axes → size/line-height/tracking → scripts → owner → exception`. Start from the accepted system. In an ordinary interface, reuse its primary text family for body copy, navigation, labels and controls unless a verified role needs a deliberate contrast. Express hierarchy first through size, real weight, spacing and placement rather than changing family section by section. Prices do not automatically need a different font; tabular figures within the existing family may solve alignment. Preserve an accepted display face, code face, logotype and legitimate script-specific fallback.
+
+Audit assignments across the whole affected composition, including similar cards, repeated headings, tooltips, menus, dialogs, validation text and embedded chart labels. Reused library components can silently import a different default stack. Fix the shared typography token, inheritance/reset or component variant at its owner, rather than adding independent font overrides to each occurrence. Make native controls inherit the relevant role where appropriate; do not globally force every element to the body font and erase intentional display, code, icon-font or locale roles.
+
+Critique the combination as well as its implementation: compare x-height, width, density, terminals, numerals and tone in actual neighboring text. Two nearly similar faces may look like a mistake; dramatic contrast may compete with the task. An explanation that each font is attractive does not establish a coherent page. If an extra family has no distinct role, compare the same content using the accepted role family and retain the extra face only when its contribution is visible. No fixed font-count limit can replace this judgment.
+
 Compare candidates on identical real content at target widths. Inspect x-height, width, rhythm, line breaks, baseline, punctuation, numeral alignment, fallback shift, and loading failure. A font specimen, popularity rank, or dataset pairing is discovery evidence only.
+
+Verify real font files, declared weight ranges, styles and required script coverage. A requested weight may be synthetic or mapped to the wrong static file; a Latin subset may fall back within a Cyrillic label. Browser rendered-font inspection, where available, can expose which face supplies actual glyphs. `getComputedStyle().fontFamily` reports the requested stack, not necessarily the rendered face; `document.fonts.ready` and `document.fonts.check` alone do not certify glyph coverage or visual coherence. Required fallback/loading states may differ transiently but must remain readable and usable; the settled intended state still needs separate proof.
+
+Distinguish the CSS alias from the font's internal family/PostScript name. Variable fonts can report a named base face even while rendering another valid axis value; a name such as “ExtraLight” alone does not prove the wrong weight. Verify file/axis mapping and the actual rendered result before diagnosing synthesis or substitution.
 
 Use fluid size where it preserves hierarchy, not as a default spectacle. Avoid very light small text. Use tabular figures when alignment communicates meaning. Allow zoom and system text scaling without clipping or content loss.
 

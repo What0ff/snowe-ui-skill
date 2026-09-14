@@ -56,7 +56,19 @@ Record the backing's role, owner, verdict and evidence in the existing finding r
 
 For new or materially revised custom glyphs, also apply the [contextual icon acceptance claims](iconography-system.md#accept-the-context-not-the-drawing-sheet). A correct backing does not close semantic truth, small-size recognition, family fit or accessible host behavior. Routine wrapper-only fixes need not reopen glyph generation.
 
-### Disposition
+### Typography Coherence
+
+For an affected page/visual system or reported font inconsistency, inspect a representative set of each real type role: display heading, repeated section/card heading, body, navigation, button/field/select, price/data, and applicable menu/dialog/error/chart text. Include below-the-fold siblings and relevant responsive/localized states. A bounded font fix inspects its owner and affected consumers; it does not reopen all type choices across the product.
+
+Compare the current implementation with the accepted role map. Record `role/selector/state → intended stack and weight/style → computed request → actual rendered face when inspectable → visible consequence → correction/rerender`. Check local overrides, imported component CSS, resets, font-face files and weight/axis mappings. Inspect required scripts and mixed-script labels for per-glyph fallback. A family token, successful font response, completed font loading promise or attractive isolated specimen does not prove the final text uses the intended face.
+
+Treat an unexplained family/style switch among equivalent labels, headings or controls as `REVISE` that blocks affected visual acceptance. Also block unresolved fake/mismapped weights, unintended default browser control fonts, missing-glyph boxes, or mixed fallback that disrupts required text. Use `REJECT` when readability, content, task completion or accessibility fails; use `UNKNOWN` when the necessary render or font identity evidence is unavailable. Do not assert a specific rendering cause from a screenshot alone.
+
+Judge the complete typographic voice: do headings, prose, controls and data read as one intentional hierarchy, or as fragments from different templates? A formally assigned role can still look incoherent. When a new pairing is unresolved, compare identical content and viewport against the accepted family assignment. Keep useful display/text/mono or script-specific distinctions and user-specified references. One-font-for-everything, a universal two-font maximum, and counting CSS stack entries are not acceptance criteria.
+
+After repair, inspect actual text at native size in the current page and relevant overlay/control states. Recheck line breaks, baselines, button dimensions, clipping and responsive fit after fonts settle; a font change can cause layout regressions without page-level overflow. Report which roles, scripts and states were verified, and separate transient loading/fallback resilience from settled visual acceptance.
+
+### Overall Disposition
 
 Judge the implementation, not the author's explanation. Review the artifact and brief before reading its design rationale when feasible. For a specified target, distinguish implementation drift from an issue already present in the source design: a faithfully reproduced trait can pass conformance while a separate usability/accessibility finding remains open. That finding does not authorize silently changing the reference. Use these dispositions for the affected scope and name which acceptance claim they address:
 
@@ -67,6 +79,7 @@ Judge the implementation, not the author's explanation. Review the artifact and 
 | Repeated cards, badges, effects, or hero/section patterns flatten meaningful content differences, contradict the selected thesis, or lose to a credible subtraction challenger without a compensating task/identity benefit | `REVISE` and block visual acceptance; change the grouping/composition or treatment, then compare again. Renaming the style does not resolve the finding. |
 | Local type, crop, spacing, alignment, control size/corner shape, or optical defect | `REVISE`; fix and rerender if it materially affects readability, hierarchy, fit, or the requested fidelity. An oversized or inappropriately squared button cannot pass merely because it is clickable. A small cosmetic preference can remain only with an explicit scoped acceptance reason. |
 | A material explicit user correction recurs, or a glyph is polished while its unsupported backing still competes with labels/actions | `REVISE` and block acceptance of the affected scope; repair the responsible owner and inspect the current result. Required functionality/semantics failures still take `REJECT`. |
+| Equivalent text roles drift between families/styles, or intended typography is undermined by unverified font files, weights or glyph fallback | `REVISE` and block affected typography acceptance; apply the typography coherence check and verify the settled rendered result. Missing required evidence stays `UNKNOWN`. |
 | Required render, interaction, content, or comparison evidence is absent, stale, or inaccessible | `UNKNOWN` for that claim; do not label it passed or replace it with source inspection. |
 | Applicable proof supports the task, visual hierarchy, role coherence, and requested identity; no blocking findings remain | `KEEP` for the inspected scope, with concrete evidence. Do not extrapolate to uninspected routes or states. |
 
@@ -162,6 +175,7 @@ Performance budgets are contextual, but unmeasured heavy decoration is not a des
 2. Exercise the affected task/keyboard path and applicable open, selected, error, loading, and reduced-motion states. Do not fabricate unrelated states to fill a checklist.
 3. Review the hierarchy and crop of the affected context, then component detail and optical alignment. Inspect the whole page when its composition is the active decision.
    Include the icon-backing check for affected icons/surfaces and reconcile applicable user corrections with the current result. Inspect representative shared variants, including below-the-fold instances when the treatment is repeated there; a polished first screen does not prove the family.
+   Apply typography coherence to affected text roles and their actual rendered fonts, including controls and overlays. Review the page's combined typographic voice as well as individual text metrics.
 4. Record findings with direct evidence and consequence. Avoid vague taste notes.
 5. Correct every `REJECT` and material `REVISE` in causal order: truth/architecture, task/interaction, responsive/accessibility, art direction, then polish.
 6. Rerender the affected evidence. Run another complete pass only after a material compositional change or unresolved major failure.
