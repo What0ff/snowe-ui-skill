@@ -5,6 +5,8 @@ from __future__ import annotations
 import hashlib
 import json
 from pathlib import Path
+import shutil
+import tempfile
 import unittest
 
 
@@ -33,14 +35,20 @@ def jpeg_size(data: bytes) -> tuple[int, int]:
 
 class VisualAcceptanceEvidenceTests(unittest.TestCase):
     def test_captures_bind_current_fixture_and_exact_image_bytes(self):
-        manifest = json.loads((ROOT / "captures/geometry.json").read_text(encoding="utf-8"))
-        self.assertEqual(manifest["fixtureSha256"], hashlib.sha256((ROOT / "fixture.html").read_bytes()).hexdigest())
+        self.assert_capture_set(ROOT)
+
+    def test_correction_transfer_captures_bind_current_fixture_and_geometry(self):
+        self.assert_capture_set(ROOT.parent / "correction-transfer")
+
+    def assert_capture_set(self, root):
+        manifest = json.loads((root / "captures/geometry.json").read_text(encoding="utf-8"))
+        self.assertEqual(manifest["fixtureSha256"], hashlib.sha256((root / "fixture.html").read_bytes()).hexdigest())
         expected = {f"{version}-{width}.jpg" for version in "ABC" for width in (1280, 820, 390)}
         self.assertEqual(len(manifest["captures"]), len(expected))
         self.assertEqual({item["file"] for item in manifest["captures"]}, expected)
         for capture in manifest["captures"]:
             with self.subTest(capture=capture["file"]):
-                image = (ROOT / "captures" / capture["file"]).read_bytes()
+                image = (root / "captures" / capture["file"]).read_bytes()
                 self.assertEqual(capture["sha256"], hashlib.sha256(image).hexdigest())
                 width, height = jpeg_size(image)
                 viewport = capture["viewport"]
@@ -51,6 +59,15 @@ class VisualAcceptanceEvidenceTests(unittest.TestCase):
                 self.assertEqual(geometry["height"], viewport["height"])
                 self.assertEqual(geometry["scrollWidth"], viewport["width"])
                 self.assertEqual(geometry["version"], capture["file"][0])
+
+    def test_stale_fixture_cannot_reuse_correction_transfer_proof(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            copied = Path(temporary_directory) / "proof"
+            shutil.copytree(ROOT.parent / "correction-transfer", copied)
+            with (copied / "fixture.html").open("a", encoding="utf-8") as source:
+                source.write("\n<style>.marker { display: none }</style>\n")
+            with self.assertRaises(AssertionError):
+                self.assert_capture_set(copied)
 
 
 if __name__ == "__main__":

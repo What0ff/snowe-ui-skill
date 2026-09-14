@@ -37,6 +37,8 @@ snowe-ui-skill/
 ├── docs/  # public repository documentation and atlas
 │   └── atlas/
 ├── evals/  # deterministic behavior contracts and bounded operational proofs
+│   ├── correction-transfer/
+│   │   └── captures/
 │   ├── designer-behavior/
 │   ├── icon-decisions/
 │   │   └── assets/
@@ -94,13 +96,13 @@ The generated map itself is excluded from the counts.
 
 | Extension | Files |
 | --- | --- |
-| `.md` | 55 |
-| `.jpg` | 43 |
+| `.md` | 58 |
+| `.jpg` | 52 |
 | `.csv` | 32 |
 | `.py` | 19 |
-| `.json` | 13 |
+| `.json` | 14 |
 | `.svg` | 12 |
-| `.html` | 7 |
+| `.html` | 8 |
 | `.txt` | 6 |
 | `.woff2` | 6 |
 | `.css` | 5 |

@@ -1,0 +1,131 @@
+{
+  "fixtureSha256": "22837e0bc3dc8776cda82c42e2bb4eae85df7c7dbb7f7438e6db9689f7e8865b",
+  "captures": [
+    {
+      "file": "A-1280.jpg",
+      "sha256": "a689cb279668ff737c8e1b7483acb529a4a9f5946dde1b66f7a41592e2954c9d",
+      "viewport": {
+        "width": 1280,
+        "height": 1200
+      },
+      "geometry": {
+        "width": 1280,
+        "height": 1200,
+        "scrollWidth": 1280,
+        "version": "A"
+      }
+    },
+    {
+      "file": "A-820.jpg",
+      "sha256": "15d8a8b6309062e6c5ca42cf3fadc181e76edb3fcaa17acc60fe587b29caee5a",
+      "viewport": {
+        "width": 820,
+        "height": 1000
+      },
+      "geometry": {
+        "width": 820,
+        "height": 1000,
+        "scrollWidth": 820,
+        "version": "A"
+      }
+    },
+    {
+      "file": "A-390.jpg",
+      "sha256": "71e032da24db234b1322d566a1731802a8bdf36c97f4e2ffc8a662d14bd4c25c",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "geometry": {
+        "width": 390,
+        "height": 844,
+        "scrollWidth": 390,
+        "version": "A"
+      }
+    },
+    {
+      "file": "B-1280.jpg",
+      "sha256": "e0c8439dc12a2dc8e1ba90ec5e2aef535b039ce2707535a8ea7e8b433ce1a28c",
+      "viewport": {
+        "width": 1280,
+        "height": 1200
+      },
+      "geometry": {
+        "width": 1280,
+        "height": 1200,
+        "scrollWidth": 1280,
+        "version": "B"
+      }
+    },
+    {
+      "file": "B-820.jpg",
+      "sha256": "e6924214b58cd488361c85570c220049bc2089d3871ea74242693969aa959135",
+      "viewport": {
+        "width": 820,
+        "height": 1000
+      },
+      "geometry": {
+        "width": 820,
+        "height": 1000,
+        "scrollWidth": 820,
+        "version": "B"
+      }
+    },
+    {
+      "file": "B-390.jpg",
+      "sha256": "87c89d9580b53857167cfb832988aff31d5125d6cf2f0a6b954001ba75838720",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "geometry": {
+        "width": 390,
+        "height": 844,
+        "scrollWidth": 390,
+        "version": "B"
+      }
+    },
+    {
+      "file": "C-1280.jpg",
+      "sha256": "0adcf96528af66085cab7e89288537abd10ac2ed9c616fc4d0a750fb18d5d339",
+      "viewport": {
+        "width": 1280,
+        "height": 1200
+      },
+      "geometry": {
+        "width": 1280,
+        "height": 1200,
+        "scrollWidth": 1280,
+        "version": "C"
+      }
+    },
+    {
+      "file": "C-820.jpg",
+      "sha256": "568015e207edf45b3395370b9d4539ad2a3ac0a93352267aa5ab2accde708450",
+      "viewport": {
+        "width": 820,
+        "height": 1000
+      },
+      "geometry": {
+        "width": 820,
+        "height": 1000,
+        "scrollWidth": 820,
+        "version": "C"
+      }
+    },
+    {
+      "file": "C-390.jpg",
+      "sha256": "31209c2f0bdac8c879c29e1e21aa6f18c111f1e148a636e0b4f5bc7fb59742a1",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "geometry": {
+        "width": 390,
+        "height": 844,
+        "scrollWidth": 390,
+        "version": "C"
+      }
+    }
+  ]
+}

@@ -32,6 +32,10 @@ For visual-acceptance changes, include both misuse and legitimate use of the sam
 
 ## Evaluate With Findings, Not a Creativity Score
 
+For correction-memory and icon-backing changes, pair a new context where the same failure mechanism applies with one where the same visual shape has a valid different role. Include a renamed class or pseudo-element backing, a sharp glyph inside an unnecessary surface, a radius-only revision, a below-the-fold repeat, a selected control, and an explicitly approved reference. Give the agent scoped prior feedback, a current superseding instruction, and an unavailable-proof case. Evaluate what it actually changes or retains and verifies, not whether it repeats the correction vocabulary. A remembered local preference must neither disappear in its original scope nor become a global style prohibition.
+
+Use held-out tasks after developing a lesson; do not tune the scenario until it produces the desired verdict. Separate a bounded review from implementation and repeated generation evidence. An independent reviewer may inspect actual artifacts when delegation is authorized; a self-review must be labelled as such. Neither a second agent nor a numeric score can replace rendered or behavioral evidence.
+
 Use:
 
 ```text
@@ -94,6 +98,8 @@ Structural SVG validation is necessary but not aesthetic proof. Render custom ic
 - on representative displays or pixel-density captures.
 
 Check recognition, ambiguity, optical size, center of mass, baseline, stroke/fill weight, terminal and corner coherence, negative space, detail loss, color inheritance, and repeated-family rhythm. Compare with text, native/existing symbols, and the strongest external candidate. Reject custom work when it loses.
+
+When increasing custom-icon exploration, include an approximate library match for a distinctive product concept, a conventional action whose accepted symbol should remain, an attractive custom metaphor that asserts the wrong state, and a custom draft that only works enlarged. Measure whether the agent develops a relevant custom candidate, repairs weak geometry in context, and retains quality boundaries. More original SVG files alone is not success. Separate generated candidates, accepted candidates, self-reviewed evidence and observed user recognition; do not optimize for a custom-use percentage.
 
 ## Paired Revision Evaluation
 

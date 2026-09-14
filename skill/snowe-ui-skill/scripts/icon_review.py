@@ -578,7 +578,7 @@ def render_review_html(manifest: dict[str, Any]) -> str:
                     f'<div class="state-cell state-cell--{state}"><span class="state-label">{html.escape(state)}</span>{_component(context, candidate, size, state)}</div>'
                     for state in context["states"]
                 )
-                matrices.append(f'<div class="size-row"><div class="size-label">{size_label}</div><div class="state-row">{states}</div></div>')
+                matrices.append(f'<div class="size-row"><div class="size-label">{size_label}</div><div class="state-row state-row--{context["component"]}">{states}</div></div>')
             validation = candidate.get("_validation")
             contract = "not applicable — no SVG" if validation is None else "structural SVG contract: PASS"
             asset_digest = "not applicable — no SVG" if validation is None else candidate["asset_sha256"]
@@ -626,14 +626,14 @@ main{{max-width:1500px;margin:auto;padding:40px 28px 80px}}h1,h2,h3,p{{margin-to
 .candidate--selected{{border:2px solid var(--accent);box-shadow:4px 4px 0 var(--accent)}}.candidate header{{display:flex;justify-content:space-between;gap:16px;border-bottom:1px solid var(--line);margin-bottom:12px}}
 .candidate h3{{font-size:22px;margin:4px 0 12px}}.decision{{color:var(--muted)}}.candidate--selected .decision{{color:var(--accent)}}dl{{display:grid;grid-template-columns:110px 1fr;gap:4px 10px;font-size:12px;color:var(--muted)}}dt{{font-weight:700;color:var(--ink)}}dd{{margin:0;overflow-wrap:anywhere}}.host-proof{{font-size:12px;color:var(--muted)}}
 .size-row{{border-top:1px solid var(--line);padding-top:12px;margin-top:14px}}.size-label{{margin-bottom:8px}}.state-row{{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px}}
-.state-cell{{min-height:96px;padding:8px;border:1px dashed var(--line);display:flex;flex-direction:column;gap:12px;align-items:flex-start;justify-content:space-between}}
+.state-row--service-item,.state-row--labeled-button{{grid-template-columns:1fr}}.state-cell{{min-width:0;min-height:96px;padding:8px;border:1px dashed var(--line);display:flex;flex-direction:column;gap:12px;align-items:flex-start;justify-content:space-between}}
 .state-cell--dark{{background:var(--dark);color:var(--light)}}.state-cell--high-contrast{{background:#000;color:#fff;border-color:#fff}}.state-label{{opacity:.68}}
 .preview{{font:inherit;color:inherit}}button.preview{{border:1px solid currentColor;background:transparent;min-height:42px;cursor:pointer}}.preview--icon-button{{width:42px;height:42px;padding:0;display:grid;place-items:center}}.preview--icon-button.preview--text-button{{width:auto;padding:8px 12px}}
-.preview--labeled-button{{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;font-weight:700}}.preview--service-item{{display:flex;align-items:center;gap:10px;padding:8px;min-width:170px}}
-.copy{{display:grid;text-align:left}}.copy small{{color:var(--muted)}}.state-cell--dark .copy small,.state-cell--high-contrast .copy small{{color:inherit;opacity:.75}}
+.preview--labeled-button{{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;font-weight:700;max-width:100%}}.preview--service-item{{display:flex;align-items:center;gap:10px;padding:8px;min-width:0;width:100%}}
+.copy{{display:grid;text-align:left;min-width:0}}.copy,.preview--labeled-button>span{{overflow-wrap:anywhere;min-width:0}}.copy small{{color:var(--muted)}}.state-cell--dark .copy small,.state-cell--high-contrast .copy small{{color:inherit;opacity:.75}}
 .state--hover{{background:#e6dfd2}}.state--focus{{outline:3px solid #1769e0;outline-offset:2px}}.state--selected{{background:var(--ink);color:var(--light)}}.state--disabled{{opacity:.38;cursor:not-allowed}}
 .icon{{width:var(--icon-size);height:var(--icon-size);display:inline-grid;place-items:center;flex:none}}.icon svg{{width:100%;height:100%;display:block}}.sr-only{{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}}
-@media(max-width:700px){{main{{padding:24px 14px 50px}}.evidence{{grid-template-columns:1fr}}.state-row{{grid-template-columns:repeat(2,minmax(0,1fr))}}dl{{grid-template-columns:90px 1fr}}}}
+@media(max-width:700px){{main{{padding:24px 14px 50px}}.evidence{{grid-template-columns:1fr}}.state-row--icon-button{{grid-template-columns:repeat(2,minmax(0,1fr))}}dl{{grid-template-columns:90px 1fr}}}}
 @media(forced-colors:active){{.candidate--selected{{border:3px solid Highlight;box-shadow:none}}.state--focus{{outline-color:Highlight}}}}
 </style></head><body><main><header><span class="eyebrow">Operational icon comparison evidence</span><h1>{title}</h1>
 <p class="lede">Every SVG shown here passed deterministic safety, geometry, paint, metadata-schema, and declared-provenance byte-binding checks. Repository-derived context source bytes and declared selectors are bound to the manifest; external source and license truth still require current primary-source verification. Host candidate/state checks are reported separately by browser smoke. The selected outcomes and optical rationales remain human visual judgments from the manifest; this sheet cannot certify recognition or taste.</p>

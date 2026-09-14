@@ -537,10 +537,13 @@ class DecisionPacketGenerator:
                     "family_spec": "role | grid/viewBox | live area/keylines | stroke or fill model | caps/joins/corners | curvature | optical overshoot | counter/negative-space minimum | detail budget by size | color modes | source/provenance",
                     "workflow": [
                         "Decide whether visible text, an existing symbol, a compatible external family, or a custom graphic gives the clearest and most ownable result.",
+                        "For open product-specific icon decisions, develop a feasible custom candidate before settling for an approximate library match; preserve accepted conventional actions and quality over frequency.",
+                        "Derive a semantic brief from actual feature behavior, label, state, nearest sibling meanings and the smallest real slot; do not imply an unverified capability or outcome.",
                         "Sketch materially different silhouettes and compound constructions before polishing paths.",
                         "Draw to the family specification; use optical compensation rather than mechanically identical bounds.",
                         "Run structural SVG/provenance validation, then render at 16, 20, and 24px and at every actual interface size beside neighboring icons.",
                         "Test default, selected, disabled, dark, high-contrast, and labelled contexts where applicable.",
+                        "Inspect native-size glyph recognition, optical family fit, host scaling and painted backings separately; bind current asset/context evidence and keep missing proof UNKNOWN.",
                     ],
                     "reject_when": "Reject or redraw when recognition depends on explanation, counters close, stroke/area feels heavier than neighbors, the metaphor conflicts with the action, the silhouette collapses, or an existing asset is visibly stronger.",
                 },
@@ -770,6 +773,14 @@ def format_decision_journal(project_name: str) -> str:
         "|---|---|---|---|---|---|---|\n"
         "| PROPOSED | project |  |  |  |  |  |\n\n"
         "Allowed statuses: `PROPOSED`, `ACCEPTED`, `SUPERSEDED`.\n"
+        "\n## Scoped corrections (when applicable)\n\n"
+        "Append material user corrections to this ledger or the project's existing finding record.\n"
+        "Keep source, scope/owner/states, cause/change, implementation/proof status, "
+        "confirming evidence, and applicability/revisit conditions together.\n"
+        "An accepted requirement is not proof of a verified implementation. "
+        "Current explicit instructions can supersede older scoped decisions; preserve their history.\n"
+        "Transfer verified causes, not blanket style preferences. "
+        "Missing memory or rendered evidence must not be replaced with inferred acceptance.\n"
     )
 
 

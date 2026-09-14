@@ -16,7 +16,8 @@ const CAPTURE_SODA = process.argv.includes("--capture-soda");
 const CAPTURE_SODA_MOTION = process.argv.includes("--soda-motion-frames");
 const CAPTURE_GOODTURN = process.argv.includes("--capture-goodturn-workshop");
 const CAPTURE_VISUAL_ACCEPTANCE = process.argv.includes("--capture-visual-acceptance");
-const CHECKS_ONLY = process.argv.includes("--smoke") || (!CAPTURE && !CAPTURE_SODA && !CAPTURE_SODA_MOTION && !CAPTURE_GOODTURN && !CAPTURE_VISUAL_ACCEPTANCE);
+const CAPTURE_CORRECTION_TRANSFER = process.argv.includes("--capture-correction-transfer");
+const CHECKS_ONLY = process.argv.includes("--smoke") || (!CAPTURE && !CAPTURE_SODA && !CAPTURE_SODA_MOTION && !CAPTURE_GOODTURN && !CAPTURE_VISUAL_ACCEPTANCE && !CAPTURE_CORRECTION_TRANSFER);
 const SCENARIO_OPTION_INDEX = process.argv.indexOf("--scenario");
 const REQUESTED_SCENARIO = SCENARIO_OPTION_INDEX >= 0 ? process.argv[SCENARIO_OPTION_INDEX + 1] : null;
 if (SCENARIO_OPTION_INDEX >= 0 && (!REQUESTED_SCENARIO || REQUESTED_SCENARIO.startsWith("--"))) {
@@ -884,6 +885,30 @@ async function exerciseMobileNavigation(client, scenario) {
   check(breakpoint.expanded === "false" && breakpoint.focusOutside && !breakpoint.focusInside, `${scenario.name}: desktop breakpoint closure stole focus or left it in navigation (${JSON.stringify(breakpoint)})`);
 }
 
+async function inspectIconCellContainment(client) {
+  return evaluate(client, `(() => {
+    const failures = [];
+    for (const cell of document.querySelectorAll('.state-cell')) {
+      const boundary = cell.getBoundingClientRect();
+      const fits = rect => rect.left >= boundary.left - 1 && rect.right <= boundary.right + 1
+        && rect.top >= boundary.top - 1 && rect.bottom <= boundary.bottom + 1;
+      const nodes = [...cell.querySelectorAll('.preview, .icon, .copy, .copy strong, .copy small, .preview > span:not(.sr-only)')];
+      for (const node of nodes) {
+        const range = document.createRange();
+        range.selectNodeContents(node);
+        const textRects = node.matches('.copy strong, .copy small, .preview > span:not(.sr-only):not(.icon):not(.copy)')
+          ? [...range.getClientRects()] : [];
+        if (!fits(node.getBoundingClientRect()) || textRects.some(rect => !fits(rect))
+          || node.scrollWidth > node.clientWidth + 1) {
+          failures.push({candidate: cell.closest('.candidate').dataset.candidate,
+            state: cell.querySelector('.state-label').textContent, node: node.className || node.tagName});
+        }
+      }
+    }
+    return failures;
+  })()`);
+}
+
 async function runSmoke(client, origin) {
   const available = new Set([...scenarios.map((scenario) => scenario.slug), "icon-decisions"]);
   if (REQUESTED_SCENARIO && !available.has(REQUESTED_SCENARIO)) {
@@ -1408,7 +1433,7 @@ async function runSmoke(client, origin) {
       const expectedNoIconIds = iconManifest.contexts.flatMap((context) => context.candidates.filter((candidate) => candidate.kind === "none").map((candidate) => candidate.id));
       const expectedCandidateCount = iconManifest.contexts.reduce((total, context) => total + context.candidates.length, 0);
       const closeTextId = iconManifest.contexts[0]?.candidates.find((candidate) => candidate.kind === "none")?.id || "";
-      for (const viewport of [DEFAULT_VIEWPORT, { width: 390, height: 844 }]) {
+      for (const viewport of [DEFAULT_VIEWPORT, { width: 900, height: 1000 }, { width: 390, height: 844 }]) {
         await navigate(client, origin, comparisonScenario, viewport);
         const report = await evaluate(client, `(() => {
           const selected = [...document.querySelectorAll(".candidate--selected")].map((node) => node.dataset.candidate);
@@ -1458,6 +1483,20 @@ async function runSmoke(client, origin) {
         check(report.unnamedButtons === 0 && report.noIconCardsWithoutSvg && report.closeText === "Close" && report.stateCoverage, "Icon review: a no-icon, accessible-name, or declared-state comparison is misleading");
         check(report.scripts === 0 && report.externalResources.length === 0, `Icon review: generated evidence is not self-contained (${report.externalResources.join(", ")})`);
         check(report.overflow <= 1, `Icon review: ${report.overflow}px horizontal overflow at ${viewport.width}px`);
+        const cellOverflow = await inspectIconCellContainment(client);
+        check(cellOverflow.length === 0, `Icon review: content escapes its comparison cell at ${viewport.width}px (${JSON.stringify(cellOverflow)})`);
+        if (viewport.width === DEFAULT_VIEWPORT.width) {
+          await evaluate(client, `(() => {
+            const style = document.createElement('style'); style.id = 'cell-overflow-regression-probe';
+            style.textContent = '.state-row--service-item { grid-template-columns:repeat(3,minmax(0,1fr)) } .preview--service-item { min-width:170px }';
+            document.head.append(style);
+          })()`);
+          try {
+            check((await inspectIconCellContainment(client)).length > 0, "Icon review: containment check missed the original narrow-cell regression");
+          } finally {
+            await evaluate(client, "document.getElementById('cell-overflow-regression-probe').remove()");
+          }
+        }
         check(diagnostics.exceptions.length === 0, `Icon review: runtime exceptions: ${diagnostics.exceptions.join(" | ")}`);
         check(diagnostics.consoleErrors.length === 0, `Icon review: console errors: ${diagnostics.consoleErrors.join(" | ")}`);
         check(diagnostics.failedRequests.length === 0, `Icon review: failed requests: ${diagnostics.failedRequests.join(" | ")}`);
@@ -1659,13 +1698,13 @@ async function runCaptures(client, origin) {
   passes.push("18 forward-test and 7 Doppler screenshots captured from validated browser states");
 }
 
-async function captureVisualAcceptance(client, origin) {
-  const dir = path.join(ROOT, "evals/visual-acceptance/captures");
-  const fixtureSha256 = createHash("sha256").update(await readFile(path.join(ROOT, "evals/visual-acceptance/fixture.html"))).digest("hex");
+async function captureVisualAcceptance(client, origin, fixture = "visual-acceptance") {
+  const dir = path.join(ROOT, `evals/${fixture}/captures`);
+  const fixtureSha256 = createHash("sha256").update(await readFile(path.join(ROOT, `evals/${fixture}/fixture.html`))).digest("hex");
   await mkdir(dir, { recursive: true });
   const proof = [];
   for (const version of ["A", "B", "C"]) {
-    const scenario = { name: `Visual acceptance ${version}`, route: `/evals/visual-acceptance/fixture.html?v=${version}`, requiresReadyMarker: false };
+    const scenario = { name: `${fixture} ${version}`, route: `/evals/${fixture}/fixture.html?v=${version}`, requiresReadyMarker: false };
     for (const viewport of [{ width: 1280, height: 1200 }, { width: 820, height: 1000 }, { width: 390, height: 844 }]) {
       await navigate(client, origin, scenario, viewport);
       const geometry = await evaluate(client, `({ width: innerWidth, height: innerHeight, scrollWidth: document.documentElement.scrollWidth, version: document.body.dataset.version })`);
@@ -1679,7 +1718,7 @@ async function captureVisualAcceptance(client, origin) {
     }
   }
   await writeFile(path.join(dir, "geometry.json"), `${JSON.stringify({ fixtureSha256, captures: proof }, null, 2)}\n`);
-  passes.push("9 visual-acceptance fixture captures with verified viewport geometry; static evidence only, no task behavior or aesthetic certification");
+  passes.push(`9 ${fixture} fixture captures with verified viewport geometry; static evidence only, no task behavior or aesthetic certification`);
 }
 
 async function main() {
@@ -1710,6 +1749,7 @@ async function main() {
       await captureGoodturnWorkshop(client, origin, scenarios.find((scenario) => scenario.slug === "bicycle-commerce"));
     }
     if (CAPTURE_VISUAL_ACCEPTANCE && failures.length === 0) await captureVisualAcceptance(client, origin);
+    if (CAPTURE_CORRECTION_TRANSFER && failures.length === 0) await captureVisualAcceptance(client, origin, "correction-transfer");
   } finally {
     if (client) {
       try {

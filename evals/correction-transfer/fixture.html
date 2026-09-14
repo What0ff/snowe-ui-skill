@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Harbor workspace · Review fixture</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #101419; color: #eef1f5; font: 16px/1.5 system-ui, sans-serif; }
+  header, main { max-width: 1100px; margin: auto; padding: 24px; }
+  header { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #35404b; }
+  button { font: inherit; cursor: pointer; color: inherit; }
+  button:focus-visible { outline: 3px solid #91c8ff; outline-offset: 4px; }
+  .round-action { width: 44px; height: 44px; display: grid; place-items: center; border-radius: 50%; border: 1px solid #708398; background: #283542; }
+  svg { display: block; width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+  h1 { font-size: clamp(28px, 4vw, 42px); margin: 12px 0; letter-spacing: -.03em; }
+  h2 { font-size: 24px; margin: 0 0 16px; }
+  h3 { font-size: 18px; margin: 0; }
+  p { color: #b6c4d1; margin: 6px 0 16px; }
+  .toolbar { display: flex; flex-wrap: wrap; gap: 12px; margin: 24px 0 36px; }
+  .filter { border: 1px solid #7890a4; border-radius: 999px; background: transparent; padding: 8px 18px; }
+  .filter[aria-pressed=true] { background: #d0e9ff; color: #102538; border-color: #d0e9ff; }
+  .tool-row { display: grid; grid-template-columns: 56px minmax(0,1fr) auto; gap: 24px; align-items: center; padding: 26px 0; border-top: 1px solid #35404b; }
+  .tool-row p { margin: 5px 0 0; }
+  .marker { position: relative; isolation: isolate; display: grid; place-items: center; height: 56px; width: 56px; color: #f1dfff; }
+  .marker::before { content: ''; position: absolute; inset: 0; z-index: -1; border-radius: 50%; background: #7955a6; box-shadow: 0 0 0 5px #7955a622; }
+  body[data-version=B] .marker::before { border-radius: 10px; }
+  body[data-version=C] .marker { width: 24px; height: 24px; color: #c9b4e5; }
+  body[data-version=C] .marker::before { content: none; }
+  body[data-version=C] .tool-row { grid-template-columns: 24px minmax(0,1fr) auto; }
+  .open { text-decoration: none; color: #d0e9ff; border-bottom: 1px solid #718494; white-space: nowrap; }
+  .section { margin-top: 48px; }
+  .notice { border-left: 3px solid #8199ac; padding-left: 20px; margin: 32px 0; }
+  .identity { display: flex; align-items: center; gap: 16px; padding: 20px; background: #1b262f; border-radius: 16px; }
+  .brand-symbol { width: 56px; height: 56px; flex-shrink: 0; border-radius: 50%; display: grid; place-items: center; background: #21556a; color: #b4f2ff; }
+  .identity p { margin: 0; }
+  footer { color: #a6b7c6; padding: 24px 0; font-size: 13px; }
+  @media(max-width:600px) { header, main { padding: 20px; } .tool-row { gap: 16px; grid-template-columns: 56px minmax(0,1fr); } body[data-version=C] .tool-row { grid-template-columns: 24px minmax(0,1fr); } .open { grid-column: 2; justify-self: start; } }
+</style>
+<body>
+<header><strong>Harbor / Workspace</strong><button class="round-action" aria-label="Workspace settings"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7h16M4 17h16M8 4v6M16 14v6"/></svg></button></header>
+<main>
+  <h1>Your workspace tools</h1>
+  <p>Find a service and open its workspace.</p>
+  <div class="toolbar" aria-label="Tool availability"><button class="filter" aria-pressed="true">All tools</button><button class="filter" aria-pressed="false">Connected</button></div>
+  <section aria-label="Everyday tools">
+    <div class="tool-row"><span class="marker"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 6h16v14H4zM8 3v6M16 3v6M4 11h16"/></svg></span><div><h3>Schedule</h3><p>Coordinate shifts and upcoming coverage.</p></div><a class="open" href="#schedule">Open schedule →</a></div>
+    <div class="tool-row"><span class="marker"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 20V4M4 20h16M8 16v-4M13 16V7M18 16V4"/></svg></span><div><h3>Reports</h3><p>Review completed work across your team.</p></div><a class="open" href="#reports">Open reports →</a></div>
+    <div class="tool-row"><span class="marker"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 5h16v14H4zM4 6l8 7 8-7"/></svg></span><div><h3>Inbox</h3><p>Find requests that still need a response.</p></div><a class="open" href="#inbox">Open inbox →</a></div>
+  </section>
+  <div class="notice"><strong>Workspace access</strong><p>Your administrator manages connected services. Opening a service does not change your plan.</p></div>
+  <section class="section"><h2>Team identity</h2><div class="identity"><span class="brand-symbol"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3v17M7 7h10M4 14c0 8 16 8 16 0M4 14l3 1M20 14l-3 1"/></svg></span><div><strong>Harbor operations</strong><p>Shared workspace for the waterfront team.</p></div></div></section>
+  <section class="section"><h2>Administration</h2><div class="tool-row"><span class="marker"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2zM9 8h6M9 12h6"/></svg></span><div><h3>Billing history</h3><p>Review invoices and previous payments.</p></div><a class="open" href="#billing">Open billing →</a></div></section>
+  <footer>Fictional static review fixture. Service destinations and filter behavior are not implemented.</footer>
+</main>
+<script>document.body.dataset.version = ['A','B','C'].includes(new URLSearchParams(location.search).get('v')) ? new URLSearchParams(location.search).get('v') : 'A';</script>
+</body>
+</html>

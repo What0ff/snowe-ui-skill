@@ -62,6 +62,7 @@ class SkillPackageTests(unittest.TestCase):
             "motion-and-interaction.md",
             "research-and-evidence.md",
             "quality-gates.md",
+            "correction-memory.md",
             "designer-evaluation.md",
             "cli-reference.md",
         )
@@ -407,10 +408,17 @@ class PersistenceTests(unittest.TestCase):
             first = persist_decision_packet(packet, output_dir=temporary_directory)
             project_dir = Path(first["design_intelligence_dir"])
             decisions = project_dir / "DECISIONS.md"
-            decisions.write_text("accepted evidence\n", encoding="utf-8")
+            accepted = (
+                "# Scoped corrections\r\n"
+                "ACCEPTED | Harbor/passive summaries | Убрать подложки | requested\r\n"
+                "VERIFIED | .tool-row .marker::before | 390/1280 render A → C\r\n"
+                "SUPERSEDED | old identity treatment | user explicitly keeps teal anchor\r\n"
+                "Exception: icon buttons and selected filters remain rounded.\r\n"
+            ).encode("utf-8")
+            decisions.write_bytes(accepted)
             packet["brief"] = "Changed inquiry"
             second = persist_decision_packet(packet, output_dir=temporary_directory)
-            self.assertEqual("accepted evidence\n", decisions.read_text(encoding="utf-8"))
+            self.assertEqual(accepted, decisions.read_bytes())
             self.assertIn(str(decisions), second["preserved_files"])
             self.assertIn("Changed inquiry", (project_dir / "BRIEF.md").read_text(encoding="utf-8"))
 

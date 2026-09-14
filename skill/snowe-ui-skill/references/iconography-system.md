@@ -15,6 +15,8 @@ Prefer visible text when a symbol would be unfamiliar, ambiguous, rarely used, h
 
 Do not add a decorative icon to every title, statistic, feature, or card. Illustrative symbols and interface controls have different jobs and may use different systems.
 
+An icon and its backing are separate decisions. Inspect the real owner for circles, capsules, tiles, nested rings and pseudo-element paint; a clean path or valid metadata cannot justify a button-like surface behind a passive symbol. Apply the [icon-backing acceptance check](quality-gates.md#icon-backings-and-nested-surfaces) in context, preserving justified interaction, contrast, masks and accepted identity. A wrapper-only correction can keep the existing glyph and stay Direct when its answer and owner are bounded.
+
 ## Inspect the Existing Symbol Ecology
 
 Before searching:
@@ -56,7 +58,7 @@ Render finalists at target size beside real neighbors before dependency economic
 
 Multiple sources may coexist only with an explicit role boundary and compatible rendering. Normalize size or wrapper behavior where appropriate; do not distort paths until incompatible drawings merely look uniformly mediocre.
 
-## Decide Whether to Draw Custom
+## Develop Custom Candidates Where They Add Value
 
 Custom work is justified when at least one is true:
 
@@ -65,7 +67,35 @@ Custom work is justified when at least one is true:
 - platform/native templates support a coherent extension;
 - licensing, language, state, or technical constraints make available sources unsuitable.
 
-It is not justified merely because custom feels premium, a generator can produce SVG, or a library is imperfect. Compare text, native/existing, compatible external, and custom candidates. Keep custom only when it wins at real size and in context.
+For an open product-specific feature, category, service or repeated family, actively sketch a custom candidate when feasible instead of ending the search at an approximate library match. This is a preferred exploration route, not a requirement to add icons where text works. An explicit request for custom icons puts drawing in scope; do not repeatedly ask whether to try it. A bounded correction to an accepted glyph does not reopen its source decision.
+
+Compare the custom candidate against the strongest relevant existing or text alternative at equal size and in the same host. Prefer custom when recognition, accessibility and rendering are at least as strong and its metaphor or family fit is visibly more specific. Do not require custom to be unprecedented or to defeat every external library. Preserve conventional Home, close, search, back and similar actions unless the user opens that decision; custom drawing may refine a familiar silhouette without inventing a new meaning.
+
+It is not justified merely because custom feels premium, a generator can produce SVG, or a library is imperfect. More custom work should come from exploring meaningful opportunities and improving candidates, never from weakening acceptance or decorating every label.
+
+## Generate From the Real Meaning
+
+Before paths, inspect the feature's actual input, action or object, outcome, current state, label, nearest sibling meanings and smallest real slot. Write a short semantic brief: `this symbol represents …; it must not imply …; it sits beside … at … CSS px`. Use repository/product evidence; keep an unknown mechanism unresolved rather than inventing a capability. A service name alone is insufficient when its meaning is ambiguous.
+
+Choose the distinguishing visual cue. For compound concepts, start with a dominant silhouette and the minimum modifier that changes the meaning; test different constructions only while the metaphor is open. Avoid generic sparkle, shield, crown, gear or crossed-tool substitutions that could accompany any feature. A shield/check can assert safety or completion; a download arrow can turn a history view into an action. Verify these implications against the actual state. Do not stack several tiny symbols to reproduce an entire description.
+
+Draw editable SVG geometry or extend the established vector system. Use raster generation only for a genuinely raster illustration role, not as a shortcut for crisp small interface glyphs. Establish the native grid and stroke/fill language around the smallest implemented size; choose coordinates and stroke alignment that survive its actual scale. Integer coordinates alone do not guarantee crisp curves or diagonals. Inspect computed SVG dimensions, viewBox scaling, ancestor transforms, flex shrinking and device-pixel ratio when blur appears; redrawing the asset cannot fix a scaled host.
+
+Render the rough candidate in its real slot early, alongside its label and nearest semantic sibling. Reduce tangencies, merged counters, redundant strokes and unstable detail before adding polish. Use optical variants when an essential cue fails at a smaller implemented size; do not hide a weak 16/20 px symbol behind a successful enlarged preview. Avoid `crispEdges` as a blanket fix for curved/diagonal paths and avoid raster upscaling or blur filters. Keep directional meaning, visual weight and state behavior consistent across variants.
+
+Once the construction works, propagate the grammar to the required family and inspect the full set. A familiar library asset reused unchanged remains existing; call an adaptation derived, preserve its license/provenance, and distinguish it from an original drawing. Ownership is not a visual-quality claim.
+
+### Repair Weak or Pixelated Results
+
+Treat reports of weak, muddy or pixelated icons as a defect to reproduce at the user's actual size, scale and background. First distinguish a raster source/upscaled screenshot from vector geometry, host resampling and ordinary edge antialiasing. Preserve the original asset and capture conditions so a sharper screenshot is not mistaken for a better drawing.
+
+Use a lossless, unresized capture or the live renderer for sharpness judgments, recording CSS size and DPR. JPEG compression, thumbnail downsampling and enlarged chat previews can introduce artifacts absent from the SVG. They may reveal a suspected defect but cannot settle its cause; inspect the actual native-size rendering before changing paths. A sharper capture proves better evidence, not an improved icon.
+
+Inspect the silhouette at 100% display scale. A thin, fragmented or visually timid mark needs a stronger construction: remove incidental segments, open counters, balance dominant masses and redraw joins or diagonals that merge. Do not simply thicken every path; that can close gaps and make dense icons heavier than their neighbors. Use the simplest distinguishing form the context supports, with deliberate curvature, terminal treatment and optical spacing. Rounded caps alone do not make a family polished.
+
+For a 16/20 px owner, simplify around that native slot; use an optical small-size drawing if scaling the larger mark loses the essential cue. Compare it against the established family at the same apparent weight and background. Reject unresolved jagged, fuzzy, doubled, cramped or fragmented forms when they materially weaken recognition or fit, even if the file passes structural validation. An enlarged polished render cannot excuse a weak actual-size result. State exactly which sizes passed; do not propagate an accepted large version into uninspected compact controls.
+
+When the source is sound but the host is soft, fix actual width/height, accidental fractional translation or scaling, flex shrink, CSS filter, bitmap delivery or screenshot resampling at its owner. Inspect relevant DPR and zoom conditions; do not force all paths to integer coordinates, disable antialiasing, or add sharpening as a universal repair. After the cause changes, recapture native-size context and confirm both clarity and semantic fit before accepting it.
 
 ## Specify the Drawing Language
 
@@ -159,6 +189,23 @@ Use short-context checks, not a popularity vote:
 - Does mirroring preserve meaning across directionality, or is the symbol culturally/spatially fixed?
 
 Mark custom work `REJECT` when recognition, ambiguity, balance, detail survival, state clarity, or family coherence is worse than the best existing or text alternative. Record the loser; do not keep it because it is ownable or took effort.
+
+## Accept the Context, Not the Drawing Sheet
+
+For a new or materially revised custom symbol, close each applicable claim separately in the existing finding record:
+
+| Claim | Required evidence and failure disposition |
+| --- | --- |
+| Context and truth | Compare the label/action/state with the metaphor and its nearest sibling meanings. `REJECT` a false capability, premature status, misleading action, or semantic collision; a polished shape cannot compensate. A self-review is not a representative-user recognition study. |
+| Small-size recognition | Inspect every implemented size at native display scale, first for silhouette and then detail. `REVISE` merged strokes, lost distinguishing cues, muddy diagonals, crowded counters or ambiguous composites; simplify or redraw and rerender. |
+| Optical family fit | Compare unlike neighboring glyphs in their real rows/controls, including the densest and most asymmetric required symbol. `REVISE` inconsistent apparent weight, baseline, size or rhythm. Equal viewBoxes and stroke numbers are not proof. |
+| Host and backing | Inspect the actual owner, surrounding label, painted backing and affected states. Fix host scaling/shrinking and unjustified surfaces independently; use the [backing check](quality-gates.md#icon-backings-and-nested-surfaces). A contact sheet does not certify host rendering. |
+| Technical and accessible behavior | Validate the changed SVG/metadata, then verify accessible ownership, color inheritance, clipping and relevant themes/focus/disabled/forced-color states. Fix applicable failures before acceptance; distinguish asset integrity from interaction proof. |
+| Fresh proof | Bind findings to exact asset bytes and the current host/state/viewport. Missing or stale required context stays `UNKNOWN`; screenshots created but not inspected cannot close the claim. |
+
+Use a native-size context view for acceptance; an enlarged crop helps diagnose geometry only. When small-size softness is at issue, compare ordinary DPR 1 and an available higher-density render, with actual browser metrics recorded; inspect fractional scale only where it is used or implicated. Do not invent device coverage. Review icon-only ambiguity without the author's explanation, then restore the real label context; a labelled domain icon need not become a universally understood standalone symbol, but it must not contradict or confuse that label.
+
+Repair failed semantics before polishing paths, paths before optical alignment, and host paint/scaling at its owner. Compare the improved candidate with the same viable baseline, preserve rejected evidence, and stop when the applicable claims pass. If a contextual custom candidate still loses, use the better existing/text outcome and record the limiting cause so the next attempt can improve it. Delivery must not count an unverified custom draft as an accepted icon.
 
 ## Delivery
 

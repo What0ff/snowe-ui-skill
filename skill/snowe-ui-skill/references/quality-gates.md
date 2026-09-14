@@ -44,6 +44,20 @@ Check product specificity without demanding novelty: temporarily disregard the l
 
 ## Acceptance Rules
 
+### Icon Backings and Nested Surfaces
+
+During visual review of an affected composition or icon treatment, inspect both the glyph and the visible surface behind it. This includes circular and capsule backings, rounded-square tiles, borders, rings, shadows and glows; inspect ancestor backgrounds and `::before`/`::after` when needed to locate the paint owner. Do not restrict the search to classes named `pill` or to the SVG file.
+
+For each materially different role in the affected scope, establish what the backing communicates: a real action/hit region, selected state, status, image mask, necessary contrast, accepted identity, or decoration. These are claims to verify in the actual UI, not automatic exemptions. A noninteractive feature icon inside a button-like tile must be evaluated alongside real controls. Several crisp glyphs in identical decorative disks can still dominate their labels or obscure the reading order.
+
+Inspect the whole affected composition and an actual-size crop beside its label and neighboring control at the relevant narrow/pressure/wide widths and states. A glyph-only contact sheet cannot close this check. If the backing violates an explicit scoped correction, fix it. If its value remains open, use the existing same-content subtraction comparison: remove only the disputed painted surface, retain meaning, layout alignment, hit targets and focus cues, then compare hierarchy, recognition and affordances. Preserve useful selected/removable chips, icon buttons, avatars and user-approved treatments. A circle-to-square conversion, smaller radius, recoloring, or lower opacity does not by itself resolve an unnecessary backing.
+
+Record the backing's role, owner, verdict and evidence in the existing finding record. Retain it when verified interaction, readability or identity supports it; revise an unsupported competing surface. No global radius threshold, pill count, or blanket removal rule can establish acceptance. If the glyph is clear but its backing is uninspected, icon-treatment acceptance remains incomplete.
+
+For new or materially revised custom glyphs, also apply the [contextual icon acceptance claims](iconography-system.md#accept-the-context-not-the-drawing-sheet). A correct backing does not close semantic truth, small-size recognition, family fit or accessible host behavior. Routine wrapper-only fixes need not reopen glyph generation.
+
+### Disposition
+
 Judge the implementation, not the author's explanation. Review the artifact and brief before reading its design rationale when feasible. For a specified target, distinguish implementation drift from an issue already present in the source design: a faithfully reproduced trait can pass conformance while a separate usability/accessibility finding remains open. That finding does not authorize silently changing the reference. Use these dispositions for the affected scope and name which acceptance claim they address:
 
 | Finding | Disposition and required action |
@@ -52,6 +66,7 @@ Judge the implementation, not the author's explanation. Review the artifact and 
 | Passive labels/status and controls appear interchangeable, or decorative emphasis obscures the next action or content relationships | `REJECT`; restore semantic and attention hierarchy, then render the affected contexts again. A pill count or CSS radius is not the evidence. |
 | Repeated cards, badges, effects, or hero/section patterns flatten meaningful content differences, contradict the selected thesis, or lose to a credible subtraction challenger without a compensating task/identity benefit | `REVISE` and block visual acceptance; change the grouping/composition or treatment, then compare again. Renaming the style does not resolve the finding. |
 | Local type, crop, spacing, alignment, control size/corner shape, or optical defect | `REVISE`; fix and rerender if it materially affects readability, hierarchy, fit, or the requested fidelity. An oversized or inappropriately squared button cannot pass merely because it is clickable. A small cosmetic preference can remain only with an explicit scoped acceptance reason. |
+| A material explicit user correction recurs, or a glyph is polished while its unsupported backing still competes with labels/actions | `REVISE` and block acceptance of the affected scope; repair the responsible owner and inspect the current result. Required functionality/semantics failures still take `REJECT`. |
 | Required render, interaction, content, or comparison evidence is absent, stale, or inaccessible | `UNKNOWN` for that claim; do not label it passed or replace it with source inspection. |
 | Applicable proof supports the task, visual hierarchy, role coherence, and requested identity; no blocking findings remain | `KEEP` for the inspected scope, with concrete evidence. Do not extrapolate to uninspected routes or states. |
 
@@ -146,6 +161,7 @@ Performance budgets are contextual, but unmeasured heavy decoration is not a des
 1. Capture the affected state for Direct, the affected comparison and shared contexts for Focused, or the required complete surfaces for Portfolio. Include narrow, pressure, and wide widths when responsive composition or a visual system is under review; a bounded state correction does not automatically require a whole-page tour.
 2. Exercise the affected task/keyboard path and applicable open, selected, error, loading, and reduced-motion states. Do not fabricate unrelated states to fill a checklist.
 3. Review the hierarchy and crop of the affected context, then component detail and optical alignment. Inspect the whole page when its composition is the active decision.
+   Include the icon-backing check for affected icons/surfaces and reconcile applicable user corrections with the current result. Inspect representative shared variants, including below-the-fold instances when the treatment is repeated there; a polished first screen does not prove the family.
 4. Record findings with direct evidence and consequence. Avoid vague taste notes.
 5. Correct every `REJECT` and material `REVISE` in causal order: truth/architecture, task/interaction, responsive/accessibility, art direction, then polish.
 6. Rerender the affected evidence. Run another complete pass only after a material compositional change or unresolved major failure.

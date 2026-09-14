@@ -24,7 +24,7 @@ Checks installable Python syntax/import compilation. It does not validate Markdo
 python -m unittest discover -s tests -v
 ```
 
-Current inspected result: **181 tests run successfully, with one Windows directory-symlink capability skip**.
+Current inspected result: **183 tests run successfully, with one Windows directory-symlink capability skip**.
 
 - `tests/test_snowe_ui_skill.py`: package routing/docs, schema-3 unresolved framing, multilingual/ambiguity/unknown behavior, opt-in analogs, persistence/path safety, evidence deletion/schemas/claims, icon constraints, contrast, SVG, and CLI.
 - `tests/test_bicycle_benchmark.py`: Goodturn commercial content, local/provenanced assets, semantics, interactions, responsive/reduced motion, design trace, and screenshot coverage.
@@ -32,7 +32,7 @@ Current inspected result: **181 tests run successfully, with one Windows directo
 - `tests/test_soda_benchmark.py`: local/semantic product content, flavor/conversion disclosure, motion/responsive/reduced ownership, complete design trace/provenance, local SVG safety, screenshot/GIF evidence, README/live-URL positioning, Doppler smoke contracts, and Pages workflow/artifact-root contracts.
 - `tests/test_installation.py`: fresh exact install, stale-file-free reinstall, interrupted-run recovery/preservation, staging-failure cleanup, activation rollback, source/destination containment, exact public CLI copy, and current installation guidance.
 - `tests/test_scope_contract.py`: six materially different consequence/change-surface traces; exact reference/process/artifact/stop/escalation/reason mutations; unjustified widening and consequential flattening; high-consequence proof floors; depth-proportional delivery; and target-discovery guidance.
-- `tests/test_visual_acceptance.py`: current fixture and exact capture hash binding, variant coverage, decoded JPEG width and measured viewport/document geometry; no aesthetic assertion.
+- `tests/test_visual_acceptance.py`: visual-acceptance and correction-transfer fixture/capture hash binding, variant coverage, decoded JPEG width and measured viewport/document geometry, plus rejection of stale-source reuse; no aesthetic assertion.
 - `tests/test_icon_workflow.py`: strict SVG grammar/geometry/paint/path safety and resource budgets, structured source/license evidence byte bindings, metadata/provenance/schema boundaries, typed/digest/one-to-one host-state icon manifest binding, actual-owner dialog selection, deterministic comparison regeneration, no-icon behavior, unresolved repository-derived selection rejection, and manifest/asset/output redirection or alias protection.
 - `tests/test_runtime_hardening.py`: project/page identity collisions and races, reserved-name/page-preflight/atomic/shared-file/reparse persistence, real Windows 8.3 alias/lock identity and alias-normalization swap probes, retrieval-limit/mode failures, installer ownership/locking/quarantine/recovery, source/staging/activation revalidation, and junction/symlink boundaries.
 
@@ -103,6 +103,17 @@ This explicit capture route uses the same isolated Chrome/CDP lifecycle to produ
 Additional bounded local probes in that README cover stale-source detection, explicit-reference button size/shape conformance, and an expressive-brand generation whose initial typography failed despite no overflow. The reference correction and brand generation were interrupted before their final agent proof reports; parent browser verification/corrections are labelled separately. Live Figma access, repeated generation quality, and complete accessibility certification were not measured.
 
 ### Low-level assets
+
+The icon comparison additionally checks preview, glyph and text containment within state cells at 1440, 900 and 390 widths. A temporary narrow-column mutation reproduces the original service-copy overflow and must be detected; it is removed before host proof. Document-wide overflow alone is insufficient. Service and labelled-action state rows use their candidate's full available width; compact icon controls retain a state grid.
+
+For scoped correction and backing evidence:
+
+```powershell
+node scripts/browser-smoke.mjs --capture-correction-transfer
+python -m unittest tests.test_visual_acceptance -v
+```
+
+This separate fictional fixture includes pseudo-element icon backings, a radius-only change, below-the-fold repetition, accepted rounded controls and a superseding brand instruction. Nine A/B/C images at 1280/820/390 bind source and actual viewport geometry. Its README records implementer self-review only, with absent behavior and generalization proof explicit; no automated aesthetic score is produced.
 
 ```powershell
 python skill/snowe-ui-skill/scripts/asset_quality.py `
