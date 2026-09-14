@@ -16,7 +16,7 @@ A current explicit instruction can supersede an older preference in the affected
 
 ## Keep the Smallest Useful Record
 
-Use the project's existing decision/finding record. If durable project memory is appropriate, append to its existing `DECISIONS.md` or established equivalent, outside the installed skill. Do not create a global personal profile, copy raw conversations, or rewrite shared skill instructions during ordinary product work. Do not introduce a new memory service or require persistence for a one-off correction.
+Keep accepted design direction in the existing `DECISIONS.md`. Record material explicit corrections through `scripts/corrections.py` in the workspace's identity-bound `design-intelligence/<project>/CORRECTIONS.json`; the tool never rewrites the decision ledger. Do not create a global personal profile, copy raw conversations, or rewrite shared skill instructions during ordinary product work. No journal is needed when there are no corrections.
 
 For a material correction preserve:
 
@@ -30,7 +30,7 @@ applicability condition / exception or revisit trigger
 
 Use the existing ledger's status vocabulary when it has one; record implementation/proof separately from acceptance of the design direction. `verified` requires evidence for the claim, not merely edited source. An explicit user requirement can be accepted while its implementation remains unverified. Keep unavailable proof visible. Deduplicate repeated statements by updating their scoped finding; do not accumulate contradictory copies.
 
-The optional packet generator preserves existing `DECISIONS.md` bytes. Agents own deliberate record updates; generating a new inquiry must not rewrite accepted memory. A Direct fix can use one compact entry in its existing task record without opening a packet or an architecture exercise.
+The optional packet generator preserves existing `DECISIONS.md` bytes. A Direct correction can record/check a correction without generating a packet, brief or architecture exercise. At continuation, inspect applicable entries; before delivery run `check` for the explicit active scope or the whole project. `BLOCKED` and `REVIEW_REQUIRED` prevent claiming completion of those obligations. A scoped check reports only its supplied scope; do not narrow the scope to hide an applicable correction.
 
 ## Apply, Observe, Correct
 
@@ -49,3 +49,30 @@ Examples of scope boundaries:
 - Optional services appearing before selection calls for checking the displayed composition against actual selection state. It does not authorize changing price, entitlements, or backend access.
 
 Validate a proposed lesson on a new relevant task and on a counterexample where it should not apply. Compare observable omissions, repeated defects, preserved requirements, corrections and unnecessary work. Self-assessment, added instructions, and deterministic prose checks do not prove better future behavior. Keep reusable lessons conditional until repeated evidence justifies broader scope.
+
+## Checked Journal Commands
+
+All commands take `--workspace <root>` and `--project <explicit identity>` and return JSON. Use `--input <file.json>` for record/transition/proof data. Files stay inside the selected workspace; the existing project identity, lock and atomic-write mechanisms protect updates. An empty `list` or `check` creates no journal. A corrupted journal fails closed without replacing it.
+
+```text
+python <skill-directory>/scripts/corrections.py record --workspace . --project Harbor --input correction.json
+python <skill-directory>/scripts/corrections.py update --workspace . --project Harbor --input transition.json
+python <skill-directory>/scripts/corrections.py verify --workspace . --project Harbor --input proof.json
+python <skill-directory>/scripts/corrections.py check --workspace . --project Harbor --input scope.json
+```
+
+`record` input:
+
+```json
+{"id":"passive-service-backings","source":"User correction","requirement":"Show passive service icons without individual backings","scope":{"owners":["src/services.css"],"routes":["/services"],"states":["default"]},"criteria":[{"id":"visual-default","kind":"visual","requirement":"Inspect service symbols beside labels and controls"}]}
+```
+
+IDs are caller-assigned and stable; repeating the same record is idempotent, while conflicting reuse is rejected. Criterion kinds are `technical`, `behavior`, and `visual`. Owners are workspace-relative source file paths using forward slashes; routes/states are explicit identifiers, not inferred labels or glob expressions. Every owner must appear in verification sources. Owner OR route overlap selects a record; states constrain that overlap when both lists are nonempty. Empty state arrays mean all states. Without `--input`, `check` and `list` cover the whole project.
+
+`update` takes `id`, `note`, optional `status` (`requested` or `implemented`), and optional `requirement`, `scope`, `criteria`. A changed requirement/scope/criterion resets the record to requested; an implementation update removes prior current proof. History snapshots preserve earlier requirements and evidence.
+
+`verify` takes `id` and `proof`: nonempty `sources` and `artifacts` arrays of workspace-relative `{path, sha256}`, plus one PASS result per criterion. Each result has `criterion`, `status`, and bound `artifacts` paths. A visual result additionally needs `review` with `reviewer`, `finding`, `viewport`, and `state` from an actual inspected render. Record separate criteria for separately required visual states. Compute hashes from the actual files; the tool refuses changed/missing evidence and traversal/reparse paths. A screenshot with no recorded visual review is insufficient. Reviewer statements remain caller evidence, not an independent machine judgment.
+
+`supersede` takes `id`, `replacement`, `note`. The replacement must exist, be active, and cover the original scope. Old records remain immutable and their obligations follow the replacement chain even if its owner later changes. `list` exposes the records and history.
+
+`check` exit codes: `0/PASS` (applicable recorded obligations closed with current evidence), `2/BLOCKED` (requested/implemented obligations), `3/REVIEW_REQUIRED` (verified proof is stale/unavailable), `1` for invalid input/state or I/O errors. The check does not rewrite a historical verified event when files change; its current disposition overrides that old confirmation. JSON/state size is bounded to 1 MB and input nesting to 32 levels; full journals fail without replacing existing data.

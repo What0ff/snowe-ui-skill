@@ -14,6 +14,18 @@ Use this reference to turn an accepted architecture and art direction into a coh
 
 ## Layout and Responsive Transformation
 
+### Placement and Alignment
+
+Choose the reference frame before aligning: the content column, control, panel, visual group or viewport. A sidebar or asymmetric padding can make viewport centering wrong for the usable region. State whether the role needs edge alignment, text baseline, geometric center, optical center or a deliberate offset. Inspect the real box, internal padding and visible glyph/image mass; `align-items:center` alone does not prove visual balance.
+
+Place actions near the object and decision they affect. Keep related labels, values and controls grouped; repeated peers should use consistent axes. Compare the accepted position with a credible alternative when placement is open. Do not center long reading text, lists or numeric columns by default, and do not preserve an arbitrary offset merely because it avoids centering. If a supplied reference specifies placement, conformance remains the target.
+
+### Bounded Lists and Scroll Ownership
+
+Decide which surface owns scrolling. A document/content page may grow naturally; a list inside a height-bounded dialog, dashboard panel or persistent workspace should scroll in its assigned region while its heading and actions remain reachable. Establish the parent height/max-height and shrinking chain, use `min-height:0` on the relevant flex/grid children, and apply `overflow:auto` to the list owner. Do not hide rows, shrink text or put overflow on an unrelated ancestor to disguise the failure.
+
+Check long/empty/loading lists, keyboard focus and scrolling, and narrow/touch layouts. A scroll region needs a useful accessible name and keyboard reachability where native focusable contents do not provide it. Keep focused items visible and avoid nested scroll traps. At a mobile breakpoint, explicitly choose retained internal scrolling or a coherent page-flow transformation; do not accidentally inherit an unbounded desktop panel.
+
 - Begin with content relationships and task sequence; choose grid and breakpoints after the composition exists.
 - Use intrinsic sizing, flex/grid, container queries, `min()`, `max()`, and `clamp()` where they improve resilience.
 - Define invariants and transformation rules for order, navigation, disclosure, comparison, imagery, sticky behavior, and input mode.

@@ -17,7 +17,8 @@ const CAPTURE_SODA_MOTION = process.argv.includes("--soda-motion-frames");
 const CAPTURE_GOODTURN = process.argv.includes("--capture-goodturn-workshop");
 const CAPTURE_VISUAL_ACCEPTANCE = process.argv.includes("--capture-visual-acceptance");
 const CAPTURE_CORRECTION_TRANSFER = process.argv.includes("--capture-correction-transfer");
-const CHECKS_ONLY = process.argv.includes("--smoke") || (!CAPTURE && !CAPTURE_SODA && !CAPTURE_SODA_MOTION && !CAPTURE_GOODTURN && !CAPTURE_VISUAL_ACCEPTANCE && !CAPTURE_CORRECTION_TRANSFER);
+const CAPTURE_ACCEPTANCE = process.argv.includes("--capture-acceptance-cases");
+const CHECKS_ONLY = process.argv.includes("--smoke") || (!CAPTURE && !CAPTURE_SODA && !CAPTURE_SODA_MOTION && !CAPTURE_GOODTURN && !CAPTURE_VISUAL_ACCEPTANCE && !CAPTURE_CORRECTION_TRANSFER && !CAPTURE_ACCEPTANCE);
 const SCENARIO_OPTION_INDEX = process.argv.indexOf("--scenario");
 const REQUESTED_SCENARIO = SCENARIO_OPTION_INDEX >= 0 ? process.argv[SCENARIO_OPTION_INDEX + 1] : null;
 if (SCENARIO_OPTION_INDEX >= 0 && (!REQUESTED_SCENARIO || REQUESTED_SCENARIO.startsWith("--"))) {
@@ -566,8 +567,9 @@ async function setValue(client, selector, value) {
 }
 
 async function key(client, keyValue, code = keyValue) {
-  await client.send("Input.dispatchKeyEvent", { type: "keyDown", key: keyValue, code });
-  await client.send("Input.dispatchKeyEvent", { type: "keyUp", key: keyValue, code });
+  const nativeCode = keyValue === "End" ? {windowsVirtualKeyCode:35} : {};
+  await client.send("Input.dispatchKeyEvent", { type: "keyDown", key: keyValue, code, ...nativeCode });
+  await client.send("Input.dispatchKeyEvent", { type: "keyUp", key: keyValue, code, ...nativeCode });
   await sleep(30);
 }
 
@@ -921,7 +923,11 @@ async function inspectRenderedType(client, selector) {
   const { fonts } = await client.send("CSS.getPlatformFontsForNode", { nodeId });
   const requested = await evaluate(client, `(() => {
     const node = document.querySelector(${JSON.stringify(selector)}), style = getComputedStyle(node);
-    return { family: style.fontFamily, weight: style.fontWeight, style: style.fontStyle };
+    const size = parseFloat(style.fontSize);
+    return { family: style.fontFamily, weight: style.fontWeight, style: style.fontStyle,
+      lineHeight: style.lineHeight === 'normal' ? 'normal' : parseFloat(style.lineHeight)/size,
+      tracking: style.letterSpacing === 'normal' ? 0 : parseFloat(style.letterSpacing)/size,
+      axes: style.fontVariationSettings };
   })()`);
   return { selector, requested, rendered: fonts.filter(font => font.glyphCount > 0) };
 }
@@ -930,20 +936,49 @@ async function auditGoodturnTypography(client, probe) {
   // Explicit roles from Goodturn's accepted --display/--body owners, not a global font-count rule.
   await client.send("DOM.enable");
   await client.send("CSS.enable");
-  const roles = [
-    { selector: "#hero-title", family: "Barlow Condensed" },
-    { selector: ".hero-lede", family: "Manrope" },
-    { selector: '.filter-button[data-filter="all"]', family: "Manrope" },
-  ];
+  const contract = JSON.parse(await readFile(path.join(ROOT, 'evals/typography/goodturn.json'), 'utf8'));
+  const width = await evaluate(client, 'innerWidth');
+  const roles = contract.roles.filter(role => (!role.minWidth || width >= role.minWidth) && (!role.maxWidth || width <= role.maxWidth))
+    .map(role => role.narrow && width <= role.narrow.maxWidth ? {...role,...role.narrow} : role);
   // The bundled variable Manrope face is reported as "Manrope ExtraLight" by Windows Chrome.
   // Its internal family name is not evidence that a requested 400 weight renders at 200.
-  const renderedNames = { "Barlow Condensed": ["Barlow Condensed"], Manrope: ["Manrope", "Manrope ExtraLight"] };
-  const matches = (report, family) => report.requested.family.includes(family)
+  const renderedNames = contract.families;
+  const familyMatches = (report, family) => report.requested.family.includes(family)
     && report.rendered.length > 0
     && report.rendered.every(font => font.isCustomFont && renderedNames[family].includes(font.familyName));
-  for (const role of roles) {
-    const report = await inspectRenderedType(client, role.selector);
-    check(matches(report, role.family), `Typography role drift: ${JSON.stringify(report)}`);
+  const matches = (report, role) => familyMatches(report, role.family)
+    && ['weight','style','axes'].every(key => report.requested[key] === role[key])
+    && (report.requested.lineHeight === role.lineHeight || Math.abs(report.requested.lineHeight-role.lineHeight) < .01)
+    && Math.abs(report.requested.tracking-role.tracking) < .001;
+  const faces = await evaluate(client, `Array.from(document.styleSheets).flatMap(sheet => Array.from(sheet.cssRules)).filter(rule => rule.type === CSSRule.FONT_FACE_RULE).map(rule=>({family:rule.style.fontFamily.replaceAll('"',''),weight:rule.style.fontWeight,style:rule.style.fontStyle,src:rule.style.src}))`);
+  for (const font of contract.fonts) {
+    check(createHash('sha256').update(await readFile(path.join(ROOT,font.path))).digest('hex') === font.sha256, `Typography: changed font file ${font.path}`);
+    check(faces.some(face=>face.family===font.family && face.weight===font.weight && face.style===font.style && face.src.includes(path.basename(font.path))), `Typography: font-face mapping mismatch ${font.path}`);
+  }
+  for (const state of ['default','menu','booking','product']) {
+    const current = roles.filter(role => role.state === state);
+    if (!current.length) continue;
+    if (state === 'menu') await click(client,'.menu-button');
+    if (state === 'booking') { await click(client,'[data-open-booking]'); await waitForOwningDialogMotionToSettle(client,'#booking-dialog','Typography booking'); await setValue(client,'#booking-form input[name="name"]','Alex'); }
+    if (state === 'product') { await click(client,'[data-open-product="turn-one"]'); await waitForOwningDialogMotionToSettle(client,'#product-dialog','Typography product'); }
+    try {
+      for (const role of current) {
+        const report = await inspectRenderedType(client, role.selector);
+        check(matches(report, role), `Typography role drift (${role.state}): ${JSON.stringify(report)}`);
+        if (probe && role.selector === '#booking-form input[name="name"]') {
+          const originalStyle = await evaluate(client, `document.querySelector(${JSON.stringify(role.selector)}).getAttribute('style')`);
+          try {
+            await evaluate(client, `document.querySelector(${JSON.stringify(role.selector)}).style.fontFamily='serif'`);
+            check(!matches(await inspectRenderedType(client,role.selector),role),'Typography: native control inheritance mutation missed');
+          } finally {
+            await evaluate(client, `(()=>{const n=document.querySelector(${JSON.stringify(role.selector)});if(${JSON.stringify(originalStyle)}===null)n.removeAttribute('style');else n.setAttribute('style',${JSON.stringify(originalStyle)})})()`);
+          }
+        }
+      }
+    } finally {
+      if (state === 'menu') await click(client,'.menu-button');
+      if (state === 'booking' || state === 'product') await key(client,'Escape');
+    }
   }
   if (!probe) return;
   const original = await evaluate(client, `(() => {
@@ -951,15 +986,19 @@ async function auditGoodturnTypography(client, probe) {
     return { text: node.textContent, style: node.getAttribute('style') };
   })()`);
   try {
-    await evaluate(client, "document.querySelector('.hero-lede').style.fontFamily = 'Georgia, serif'");
-    check(!matches(await inspectRenderedType(client, ".hero-lede"), "Manrope"), "Typography: missed same-role family mutation");
+    const role = roles.find(role=>role.selector === '.hero-lede');
+    for (const [property,value] of Object.entries({fontFamily:'Georgia,serif',fontWeight:'800',fontStyle:'italic',lineHeight:'2.5',letterSpacing:'0.2em',fontVariationSettings:'"wght" 800'})) {
+      await evaluate(client, `document.querySelector('.hero-lede').setAttribute('style',''); document.querySelector('.hero-lede').style[${JSON.stringify(property)}]=${JSON.stringify(value)}`);
+      check(!matches(await inspectRenderedType(client,'.hero-lede'),role), `Typography: missed ${property} mutation`);
+    }
     await evaluate(client, `(() => {
       const node = document.querySelector('.hero-lede');
+      node.removeAttribute('style');
       node.style.fontFamily = 'Manrope, sans-serif';
       node.textContent = 'Workspace Привет';
     })()`);
     const partial = await inspectRenderedType(client, ".hero-lede");
-    check(partial.requested.family.includes("Manrope") && !matches(partial, "Manrope")
+    check(partial.requested.family.includes("Manrope") && !familyMatches(partial, "Manrope")
       && partial.rendered.some(font => font.isCustomFont && renderedNames.Manrope.includes(font.familyName))
       && partial.rendered.some(font => !font.isCustomFont),
     `Typography: missed per-glyph fallback behind a correct family declaration (${JSON.stringify(partial)})`);
@@ -970,11 +1009,11 @@ async function auditGoodturnTypography(client, probe) {
       if (original.style === null) node.removeAttribute('style'); else node.setAttribute('style', original.style);
     })()`);
   }
-  check(matches(await inspectRenderedType(client, ".hero-lede"), "Manrope"), "Typography: failed to restore the original role after probes");
+  check(matches(await inspectRenderedType(client, ".hero-lede"), roles.find(role=>role.selector === '.hero-lede')), "Typography: failed to restore the original role after probes");
 }
 
 async function runSmoke(client, origin) {
-  const available = new Set([...scenarios.map((scenario) => scenario.slug), "icon-decisions"]);
+  const available = new Set([...scenarios.map((scenario) => scenario.slug), "icon-decisions", "acceptance-cases"]);
   if (REQUESTED_SCENARIO && !available.has(REQUESTED_SCENARIO)) {
     throw new Error(`Unknown --scenario ${REQUESTED_SCENARIO}; expected one of: ${[...available].join(", ")}`);
   }
@@ -987,7 +1026,11 @@ async function runSmoke(client, origin) {
       for (const viewport of [DEFAULT_VIEWPORT, { width: 900, height: 900 }, { width: 390, height: 844 }]) {
         await navigate(client, origin, scenario, viewport);
         await commonAudit(client, scenario, viewport, false);
-        if (scenario.slug === "bicycle-commerce") await auditGoodturnTypography(client, viewport.width === 1440);
+        if (scenario.slug === "bicycle-commerce") {
+          await auditGoodturnTypography(client, viewport.width === 1440);
+          // Font-state probes open dialogs and fill native fields; isolate the interaction suite.
+          await navigate(client, origin, scenario, viewport);
+        }
         if (scenario.slug === "soda-campaign") {
           const expectedPanels = viewport.width === 1440 ? 48 : viewport.width === 900 ? 40 : 32;
           check(await evaluate(client, `document.querySelectorAll(".can-panel").length === ${expectedPanels}`), `Doppler: expected ${expectedPanels} can segments at ${viewport.width}px`);
@@ -1580,11 +1623,93 @@ async function runSmoke(client, origin) {
         `Icon review: repository-derived context source/digest/selector/label binding failed (${JSON.stringify(contextBindings)})`,
       );
       for (const context of iconManifest.contexts) await runIconHostProof(client, origin, context);
+      await runIconStress(client, origin);
       passes.push(`Icon decision comparison: ${iconManifest.contexts.length} contexts, ${expectedCandidateCount} candidates, digest-bound host selectors and candidate bytes/metadata, nontransparent asset paint, selected and rejected candidates rendered in owning hosts, declared states, exact wide/mobile viewports, containment`);
     } catch (error) {
       failures.push(`Icon decision comparison: ${error.message}`);
     }
   }
+  if (!REQUESTED_SCENARIO || REQUESTED_SCENARIO === 'acceptance-cases') await runAcceptanceCases(client, origin);
+}
+
+async function runIconStress(client, origin) {
+  for (const width of [320,390,900,1440]) {
+    for (const scale of [1,2]) {
+      await navigate(client,origin,{name:'Multilingual icon stress',route:'/evals/icon-decisions/stress.html',requiresReadyMarker:false},{width,height:1000});
+      await evaluate(client, `(() => {
+        const style=document.createElement('style');
+        style.textContent=${JSON.stringify('body{font-size:calc(15px * SCALE)}.state-label,.size-label,.eyebrow,.decision,.kind{font-size:calc(11px * SCALE)}.candidate h3{font-size:calc(22px * SCALE)}dl{font-size:calc(12px * SCALE)}')}.replaceAll('SCALE',${JSON.stringify(String(scale))});
+        document.head.append(style);
+      })()`);
+      const cells=await inspectIconCellContainment(client);
+      const result=await evaluate(client, `(() => {
+        const failures=[];
+        for(const candidate of document.querySelectorAll('.candidate')) {
+          const outer=candidate.getBoundingClientRect();
+          const header=candidate.querySelector('header'), hb=header.getBoundingClientRect();
+          for(const node of candidate.querySelectorAll('h3,.decision,dt,dd')) {
+            const b=node.getBoundingClientRect();
+            if(b.right>outer.right-1 || b.left<outer.left+1 || node.scrollWidth>node.clientWidth+1) failures.push(node.textContent);
+          }
+          for(const node of header.querySelectorAll('h3,.decision')) {const b=node.getBoundingClientRect(); if(b.bottom>hb.bottom+1) failures.push('header collision');}
+          for(const node of candidate.querySelectorAll('.state--focus')) {const b=node.getBoundingClientRect(),o=node.closest('.state-cell').getBoundingClientRect(),s=getComputedStyle(node),extra=parseFloat(s.outlineWidth)+parseFloat(s.outlineOffset);if(b.left-extra<o.left || b.right+extra>o.right)failures.push('clipped focus');}
+        }
+        const lang=[...document.querySelectorAll('.context')].map(c=>{const p=c.querySelector('.preview');return [p.lang,p.dir]});
+        return {failures,lang,overflow:document.documentElement.scrollWidth-innerWidth};
+      })()`);
+      check(!cells.length && !result.failures.length && result.overflow<=1, `Icon stress ${width}/${scale}: ${JSON.stringify({cells,...result})}`);
+      check(JSON.stringify(result.lang)===JSON.stringify([['ru','auto'],['de','ltr'],['ar','rtl']]),'Icon stress: wrong preview language/direction');
+    }
+  }
+}
+
+async function runAcceptanceCases(client, origin, capture=false) {
+  const dir=path.join(ROOT,'evals/acceptance-cases/captures');
+  if(capture) await mkdir(dir,{recursive:true});
+  const evidence=[];
+  for(const name of ['coherent','typography','custom','backings','workspace','resume']) {
+    for(const width of [900,390]) {
+      for(const version of ['before','after']) {
+        await navigate(client,origin,{name,route:`/evals/acceptance-cases/fixture.html?case=${name}&v=${version}`,requiresReadyMarker:false},{width,height:844});
+        await waitFor(client,'window.__acceptanceReady===true','acceptance fixture');
+        const report=await evaluate(client, `(() => {
+          const panel=document.querySelector('.bounded'), list=document.querySelector('.list'),button=document.querySelector('.panel-foot .primary');
+          const b=button?.getBoundingClientRect(),p=panel?.getBoundingClientRect();
+          return {width:innerWidth,case:document.body.dataset.case,version:document.body.dataset.version,overflow:document.documentElement.scrollWidth-innerWidth,
+            bounded:!!list && list.scrollHeight>list.clientHeight && panel.getBoundingClientRect().height<=440.5,
+            aligned:!!b && Math.abs((b.left+b.right-p.left-p.right)/2)<1,
+            bodyFamilies:[...document.querySelectorAll('.row')].map(n=>getComputedStyle(n).fontFamily),
+            backings:[...document.querySelectorAll('.panel .mark')].map(n=>getComputedStyle(n).backgroundColor),
+            svg:[...document.querySelectorAll('svg')].map(n=>({width:n.getBoundingClientRect().width,height:n.getBoundingClientRect().height}))};
+        })()`);
+        check(report.case===name && report.version===version && report.width===width,'Acceptance: incorrect target state');
+        check(report.overflow<=1,'Acceptance: unexpected horizontal page overflow');
+        if(name==='workspace') {
+          check(report.bounded===(version==='after') && report.aligned===(version==='after'),'Acceptance: bounded list/placement regression not distinguished');
+          if(version==='after') {
+            await evaluate(client,`document.querySelector('.list').focus()`); await key(client,'End');
+            await waitFor(client,`(()=>{const list=document.querySelector('.list');return list.scrollTop+list.clientHeight>=list.scrollHeight-1})()`,'keyboard internal scroll end');
+            await evaluate(client,`document.querySelector('.list').scrollTop=0`);
+          }
+        }
+        if(name==='typography') check((new Set(report.bodyFamilies).size===1)===(version==='after'),'Acceptance: role drift not distinguished');
+        if(['backings','resume'].includes(name)) check(report.backings.every(color=>color==='rgba(0, 0, 0, 0)')===(version==='after'),'Acceptance: passive backings not distinguished');
+        if(capture) {
+          const file=`${name}-${version}-${width}.png`;await screenshotPng(client,path.join(dir,file));
+          evidence.push({file,sha256:createHash('sha256').update(await readFile(path.join(dir,file))).digest('hex'),report});
+        }
+        if(name==='workspace' && version==='after') {
+          for(const state of ['empty','loading']) {
+            await navigate(client,origin,{name,route:`/evals/acceptance-cases/fixture.html?case=workspace&v=after&state=${state}`,requiresReadyMarker:false},{width,height:844});
+            const valid=await evaluate(client,`(()=>{const list=document.querySelector('.list'),p=document.querySelector('.bounded').getBoundingClientRect(),button=document.querySelector('.panel-foot .primary').getBoundingClientRect();return list.scrollHeight===list.clientHeight && p.height<=440.5 && button.bottom<=innerHeight && !!list.querySelector('[role=status]')})()`);
+            check(valid,`Acceptance: ${state} bounded-list state failed`);
+          }
+        }
+      }
+    }
+  }
+  if(capture) await writeFile(path.join(dir,'evidence.json'),JSON.stringify({fixtureSha256:createHash('sha256').update(await readFile(path.join(ROOT,'evals/acceptance-cases/fixture.html'))).digest('hex'),captures:evidence},null,2)+'\n');
+  passes.push('Six authored acceptance cases: role preservation/drift, contextual icons, backings, multilingual bounded lists/placement, continuation; technical evidence only');
 }
 
 async function screenshot(client, filename, fullPage = false) {
@@ -1815,6 +1940,7 @@ async function main() {
     }
     if (CAPTURE_VISUAL_ACCEPTANCE && failures.length === 0) await captureVisualAcceptance(client, origin);
     if (CAPTURE_CORRECTION_TRANSFER && failures.length === 0) await captureVisualAcceptance(client, origin, "correction-transfer");
+    if (CAPTURE_ACCEPTANCE && failures.length === 0) await runAcceptanceCases(client, origin, true);
   } finally {
     if (client) {
       try {

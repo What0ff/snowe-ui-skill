@@ -41,13 +41,14 @@ The absence of deleted recipe catalogs is an intentional source-of-truth decisio
 - `design-intelligence/<project>/PROJECT.json` — atomic source of exact printable project identity for the slug;
 - `design-intelligence/<project>/BRIEF.md` — replaceable current inquiry;
 - `design-intelligence/<project>/DECISIONS.md` — durable create-once accepted-decision ledger;
+- `design-intelligence/<project>/CORRECTIONS.json` — optional schema-1 checked correction history, written only by explicit journal commands;
 - `design-intelligence/<project>/pages/<page>.md` — identity-bound replaceable open page inquiry.
 
 The exact explicit project/page identities own slug claims; a Windows-reserved or different identity that normalizes to the same slug is rejected, not permission to overwrite. Windows 8.3 names are expanded to a shared long lexical spelling without resolving reparse targets, then both spellings are rechecked before lexical containment, locking, or writes. A short-lived per-project lock serializes claims and recovery. The generator owns atomically replaceable inquiry files only after identity preflight and immediate parent revalidation. Existing `DECISIONS.md` owns accepted evidence and is preserved byte-for-byte. Explicit current requirements or verified evidence can supersede it only through an explicit `SUPERSEDED` record.
 
 ## Repository evaluation state
 
-Correction memory is scoped agent-maintained project evidence, not a new runtime store. `references/correction-memory.md` defines source/scope/owner/states, implementation versus proof, supersession and conditional transfer. A new optional ledger includes these instructions; the generator still never imports preferences, edits an existing ledger, or turns a local dislike into a global rule.
+Correction memory is scoped caller-declared project evidence checked by `corrections.py`. `locked_project_state` reuses the existing identity/lock infrastructure without generating a packet. Records retain source/requirement/scope/criteria, lifecycle snapshots and exact source/artifact hashes. Active owner/route/state scope selects obligations and follows supersession; source changes make old verification REVIEW_REQUIRED. The tool checks recorded proof integrity, never aesthetic truth or automatic user preferences.
 
 - `evals/designer-behavior/scenarios.json` is deterministic scenario/route-fixture input; `run_eval.py` is the packet/repository/scope-contract runner; `EVIDENCE-AUDIT.md` is the legacy-field decision record. None is observed real-agent evidence.
 - `evals/designer-behavior/HOST-PROBES.md` is bounded observed-host evidence for explicitly recorded GPT-5.6 Luna/max tasks, tool/context conditions, task/diff fingerprints, loaded references, process depth, timing, and uncertainty. It is not deterministic runner output, a transcript, a representative model sample, or causal proof.
@@ -79,4 +80,6 @@ Correction memory is scoped agent-maintained project evidence, not a new runtime
 - If cross-benchmark comparison finds similarity without causal justification, change the decision mechanism and rerun affected benchmarks; do not add cosmetic anti-template rules.
 - Structural SVG validation and exact-byte metadata binding cannot establish source/license truth or override a weak rendered icon; real-context optical review can reject a structurally valid custom asset, keep a compatible existing glyph, or keep no icon.
 
-There is no database, migration system, service state, browser storage, environment configuration model, runtime network cache, queue, or shared memory in the installable product.
+There is no database, browser storage, network cache, queue or shared memory service in the installable product. Correction journals are local identity-bound files; legacy installation migration is repository-only tooling.
+
+Typography role expectations are separately authored in `evals/typography/goodturn.json`; tests do not derive them from the current page. `evals/acceptance-cases` owns the six fictional before/after tasks and capture/hash evidence; `memory-check.json` records a scoped lifecycle self-review. Installer migration manifests live outside discovery alongside preserved legacy trees and identify exact archived bytes.

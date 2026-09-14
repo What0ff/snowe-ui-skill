@@ -1091,6 +1091,29 @@ def _validate_pages_parent(project_dir: Path, pages_dir: Path) -> None:
         raise ValueError(f"Persisted pages path must remain inside the project directory: {pages_dir}")
 
 
+@contextmanager
+def locked_project_state(output_dir: str | Path, project_identity: str, *, create: bool = False):
+    """Share the existing identity/locking contract without generating an inquiry."""
+    lexical = _absolute_lexical_path(output_dir)
+    _reject_reparse_chain(lexical, "Selected output directory")
+    root = _normalize_lexical_aliases(lexical, "Selected output directory")
+    _reject_reparse_chain(root, "Selected output directory")
+    identity = _project_identity({}, project_identity)
+    slug = _persisted_slug(identity, "project", "Project")
+    project = root / "design-intelligence" / slug
+    _reject_reparse_chain(project, "Project state")
+    if not create and not project.exists():
+        yield None
+        return
+    with _persistence_lock(root, slug):
+        _reject_reparse_chain(project, "Project state")
+        if create:
+            _prepare_project_manifest(project, identity, slug, root)
+        _read_project_manifest(project / PROJECT_MANIFEST_FILENAME, identity, slug)
+        yield project
+        _read_project_manifest(project / PROJECT_MANIFEST_FILENAME, identity, slug)
+
+
 def persist_decision_packet(
     packet: dict[str, Any],
     page: str | None = None,

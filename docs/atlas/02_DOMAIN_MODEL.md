@@ -2,6 +2,10 @@
 
 ## Canonical vocabulary
 
+Checked correction records use schema `1.0`: stable ID, explicit source/requirement, scope (relative source owners, routes, states), technical/behavior/visual criteria, `requested | implemented | verified | superseded` status, history snapshots and optional proof/replacement. `check` reports `PASS | BLOCKED | REVIEW_REQUIRED` independently of the historical status. Visual proof requires recorded review for each required state and exact source/artifact bindings; the caller's judgment is not independently certified. See the installable correction-memory reference for JSON fields and CLI exit codes.
+
+Icon comparison schema `1.1` requires context `lang` and `dir` (`ltr | rtl | auto`). The reader retains schema `1.0` defaults `en/ltr`; preview language applies to target content, while English inspector metadata retains its own language. Long labels and text-only controls can wrap/grow without changing SVG target sizes.
+
 | Term | Meaning | Source |
 |---|---|---|
 | Skill | Copied `skill/snowe-ui-skill/` unit discovered from `SKILL.md` frontmatter. | `SKILL.md`, package tests |

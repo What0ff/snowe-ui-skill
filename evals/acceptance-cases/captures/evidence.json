@@ -1,0 +1,1049 @@
+{
+  "fixtureSha256": "b4bd4c7f65cc9d071519978fef74f23ec8921ea446b3b9d2a7ac3944e3a1227c",
+  "captures": [
+    {
+      "file": "coherent-before-900.png",
+      "sha256": "a2a60445b7cc6ea3ab114162ce38077e0d778872bd36d9ae4b4cd978cb68179e",
+      "report": {
+        "width": 900,
+        "case": "coherent",
+        "version": "before",
+        "overflow": 0,
+        "bounded": false,
+        "aligned": false,
+        "bodyFamilies": [],
+        "backings": [],
+        "svg": []
+      }
+    },
+    {
+      "file": "coherent-after-900.png",
+      "sha256": "a2a60445b7cc6ea3ab114162ce38077e0d778872bd36d9ae4b4cd978cb68179e",
+      "report": {
+        "width": 900,
+        "case": "coherent",
+        "version": "after",
+        "overflow": 0,
+        "bounded": false,
+        "aligned": false,
+        "bodyFamilies": [],
+        "backings": [],
+        "svg": []
+      }
+    },
+    {
+      "file": "coherent-before-390.png",
+      "sha256": "239d20f67be1f3ea9c42b3cb02fd72080829aa4779b8b8c9e88e5e80ddb1ab42",
+      "report": {
+        "width": 390,
+        "case": "coherent",
+        "version": "before",
+        "overflow": 0,
+        "bounded": false,
+        "aligned": false,
+        "bodyFamilies": [],
+        "backings": [],
+        "svg": []
+      }
+    },
+    {
+      "file": "coherent-after-390.png",
+      "sha256": "239d20f67be1f3ea9c42b3cb02fd72080829aa4779b8b8c9e88e5e80ddb1ab42",
+      "report": {
+        "width": 390,
+        "case": "coherent",
+        "version": "after",
+        "overflow": 0,
+        "bounded": false,
+        "aligned": false,
+        "bodyFamilies": [],
+        "backings": [],
+        "svg": []
+      }
+    },
+    {
+      "file": "typography-before-900.png",
+      "sha256": "4e5b07ec40dd1e050c5ed649b4952d4639a40caab2c4b33234679797bcfbe490",
+      "report": {
+        "width": 900,
+        "case": "typography",
+        "version": "before",
+        "overflow": 0,
+        "bounded": false,
+        "aligned": false,
+        "bodyFamilies": [
+          "system-ui, sans-serif",
+          "Georgia, serif",
+          "system-ui, sans-serif"
+        ],
+        "backings": [
+          "rgba(0, 0, 0, 0)",
+          "rgba(0, 0, 0, 0)",
+          "rgba(0, 0, 0, 0)"
+        ],
+        "svg": [
+          {
+            "width": 24,
+            "height": 24
+          },
+          {
+            "width": 24,
+            "height": 24
+          },
+          {
+            "width": 24,
+            "height": 24
+          },
+          {
+            "width": 24,
+            "height": 24
+          }
+        ]
+      }
+    },
+    {
+      "file": "typography-after-900.png",
+      "sha256": "89eaa09d6d1ba613a015c4e5d24cbdb0af5e13dfed1517fff306ddcd4ffa7a3a",
+      "report": {
+        "width": 900,
+        "case": "typography",
+        "version": "after",
+        "overflow": 0,
+        "bounded": false,
+        "aligned": false,
+        "bodyFamilies": [
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif"
+        ],
+        "backings": [
+          "rgba(0, 0, 0, 0)",
+          "rgba(0, 0, 0, 0)",
+          "rgba(0, 0, 0, 0)"
+        ],
+        "svg": [
+          {
+            "width": 24,
+            "height": 24
+          },
+          {
+            "width": 24,
+            "height": 24
+          },
+          {
+            "width": 24,
+            "height": 24
+          },
+          {
+            "width": 24,
+            "height": 24
+          }
+        ]
+      }
+    },
+    {
+      "file": "typography-before-390.png",
+      "sha256": "a7c10f757db5fcbfe7a464dce77c7127250e734bd784d7ba64d09c3db8b598ea",
+      "report": {
+        "width": 390,
+        "case": "typography",
+        "version": "before",
+        "overflow": 0,
+        "bounded": false,
+        "aligned": false,
+        "bodyFamilies": [
+          "system-ui, sans-serif",
+          "Georgia, serif",
+          "system-ui, sans-serif"
+        ],
+        "backings": [
+          "rgba(0, 0, 0, 0)",
+          "rgba(0, 0, 0, 0)",
+          "rgba(0, 0, 0, 0)"
+        ],
+        "svg": [
+          {
+            "width": 24,
+            "height": 24
+          },
+          {
+            "width": 24,
+            "height": 24
+          },
+          {
+            "width": 24,
+            "height": 24
+          },
+          {
+            "width": 24,
+            "height": 24
+          }
+        ]
+      }
+    },
+    {
+      "file": "typography-after-390.png",
+      "sha256": "098ea5f96aae02313c0ea90d3c6d293cd71359bc43683d1e6d968d047f4d7991",
+      "report": {
+        "width": 390,
+        "case": "typography",
+        "version": "after",
+        "overflow": 0,
+        "bounded": false,
+        "aligned": false,
+        "bodyFamilies": [
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif"
+        ],
+        "backings": [
+          "rgba(0, 0, 0, 0)",
+          "rgba(0, 0, 0, 0)",
+          "rgba(0, 0, 0, 0)"
+        ],
+        "svg": [
+          {
+            "width": 24,
+            "height": 24
+          },
+          {
+            "width": 24,
+            "height": 24
+          },
+          {
+            "width": 24,
+            "height": 24
+          },
+          {
+            "width": 24,
+            "height": 24
+          }
+        ]
+      }
+    },
+    {
+      "file": "custom-before-900.png",
+      "sha256": "0e8c92425513b65d1992bc531fbf30e1f76659f5e05dfe351d2b1de4b468b214",
+      "report": {
+        "width": 900,
+        "case": "custom",
+        "version": "before",
+        "overflow": 0,
+        "bounded": false,
+        "aligned": false,
+        "bodyFamilies": [
+          "system-ui, sans-serif",
+          "system-ui, sans-serif"
+        ],
+        "backings": [
+          "rgba(0, 0, 0, 0)",
+          "rgba(0, 0, 0, 0)"
+        ],
+        "svg": [
+          {
+            "width": 24,
+            "height": 24
+          },
+          {
+            "width": 24,
+            "height": 24
+          }
+        ]
+      }
+    },
+    {
+      "file": "custom-after-900.png",
+      "sha256": "29c2f30945fd8f638bba9e35a2156fa8ad8eae8f85e7bdcd349bd8540a28c2db",
+      "report": {
+        "width": 900,
+        "case": "custom",
+        "version": "after",
+        "overflow": 0,
+        "bounded": false,
+        "aligned": false,
+        "bodyFamilies": [
+          "system-ui, sans-serif",
+          "system-ui, sans-serif"
+        ],
+        "backings": [
+          "rgba(0, 0, 0, 0)",
+          "rgba(0, 0, 0, 0)"
+        ],
+        "svg": [
+          {
+            "width": 24,
+            "height": 24
+          },
+          {
+            "width": 24,
+            "height": 24
+          }
+        ]
+      }
+    },
+    {
+      "file": "custom-before-390.png",
+      "sha256": "d1caa907f0f7a782d9a0419737c043465902fa21125e241021ae8e867984ff0e",
+      "report": {
+        "width": 390,
+        "case": "custom",
+        "version": "before",
+        "overflow": 0,
+        "bounded": false,
+        "aligned": false,
+        "bodyFamilies": [
+          "system-ui, sans-serif",
+          "system-ui, sans-serif"
+        ],
+        "backings": [
+          "rgba(0, 0, 0, 0)",
+          "rgba(0, 0, 0, 0)"
+        ],
+        "svg": [
+          {
+            "width": 24,
+            "height": 24
+          },
+          {
+            "width": 24,
+            "height": 24
+          }
+        ]
+      }
+    },
+    {
+      "file": "custom-after-390.png",
+      "sha256": "95fb84e6b94ad2fc0dc765882ac008f8460cc298e066383b9b3e3ad20df44600",
+      "report": {
+        "width": 390,
+        "case": "custom",
+        "version": "after",
+        "overflow": 0,
+        "bounded": false,
+        "aligned": false,
+        "bodyFamilies": [
+          "system-ui, sans-serif",
+          "system-ui, sans-serif"
+        ],
+        "backings": [
+          "rgba(0, 0, 0, 0)",
+          "rgba(0, 0, 0, 0)"
+        ],
+        "svg": [
+          {
+            "width": 24,
+            "height": 24
+          },
+          {
+            "width": 24,
+            "height": 24
+          }
+        ]
+      }
+    },
+    {
+      "file": "backings-before-900.png",
+      "sha256": "868e3cebb6f49b19cb64ce0e7f34470fe7da0aaa81da79e754729a26b2da6ae5",
+      "report": {
+        "width": 900,
+        "case": "backings",
+        "version": "before",
+        "overflow": 0,
+        "bounded": false,
+        "aligned": false,
+        "bodyFamilies": [
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif"
+        ],
+        "backings": [
+          "rgb(218, 203, 240)",
+          "rgb(218, 203, 240)",
+          "rgb(218, 203, 240)"
+        ],
+        "svg": [
+          {
+            "width": 24,
+            "height": 24
+          },
+          {
+            "width": 24,
+            "height": 24
+          },
+          {
+            "width": 24,
+            "height": 24
+          },
+          {
+            "width": 24,
+            "height": 24
+          }
+        ]
+      }
+    },
+    {
+      "file": "backings-after-900.png",
+      "sha256": "74ac78af14df2cc7a1477500fdfc1dfc57d1c5e47c485ef48c47aec9344ea79c",
+      "report": {
+        "width": 900,
+        "case": "backings",
+        "version": "after",
+        "overflow": 0,
+        "bounded": false,
+        "aligned": false,
+        "bodyFamilies": [
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif"
+        ],
+        "backings": [
+          "rgba(0, 0, 0, 0)",
+          "rgba(0, 0, 0, 0)",
+          "rgba(0, 0, 0, 0)"
+        ],
+        "svg": [
+          {
+            "width": 24,
+            "height": 24
+          },
+          {
+            "width": 24,
+            "height": 24
+          },
+          {
+            "width": 24,
+            "height": 24
+          },
+          {
+            "width": 24,
+            "height": 24
+          }
+        ]
+      }
+    },
+    {
+      "file": "backings-before-390.png",
+      "sha256": "7b288bfc2128de5388c67da5f6450d226fda5bc023cf8cb50d4dc0c8fc68ec53",
+      "report": {
+        "width": 390,
+        "case": "backings",
+        "version": "before",
+        "overflow": 0,
+        "bounded": false,
+        "aligned": false,
+        "bodyFamilies": [
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif"
+        ],
+        "backings": [
+          "rgb(218, 203, 240)",
+          "rgb(218, 203, 240)",
+          "rgb(218, 203, 240)"
+        ],
+        "svg": [
+          {
+            "width": 24,
+            "height": 24
+          },
+          {
+            "width": 24,
+            "height": 24
+          },
+          {
+            "width": 24,
+            "height": 24
+          },
+          {
+            "width": 24,
+            "height": 24
+          }
+        ]
+      }
+    },
+    {
+      "file": "backings-after-390.png",
+      "sha256": "b34a174cfa1ec7f1fdc5b7bcb21a8150f12b64788dc3ec60b33c5e40f94e467f",
+      "report": {
+        "width": 390,
+        "case": "backings",
+        "version": "after",
+        "overflow": 0,
+        "bounded": false,
+        "aligned": false,
+        "bodyFamilies": [
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif"
+        ],
+        "backings": [
+          "rgba(0, 0, 0, 0)",
+          "rgba(0, 0, 0, 0)",
+          "rgba(0, 0, 0, 0)"
+        ],
+        "svg": [
+          {
+            "width": 24,
+            "height": 24
+          },
+          {
+            "width": 24,
+            "height": 24
+          },
+          {
+            "width": 24,
+            "height": 24
+          },
+          {
+            "width": 24,
+            "height": 24
+          }
+        ]
+      }
+    },
+    {
+      "file": "workspace-before-900.png",
+      "sha256": "26b00115d8cbd2220792d401a38734806be37115f734ba55753951477f6778aa",
+      "report": {
+        "width": 900,
+        "case": "workspace",
+        "version": "before",
+        "overflow": 0,
+        "bounded": false,
+        "aligned": false,
+        "bodyFamilies": [
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif"
+        ],
+        "backings": [],
+        "svg": []
+      }
+    },
+    {
+      "file": "workspace-after-900.png",
+      "sha256": "6b217e3123941b6af7dfe0b31d846c5b95d916c7f360aa26a144c0f87f0af6a7",
+      "report": {
+        "width": 900,
+        "case": "workspace",
+        "version": "after",
+        "overflow": 0,
+        "bounded": true,
+        "aligned": true,
+        "bodyFamilies": [
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif"
+        ],
+        "backings": [],
+        "svg": []
+      }
+    },
+    {
+      "file": "workspace-before-390.png",
+      "sha256": "7b5b56abee1cb3977b98e0edc0e81bec168f269879fa0814d485b6f759cd9eb2",
+      "report": {
+        "width": 390,
+        "case": "workspace",
+        "version": "before",
+        "overflow": 0,
+        "bounded": false,
+        "aligned": false,
+        "bodyFamilies": [
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif"
+        ],
+        "backings": [],
+        "svg": []
+      }
+    },
+    {
+      "file": "workspace-after-390.png",
+      "sha256": "a4593ef47e805c2e1d08aaa7b09e7019b9dfa3c3ba1a5d6a4165d1c65595003e",
+      "report": {
+        "width": 390,
+        "case": "workspace",
+        "version": "after",
+        "overflow": 0,
+        "bounded": true,
+        "aligned": true,
+        "bodyFamilies": [
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif"
+        ],
+        "backings": [],
+        "svg": []
+      }
+    },
+    {
+      "file": "resume-before-900.png",
+      "sha256": "fb8b284ea9fbe37b0c8338d290f54d7b31fc23c81692c581f878d018a8bdd02a",
+      "report": {
+        "width": 900,
+        "case": "resume",
+        "version": "before",
+        "overflow": 0,
+        "bounded": false,
+        "aligned": false,
+        "bodyFamilies": [
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif"
+        ],
+        "backings": [
+          "rgb(218, 203, 240)",
+          "rgb(218, 203, 240)",
+          "rgb(218, 203, 240)"
+        ],
+        "svg": [
+          {
+            "width": 24,
+            "height": 24
+          },
+          {
+            "width": 24,
+            "height": 24
+          },
+          {
+            "width": 24,
+            "height": 24
+          },
+          {
+            "width": 24,
+            "height": 24
+          }
+        ]
+      }
+    },
+    {
+      "file": "resume-after-900.png",
+      "sha256": "d04c77c66f07621cfd28b539d7c92511aca009d66c37d66c83bacd57004dfb6d",
+      "report": {
+        "width": 900,
+        "case": "resume",
+        "version": "after",
+        "overflow": 0,
+        "bounded": false,
+        "aligned": false,
+        "bodyFamilies": [
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif"
+        ],
+        "backings": [
+          "rgba(0, 0, 0, 0)",
+          "rgba(0, 0, 0, 0)",
+          "rgba(0, 0, 0, 0)"
+        ],
+        "svg": [
+          {
+            "width": 24,
+            "height": 24
+          },
+          {
+            "width": 24,
+            "height": 24
+          },
+          {
+            "width": 24,
+            "height": 24
+          },
+          {
+            "width": 24,
+            "height": 24
+          }
+        ]
+      }
+    },
+    {
+      "file": "resume-before-390.png",
+      "sha256": "8f1e0de4cc291eb37e6f22886b8d49a10b7248c0df6379d7dd38d5cf09ab0ec6",
+      "report": {
+        "width": 390,
+        "case": "resume",
+        "version": "before",
+        "overflow": 0,
+        "bounded": false,
+        "aligned": false,
+        "bodyFamilies": [
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif"
+        ],
+        "backings": [
+          "rgb(218, 203, 240)",
+          "rgb(218, 203, 240)",
+          "rgb(218, 203, 240)"
+        ],
+        "svg": [
+          {
+            "width": 24,
+            "height": 24
+          },
+          {
+            "width": 24,
+            "height": 24
+          },
+          {
+            "width": 24,
+            "height": 24
+          },
+          {
+            "width": 24,
+            "height": 24
+          }
+        ]
+      }
+    },
+    {
+      "file": "resume-after-390.png",
+      "sha256": "db7e680d9f907d6836f5e5145db8bf2a7046aba7a6027ce27d188001f3a80223",
+      "report": {
+        "width": 390,
+        "case": "resume",
+        "version": "after",
+        "overflow": 0,
+        "bounded": false,
+        "aligned": false,
+        "bodyFamilies": [
+          "system-ui, sans-serif",
+          "system-ui, sans-serif",
+          "system-ui, sans-serif"
+        ],
+        "backings": [
+          "rgba(0, 0, 0, 0)",
+          "rgba(0, 0, 0, 0)",
+          "rgba(0, 0, 0, 0)"
+        ],
+        "svg": [
+          {
+            "width": 24,
+            "height": 24
+          },
+          {
+            "width": 24,
+            "height": 24
+          },
+          {
+            "width": 24,
+            "height": 24
+          },
+          {
+            "width": 24,
+            "height": 24
+          }
+        ]
+      }
+    }
+  ]
+}

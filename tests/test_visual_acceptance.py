@@ -34,6 +34,21 @@ def jpeg_size(data: bytes) -> tuple[int, int]:
 
 
 class VisualAcceptanceEvidenceTests(unittest.TestCase):
+    def test_six_case_native_captures_are_current_and_complete(self):
+        root = ROOT.parent / "acceptance-cases"
+        manifest = json.loads((root / "captures/evidence.json").read_text(encoding="utf-8"))
+        self.assertEqual(manifest["fixtureSha256"], hashlib.sha256((root / "fixture.html").read_bytes()).hexdigest())
+        names = {f"{case}-{variant}-{width}.png" for case in ("coherent", "typography", "custom", "backings", "workspace", "resume") for variant in ("before", "after") for width in (900, 390)}
+        self.assertEqual(names, {capture["file"] for capture in manifest["captures"]})
+        self.assertEqual(len(names), len(manifest["captures"]))
+        for capture in manifest["captures"]:
+            image = (root / "captures" / capture["file"]).read_bytes()
+            self.assertEqual(b"\x89PNG\r\n\x1a\n", image[:8])
+            self.assertEqual(capture["sha256"], hashlib.sha256(image).hexdigest())
+            self.assertEqual(capture["report"]["width"], int.from_bytes(image[16:20], "big"))
+            self.assertEqual(844, int.from_bytes(image[20:24], "big"))
+            self.assertEqual(0, capture["report"]["overflow"])
+
     def test_captures_bind_current_fixture_and_exact_image_bytes(self):
         self.assert_capture_set(ROOT)
 

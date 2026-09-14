@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 from contextlib import contextmanager
 import json
 import os
@@ -800,6 +801,88 @@ def _install_skill_locked(source_path: Path, destination_path: Path) -> dict[str
     }
 
 
+def _migration_fingerprint(root: Path) -> dict[str, str]:
+    _validate_source_tree(root)
+    # Include personal files and caches: migration preserves the complete old tree.
+    return {path.relative_to(root).as_posix(): hashlib.sha256(path.read_bytes()).hexdigest()
+            for path in root.rglob("*") if path.is_file()}
+
+
+def diagnose_installations(destination=DEFAULT_DESTINATION, legacy=None):
+    legacy = Path(legacy) if legacy else Path.home() / ".codex/skills" / PRODUCT_NAME
+    paths = list(dict.fromkeys([Path(destination).absolute(), legacy.absolute()]))
+    copies = []
+    for path in paths:
+        _reject_reparse_chain(path, "Installed skill")
+        copies.append({"path": str(path), "exists": path.exists(), "recognized": _is_recognized_install_tree(path) if path.exists() else False})
+    return {"copies": copies, "duplicates": sum(item["recognized"] for item in copies) > 1}
+
+
+def _migration_archives(backup_root: Path, legacy: Path):
+    """Recover the archive location after a process dies immediately following rename."""
+    if not backup_root.exists(): return []
+    _reject_reparse_chain(backup_root, "Migration backups")
+    found = []
+    for manifest in backup_root.glob(f"{PRODUCT_NAME}-*.migration.json"):
+        _reject_reparse_chain(manifest, "Migration record")
+        if not manifest.is_file() or manifest.stat().st_size > 1_000_000: raise ValueError("Invalid migration record")
+        record = json.loads(manifest.read_text(encoding="utf-8"))
+        if not isinstance(record, dict) or record.get("schema_version") != "1.0" or not isinstance(record.get("files"), dict):
+            raise ValueError("Invalid migration record schema")
+        archive = manifest.with_name(manifest.name.removesuffix(".migration.json"))
+        if record.get("legacy") == str(legacy) and archive.exists():
+            if _migration_fingerprint(archive) != record.get("files"): raise ValueError("Migration archive changed; preserve it for manual review")
+            found.append(str(archive))
+    return sorted(found)
+
+
+def migrate_legacy(source=DEFAULT_SOURCE, destination=DEFAULT_DESTINATION, legacy=None, backup_root=None):
+    """Install the canonical copy, then archive a verified legacy tree without deleting it."""
+    source, destination = _validated_paths(source, destination)
+    legacy = Path(os.path.abspath(legacy or Path.home() / ".codex/skills" / PRODUCT_NAME))
+    backup_root = Path(os.path.abspath(backup_root or Path.home() / ".agents/skill-backups"))
+    for candidate in (legacy, backup_root): _reject_reparse_chain(candidate, "Migration path")
+    legacy = _normalize_lexical_aliases(legacy, "Legacy skill")
+    backup_root = _normalize_lexical_aliases(backup_root, "Migration backups")
+    if legacy.is_relative_to(destination) or destination.is_relative_to(legacy) or legacy.name != PRODUCT_NAME or source.is_relative_to(legacy) or legacy.is_relative_to(source):
+        raise ValueError("Legacy must be a separate Snowe install")
+    if any(backup_root == path or backup_root.is_relative_to(path) or path.is_relative_to(backup_root) for path in (source, destination.parent, legacy.parent)):
+        raise ValueError("Backups must be outside source and both discovery directories")
+    if legacy.exists() and not _is_recognized_install_tree(legacy): raise ValueError("Legacy is not a regular Snowe install")
+    installed = install_skill(source, destination)
+    if not legacy.exists(): return {**installed, "migration": "already-absent", "archives": _migration_archives(backup_root, legacy)}
+    backup_root.mkdir(parents=True, exist_ok=True)
+    _reject_reparse_chain(backup_root, "Migration backups")
+    # Lock the same legacy parent used by its installer to avoid a concurrent update.
+    with _installation_lock(legacy.parent):
+        _reject_reparse_chain(legacy, "Legacy skill")
+        if not legacy.exists(): return {**installed, "migration": "already-absent", "archives": _migration_archives(backup_root, legacy)}
+        if not _is_recognized_install_tree(legacy): raise ValueError("Legacy changed before migration")
+        before = _migration_fingerprint(legacy)
+        identity = _filesystem_identity(legacy)
+        backup = backup_root / f"{PRODUCT_NAME}-{uuid.uuid4().hex}"
+        # All recursive paths are resolved/checked above; rename moves the complete tree atomically.
+        record = backup.with_suffix(".migration.json")
+        with record.open("x", encoding="utf-8") as handle:
+            json.dump({"schema_version": "1.0", "legacy": str(legacy), "canonical": str(destination), "backup": str(backup), "files": before}, handle, indent=2)
+            handle.flush(); os.fsync(handle.fileno())
+        moved = False
+        try:
+            _reject_reparse_chain(legacy, "Legacy skill")
+            _reject_reparse_chain(backup_root, "Migration backups")
+            if not _same_identity(_filesystem_identity(legacy), identity) or _migration_fingerprint(legacy) != before:
+                raise ValueError("Legacy changed before archival")
+            _rename(legacy, backup)
+            moved = True
+            if not _same_identity(_filesystem_identity(backup), identity) or _migration_fingerprint(backup) != before:
+                raise ValueError("Archived bytes or identity differ")
+        except BaseException:
+            if moved and not _path_exists(legacy) and _same_identity(_filesystem_identity(backup), identity):
+                _rename(backup, legacy)
+            raise
+        return {**installed, "migration": "archived", "backup": str(backup), "manifest": str(record)}
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(
         description="Install or update Snowe as an exact standalone Codex skill copy."
@@ -810,13 +893,23 @@ def main() -> int:
         default=DEFAULT_DESTINATION,
         help=f"Final skill directory (default: {DEFAULT_DESTINATION})",
     )
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument("--diagnose", action="store_true", help="Read-only duplicate installation report")
+    mode.add_argument("--migrate-legacy", action="store_true", help="Archive legacy copy outside discovery after canonical install")
+    parser.add_argument("--legacy", type=Path)
+    parser.add_argument("--backup-root", type=Path)
     args = parser.parse_args()
     try:
-        result = install_skill(destination=args.destination)
+        if (args.legacy or args.backup_root) and not (args.migrate_legacy or args.diagnose):
+            raise ValueError("Migration options require --migrate-legacy or --diagnose")
+        if args.diagnose:
+            print(json.dumps(diagnose_installations(args.destination, args.legacy), indent=2))
+            return 0
+        result = migrate_legacy(destination=args.destination, legacy=args.legacy, backup_root=args.backup_root) if args.migrate_legacy else install_skill(destination=args.destination)
     except (OSError, RuntimeError, ValueError) as error:
         print(f"Install failed: {error}", file=sys.stderr)
         return 1
-    print(f"Snowe {result['operation']}: {result['destination']}")
+    print(json.dumps(result, indent=2) if args.migrate_legacy else f"Snowe {result['operation']}: {result['destination']}")
     return 0
 
 

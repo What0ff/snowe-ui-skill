@@ -37,11 +37,14 @@ snowe-ui-skill/
 ├── docs/  # public repository documentation and atlas
 │   └── atlas/
 ├── evals/  # deterministic behavior contracts and bounded operational proofs
+│   ├── acceptance-cases/
+│   │   └── captures/
 │   ├── correction-transfer/
 │   │   └── captures/
 │   ├── designer-behavior/
 │   ├── icon-decisions/
 │   │   └── assets/
+│   ├── typography/
 │   └── visual-acceptance/
 │       └── captures/
 ├── scripts/  # repository maintenance tooling
@@ -73,6 +76,7 @@ snowe-ui-skill/
 | `skill/snowe-ui-skill/SKILL.md` | Agent-runtime activation metadata and workflow router |
 | `skill/snowe-ui-skill/scripts/search.py` | Local evidence-search and decision-packet CLI |
 | `skill/snowe-ui-skill/scripts/decision_packet.py` | Portfolio/open-inquiry generation and identity-bound persistence API |
+| `skill/snowe-ui-skill/scripts/corrections.py` | Scoped correction journal, evidence freshness and completion check CLI |
 | `skill/snowe-ui-skill/scripts/asset_quality.py` | Strict self-contained SVG structure/provenance validator |
 | `skill/snowe-ui-skill/scripts/icon_review.py` | Deterministic icon decision/context comparison builder |
 | `skill/snowe-ui-skill/scripts/contrast.py` | Exact opaque-color contrast checker |
@@ -96,13 +100,14 @@ The generated map itself is excluded from the counts.
 
 | Extension | Files |
 | --- | --- |
-| `.md` | 58 |
+| `.md` | 60 |
 | `.jpg` | 52 |
 | `.csv` | 32 |
-| `.py` | 19 |
-| `.json` | 14 |
+| `.png` | 24 |
+| `.py` | 22 |
+| `.json` | 18 |
 | `.svg` | 12 |
-| `.html` | 8 |
+| `.html` | 10 |
 | `.txt` | 6 |
 | `.woff2` | 6 |
 | `.css` | 5 |
@@ -124,6 +129,7 @@ The generated map itself is excluded from the counts.
 | Change CLI options or output dispatch | `skill/snowe-ui-skill/scripts/search.py` |
 | Change domains, stacks, BM25 retrieval, or result filtering | `skill/snowe-ui-skill/scripts/core.py` |
 | Change open inquiry generation, analog filtering, or identity-bound decision persistence | `skill/snowe-ui-skill/scripts/decision_packet.py` |
+| Change correction lifecycle, scope applicability, evidence freshness or journal CLI | `skill/snowe-ui-skill/scripts/corrections.py` |
 | Change custom SVG validation | `skill/snowe-ui-skill/scripts/asset_quality.py` |
 | Change icon need, custom/existing/no-icon comparison, or context proof | `skill/snowe-ui-skill/scripts/icon_review.py` |
 | Change exact color/contrast validation | `skill/snowe-ui-skill/scripts/contrast.py` |

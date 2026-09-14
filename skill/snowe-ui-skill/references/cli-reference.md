@@ -212,6 +212,10 @@ The manifest binds every SVG candidate to its validated metadata name, provenanc
 
 The sheet is representative comparison evidence, not a pixel-identical host render and not an automatic decision. Inspect it in a browser at wide and narrow viewports, then render any claimed winner and the closest rejected alternative inside the actual owning component beside real neighbors. Record optical and semantic selection/rejection as human visual judgment. See the checked operational proof in `evals/icon-decisions/` in the source repository.
 
+New icon comparison manifests use schema `1.1` and explicit `lang` (language tag) and `dir` (`ltr`, `rtl`, `auto`) on every context. Version `1.0` remains readable with `en`/`ltr` defaults. The attributes belong to the preview content; English inspector metadata retains its own language. The renderer handles long headers and text alternatives with wrapping and height growth, not clipping. Language is never inferred from label vocabulary.
+
+For identity-bound correction commands, JSON schemas, proof requirements and exit codes, use [correction-memory.md](correction-memory.md#checked-journal-commands). These commands work independently of decision-packet generation and preserve an existing `DECISIONS.md`.
+
 ## Check an Exact Opaque Color Pair
 
 ```text

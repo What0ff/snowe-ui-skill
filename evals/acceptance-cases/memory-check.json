@@ -1,0 +1,66 @@
+{
+  "boundary": "Authored lifecycle using an inspected source-bound render, not an independent agent trial",
+  "steps": [
+    {
+      "status": "BLOCKED",
+      "project_identity": "Harbor continuation",
+      "applicable": [
+        "passive-icons"
+      ],
+      "blocked": [
+        "passive-icons"
+      ],
+      "stale": [],
+      "boundary": "Recorded proof integrity; not independent visual certification"
+    },
+    {
+      "status": "BLOCKED",
+      "project_identity": "Harbor continuation",
+      "applicable": [
+        "passive-icons"
+      ],
+      "blocked": [
+        "passive-icons"
+      ],
+      "stale": [],
+      "boundary": "Recorded proof integrity; not independent visual certification"
+    },
+    {
+      "status": "PASS",
+      "project_identity": "Harbor continuation",
+      "applicable": [
+        "passive-icons"
+      ],
+      "blocked": [],
+      "stale": [],
+      "boundary": "Recorded proof integrity; not independent visual certification"
+    },
+    {
+      "status": "REVIEW_REQUIRED",
+      "project_identity": "Harbor continuation",
+      "applicable": [
+        "passive-icons"
+      ],
+      "blocked": [],
+      "stale": [
+        {
+          "id": "passive-icons",
+          "issues": [
+            "Changed: fixture.html"
+          ]
+        }
+      ],
+      "boundary": "Recorded proof integrity; not independent visual certification"
+    },
+    {
+      "status": "PASS",
+      "project_identity": "Harbor continuation",
+      "applicable": [
+        "passive-icons"
+      ],
+      "blocked": [],
+      "stale": [],
+      "boundary": "Recorded proof integrity; not independent visual certification"
+    }
+  ]
+}

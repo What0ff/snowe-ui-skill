@@ -114,3 +114,9 @@ GitHub Actions runs four independent surfaces:
 CI does not perform aesthetic certification, manual browser review, lint/format/type/coverage, packaging, deployment, or release publication.
 
 The independent `.github/workflows/pages.yml` path-filtered workflow uploads `benchmarks/soda-campaign/` as the GitHub Pages artifact root and deploys it through the `github-pages` environment. It runs only for Doppler/workflow changes or manual dispatch, does not replace or alter the three normal CI surfaces, and adds no benchmark build step.
+
+## Checked corrections and installation migration
+
+Correction commands validate explicit input, acquire the existing project identity/lock via `locked_project_state`, load/validate CORRECTIONS.json, perform the permitted transition, and atomically publish the complete journal. No packet is generated. Record is idempotent for identical IDs/content; conflicting reuse fails. Verify binds every source owner and all required criterion results; check detects source/artifact changes and follows supersession across later scope edits. The decision ledger remains untouched. Missing state for a read-only check returns an empty scoped result without creating a directory.
+
+Explicit legacy migration validates separate source/canonical/legacy/backup paths, completes the canonical installation, fingerprints and locks the regular legacy tree, writes a digest manifest outside discovery, and renames the old tree into that archive. Post-move failure restores the old path when identity still matches. If the process dies after rename, a repeated run finds and verifies the manifest-bound archive. Differing legacy files are preserved rather than merged or deleted; ordinary install does not silently migrate them.

@@ -460,6 +460,38 @@ class SvgStructuralHardeningTests(unittest.TestCase):
 
 
 class IconDecisionWorkflowTests(unittest.TestCase):
+    def test_multilingual_stress_sheet_matches_validated_source(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            output = Path(temporary) / "stress.html"
+            generate_review(EVIDENCE / "stress.json", output)
+            self.assertEqual((EVIDENCE / "stress.html").read_bytes(), output.read_bytes())
+
+    def test_context_language_v11_and_legacy_default(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            value = self.compact_manifest()
+            legacy = load_review_manifest(self.write_manifest(root, value))
+            self.assertEqual("en", legacy["contexts"][0]["lang"])
+            self.assertEqual("ltr", legacy["contexts"][0]["dir"])
+            value["schema_version"] = "1.1"
+            for lang, direction, label in [("ru", "ltr", "Закрыть"), ("de", "ltr", "Produktinformationen schließen"), ("ar", "rtl", "إغلاق ABC-123")]:
+                value["contexts"][0].update(lang=lang, dir=direction, label=label)
+                loaded = load_review_manifest(self.write_manifest(root, value))
+                rendered = render_review_html(loaded)
+                self.assertIn(f'lang="{lang}" dir="{direction}"', rendered)
+                self.assertIn(label, rendered)
+
+    def test_context_language_v11_rejects_missing_or_invalid_declaration(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            value = self.compact_manifest()
+            value["schema_version"] = "1.1"
+            for declaration in [{}, {"lang": "en\" onclick=", "dir": "ltr"}, {"lang": "ru", "dir": "sideways"}]:
+                value["contexts"][0].pop("lang", None)
+                value["contexts"][0].pop("dir", None)
+                value["contexts"][0].update(declaration)
+                with self.assertRaises(ManifestError):
+                    load_review_manifest(self.write_manifest(Path(temporary), value))
+
     def checked_manifest(self) -> dict:
         return json.loads(MANIFEST.read_text(encoding="utf-8"))
 

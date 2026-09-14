@@ -68,7 +68,13 @@ Judge the complete typographic voice: do headings, prose, controls and data read
 
 After repair, inspect actual text at native size in the current page and relevant overlay/control states. Recheck line breaks, baselines, button dimensions, clipping and responsive fit after fonts settle; a font change can cause layout regressions without page-level overflow. Report which roles, scripts and states were verified, and separate transient loading/fallback resilience from settled visual acceptance.
 
-### Overall Disposition
+### Placement and Scroll Acceptance
+
+For reported placement or scrolling issues, inspect the [layout contracts](design-foundations.md#placement-and-alignment) in the affected context. Identify the intended reference frame and alignment axis, then compare actual bounds, padding, visible mass, reading order and action proximity. An icon can be numerically centered but optically displaced; a correctly centered component can still be in the wrong part of the page. Use measured geometry for an explicit contract and rendered comparison for an open composition decision.
+
+For bounded lists, verify the panel remains within its intended height, the list actually has scrollable overflow, and header/actions stay reachable. Test keyboard access, focus visibility, long content, empty state and relevant mobile transformation. Unintended document growth, unreachable actions, an inert scrollbar or a focus/scroll trap blocks acceptance. Ordinary document-flow lists must not acquire arbitrary height limits just to pass this check. Record the actual scroll owner and affected state; page-level overflow checks cannot prove this contract.
+
+### Dispositions
 
 Judge the implementation, not the author's explanation. Review the artifact and brief before reading its design rationale when feasible. For a specified target, distinguish implementation drift from an issue already present in the source design: a faithfully reproduced trait can pass conformance while a separate usability/accessibility finding remains open. That finding does not authorize silently changing the reference. Use these dispositions for the affected scope and name which acceptance claim they address:
 

@@ -218,7 +218,14 @@ python3 snowe-ui-skill/scripts/install_skill.py
 
 Use `--destination /path/to/skills/snowe-ui-skill` for another compatible runtime. The destination must be the final `snowe-ui-skill` directory. Codex normally detects skill changes automatically; restart it if the updated skill does not appear.
 
-If an older Snowe version was copied to `~/.codex/skills/snowe-ui-skill`, verify the new `.agents/skills` install and then remove or disable the legacy copy yourself. The installer intentionally does not delete a legacy location that may contain user changes; keeping both can expose duplicate skill names.
+If an older Snowe version was copied to `~/.codex/skills/snowe-ui-skill`, keeping both can expose duplicate skill names. Diagnose and migrate explicitly:
+
+```bash
+python3 scripts/install_skill.py --diagnose
+python3 scripts/install_skill.py --migrate-legacy
+```
+
+On Windows use `python`. Migration verifies the canonical `.agents/skills` installation and archives the entire regular legacy tree, including differing personal files, under `~/.agents/skill-backups/`. A digest manifest identifies the archived files. Failed verification after a move restores the legacy copy; a repeated run after a process interruption reports the existing archive. No unrelated skill configuration is changed. Optional `--legacy` and `--backup-root` select explicit paths; backups must stay outside both discovery directories. Review a differing archive manually rather than merging it over the canonical installation.
 
 ## Usage
 

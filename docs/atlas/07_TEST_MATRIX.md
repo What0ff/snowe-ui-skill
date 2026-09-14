@@ -24,7 +24,7 @@ Checks installable Python syntax/import compilation. It does not validate Markdo
 python -m unittest discover -s tests -v
 ```
 
-Current inspected result: **183 tests run successfully, with one Windows directory-symlink capability skip**.
+Current inspected result: **203 tests run successfully, with one Windows directory-symlink capability skip**.
 
 - `tests/test_snowe_ui_skill.py`: package routing/docs, schema-3 unresolved framing, multilingual/ambiguity/unknown behavior, opt-in analogs, persistence/path safety, evidence deletion/schemas/claims, icon constraints, contrast, SVG, and CLI.
 - `tests/test_bicycle_benchmark.py`: Goodturn commercial content, local/provenanced assets, semantics, interactions, responsive/reduced motion, design trace, and screenshot coverage.
@@ -32,6 +32,8 @@ Current inspected result: **183 tests run successfully, with one Windows directo
 - `tests/test_soda_benchmark.py`: local/semantic product content, flavor/conversion disclosure, motion/responsive/reduced ownership, complete design trace/provenance, local SVG safety, screenshot/GIF evidence, README/live-URL positioning, Doppler smoke contracts, and Pages workflow/artifact-root contracts.
 - `tests/test_installation.py`: fresh exact install, stale-file-free reinstall, interrupted-run recovery/preservation, staging-failure cleanup, activation rollback, source/destination containment, exact public CLI copy, and current installation guidance.
 - `tests/test_scope_contract.py`: six materially different consequence/change-surface traces; exact reference/process/artifact/stop/escalation/reason mutations; unjustified widening and consequential flattening; high-consequence proof floors; depth-proportional delivery; and target-discovery guidance.
+- `tests/test_corrections.py`: identity-bound lifecycle, idempotency/conflicts, scope, required owner/state proof, stale/lost evidence, supersession inheritance, ledger preservation, hardlinks, atomic failure and concurrent records.
+- `tests/test_install_migration.py`: identical/differing legacy copies, duplicate diagnostics, post-move rollback, process-death recovery and unsafe targets.
 - `tests/test_visual_acceptance.py`: visual-acceptance and correction-transfer fixture/capture hash binding, variant coverage, decoded JPEG width and measured viewport/document geometry, plus rejection of stale-source reuse; no aesthetic assertion.
 - `tests/test_icon_workflow.py`: strict SVG grammar/geometry/paint/path safety and resource budgets, structured source/license evidence byte bindings, metadata/provenance/schema boundaries, typed/digest/one-to-one host-state icon manifest binding, actual-owner dialog selection, deterministic comparison regeneration, no-icon behavior, unresolved repository-derived selection rejection, and manifest/asset/output redirection or alias protection.
 - `tests/test_runtime_hardening.py`: project/page identity collisions and races, reserved-name/page-preflight/atomic/shared-file/reparse persistence, real Windows 8.3 alias/lock identity and alias-normalization swap probes, retrieval-limit/mode failures, installer ownership/locking/quarantine/recovery, source/staging/activation revalidation, and junction/symlink boundaries.
@@ -104,7 +106,7 @@ Additional bounded local probes in that README cover stale-source detection, exp
 
 ### Low-level assets
 
-Goodturn's normal browser smoke also checks actual rendered custom faces for its heading, body and filter-control roles at 1440/900/390 using CDP `CSS.getPlatformFontsForNode`. At the wide viewport it temporarily changes the body face, then inserts mixed Latin/Cyrillic text into the Latin-subset owner while keeping the correct CSS family declaration. Both mismatches must be detected and the original text/style restored. Font loading and two paint frames settle before querying glyph use. The bundled variable Manrope reports an internal family name of `Manrope ExtraLight` on Windows Chrome; this is mapped separately from its CSS alias, without interpreting that name as the actual weight. These are authored face/role/fallback regression checks, not automatic aesthetic or variable-axis certification.
+Goodturn's normal browser smoke checks the separately declared role contract in `evals/typography/goodturn.json`: heading/body/card/control, navigation, booking fields and open dialogs at 1440/900/390. It verifies CSS metrics, rendered faces and pinned font-file/face mapping, and rejects mutations of family, weight 400→800, italic, line-height, tracking, variable settings, control inheritance and per-glyph fallback. Font/paint settling precedes inspection; dialog probes are isolated from the interaction suite. These are declared role regressions, not automatic aesthetic or font-engine certification.
 
 The icon comparison additionally checks preview, glyph and text containment within state cells at 1440, 900 and 390 widths. A temporary narrow-column mutation reproduces the original service-copy overflow and must be detected; it is removed before host proof. Document-wide overflow alone is insufficient. Service and labelled-action state rows use their candidate's full available width; compact icon controls retain a state grid.
 
@@ -210,3 +212,16 @@ Normal CI does not run manual aesthetic review, lint/format/type/coverage, packa
 ## Missing command surfaces
 
 No local command currently provides linting/formatting, static typing, coverage, package/plugin build or publication, visual-diff approval, full accessibility-engine audit, icon recognition/usability research, or backend integration validation. The bounded host series cannot expose exact token totals or independently attest runtime model identity. Exact standalone-copy installation is tested; GitHub Pages deployment exists only through its hosted workflow. Do not invent or report unavailable checks as executed.
+
+## Completion cases and migration checks
+
+```powershell
+python -m unittest tests.test_corrections tests.test_install_migration -v
+node scripts/browser-smoke.mjs --capture-acceptance-cases
+node scripts/browser-smoke.mjs --smoke --scenario acceptance-cases
+python scripts/install_skill.py --diagnose
+```
+
+Main smoke includes six authored before/after cases with current 900/390 PNGs: preserved type roles, drift, contextual glyphs, backings, multilingual bounded lists/alignment and continuation. It verifies keyboard scrolling to the end, empty/loading states and panel-centered action geometry. Icon stress uses schema 1.1 Russian/German/Arabic content at 320/390/900/1440 and 100/200% text, checking headers, status, metadata, preview text and focus bounds. Version 1.0 remains a regression input. Screenshots/self-review do not prove independent model improvement.
+
+The instruction fingerprint is an output revision identifier only. Critical route clauses and six authored consequence/scope traces still reject their tested contradictions; removed whole-document equality and obsolete stage wording are not semantic-quality evidence. Internal proof records remain detailed, while user-facing delivery is brief.
