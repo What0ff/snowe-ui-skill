@@ -41,6 +41,8 @@ snowe-ui-skill/
 │   │   └── captures/
 │   ├── correction-transfer/
 │   │   └── captures/
+│   ├── density/
+│   │   └── captures/
 │   ├── designer-behavior/
 │   ├── icon-decisions/
 │   │   └── assets/
@@ -100,14 +102,14 @@ The generated map itself is excluded from the counts.
 
 | Extension | Files |
 | --- | --- |
-| `.md` | 60 |
+| `.md` | 61 |
 | `.jpg` | 52 |
+| `.png` | 42 |
 | `.csv` | 32 |
-| `.png` | 24 |
 | `.py` | 22 |
-| `.json` | 18 |
+| `.json` | 19 |
 | `.svg` | 12 |
-| `.html` | 10 |
+| `.html` | 11 |
 | `.txt` | 6 |
 | `.woff2` | 6 |
 | `.css` | 5 |

@@ -59,6 +59,16 @@ class CorrectionTests(unittest.TestCase):
         with self.assertRaises(ValueError): self.call("verify", {"id": "type-role", "proof": proof})
         self.assertEqual("BLOCKED", self.call("check")["status"])
 
+    def test_user_rejection_reopens_verified_work_without_source_changes(self):
+        proof = self.prepare()
+        self.call("verify", {"id": "type-role", "proof": proof})
+        self.assertEqual("PASS", self.call("check")["status"])
+        self.call("update", {"id": "type-role", "status": "requested", "note": "User rejected the visual result as unfinished"})
+        self.assertEqual("BLOCKED", self.call("check")["status"])
+        record = self.call("list")["records"][0]
+        self.assertNotIn("proof", record)
+        self.assertTrue(any(item["status"] == "verified" for item in record["history"]))
+
     def test_proof_cannot_omit_owner_or_required_visual_state(self):
         proof = self.prepare()
         proof["sources"][0]["path"] = "unrelated.css"

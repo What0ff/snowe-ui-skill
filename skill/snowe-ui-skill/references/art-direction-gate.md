@@ -29,6 +29,10 @@ Examples such as “precise but not clinical” or “energetic without urgency 
 
 ## 3. Create a Direction Portfolio
 
+When a user rejects the visual result, treat that as evidence that the affected direction is open. Do not call the existing implementation accepted merely because its business behavior or palette remains valid. A local visual choice can reopen at Focused depth without redesigning the entire product.
+
+Construct before subtracting: give an unresolved design a positive, product-specific proposition through composition, typography, material, color relationships, custom imagery/graphics or interaction as appropriate. Compare this coherent candidate with the baseline; a sequence of removing pills, reducing spacing and muting color is not creative exploration by itself. Select the relevant expressive means rather than mandating an asset, extra font, animation or saturated palette. Quiet utility and expressive brand work can both succeed when they intentionally fit the brief.
+
 Use a portfolio when identity is unresolved. Generate enough directions to cover the real perceptual and business trade-offs. Each direction uses identical requirements and real content and records:
 
 ```text
@@ -134,6 +138,8 @@ Record:
 This is a drift boundary, not a permanent law. Reopen it when real content, rendered behavior, user evidence, asset quality, performance, or platform constraints invalidate the premise.
 
 ## 9. Rendered Art-Direction Review
+
+Separate an engineering fixture from a finished design proposal. The former can demonstrate a corrected overflow or density contract while remaining visually weak. Do not promote it to visual KEEP on that basis. For a proposal, inspect the complete composition, quality of the type/graphic relationship, hierarchy, rhythm, material consistency and finishing of every exposed state. If the user asked for character and the result is interchangeable, merely sparse or colorized, revise the actual direction. A user-rejected proposal remains rejected evidence until a materially changed proposal is reviewed; do not relabel it a success because it passed tests.
 
 Review the functioning product, not a direction card alone.
 

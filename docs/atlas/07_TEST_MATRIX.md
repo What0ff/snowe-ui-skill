@@ -24,7 +24,7 @@ Checks installable Python syntax/import compilation. It does not validate Markdo
 python -m unittest discover -s tests -v
 ```
 
-Current inspected result: **203 tests run successfully, with one Windows directory-symlink capability skip**.
+Current inspected result: **205 tests run successfully, with one Windows directory-symlink capability skip**.
 
 - `tests/test_snowe_ui_skill.py`: package routing/docs, schema-3 unresolved framing, multilingual/ambiguity/unknown behavior, opt-in analogs, persistence/path safety, evidence deletion/schemas/claims, icon constraints, contrast, SVG, and CLI.
 - `tests/test_bicycle_benchmark.py`: Goodturn commercial content, local/provenanced assets, semantics, interactions, responsive/reduced motion, design trace, and screenshot coverage.
@@ -215,6 +215,8 @@ No local command currently provides linting/formatting, static typing, coverage,
 
 ## Completion cases and migration checks
 
+The density scenario is included in main browser smoke and can run alone with `--smoke --scenario density`. `--capture-density` writes 18 native PNGs for before/after empty/sparse/populated states at 1280/820/390; the visual-evidence suite validates fixture/font/image hashes and geometry. It checks the authored fixed-chrome/row/placeholder bounds, unchanged text-node inventory, label size and control height, nearby related values, stable queue anchor and keyboard scrolling for 24 rows. These numerical bounds belong only to the fixture; the skill's acceptance criterion remains contextual comparison and visual review.
+
 ```powershell
 python -m unittest tests.test_corrections tests.test_install_migration -v
 node scripts/browser-smoke.mjs --capture-acceptance-cases
@@ -225,3 +227,5 @@ python scripts/install_skill.py --diagnose
 Main smoke includes six authored before/after cases with current 900/390 PNGs: preserved type roles, drift, contextual glyphs, backings, multilingual bounded lists/alignment and continuation. It verifies keyboard scrolling to the end, empty/loading states and panel-centered action geometry. Icon stress uses schema 1.1 Russian/German/Arabic content at 320/390/900/1440 and 100/200% text, checking headers, status, metadata, preview text and focus bounds. Version 1.0 remains a regression input. Screenshots/self-review do not prove independent model improvement.
 
 The instruction fingerprint is an output revision identifier only. Critical route clauses and six authored consequence/scope traces still reject their tested contradictions; removed whole-document equality and obsolete stage wording are not semantic-quality evidence. Internal proof records remain detailed, while user-facing delivery is brief.
+
+The density fixture’s first tighter visual proposal was user-rejected and is not a visual KEEP. The current candidate changes grouping/selector composition and uses scoped identity cues; README distinguishes its technical contract from proposal/user acceptance. A correction regression ensures new user rejection reopens verified work even without source changes.

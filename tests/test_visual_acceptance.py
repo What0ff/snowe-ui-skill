@@ -34,6 +34,23 @@ def jpeg_size(data: bytes) -> tuple[int, int]:
 
 
 class VisualAcceptanceEvidenceTests(unittest.TestCase):
+    def test_density_capture_states_and_geometry_bind_current_source(self):
+        root = ROOT.parent / "density"
+        manifest = json.loads((root / "captures/evidence.json").read_text(encoding="utf-8"))
+        self.assertEqual(manifest["fixtureSha256"], hashlib.sha256((root / "fixture.html").read_bytes()).hexdigest())
+        self.assertEqual(manifest["fontSha256"], hashlib.sha256((ROOT.parents[1] / "benchmarks/bicycle-commerce/assets/fonts/manrope-latin.woff2").read_bytes()).hexdigest())
+        expected = {f"{version}-{state}-{width}.png" for version in ("before", "after") for state in ("empty", "sparse", "populated") for width in (1280, 820, 390)}
+        self.assertEqual(expected, {item["file"] for item in manifest["captures"]})
+        self.assertEqual(len(expected), len(manifest["captures"]))
+        for capture in manifest["captures"]:
+            raw = (root / "captures" / capture["file"]).read_bytes()
+            self.assertEqual(b"\x89PNG\r\n\x1a\n", raw[:8])
+            self.assertEqual(capture["sha256"], hashlib.sha256(raw).hexdigest())
+            report = capture["report"]
+            self.assertEqual(report["width"], int.from_bytes(raw[16:20], "big"))
+            self.assertEqual(report["height"], int.from_bytes(raw[20:24], "big"))
+            self.assertEqual(capture["file"], f"{report['version']}-{report['state']}-{report['width']}.png")
+
     def test_six_case_native_captures_are_current_and_complete(self):
         root = ROOT.parent / "acceptance-cases"
         manifest = json.loads((root / "captures/evidence.json").read_text(encoding="utf-8"))

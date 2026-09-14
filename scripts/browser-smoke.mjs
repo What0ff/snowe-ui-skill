@@ -18,7 +18,8 @@ const CAPTURE_GOODTURN = process.argv.includes("--capture-goodturn-workshop");
 const CAPTURE_VISUAL_ACCEPTANCE = process.argv.includes("--capture-visual-acceptance");
 const CAPTURE_CORRECTION_TRANSFER = process.argv.includes("--capture-correction-transfer");
 const CAPTURE_ACCEPTANCE = process.argv.includes("--capture-acceptance-cases");
-const CHECKS_ONLY = process.argv.includes("--smoke") || (!CAPTURE && !CAPTURE_SODA && !CAPTURE_SODA_MOTION && !CAPTURE_GOODTURN && !CAPTURE_VISUAL_ACCEPTANCE && !CAPTURE_CORRECTION_TRANSFER && !CAPTURE_ACCEPTANCE);
+const CAPTURE_DENSITY = process.argv.includes("--capture-density");
+const CHECKS_ONLY = process.argv.includes("--smoke") || (!CAPTURE && !CAPTURE_SODA && !CAPTURE_SODA_MOTION && !CAPTURE_GOODTURN && !CAPTURE_VISUAL_ACCEPTANCE && !CAPTURE_CORRECTION_TRANSFER && !CAPTURE_ACCEPTANCE && !CAPTURE_DENSITY);
 const SCENARIO_OPTION_INDEX = process.argv.indexOf("--scenario");
 const REQUESTED_SCENARIO = SCENARIO_OPTION_INDEX >= 0 ? process.argv[SCENARIO_OPTION_INDEX + 1] : null;
 if (SCENARIO_OPTION_INDEX >= 0 && (!REQUESTED_SCENARIO || REQUESTED_SCENARIO.startsWith("--"))) {
@@ -1013,7 +1014,7 @@ async function auditGoodturnTypography(client, probe) {
 }
 
 async function runSmoke(client, origin) {
-  const available = new Set([...scenarios.map((scenario) => scenario.slug), "icon-decisions", "acceptance-cases"]);
+  const available = new Set([...scenarios.map((scenario) => scenario.slug), "icon-decisions", "acceptance-cases", "density"]);
   if (REQUESTED_SCENARIO && !available.has(REQUESTED_SCENARIO)) {
     throw new Error(`Unknown --scenario ${REQUESTED_SCENARIO}; expected one of: ${[...available].join(", ")}`);
   }
@@ -1630,6 +1631,64 @@ async function runSmoke(client, origin) {
     }
   }
   if (!REQUESTED_SCENARIO || REQUESTED_SCENARIO === 'acceptance-cases') await runAcceptanceCases(client, origin);
+  if (!REQUESTED_SCENARIO || REQUESTED_SCENARIO === 'density') await runDensityCases(client, origin);
+}
+
+async function runDensityCases(client, origin, capture=false) {
+  const dir=path.join(ROOT,'evals/density/captures');
+  if(capture) await mkdir(dir,{recursive:true});
+  const evidence=[];
+  for(const width of [1280,820,390]) {
+    const afterQueueAnchors=[];
+    for(const state of ['empty','sparse','populated']) {
+      let baseline;
+      for(const version of ['before','after']) {
+        const viewport={width,height:width===390?844:900};
+        await navigate(client,origin,{name:'Queue density',route:`/evals/density/fixture.html?v=${version}&state=${state}`,requiresReadyMarker:false},viewport);
+        await waitFor(client,'window.__densityReady===true','density fixture');
+        const report=await evaluate(client, `(() => {
+          const queue=document.querySelector('.queue'),rect=queue.getBoundingClientRect();
+          const choices=[...document.querySelectorAll('.choice')];
+          const walker=document.createTreeWalker(document.querySelector('.app'),NodeFilter.SHOW_TEXT),content=[];
+          while(walker.nextNode()){const value=walker.currentNode.textContent.trim();if(value)content.push(value)}
+          const label=document.querySelector('.holder span').getBoundingClientRect(),value=document.querySelector('#holder').getBoundingClientRect();
+          return {width:innerWidth,height:innerHeight,dpr:devicePixelRatio,state:document.body.dataset.state,version:document.body.dataset.v,
+            text:document.querySelector('.app').innerText,content:content.sort(),overflow:document.documentElement.scrollWidth-innerWidth,
+            queueTop:rect.top,queueHeight:rect.height,queueScrollHeight:queue.scrollHeight,
+            rowHeights:choices.map(n=>n.getBoundingClientRect().height),labelSizes:choices.map(n=>getComputedStyle(n.querySelector('strong')).fontSize),
+            settingsHeight:document.querySelector('.settings').getBoundingClientRect().height,
+            holderGap:Math.max(0,value.left-label.right,label.left-value.right,value.top-label.bottom,label.top-value.bottom),
+            contentRows:queue.querySelectorAll('.entry').length,
+            placeholderSize:document.body.dataset.state==='empty'?getComputedStyle(document.querySelector('#holder')).fontSize:null};
+        })()`);
+        check(report.width===width && report.state===state && report.version===version && report.overflow<=1,'Density: wrong viewport/state or unexpected horizontal overflow');
+        if(version==='before') baseline=report;
+        else {
+          afterQueueAnchors.push(report.queueTop);
+          check(JSON.stringify(report.content)===JSON.stringify(baseline.content),'Density: challenger removed or changed content');
+          check(JSON.stringify(report.labelSizes)===JSON.stringify(baseline.labelSizes) && report.settingsHeight===baseline.settingsHeight,'Density: global shrinking disguised the layout issue');
+          check(report.rowHeights.every(h=>h>=44 && h<=68),`Density: declared operator row contract failed ${width}/${state}: ${JSON.stringify(report.rowHeights)}`);
+          check(report.holderGap<=16,'Density: related label/value remain scattered across the panel');
+          check(report.queueTop<=baseline.queueTop-40 && report.queueTop<viewport.height*.7,'Density: fixed chrome still displaces the working content');
+          if(state==='empty') check(report.queueHeight<80 && report.placeholderSize==='14px','Density: empty state retained oversized well/emphasis');
+          if(state==='sparse') check(report.contentRows===2 && report.queueHeight<120,'Density: sparse state has unexplained reserved height');
+          if(state==='populated') {
+            check(report.contentRows===24 && report.queueHeight<=241 && report.queueScrollHeight>report.queueHeight,'Density: populated queue lost internal scrolling');
+            await evaluate(client,`document.querySelector('.queue').focus()`);await key(client,'End');
+            await waitFor(client,`(()=>{const q=document.querySelector('.queue');return q.scrollTop+q.clientHeight>=q.scrollHeight-1})()`,'density queue keyboard scroll');
+            await evaluate(client,`document.querySelector('.queue').scrollTop=0`);
+          }
+        }
+        if(capture) {
+          const file=`${version}-${state}-${width}.png`;await screenshotPng(client,path.join(dir,file));
+          evidence.push({file,sha256:createHash('sha256').update(await readFile(path.join(dir,file))).digest('hex'),report});
+        }
+      }
+    }
+    check(Math.max(...afterQueueAnchors)-Math.min(...afterQueueAnchors)<=8,'Density: state changes destabilized the working-content anchor');
+  }
+  if(capture) await writeFile(path.join(dir,'evidence.json'),JSON.stringify({fixtureSha256:createHash('sha256').update(await readFile(path.join(ROOT,'evals/density/fixture.html'))).digest('hex'),fontSha256:createHash('sha256').update(await readFile(path.join(ROOT,'benchmarks/bicycle-commerce/assets/fonts/manrope-latin.woff2'))).digest('hex'),captures:evidence},null,2)+'\n');
+  passes.push('Operator density: identical empty/sparse/populated content, fixed chrome, preserved label/target sizes and long-queue keyboard scrolling at 1280/820/390; authored contract, not aesthetic certification');
 }
 
 async function runIconStress(client, origin) {
@@ -1941,6 +2000,7 @@ async function main() {
     if (CAPTURE_VISUAL_ACCEPTANCE && failures.length === 0) await captureVisualAcceptance(client, origin);
     if (CAPTURE_CORRECTION_TRANSFER && failures.length === 0) await captureVisualAcceptance(client, origin, "correction-transfer");
     if (CAPTURE_ACCEPTANCE && failures.length === 0) await runAcceptanceCases(client, origin, true);
+    if (CAPTURE_DENSITY && failures.length === 0) await runDensityCases(client, origin, true);
   } finally {
     if (client) {
       try {

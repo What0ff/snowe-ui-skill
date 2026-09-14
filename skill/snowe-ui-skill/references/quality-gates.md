@@ -56,6 +56,14 @@ Record the backing's role, owner, verdict and evidence in the existing finding r
 
 For new or materially revised custom glyphs, also apply the [contextual icon acceptance claims](iconography-system.md#accept-the-context-not-the-drawing-sheet). A correct backing does not close semantic truth, small-size recognition, family fit or accessible host behavior. Routine wrapper-only fixes need not reopen glyph generation.
 
+### Density and State Composition
+
+When sizing/composition is new, materially revised, or reported as oversized, apply the [density contract](design-foundations.md#density-before-dimensions) before propagating the layout. Inspect actual CSS viewport, zoom/DPR and reference scale; screenshot pixels alone do not establish CSS dimensions. For the affected task, account for total header/summary height, repeated row height, cumulative padding and the location of the first useful content/action. Include empty, sparse and populated states at a pressure width and the relevant desktop/mobile contexts.
+
+When density remains an open choice in repeated-use work, require a rendered tighter challenger when unexplained large rows, ceremonial headers, amplified placeholder values or oversized empty wells separate related information. Compare the same content and states, keeping readable text and usable targets. `REVISE` and block affected visual acceptance when the extra space has no demonstrated grouping, input, stability or identity benefit and the challenger supports the task better. A page fitting inside the viewport, centered correctly, or having an internal scrollbar cannot overrule this finding. A fixed dimension is acceptable when its role is justified; an explicitly approved spacious reference remains a conformance target.
+
+Fix the cause at the owning layout: additive padding, min-height, stretching, typography role or state treatment. Do not use global zoom, a CSS scale transform, shrinking all fonts or arbitrary clipping. Recheck that long lists still scroll inside the intended region and that empty/short states do not receive the same unused height by accident. Automated geometry checks prove an authored density contract; they do not decide which density is aesthetically or functionally best.
+
 ### Typography Coherence
 
 For an affected page/visual system or reported font inconsistency, inspect a representative set of each real type role: display heading, repeated section/card heading, body, navigation, button/field/select, price/data, and applicable menu/dialog/error/chart text. Include below-the-fold siblings and relevant responsive/localized states. A bounded font fix inspects its owner and affected consumers; it does not reopen all type choices across the product.
@@ -75,6 +83,8 @@ For reported placement or scrolling issues, inspect the [layout contracts](desig
 For bounded lists, verify the panel remains within its intended height, the list actually has scrollable overflow, and header/actions stay reachable. Test keyboard access, focus visibility, long content, empty state and relevant mobile transformation. Unintended document growth, unreachable actions, an inert scrollbar or a focus/scroll trap blocks acceptance. Ordinary document-flow lists must not acquire arbitrary height limits just to pass this check. Record the actual scroll owner and affected state; page-level overflow checks cannot prove this contract.
 
 ### Dispositions
+
+Visual readiness has a positive bar as well as defect checks: the whole affected screen must read as an intentional, resolved experience with coherent hierarchy, rhythm, type/graphic relationships and the character requested by the brief. Technical correctness and a quieter layout cannot establish that bar. Treat an unfinished or interchangeable proposal as `REVISE` when the task calls for an authored visual direction; reopen the affected decision rather than appending arbitrary color, shadows or decorative assets. Preserve deliberately restrained approved references. Engineering fixtures may pass their technical contract while retaining a separate visual `REVISE` disposition.
 
 Judge the implementation, not the author's explanation. Review the artifact and brief before reading its design rationale when feasible. For a specified target, distinguish implementation drift from an issue already present in the source design: a faithfully reproduced trait can pass conformance while a separate usability/accessibility finding remains open. That finding does not authorize silently changing the reference. Use these dispositions for the affected scope and name which acceptance claim they address:
 

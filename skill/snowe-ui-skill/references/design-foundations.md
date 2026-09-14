@@ -14,6 +14,16 @@ Use this reference to turn an accepted architecture and art direction into a coh
 
 ## Layout and Responsive Transformation
 
+### Density Before Dimensions
+
+Before choosing new heights, padding and headline sizes, establish how this surface is actually used: reading/persuasion, occasional choice, or repeated monitoring/editing; input mode; typical content volume; and which related decisions must be seen together. Derive this from behavior and product evidence, not a category keyword. Keep a compact density contract: `task/frequency → content states → information/actions visible together → existing comparable roles → fixed chrome versus working region → proof`. Reuse an accepted density system when it fits.
+
+Size the content and grouping first, then distribute remaining space. A wider viewport does not automatically justify larger padding, navigation rows or status values. Large minimum heights, repeated section paddings, viewport-sized wrappers and flex/grid stretching accumulate even when every individual number looks reasonable. Measure their combined effect on the first useful decision. Do not scale the whole interface down: small labels and control targets may already be correct while their containers are too large.
+
+Treat empty, sparse and populated content as distinct compositions. An unassigned value or zero count should carry its factual role without acquiring the emphasis of a meaningful result merely because it shares a component. Reserve empty working space only when stable geometry, real-time updates, comparison or another demonstrated task benefits from it. Otherwise let short content use its natural extent and cap long content at the intended scroll owner. Avoid both giant empty wells and layouts that jump excessively when a row arrives.
+
+When density remains open on newly composed or materially revised repeated-use surfaces, compare the current density against a credible tighter composition using identical empty, short and long content. Preserve type readability, control hit regions, grouping, keyboard focus, localization and touch behavior. Judge useful information visible together, distance between related facts/actions and repeated scanning effort. A spacious editorial/reference design can remain the correct counterexample. Record why the chosen density fits; neither maximum compression nor a universal 64px row, 28px heading or occupancy percentage defines quality.
+
 ### Placement and Alignment
 
 Choose the reference frame before aligning: the content column, control, panel, visual group or viewport. A sidebar or asymmetric padding can make viewport centering wrong for the usable region. State whether the role needs edge alignment, text baseline, geometric center, optical center or a deliberate offset. Inspect the real box, internal padding and visible glyph/image mass; `align-items:center` alone does not prove visual balance.
