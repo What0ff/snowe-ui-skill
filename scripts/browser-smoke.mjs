@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { spawn, spawnSync } from "node:child_process";
+import { createHash } from "node:crypto";
 import { createServer } from "node:http";
 import { mkdir, readFile, rm, stat, writeFile } from "node:fs/promises";
 import { existsSync, mkdtempSync } from "node:fs";
@@ -14,7 +15,8 @@ const CAPTURE = process.argv.includes("--capture");
 const CAPTURE_SODA = process.argv.includes("--capture-soda");
 const CAPTURE_SODA_MOTION = process.argv.includes("--soda-motion-frames");
 const CAPTURE_GOODTURN = process.argv.includes("--capture-goodturn-workshop");
-const CHECKS_ONLY = process.argv.includes("--smoke") || (!CAPTURE && !CAPTURE_SODA && !CAPTURE_SODA_MOTION && !CAPTURE_GOODTURN);
+const CAPTURE_VISUAL_ACCEPTANCE = process.argv.includes("--capture-visual-acceptance");
+const CHECKS_ONLY = process.argv.includes("--smoke") || (!CAPTURE && !CAPTURE_SODA && !CAPTURE_SODA_MOTION && !CAPTURE_GOODTURN && !CAPTURE_VISUAL_ACCEPTANCE);
 const SCENARIO_OPTION_INDEX = process.argv.indexOf("--scenario");
 const REQUESTED_SCENARIO = SCENARIO_OPTION_INDEX >= 0 ? process.argv[SCENARIO_OPTION_INDEX + 1] : null;
 if (SCENARIO_OPTION_INDEX >= 0 && (!REQUESTED_SCENARIO || REQUESTED_SCENARIO.startsWith("--"))) {
@@ -445,7 +447,9 @@ async function navigate(client, origin, scenario, viewport = DEFAULT_VIEWPORT, r
   diagnostics = { exceptions: [], consoleErrors: [], failedRequests: [], badResponses: [] };
   await setViewport(client, viewport, reducedMotion);
   const loaded = client.once("Page.loadEventFired");
-  await client.send("Page.navigate", { url: `${origin}${scenario.route}?smoke=${Date.now()}` });
+  const url = new URL(scenario.route, origin);
+  url.searchParams.set("smoke", String(Date.now()));
+  await client.send("Page.navigate", { url: url.href });
   await loaded;
   await evaluate(client, `(async () => {
     if (document.fonts?.ready) await document.fonts.ready;
@@ -1655,6 +1659,29 @@ async function runCaptures(client, origin) {
   passes.push("18 forward-test and 7 Doppler screenshots captured from validated browser states");
 }
 
+async function captureVisualAcceptance(client, origin) {
+  const dir = path.join(ROOT, "evals/visual-acceptance/captures");
+  const fixtureSha256 = createHash("sha256").update(await readFile(path.join(ROOT, "evals/visual-acceptance/fixture.html"))).digest("hex");
+  await mkdir(dir, { recursive: true });
+  const proof = [];
+  for (const version of ["A", "B", "C"]) {
+    const scenario = { name: `Visual acceptance ${version}`, route: `/evals/visual-acceptance/fixture.html?v=${version}`, requiresReadyMarker: false };
+    for (const viewport of [{ width: 1280, height: 1200 }, { width: 820, height: 1000 }, { width: 390, height: 844 }]) {
+      await navigate(client, origin, scenario, viewport);
+      const geometry = await evaluate(client, `({ width: innerWidth, height: innerHeight, scrollWidth: document.documentElement.scrollWidth, version: document.body.dataset.version })`);
+      check(geometry.width === viewport.width && geometry.height === viewport.height, `${scenario.name}: capture viewport mismatch`);
+      check(geometry.version === version, `${scenario.name}: wrong rendered variant`);
+      check(geometry.scrollWidth <= viewport.width, `${scenario.name}: unexpected capture overflow`);
+      const filename = `${version}-${viewport.width}.jpg`;
+      await screenshot(client, path.join(dir, filename), true);
+      const sha256 = createHash("sha256").update(await readFile(path.join(dir, filename))).digest("hex");
+      proof.push({ file: filename, sha256, viewport, geometry });
+    }
+  }
+  await writeFile(path.join(dir, "geometry.json"), `${JSON.stringify({ fixtureSha256, captures: proof }, null, 2)}\n`);
+  passes.push("9 visual-acceptance fixture captures with verified viewport geometry; static evidence only, no task behavior or aesthetic certification");
+}
+
 async function main() {
   const chrome = resolveChrome();
   const profile = mkdtempSync(path.join(tmpdir(), "snowe-browser-smoke-"));
@@ -1682,6 +1709,7 @@ async function main() {
     if (CAPTURE_GOODTURN && failures.length === 0) {
       await captureGoodturnWorkshop(client, origin, scenarios.find((scenario) => scenario.slug === "bicycle-commerce"));
     }
+    if (CAPTURE_VISUAL_ACCEPTANCE && failures.length === 0) await captureVisualAcceptance(client, origin);
   } finally {
     if (client) {
       try {

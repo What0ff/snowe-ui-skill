@@ -1,6 +1,6 @@
 ---
 name: snowe-ui-skill
-description: Design and build high-quality web, product, and brand experiences. Use for bounded UI corrections through open site/product architecture, information architecture, UX, art direction, visual systems, typography, color/material, imagery, illustration, custom graphics and icons, motion, interaction, responsive behavior, implementation, and rendered critique. Snowe calibrates process depth from observed consequence, owners, consumers, and material uncertainty: narrow accepted-system work stays local, shared or unresolved work widens only as evidence requires, and no image, custom asset, animation, redesign, or workshop is always a valid outcome.
+description: "Design and build high-quality web, product, and brand experiences. Use for bounded UI corrections through open site/product architecture, information architecture, UX, art direction, visual systems, typography, color/material, imagery, illustration, custom graphics and icons, motion, interaction, responsive behavior, implementation, and rendered critique. Snowe calibrates process depth from observed consequence, owners, consumers, and material uncertainty: narrow accepted-system work stays local, shared or unresolved work widens only as evidence requires, and no image, custom asset, animation, redesign, or workshop is always a valid outcome."
 ---
 
 # Snowe UI Skill
@@ -21,6 +21,12 @@ Use this order:
 6. Generated hypotheses.
 
 Never turn an inference, retrieved row, trend, competitor convention, or generated image into a fact. When evidence is missing, keep the uncertainty visible and make reversible assumptions only.
+
+For newly composed UI, pills, badges, cards, and decorative effects are design decisions, not starter defaults. Static eyebrows and ordinary metadata do not earn a capsule merely because the text is short. Establish hierarchy through content, composition, and typography; retain expressive treatments when their semantic, interaction, or verified identity role survives rendered comparison. Preserve user-requested and coherent accepted systems. Removing every radius is not a quality strategy.
+
+When the user supplies a definite design to implement or check (such as selected Figma frames or approved screenshots), use the reference-conformance workflow in [quality-gates.md](references/quality-gates.md). The specified visual decisions are the acceptance target, not an invitation to redesign. Compare target versus implementation instead of generating new directions; preserve layout, typography, spacing, control dimensions and shapes, imagery, and hierarchy within the supplied scope. Explore only genuinely unspecified decisions. A reference explicitly offered as inspiration remains evidence rather than an exact target. Neither anti-default guidance nor personal taste overrides the user's chosen design.
+
+A detailed content brief or accepted palette/brand does not by itself specify a composition or control geometry. If those decisions are still being designed for an affected surface, do not call the answer a bounded Direct correction merely because its fields and brand adjectives are known. Compare the open affected choice at Focused depth; widen only for demonstrated broader uncertainty. Applying an actual supplied or accepted design remains conformance work within its proved scope.
 
 ## Calibrate Consequence and Change Surface
 
@@ -163,6 +169,8 @@ Before substantial implementation, freeze only the contract required by the cali
 
 The contract prevents implementation convenience from silently replacing the design. Change it when new evidence appears, not when a familiar component is easier.
 
+For a new or materially changed visual system, apply the early rendered gate in [quality-gates.md](references/quality-gates.md) before propagating its components across the experience. Prove the composition on real content and a representative repeated context; an attractive isolated hero is insufficient. This gate stays within the active visual decision and does not widen Direct work.
+
 ### 7. Implement in the Real Architecture (at the calibrated change surface)
 
 Implementation stays at the calibrated change surface. Only Portfolio implementation spans the whole architecture when its uncertainty requires it; Direct and Focused preserve the accepted system outside the affected owner/flow and its proof contexts.
@@ -185,7 +193,7 @@ KEEP | REVISE | REJECT | UNKNOWN
 viewport/state | visible or behavioral evidence | consequence | correction or acceptance reason | rerender/retest
 ```
 
-Critique the result against the product outcome and implementation contract, not against a generic aesthetic checklist. Resolve every `REJECT` and material `REVISE`, rerender the affected evidence, and stop when further change no longer improves a stated driver. If a correction exposes a weak architecture or art-direction premise, reopen that decision instead of polishing around it.
+Critique the result against the product outcome and implementation contract, using the acceptance rules in [quality-gates.md](references/quality-gates.md). Functional correctness and visual acceptance are separate claims: a clean build cannot excuse weak hierarchy, ambiguous affordances, or unsupported decorative repetition. Resolve every `REJECT` and material `REVISE`, rerender the affected evidence, and stop when further change no longer improves a stated driver. If a correction exposes a weak architecture or art-direction premise, reopen that decision instead of polishing around it. Missing required rendered evidence remains `UNKNOWN`; report the scoped implementation and outstanding proof without claiming visual acceptance.
 
 ## Professional Invariants
 

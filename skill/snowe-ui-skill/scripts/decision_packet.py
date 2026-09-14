@@ -577,9 +577,11 @@ class DecisionPacketGenerator:
                     "Discretion: imagery, generation, custom graphics, and animation appear only when they outperform simpler alternatives.",
                     "UX resilience: task clarity, accessibility, localization, content variation, performance, and responsive behavior survive the direction.",
                     "Rendered proof: visible hierarchy and interaction quality are evaluated in the real product, not certified by policy prose or code tokens.",
+                    "Visual acceptance: distinguish controls, semantic tokens, and passive content; compare disputed wrappers/effects against a credible same-content subtraction render. Preserve justified brand/native forms rather than banning shapes.",
+                    "Specified-reference conformance: when the user provides a definite target, compare implementation against that target, including control dimensions and corner shape. Do not reopen supplied visual decisions or silently redesign; isolate unspecified states and unresolved deviations.",
                 ],
                 "finding_record": "verdict | viewport/state | visible or behavioral evidence | consequence | correction or acceptance reason | rerender/retest",
-                "stop": "Resolve every REJECT and material REVISE finding, rerender the affected evidence, and stop when further change no longer improves a stated driver. Preserve UNKNOWN where evidence genuinely cannot be obtained.",
+                "stop": "Resolve every REJECT and material REVISE finding and inspect the current rerender before visual acceptance. Build success cannot override a blocking visual finding. Stop when further change no longer improves a stated driver; if required evidence cannot be obtained, finish verifiable work with those claims UNKNOWN and no visual acceptance claim.",
             },
             "local_evidence": {
                 "status": evidence["status"],

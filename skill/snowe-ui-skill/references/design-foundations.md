@@ -62,12 +62,14 @@ Shape follows component behavior, visual thesis, platform, content, and hierarch
 
 - Define edges by role: small detail, control, container, overlay, image, semantic token, or genuinely circular object.
 - Keep interaction targets independent from visible geometry.
-- Use pills for compact semantic tokens or a verified brand/native behavior when appropriate; do not spread them automatically.
+- Use pills when compact selection/removal, a meaningful token, or verified brand/native behavior benefits from that silhouette. A short string alone is not a semantic token. Ordinary metadata, section eyebrows, navigation links, fields, and calls to action do not inherit a capsule from a nearby filter.
 - Use circles where the silhouette communicates the object or action.
 - Sharp, rounded, irregular, cut, framed, or borderless systems can all work when coherent and usable.
 - Check nested surfaces, text fit, focus, selected, disabled, and error states together.
 
 Do not derive a system from one global radius dial. A repeated edge can be an identity carrier, but it needs a product reason and repetition boundary.
+
+For a new or revised shape system, distinguish interactive controls, selected/filter tokens, passive status, and plain content in the rendered context. They may share curvature, but must not acquire indistinguishable affordances or equal emphasis. Compare a disputed capsule with unwrapped text, a bounded control, or another role-appropriate treatment using identical content. Keep the capsule when it improves recognition, state reading, or established identity; otherwise remove the wrapper and rebalance spacing/type. Do not replace every pill with a rectangle and call the hierarchy repaired.
 
 ## Surfaces and Containers
 
@@ -87,6 +89,10 @@ Choose components by behavior and platform semantics, then style them within the
 - Custom controls must reproduce keyboard, focus, selected, disabled, validation, text scaling, and assistive-technology behavior.
 - Visible control scale follows density, content, input mode, and brand. The hit target can be larger through transparent non-overlapping space.
 - Full-width, oversized, icon-only, segmented, chip, tab, menu, or drawer patterns need a behavioral reason.
+
+For a button family, resolve visible height, content width, horizontal/vertical padding, label metrics, icon size/gap, edge treatment, and alignment from the accepted reference/system or the local density and task. Primary importance can come from placement and contrast; it does not automatically require a taller, wider button. A compact toolbar action, an inline action, and a campaign CTA need not share one size. Likewise, removing pills does not authorize square corners: preserve the reference's curvature or derive a coherent control edge independently of card/image edges.
+
+Compare controls at actual rendered size beside nearby fields, tabs, text, and secondary actions, including narrow and long-label states when relevant. Reject a size/shape change when it departs from the specified target, dominates the content without a task benefit, breaks the density/alignment of its control family, or squeezes essential neighboring content. Trace unexpected size or corners to their owner: inherited font/line-height, component size variant, min-height, padding, flex stretch, global radius utilities, or box sizing. Correct that cause rather than overriding every button globally. Keep the visual box distinct from a larger non-overlapping hit region; enlarging a target must not silently inflate the visible control or steal adjacent targets.
 
 ## Icons and Graphics
 

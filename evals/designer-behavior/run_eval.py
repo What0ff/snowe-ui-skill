@@ -439,7 +439,7 @@ Evidence required:
 Escalate when a supposedly routine answer proves weak, generic, inaccessible, inconsistent, or contradicted by current evidence and the failure reaches a material contract or another owner/consumer. De-escalate when further search is unlikely to change the decision. Record the evidence and the trigger either way."""
 )
 
-SKILL_OPERATIVE_REGION_DIGEST = "2ed44e75750c656ef785b9232ec1fb344a00eb237c2a25b8f51253ac68e62dc7"
+SKILL_OPERATIVE_REGION_DIGEST = "35d170803db8e63d51805d07adf9af7f7a22099f8ba2d91e5b5d3cbb1b0a1cc6"
 EXPLORATION_OPERATIVE_REGION_END = "<!-- End of the operative inquiry protocol. Notes after this marker are non-operative evidence and cannot widen a calibrated route. -->"
 EXPLORATION_OPERATIVE_REGION_DIGEST = "70162cdcc36b81cf766b562b5c84c2995cef32466ca6c7e616918b35f5871e33"
 

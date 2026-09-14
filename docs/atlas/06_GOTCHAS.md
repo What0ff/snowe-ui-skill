@@ -62,8 +62,12 @@
 - Model durable object state explicitly: setting `hidden` before a recomputation can be undone, as the initial resolution flow demonstrated.
 - Check inherited responsive grid placement at every breakpoint; the literary tablet membership placement initially leaked into phone order without causing overflow.
 - Full-page and viewport screenshots serve different evidence. Fixed elements can appear misleadingly in full-page state captures.
+- A headless window-size flag or screenshot pixel width alone can describe a crop of a wider layout. The visual-acceptance capture route explicitly emulates and reads back CSS viewport geometry before capture; distinguish capture defects from product overflow before changing CSS.
+- No horizontal overflow does not prove readable display type: emergency wrapping can split ordinary words while containment checks pass. Likewise, supplied brand adjectives do not prove that a newly invented composition was already accepted. The additional local probes summarized in `evals/visual-acceptance/README.md` expose these boundaries without claiming a completed independent generation study.
 
 ## Installer boundary
+
+- Keep YAML frontmatter scalars valid: descriptions containing colon-space must be quoted or block scalars. The installer's bounded metadata recognition is not a general YAML parser; a successful copy alone cannot establish skill-host loadability.
 
 - The repository installer owns a short-lived destination lock and per-run transient staging/backup claims. It preserves recognizable interrupted previous state until staging succeeds and must never treat a forgeable stale marker as permission for recursive deletion.
 - Validate the source, completed staging tree, and activated destination. Expand Windows short names through the longest existing ancestor without resolving reparse targets, then recheck both original and long lexical spellings before containment, locking, and swaps so aliases cannot bypass overlap checks or split ownership identity. Copy or rename success alone is not proof that a concurrent path swap stayed safe. The post-swap checks are still path-based; complete protection against a hostile same-user TOCTOU adversary would require platform-specific secure directory handles.

@@ -38,8 +38,10 @@ snowe-ui-skill/
 │   └── atlas/
 ├── evals/  # deterministic behavior contracts and bounded operational proofs
 │   ├── designer-behavior/
-│   └── icon-decisions/
-│       └── assets/
+│   ├── icon-decisions/
+│   │   └── assets/
+│   └── visual-acceptance/
+│       └── captures/
 ├── scripts/  # repository maintenance tooling
 │   └── atlas/
 ├── skill/  # installable product boundary
@@ -92,13 +94,13 @@ The generated map itself is excluded from the counts.
 
 | Extension | Files |
 | --- | --- |
-| `.md` | 54 |
-| `.jpg` | 34 |
+| `.md` | 55 |
+| `.jpg` | 43 |
 | `.csv` | 32 |
-| `.py` | 18 |
-| `.json` | 12 |
+| `.py` | 19 |
+| `.json` | 13 |
 | `.svg` | 12 |
-| `.html` | 6 |
+| `.html` | 7 |
 | `.txt` | 6 |
 | `.woff2` | 6 |
 | `.css` | 5 |

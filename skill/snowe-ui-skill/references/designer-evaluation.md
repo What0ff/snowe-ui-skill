@@ -28,6 +28,8 @@ Do not encode the expected layout, style, image choice, or number of candidates 
 
 Add adversarial cases that expose known failure modes, such as ambiguous vocabulary, multilingual content, long prices/titles, incomplete product data, high stakes, keyboard-first work, or an existing visual system that should be preserved.
 
+For visual-acceptance changes, include both misuse and legitimate use of the same treatment: decorative capsules that compete with actions, functional selected/removable filters, and an explicitly accepted rounded brand system. Include a radius-only revision that leaves weak grouping intact, a visually quiet but poorly organized alternative, and missing rendered evidence. Evaluate whether the agent repairs the actual hierarchy, preserves justified shape/identity, and withholds unsupported acceptance. Zero pills, extra paperwork, and an automatic preference for plainness are not success criteria.
+
 ## Evaluate With Findings, Not a Creativity Score
 
 Use:
@@ -105,6 +107,8 @@ When changing Snowe, run the same scenario evidence through the previous and pro
 - added process cost that did or did not change the result.
 
 Keep useful regressions when the new approach weakens an established invariant. Remove tests that merely require obsolete prose or catalog choices.
+
+Separate the implementer's rationale from the acceptance pass. Give a fresh evaluator the brief, actual artifacts, viewports/states, and applicable skill; withhold the intended winner and diagnosis until its first findings are recorded. Compare old and proposed skill revisions on the same artifacts and conditions where available. Preserve raw outputs and label authored fixtures, observed judgments, and unavailable interaction proof separately. A stronger rejection record is evidence about that review, not proof that future generated designs improve; that claim needs repeated generation and rendered comparison across briefs.
 
 ## Benchmark Acceptance
 

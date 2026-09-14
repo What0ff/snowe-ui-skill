@@ -114,6 +114,8 @@ After selection, establish role-based systems:
 
 Do not let one expressive permission spread automatically. A campaign visual does not define every control; an illustrated product category does not authorize decorative icons; a soft brand edge does not require pill-shaped fields.
 
+Before scaling a new direction, render the primary decision surface and a representative secondary/repeated context with real content. Inspect the full composition as well as target-size details. If the direction only works in the hero, if every fact needs a badge, or if repeated containers erase content hierarchy, revise the system before building the rest. Use the early gate in [quality-gates.md](quality-gates.md); do not invent a separate approval ceremony.
+
 ## 8. Freeze the Implementation Contract
 
 Record:

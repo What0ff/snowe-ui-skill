@@ -24,7 +24,7 @@ Checks installable Python syntax/import compilation. It does not validate Markdo
 python -m unittest discover -s tests -v
 ```
 
-Current inspected result: **180 tests pass, with one Windows directory-symlink capability skip**.
+Current inspected result: **181 tests run successfully, with one Windows directory-symlink capability skip**.
 
 - `tests/test_snowe_ui_skill.py`: package routing/docs, schema-3 unresolved framing, multilingual/ambiguity/unknown behavior, opt-in analogs, persistence/path safety, evidence deletion/schemas/claims, icon constraints, contrast, SVG, and CLI.
 - `tests/test_bicycle_benchmark.py`: Goodturn commercial content, local/provenanced assets, semantics, interactions, responsive/reduced motion, design trace, and screenshot coverage.
@@ -32,6 +32,7 @@ Current inspected result: **180 tests pass, with one Windows directory-symlink c
 - `tests/test_soda_benchmark.py`: local/semantic product content, flavor/conversion disclosure, motion/responsive/reduced ownership, complete design trace/provenance, local SVG safety, screenshot/GIF evidence, README/live-URL positioning, Doppler smoke contracts, and Pages workflow/artifact-root contracts.
 - `tests/test_installation.py`: fresh exact install, stale-file-free reinstall, interrupted-run recovery/preservation, staging-failure cleanup, activation rollback, source/destination containment, exact public CLI copy, and current installation guidance.
 - `tests/test_scope_contract.py`: six materially different consequence/change-surface traces; exact reference/process/artifact/stop/escalation/reason mutations; unjustified widening and consequential flattening; high-consequence proof floors; depth-proportional delivery; and target-discovery guidance.
+- `tests/test_visual_acceptance.py`: current fixture and exact capture hash binding, variant coverage, decoded JPEG width and measured viewport/document geometry; no aesthetic assertion.
 - `tests/test_icon_workflow.py`: strict SVG grammar/geometry/paint/path safety and resource budgets, structured source/license evidence byte bindings, metadata/provenance/schema boundaries, typed/digest/one-to-one host-state icon manifest binding, actual-owner dialog selection, deterministic comparison regeneration, no-icon behavior, unresolved repository-derived selection rejection, and manifest/asset/output redirection or alias protection.
 - `tests/test_runtime_hardening.py`: project/page identity collisions and races, reserved-name/page-preflight/atomic/shared-file/reparse persistence, real Windows 8.3 alias/lock identity and alias-normalization swap probes, retrieval-limit/mode failures, installer ownership/locking/quarantine/recovery, source/staging/activation revalidation, and junction/symlink boundaries.
 
@@ -89,6 +90,17 @@ node scripts/browser-smoke.mjs --soda-motion-frames
 ```
 
 The motion-frame command captures 72 PNGs from the live implementation; it does not define a repository image-encoder dependency or overwrite `hero-motion.gif`.
+
+### Visual acceptance fixture
+
+```powershell
+node scripts/browser-smoke.mjs --capture-visual-acceptance
+python -m unittest tests.test_visual_acceptance -v
+```
+
+This explicit capture route uses the same isolated Chrome/CDP lifecycle to produce nine full-page JPGs for A/B/C at 1280, 820 and 390 CSS widths, preserving the variant query parameter. It verifies actual viewport and document geometry and writes source/image SHA-256 bindings. It does not exercise the fixture's intentionally nonfunctional controls or grade appearance. `evals/visual-acceptance/README.md` records the one paired old/proposed review: both selected C and withheld functional acceptance; the proposed review rejected A more explicitly, without proving better generated design. The rejected preliminary window-size-only capture set is not public regression evidence.
+
+Additional bounded local probes in that README cover stale-source detection, explicit-reference button size/shape conformance, and an expressive-brand generation whose initial typography failed despite no overflow. The reference correction and brand generation were interrupted before their final agent proof reports; parent browser verification/corrections are labelled separately. Live Figma access, repeated generation quality, and complete accessibility certification were not measured.
 
 ### Low-level assets
 
