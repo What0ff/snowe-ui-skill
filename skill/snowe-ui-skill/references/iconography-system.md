@@ -17,6 +17,22 @@ Do not add a decorative icon to every title, statistic, feature, or card. Illust
 
 An icon and its backing are separate decisions. Inspect the real owner for circles, capsules, tiles, nested rings and pseudo-element paint; a clean path or valid metadata cannot justify a button-like surface behind a passive symbol. Apply the [icon-backing acceptance check](quality-gates.md#icon-backings-and-nested-surfaces) in context, preserving justified interaction, contrast, masks and accepted identity. A wrapper-only correction can keep the existing glyph and stay Direct when its answer and owner are bounded.
 
+## Choose the Control Label Mode
+
+Use the role/context record above to choose the presentation that makes the action quickest to understand and operate at the intended density. Do not automatically add a caption to every icon or remove text because another app looks cleaner. Reason by action family, keep peers consistent, and justify meaningful exceptions rather than re-deciding every identical row.
+
+- **Icon only:** a recognizable, repeated utility whose meaning and state remain clear in its toolbar, view switcher or row context before a tooltip appears.
+- **Text only:** wording communicates the action well and an accompanying glyph adds no useful recognition, scanning or identity value.
+- **Icon with text:** the pair materially helps recognition or scanning, or visible wording is needed to understand an unfamiliar, ambiguous or consequential action.
+
+Inspect the actual handler/outcome and neighbors before naming or hiding the label. A table/list view switcher can use familiar symbols with localized “Table view” / “List view” tooltips and a visible/programmatic selected state. An important commitment may need an action phrase. Preserve accepted conventional controls; a passive service name, data label or form label is not a redundant button caption.
+
+Own this reversible decision. If it remains material and unresolved, compare the credible modes in the real control set at its actual size and input contexts, then select the clearest result yourself. Inspect icon-only recognition with the tooltip closed: hover help cannot rescue an unclear metaphor or make touch users guess. Retain necessary wording when uncertainty remains. A known accepted pattern or bounded caption correction does not require an icon-source workshop or a new decision document.
+
+Every icon-only action needs an accessible name independent of hover, such as the owning button's `aria-label` or `aria-labelledby`; hide decorative SVG content from assistive output. Reuse the site's tooltip component/style: concise help on hover and keyboard focus, readable while hovered, and Escape dismissal without moving focus or activating the action. A plain tooltip contains no focusable controls. Do not rely on HTML `title` alone or announce identical name/description twice. On touch, preserve understandable operation without hover; use wording or an equivalent labelled path when needed. See [button naming and state](https://www.w3.org/WAI/ARIA/apg/patterns/button/) and [hover/focus content behavior](https://www.w3.org/WAI/WCAG22/Understanding/content-on-hover-or-focus.html).
+
+Verify the chosen mode's recognition, accessible name/state, input behavior, target size and tooltip clipping at the affected viewport. Do not present speculative label stripping as an improvement before checking the whole control set.
+
 ## Inspect the Existing Symbol Ecology
 
 Before searching:

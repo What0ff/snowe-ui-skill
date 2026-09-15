@@ -127,6 +127,7 @@ Verify the implemented result, not the intent:
 
 - semantic elements or correct native equivalents;
 - accessible names, descriptions, roles, states, relationships, and announcements;
+- for icon controls, an intentional [label mode](iconography-system.md#choose-the-control-label-mode): avoid automatic icon-plus-caption duplication, preserve necessary visible wording, and check the accessible name/state, hover/focus tooltip, dismissal, touch usability and clipping;
 - keyboard access, logical focus order, visible focus, focus restoration, escape/cancel, and no traps outside intentional modal behavior;
 - target behavior and spacing suitable for the input/context;
 - text, icons, controls, statuses, charts, and focus indicators with sufficient rendered contrast for their roles;
