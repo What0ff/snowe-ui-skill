@@ -21,7 +21,7 @@ State:
 
 - what the experience should feel like and why that perception helps the task or position;
 - what it must never imply;
-- the primary focal hierarchy;
+- the intended state-specific attention and its visible cues, using the compact record in [page-hierarchy.md](page-hierarchy.md#connect-importance-to-visible-cues);
 - how much the interface should lead, reassure, disappear, teach, provoke, or create desire;
 - how the visual language changes across high-attention and routine states.
 
@@ -29,7 +29,7 @@ Examples such as “precise but not clinical” or “energetic without urgency 
 
 ## 3. Create a Direction Portfolio
 
-When a user rejects the visual result, treat that as evidence that the affected direction is open. Do not call the existing implementation accepted merely because its business behavior or palette remains valid. A local visual choice can reopen at Focused depth without redesigning the entire product.
+When a user rejects the visual result, treat that as evidence that the affected direction is open. Do not call the existing implementation accepted merely because its business behavior or palette remains valid. A local visual choice can reopen at Focused depth without redesigning the entire product. An already understandable page may still need this bounded pass; it does not require an identity overhaul to qualify.
 
 Construct before subtracting: give an unresolved design a positive, product-specific proposition through composition, typography, material, color relationships, custom imagery/graphics or interaction as appropriate. Compare this coherent candidate with the baseline; a sequence of removing pills, reducing spacing and muting color is not creative exploration by itself. Select the relevant expressive means rather than mandating an asset, extra font, animation or saturated palette. Quiet utility and expressive brand work can both succeed when they intentionally fit the brief.
 

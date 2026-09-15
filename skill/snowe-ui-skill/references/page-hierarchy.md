@@ -17,6 +17,21 @@ Only then choose grouping, composition, components and visual emphasis. Do not m
 
 For a material open choice, compare the baseline page map with a credible alternative that changes the weak relationships. Reordering identical boxes without changing importance or grouping is not enough. Implement a complete affected surface with real content before claiming that its hierarchy works. Keep this internal map concise; do not create a new document for every small correction.
 
+### Connect Importance to Visible Cues
+
+For a live hierarchy choice, extend that same record with the few states that change the user's decision:
+
+```text
+state / immediate user question / intended attention order
+visible cue and owner / competing element / observed render / disposition
+```
+
+Name the actual content, not only “primary” and “secondary.” Explain how placement, scale, type weight, grouping, contrast or disclosure makes it distinguishable, and what could compete with it. “Use a journal” or “make the palette neutral” names a treatment; it does not establish that the treatment improves this task. Preserve useful technical data and a calm accepted system when they work.
+
+Inspect meaningful transitions. While a scan runs, progress and affected kingdoms may lead; on failure, the problem and recovery may lead; after completion, the result and next useful operation may lead. These are a worked example, not a universal dashboard recipe. Stable geometry can remain valuable: change emphasis only where the user's question changes, without making panels jump or adding ceremonial animation.
+
+Author the intended order and cues before evaluating the candidate. Compare them with what the full render actually emphasizes; do not derive the expectation from the same DOM/CSS being checked. A self-review's observed attention is a reasoned visual judgment, not measured gaze or a timed user study. If structure is clear but its visual expression remains weak, use [art-direction-gate.md](art-direction-gate.md) for that bounded choice before accepting it.
+
 ## Use References at the Requested Level
 
 Identify what the user likes: hierarchy, density, navigation, typography, material, interaction or another specific attribute. Inspect the actual referenced surface. A vendor's marketing homepage is not evidence of its dashboard hierarchy. Cloudflare dashboards can illustrate distinct resource context, navigation, actionable work and secondary tools, but do not prescribe their palette, sidebar, module count or content model to unrelated products.

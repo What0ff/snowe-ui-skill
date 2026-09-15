@@ -55,3 +55,7 @@ Experimental notices and instructional copy were removed from the customer surfa
 Final render review found a real recovery defect: on narrow settings, the error was at the bottom of the scrolling form. A new required-error visibility assertion first failed despite the existing text-presence check. The message now has a persistent dialog-owned area next to the footer actions; the same check passes for all four failure paths. Dialog captures use the actual viewport; page captures may include the full page, avoiding artificial backdrop gaps below a fixed modal.
 
 The same failure-path regression reproduced focus loss when pending controls were disabled. Failed operations now restore the initiating control by its stable identity, including queue rows recreated during render. The browser test checks the visible error and retry focus together.
+
+## Explicit visual disposition
+
+The schema-1 SELF_REVIEWED report is preserved under `review-history/2026-09-15-schema1.json`; the checker reads it as REVIEW_REQUIRED rather than inferring KEEP. The current schema-2 report has a separate method, explicit scoped KEEP, state assessments, source/render bindings and UNCONFIRMED user acceptance. Its new attention contract transcribes the existing pre-component PAGE-MAP for explicit reassessment. This accepts the bounded hierarchy/state-legibility pilot, not a finished brand identity. Run `python skill/snowe-ui-skill/scripts/visual_review.py evals/titlebot-hierarchy/REVIEW.json --workspace .` from the repository root.

@@ -11,6 +11,7 @@ import process from "node:process";
 import { fileURLToPath } from "node:url";
 import { inspectUiContract } from "./ui-proof.mjs";
 import { runTitleBotPilot } from "./titlebot-pilot.mjs";
+import { runVisualJudgment } from "./visual-judgment.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const CAPTURE = process.argv.includes("--capture");
@@ -22,7 +23,8 @@ const CAPTURE_CORRECTION_TRANSFER = process.argv.includes("--capture-correction-
 const CAPTURE_ACCEPTANCE = process.argv.includes("--capture-acceptance-cases");
 const CAPTURE_DENSITY = process.argv.includes("--capture-density");
 const CAPTURE_TITLEBOT = process.argv.includes("--capture-titlebot");
-const CHECKS_ONLY = process.argv.includes("--smoke") || (!CAPTURE && !CAPTURE_SODA && !CAPTURE_SODA_MOTION && !CAPTURE_GOODTURN && !CAPTURE_VISUAL_ACCEPTANCE && !CAPTURE_CORRECTION_TRANSFER && !CAPTURE_ACCEPTANCE && !CAPTURE_DENSITY && !CAPTURE_TITLEBOT);
+const CAPTURE_JUDGMENT = process.argv.includes("--capture-visual-judgment");
+const CHECKS_ONLY = process.argv.includes("--smoke") || (!CAPTURE && !CAPTURE_SODA && !CAPTURE_SODA_MOTION && !CAPTURE_GOODTURN && !CAPTURE_VISUAL_ACCEPTANCE && !CAPTURE_CORRECTION_TRANSFER && !CAPTURE_ACCEPTANCE && !CAPTURE_DENSITY && !CAPTURE_TITLEBOT && !CAPTURE_JUDGMENT);
 const SCENARIO_OPTION_INDEX = process.argv.indexOf("--scenario");
 const REQUESTED_SCENARIO = SCENARIO_OPTION_INDEX >= 0 ? process.argv[SCENARIO_OPTION_INDEX + 1] : null;
 if (SCENARIO_OPTION_INDEX >= 0 && (!REQUESTED_SCENARIO || REQUESTED_SCENARIO.startsWith("--"))) {
@@ -579,7 +581,7 @@ async function setValue(client, selector, value) {
 async function key(client, keyValue, code = keyValue) {
   const keyCodes = {End:35,Home:36,Escape:27,Tab:9,Enter:13,ArrowLeft:37,ArrowRight:39};
   const nativeCode = keyCodes[keyValue] ? {windowsVirtualKeyCode:keyCodes[keyValue]} : {};
-  await client.send("Input.dispatchKeyEvent", { type: "keyDown", key: keyValue, code, ...nativeCode });
+  await client.send("Input.dispatchKeyEvent", { type: "keyDown", key: keyValue, code, ...nativeCode, ...(keyValue === "Enter" ? {text:"\r",unmodifiedText:"\r"} : {}) });
   await client.send("Input.dispatchKeyEvent", { type: "keyUp", key: keyValue, code, ...nativeCode });
   await sleep(30);
 }
@@ -1024,7 +1026,7 @@ async function auditGoodturnTypography(client, probe) {
 }
 
 async function runSmoke(client, origin) {
-  const available = new Set([...scenarios.map((scenario) => scenario.slug), "icon-decisions", "acceptance-cases", "density", "titlebot-hierarchy"]);
+  const available = new Set([...scenarios.map((scenario) => scenario.slug), "icon-decisions", "acceptance-cases", "density", "titlebot-hierarchy", "visual-judgment"]);
   if (REQUESTED_SCENARIO && !available.has(REQUESTED_SCENARIO)) {
     throw new Error(`Unknown --scenario ${REQUESTED_SCENARIO}; expected one of: ${[...available].join(", ")}`);
   }
@@ -1643,6 +1645,11 @@ async function runSmoke(client, origin) {
   if (!REQUESTED_SCENARIO || REQUESTED_SCENARIO === 'acceptance-cases') await runAcceptanceCases(client, origin);
   if (!REQUESTED_SCENARIO || REQUESTED_SCENARIO === 'density') await runDensityCases(client, origin);
   if (!REQUESTED_SCENARIO || REQUESTED_SCENARIO === 'titlebot-hierarchy') await runPilot(client, origin);
+  if (!REQUESTED_SCENARIO || REQUESTED_SCENARIO === 'visual-judgment') await runJudgment(client, origin);
+}
+
+async function runJudgment(client, origin, capture=false) {
+  passes.push(await runVisualJudgment({client,origin,root:ROOT,navigate,evaluate,check,click,key,diagnostics:()=>diagnostics},capture));
 }
 
 async function runPilot(client, origin, capture=false) {
@@ -2044,6 +2051,7 @@ async function main() {
     if (CAPTURE_ACCEPTANCE && failures.length === 0) await runAcceptanceCases(client, origin, true);
     if (CAPTURE_DENSITY && failures.length === 0) await runDensityCases(client, origin, true);
     if (CAPTURE_TITLEBOT && failures.length === 0) await runPilot(client, origin, true);
+    if (CAPTURE_JUDGMENT && failures.length === 0) await runJudgment(client, origin, true);
   } finally {
     if (client) {
       try {

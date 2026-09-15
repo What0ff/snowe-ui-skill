@@ -1,0 +1,158 @@
+{
+  "schema": "2.0",
+  "scope": "Scan operator state priority",
+  "method": "self-review",
+  "reviewer": "Implementing Codex agent",
+  "date": "2026-09-15",
+  "contract": {
+    "path": "evals/visual-judgment/ATTENTION.json",
+    "sha256": "e5f42248d2fbefc4895be1111b4eade6f61d0c5efadd1fa067fbcbc8e23f12b2"
+  },
+  "sources": [
+    {
+      "path": "evals/visual-judgment/index.html",
+      "sha256": "b9dad3b410fb231a2c4df77c838a79f0cfc83502fe5e84fa76cec42e01fc124f"
+    },
+    {
+      "path": "evals/visual-judgment/app.js",
+      "sha256": "eccd9916099a0aa3da84c9412d7f654e49d6cdea0d9b558099248a84820dccb4"
+    },
+    {
+      "path": "evals/visual-judgment/styles.css",
+      "sha256": "6521b3a46ab0918a9f7108b471271dd4a106ccb89c7240abd743cd9848349cd9"
+    },
+    {
+      "path": "evals/titlebot-hierarchy/assets/fonts/inter-v20-latin.woff2",
+      "sha256": "c940764593d0fe5d596be327ca7558855e018039fb78509aa21921fd3644c3e4"
+    },
+    {
+      "path": "evals/titlebot-hierarchy/assets/fonts/inter-v20-cyrillic.woff2",
+      "sha256": "aebf2ab4a4ce6810d73c1ac7be7cafb4e5ec4cee2d6db5fb3e09691747ec4bd6"
+    },
+    {
+      "path": "scripts/visual-judgment.mjs",
+      "sha256": "0b44dbc1171712c2b97dc1aba4391bf0e781b2fd63bf7b2ea954d2d702a94b46"
+    },
+    {
+      "path": "scripts/ui-proof.mjs",
+      "sha256": "b451ac5918cf8cbf4d24950cc422903e6098bc144376b9ba2c08501b982b56f6"
+    },
+    {
+      "path": "scripts/browser-smoke.mjs",
+      "sha256": "c0729cba53c2c0f911e77849671b09ffe832603c057b532b5162ab3a57868701"
+    },
+    {
+      "path": "evals/visual-judgment/captures/evidence.json",
+      "sha256": "a8984ab3eec54a33fc2bd9cdaded94f43dfcbc27e4b8754a0e8fee07f970ee3e"
+    }
+  ],
+  "renders": [
+    {
+      "path": "evals/visual-judgment/captures/d-running-900.png",
+      "sha256": "4943fe30d33fb8710aaadc2f474bd03bcb17a6626e8cd38033898a2bbf053f4f",
+      "state": "running",
+      "viewport": "900x1000@1"
+    },
+    {
+      "path": "evals/visual-judgment/captures/d-complete-900.png",
+      "sha256": "b97737d31b7f741224cbbea41364e2b16447b51db960584b7891a631b300b1df",
+      "state": "complete",
+      "viewport": "900x1000@1"
+    },
+    {
+      "path": "evals/visual-judgment/captures/d-error-900.png",
+      "sha256": "b0745c56f401dd089a58a4f1437691b3baf165dd9a809d106da633ebc5fc97ed",
+      "state": "error",
+      "viewport": "900x1000@1"
+    },
+    {
+      "path": "evals/visual-judgment/captures/d-running-390.png",
+      "sha256": "56758306869aaad909046c812317095fcf2274d33013dc0184855e45eaa56a0a",
+      "state": "running",
+      "viewport": "390x1000@1"
+    },
+    {
+      "path": "evals/visual-judgment/captures/d-complete-390.png",
+      "sha256": "25410bebc88bfa111886cbd9f49f8f2e6b13ff5b98d59b7e493a651207d6947a",
+      "state": "complete",
+      "viewport": "390x1000@1"
+    },
+    {
+      "path": "evals/visual-judgment/captures/d-error-390.png",
+      "sha256": "fd4640c7d004c0a4a36ccdfbbd5ea30a2deaddece31a24d3ee2424c2c6556378",
+      "state": "error",
+      "viewport": "390x1000@1"
+    }
+  ],
+  "visualAssessment": {
+    "verdict": "KEEP",
+    "finding": "Scoped attention review of authored cases. Technical PASS is common to every candidate; these visual judgments are explicit self-review, not inferred by the checker.",
+    "assessments": [
+      {
+        "state": "running",
+        "renders": [
+          "evals/visual-judgment/captures/d-running-900.png",
+          "evals/visual-judgment/captures/d-running-390.png"
+        ],
+        "observedAttention": [
+          "Current scan progress",
+          "Kingdom coverage",
+          "Next scheduled run"
+        ],
+        "finding": "After the narrow-order correction, progress leads in the same compact work region. White type, spacing and a restrained bar separate roles without requiring a filled panel or saturated control.",
+        "verdict": "KEEP"
+      },
+      {
+        "state": "complete",
+        "renders": [
+          "evals/visual-judgment/captures/d-complete-900.png",
+          "evals/visual-judgment/captures/d-complete-390.png"
+        ],
+        "observedAttention": [
+          "Ready result and its action",
+          "Completed run identity",
+          "Kingdom coverage"
+        ],
+        "finding": "The ready message and result action are adjacent and precede supporting progress. The restrained treatment retains a clear task order.",
+        "verdict": "KEEP"
+      },
+      {
+        "state": "error",
+        "renders": [
+          "evals/visual-judgment/captures/d-error-900.png",
+          "evals/visual-judgment/captures/d-error-390.png"
+        ],
+        "observedAttention": [
+          "Affected kingdoms",
+          "Retry action",
+          "Retained scan progress"
+        ],
+        "finding": "The problem and recovery are read together before progress. Restrained surfaces do not erase that relationship on either width.",
+        "verdict": "KEEP"
+      }
+    ],
+    "findings": [
+      {
+        "id": "d-narrow-progress-order",
+        "states": [
+          "running"
+        ],
+        "owner": "Current run mobile grouping",
+        "observation": "The first draft placed a disabled future-result control between coverage and the total progress value.",
+        "consequence": "The main progress was delayed by a supporting control.",
+        "blocking": true,
+        "status": "resolved",
+        "renders": [
+          "evals/visual-judgment/captures/d-running-900.png",
+          "evals/visual-judgment/captures/d-running-390.png"
+        ],
+        "resolution": "Moved the existing progress group first in the running state and inspected both current widths. The restrained palette is preserved."
+      }
+    ]
+  },
+  "userAcceptance": "UNCONFIRMED",
+  "notes": [
+    "Same content and font family across variants. The contrast is in role emphasis and state response, not an enforced style preference.",
+    "No independent evaluator, measured gaze, blinded comparison or future-generation improvement is claimed."
+  ]
+}

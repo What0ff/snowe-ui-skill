@@ -1,0 +1,404 @@
+{
+  "schema": "1.0",
+  "evidenceKind": "authored visual-judgment cases; technical checks do not grade their appearance",
+  "sources": [
+    {
+      "file": "evals/visual-judgment/index.html",
+      "sha256": "b9dad3b410fb231a2c4df77c838a79f0cfc83502fe5e84fa76cec42e01fc124f"
+    },
+    {
+      "file": "evals/visual-judgment/app.js",
+      "sha256": "eccd9916099a0aa3da84c9412d7f654e49d6cdea0d9b558099248a84820dccb4"
+    },
+    {
+      "file": "evals/visual-judgment/styles.css",
+      "sha256": "6521b3a46ab0918a9f7108b471271dd4a106ccb89c7240abd743cd9848349cd9"
+    },
+    {
+      "file": "evals/visual-judgment/ATTENTION.json",
+      "sha256": "e5f42248d2fbefc4895be1111b4eade6f61d0c5efadd1fa067fbcbc8e23f12b2"
+    },
+    {
+      "file": "evals/titlebot-hierarchy/assets/fonts/inter-v20-latin.woff2",
+      "sha256": "c940764593d0fe5d596be327ca7558855e018039fb78509aa21921fd3644c3e4"
+    },
+    {
+      "file": "evals/titlebot-hierarchy/assets/fonts/inter-v20-cyrillic.woff2",
+      "sha256": "aebf2ab4a4ce6810d73c1ac7be7cafb4e5ec4cee2d6db5fb3e09691747ec4bd6"
+    },
+    {
+      "file": "scripts/visual-judgment.mjs",
+      "sha256": "0b44dbc1171712c2b97dc1aba4391bf0e781b2fd63bf7b2ea954d2d702a94b46"
+    },
+    {
+      "file": "scripts/ui-proof.mjs",
+      "sha256": "b451ac5918cf8cbf4d24950cc422903e6098bc144376b9ba2c08501b982b56f6"
+    },
+    {
+      "file": "scripts/browser-smoke.mjs",
+      "sha256": "c0729cba53c2c0f911e77849671b09ffe832603c057b532b5162ab3a57868701"
+    }
+  ],
+  "captures": [
+    {
+      "file": "a-running-900.png",
+      "sha256": "afbb51c43abd5c8a53e22251856a357de13f65bd11030d5eba31f1c5088b0ed0",
+      "variant": "a",
+      "state": "running",
+      "viewport": {
+        "width": 900,
+        "height": 1000
+      },
+      "image": {
+        "width": 900,
+        "height": 1000
+      },
+      "technical": "PASS"
+    },
+    {
+      "file": "b-running-900.png",
+      "sha256": "c7cfd20d9b038ff03f3e2690dd620598e90b2ad7aa7485693fc245668de89723",
+      "variant": "b",
+      "state": "running",
+      "viewport": {
+        "width": 900,
+        "height": 1000
+      },
+      "image": {
+        "width": 900,
+        "height": 1000
+      },
+      "technical": "PASS"
+    },
+    {
+      "file": "c-running-900.png",
+      "sha256": "486c691bb64fc58400be66f18f45c308728a20b4e0cc324139437822eff4b785",
+      "variant": "c",
+      "state": "running",
+      "viewport": {
+        "width": 900,
+        "height": 1000
+      },
+      "image": {
+        "width": 900,
+        "height": 1000
+      },
+      "technical": "PASS"
+    },
+    {
+      "file": "d-running-900.png",
+      "sha256": "4943fe30d33fb8710aaadc2f474bd03bcb17a6626e8cd38033898a2bbf053f4f",
+      "variant": "d",
+      "state": "running",
+      "viewport": {
+        "width": 900,
+        "height": 1000
+      },
+      "image": {
+        "width": 900,
+        "height": 1000
+      },
+      "technical": "PASS"
+    },
+    {
+      "file": "a-complete-900.png",
+      "sha256": "87f2ced429237cb5f68390c51591eade28d90fa258a664fb83cdf38d60df72d5",
+      "variant": "a",
+      "state": "complete",
+      "viewport": {
+        "width": 900,
+        "height": 1000
+      },
+      "image": {
+        "width": 900,
+        "height": 1000
+      },
+      "technical": "PASS"
+    },
+    {
+      "file": "b-complete-900.png",
+      "sha256": "894a3ffeb251a1478a6f0d8a20c301468827fcb6982bdd693b54a435aabe4ef5",
+      "variant": "b",
+      "state": "complete",
+      "viewport": {
+        "width": 900,
+        "height": 1000
+      },
+      "image": {
+        "width": 900,
+        "height": 1000
+      },
+      "technical": "PASS"
+    },
+    {
+      "file": "c-complete-900.png",
+      "sha256": "3c2164dcc79fb063b58db8beab5f827b1e6c233a1d4d1ee6b9c6103d644e66e8",
+      "variant": "c",
+      "state": "complete",
+      "viewport": {
+        "width": 900,
+        "height": 1000
+      },
+      "image": {
+        "width": 900,
+        "height": 1000
+      },
+      "technical": "PASS"
+    },
+    {
+      "file": "d-complete-900.png",
+      "sha256": "b97737d31b7f741224cbbea41364e2b16447b51db960584b7891a631b300b1df",
+      "variant": "d",
+      "state": "complete",
+      "viewport": {
+        "width": 900,
+        "height": 1000
+      },
+      "image": {
+        "width": 900,
+        "height": 1000
+      },
+      "technical": "PASS"
+    },
+    {
+      "file": "a-error-900.png",
+      "sha256": "44a65dd789e6a73d0360c1cf4ba7dfc60cddd1986e04c5f4b745fce64f3ce93a",
+      "variant": "a",
+      "state": "error",
+      "viewport": {
+        "width": 900,
+        "height": 1000
+      },
+      "image": {
+        "width": 900,
+        "height": 1000
+      },
+      "technical": "PASS"
+    },
+    {
+      "file": "b-error-900.png",
+      "sha256": "f26ff1643d8c35a06d20ac829e180ae594390532ed26c223df82b76f50b07d5f",
+      "variant": "b",
+      "state": "error",
+      "viewport": {
+        "width": 900,
+        "height": 1000
+      },
+      "image": {
+        "width": 900,
+        "height": 1000
+      },
+      "technical": "PASS"
+    },
+    {
+      "file": "c-error-900.png",
+      "sha256": "bbfca7026e21381b726887e7d61e234965409522d0389203a07f62c588c56132",
+      "variant": "c",
+      "state": "error",
+      "viewport": {
+        "width": 900,
+        "height": 1000
+      },
+      "image": {
+        "width": 900,
+        "height": 1000
+      },
+      "technical": "PASS"
+    },
+    {
+      "file": "d-error-900.png",
+      "sha256": "b0745c56f401dd089a58a4f1437691b3baf165dd9a809d106da633ebc5fc97ed",
+      "variant": "d",
+      "state": "error",
+      "viewport": {
+        "width": 900,
+        "height": 1000
+      },
+      "image": {
+        "width": 900,
+        "height": 1000
+      },
+      "technical": "PASS"
+    },
+    {
+      "file": "a-running-390.png",
+      "sha256": "ea6d9324d6dd13f11f26568f0e8516a3d0793a8ada8dbc92113df7be738307ee",
+      "variant": "a",
+      "state": "running",
+      "viewport": {
+        "width": 390,
+        "height": 1000
+      },
+      "image": {
+        "width": 390,
+        "height": 1000
+      },
+      "technical": "PASS"
+    },
+    {
+      "file": "b-running-390.png",
+      "sha256": "875618906cae1e260337c4385f37ae7003e990cc91cc0f5f99d588c06ef73f55",
+      "variant": "b",
+      "state": "running",
+      "viewport": {
+        "width": 390,
+        "height": 1000
+      },
+      "image": {
+        "width": 390,
+        "height": 1000
+      },
+      "technical": "PASS"
+    },
+    {
+      "file": "c-running-390.png",
+      "sha256": "3c0f413a2eea5d3b8dbea088f4f05cab0d1ffcdf8d9ec0961cc37503919f3a5c",
+      "variant": "c",
+      "state": "running",
+      "viewport": {
+        "width": 390,
+        "height": 1000
+      },
+      "image": {
+        "width": 390,
+        "height": 1000
+      },
+      "technical": "PASS"
+    },
+    {
+      "file": "d-running-390.png",
+      "sha256": "56758306869aaad909046c812317095fcf2274d33013dc0184855e45eaa56a0a",
+      "variant": "d",
+      "state": "running",
+      "viewport": {
+        "width": 390,
+        "height": 1000
+      },
+      "image": {
+        "width": 390,
+        "height": 1000
+      },
+      "technical": "PASS"
+    },
+    {
+      "file": "a-complete-390.png",
+      "sha256": "ee226d255395ad8e57f318014dde334c1fad4ace617dd2d5d907ca1f6b54f2ce",
+      "variant": "a",
+      "state": "complete",
+      "viewport": {
+        "width": 390,
+        "height": 1000
+      },
+      "image": {
+        "width": 390,
+        "height": 1000
+      },
+      "technical": "PASS"
+    },
+    {
+      "file": "b-complete-390.png",
+      "sha256": "1b8b250243cce5e37ef1a76d5af89546e515395e402fa2b454d8b90893706f9d",
+      "variant": "b",
+      "state": "complete",
+      "viewport": {
+        "width": 390,
+        "height": 1000
+      },
+      "image": {
+        "width": 390,
+        "height": 1000
+      },
+      "technical": "PASS"
+    },
+    {
+      "file": "c-complete-390.png",
+      "sha256": "263263510a847f804da60fd82fa65652bf25875ceaa5085d9b71a56e4f816651",
+      "variant": "c",
+      "state": "complete",
+      "viewport": {
+        "width": 390,
+        "height": 1000
+      },
+      "image": {
+        "width": 390,
+        "height": 1000
+      },
+      "technical": "PASS"
+    },
+    {
+      "file": "d-complete-390.png",
+      "sha256": "25410bebc88bfa111886cbd9f49f8f2e6b13ff5b98d59b7e493a651207d6947a",
+      "variant": "d",
+      "state": "complete",
+      "viewport": {
+        "width": 390,
+        "height": 1000
+      },
+      "image": {
+        "width": 390,
+        "height": 1000
+      },
+      "technical": "PASS"
+    },
+    {
+      "file": "a-error-390.png",
+      "sha256": "c298960c2bbcce8712b6494e54b5456dbae6e0a4343ee5489b228326cad56596",
+      "variant": "a",
+      "state": "error",
+      "viewport": {
+        "width": 390,
+        "height": 1000
+      },
+      "image": {
+        "width": 390,
+        "height": 1000
+      },
+      "technical": "PASS"
+    },
+    {
+      "file": "b-error-390.png",
+      "sha256": "e26ea07b785479fac5187910a1c87d47ef04c90550d04a8be662dc205836afbd",
+      "variant": "b",
+      "state": "error",
+      "viewport": {
+        "width": 390,
+        "height": 1000
+      },
+      "image": {
+        "width": 390,
+        "height": 1000
+      },
+      "technical": "PASS"
+    },
+    {
+      "file": "c-error-390.png",
+      "sha256": "bc05eaee731ab4623c829a44ff0567edbae6bbb116c81baf328f43ccc38a53ec",
+      "variant": "c",
+      "state": "error",
+      "viewport": {
+        "width": 390,
+        "height": 1000
+      },
+      "image": {
+        "width": 390,
+        "height": 1000
+      },
+      "technical": "PASS"
+    },
+    {
+      "file": "d-error-390.png",
+      "sha256": "fd4640c7d004c0a4a36ccdfbbd5ea30a2deaddece31a24d3ee2424c2c6556378",
+      "variant": "d",
+      "state": "error",
+      "viewport": {
+        "width": 390,
+        "height": 1000
+      },
+      "image": {
+        "width": 390,
+        "height": 1000
+      },
+      "technical": "PASS"
+    }
+  ]
+}

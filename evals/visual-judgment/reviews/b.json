@@ -1,0 +1,172 @@
+{
+  "schema": "2.0",
+  "scope": "Scan operator state priority",
+  "method": "self-review",
+  "reviewer": "Implementing Codex agent",
+  "date": "2026-09-15",
+  "contract": {
+    "path": "evals/visual-judgment/ATTENTION.json",
+    "sha256": "e5f42248d2fbefc4895be1111b4eade6f61d0c5efadd1fa067fbcbc8e23f12b2"
+  },
+  "sources": [
+    {
+      "path": "evals/visual-judgment/index.html",
+      "sha256": "b9dad3b410fb231a2c4df77c838a79f0cfc83502fe5e84fa76cec42e01fc124f"
+    },
+    {
+      "path": "evals/visual-judgment/app.js",
+      "sha256": "eccd9916099a0aa3da84c9412d7f654e49d6cdea0d9b558099248a84820dccb4"
+    },
+    {
+      "path": "evals/visual-judgment/styles.css",
+      "sha256": "6521b3a46ab0918a9f7108b471271dd4a106ccb89c7240abd743cd9848349cd9"
+    },
+    {
+      "path": "evals/titlebot-hierarchy/assets/fonts/inter-v20-latin.woff2",
+      "sha256": "c940764593d0fe5d596be327ca7558855e018039fb78509aa21921fd3644c3e4"
+    },
+    {
+      "path": "evals/titlebot-hierarchy/assets/fonts/inter-v20-cyrillic.woff2",
+      "sha256": "aebf2ab4a4ce6810d73c1ac7be7cafb4e5ec4cee2d6db5fb3e09691747ec4bd6"
+    },
+    {
+      "path": "scripts/visual-judgment.mjs",
+      "sha256": "0b44dbc1171712c2b97dc1aba4391bf0e781b2fd63bf7b2ea954d2d702a94b46"
+    },
+    {
+      "path": "scripts/ui-proof.mjs",
+      "sha256": "b451ac5918cf8cbf4d24950cc422903e6098bc144376b9ba2c08501b982b56f6"
+    },
+    {
+      "path": "scripts/browser-smoke.mjs",
+      "sha256": "c0729cba53c2c0f911e77849671b09ffe832603c057b532b5162ab3a57868701"
+    },
+    {
+      "path": "evals/visual-judgment/captures/evidence.json",
+      "sha256": "a8984ab3eec54a33fc2bd9cdaded94f43dfcbc27e4b8754a0e8fee07f970ee3e"
+    }
+  ],
+  "renders": [
+    {
+      "path": "evals/visual-judgment/captures/b-running-900.png",
+      "sha256": "c7cfd20d9b038ff03f3e2690dd620598e90b2ad7aa7485693fc245668de89723",
+      "state": "running",
+      "viewport": "900x1000@1"
+    },
+    {
+      "path": "evals/visual-judgment/captures/b-complete-900.png",
+      "sha256": "894a3ffeb251a1478a6f0d8a20c301468827fcb6982bdd693b54a435aabe4ef5",
+      "state": "complete",
+      "viewport": "900x1000@1"
+    },
+    {
+      "path": "evals/visual-judgment/captures/b-error-900.png",
+      "sha256": "f26ff1643d8c35a06d20ac829e180ae594390532ed26c223df82b76f50b07d5f",
+      "state": "error",
+      "viewport": "900x1000@1"
+    },
+    {
+      "path": "evals/visual-judgment/captures/b-running-390.png",
+      "sha256": "875618906cae1e260337c4385f37ae7003e990cc91cc0f5f99d588c06ef73f55",
+      "state": "running",
+      "viewport": "390x1000@1"
+    },
+    {
+      "path": "evals/visual-judgment/captures/b-complete-390.png",
+      "sha256": "1b8b250243cce5e37ef1a76d5af89546e515395e402fa2b454d8b90893706f9d",
+      "state": "complete",
+      "viewport": "390x1000@1"
+    },
+    {
+      "path": "evals/visual-judgment/captures/b-error-390.png",
+      "sha256": "e26ea07b785479fac5187910a1c87d47ef04c90550d04a8be662dc205836afbd",
+      "state": "error",
+      "viewport": "390x1000@1"
+    }
+  ],
+  "visualAssessment": {
+    "verdict": "REVISE",
+    "finding": "Scoped attention review of authored cases. Technical PASS is common to every candidate; these visual judgments are explicit self-review, not inferred by the checker.",
+    "assessments": [
+      {
+        "state": "running",
+        "renders": [
+          "evals/visual-judgment/captures/b-running-900.png",
+          "evals/visual-judgment/captures/b-running-390.png"
+        ],
+        "observedAttention": [
+          "Current scan progress",
+          "Kingdom coverage",
+          "Earlier results"
+        ],
+        "finding": "The large progress value matches the monitoring question and remains grouped with coverage. The new-run entry is secondary.",
+        "verdict": "KEEP"
+      },
+      {
+        "state": "complete",
+        "renders": [
+          "evals/visual-judgment/captures/b-complete-900.png",
+          "evals/visual-judgment/captures/b-complete-390.png"
+        ],
+        "observedAttention": [
+          "Finished percentage",
+          "Ready result",
+          "Result action"
+        ],
+        "finding": "The 100% figure keeps dominant scale and color even though the useful next step is opening the result. The ready message is small supporting text.",
+        "verdict": "REVISE"
+      },
+      {
+        "state": "error",
+        "renders": [
+          "evals/visual-judgment/captures/b-error-900.png",
+          "evals/visual-judgment/captures/b-error-390.png"
+        ],
+        "observedAttention": [
+          "Retained percentage",
+          "Affected kingdoms",
+          "Retry action"
+        ],
+        "finding": "The amber 83% keeps the running-state emphasis. The actionable failure reads as a small note beside or below it.",
+        "verdict": "REVISE"
+      }
+    ],
+    "findings": [
+      {
+        "id": "b-complete-priority",
+        "states": [
+          "complete"
+        ],
+        "owner": "Current-run emphasis and competing actions",
+        "observation": "The 100% figure keeps dominant scale and color even though the useful next step is opening the result. The ready message is small supporting text.",
+        "consequence": "Finding and retrieving the completed output requires looking past the stronger create/progress emphasis.",
+        "blocking": true,
+        "status": "open",
+        "renders": [
+          "evals/visual-judgment/captures/b-complete-900.png",
+          "evals/visual-judgment/captures/b-complete-390.png"
+        ]
+      },
+      {
+        "id": "b-error-priority",
+        "states": [
+          "error"
+        ],
+        "owner": "Current-run emphasis and competing actions",
+        "observation": "The amber 83% keeps the running-state emphasis. The actionable failure reads as a small note beside or below it.",
+        "consequence": "The actionable failure can be overlooked while retained progress or unrelated creation remains more salient.",
+        "blocking": true,
+        "status": "open",
+        "renders": [
+          "evals/visual-judgment/captures/b-error-900.png",
+          "evals/visual-judgment/captures/b-error-390.png"
+        ]
+      }
+    ]
+  },
+  "userAcceptance": "UNCONFIRMED",
+  "notes": [
+    "Same content and font family across variants. The contrast is in role emphasis and state response, not an enforced style preference.",
+    "No independent evaluator, measured gaze, blinded comparison or future-generation improvement is claimed."
+  ]
+}

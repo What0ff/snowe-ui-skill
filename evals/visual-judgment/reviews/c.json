@@ -1,0 +1,141 @@
+{
+  "schema": "2.0",
+  "scope": "Scan operator state priority",
+  "method": "self-review",
+  "reviewer": "Implementing Codex agent",
+  "date": "2026-09-15",
+  "contract": {
+    "path": "evals/visual-judgment/ATTENTION.json",
+    "sha256": "e5f42248d2fbefc4895be1111b4eade6f61d0c5efadd1fa067fbcbc8e23f12b2"
+  },
+  "sources": [
+    {
+      "path": "evals/visual-judgment/index.html",
+      "sha256": "b9dad3b410fb231a2c4df77c838a79f0cfc83502fe5e84fa76cec42e01fc124f"
+    },
+    {
+      "path": "evals/visual-judgment/app.js",
+      "sha256": "eccd9916099a0aa3da84c9412d7f654e49d6cdea0d9b558099248a84820dccb4"
+    },
+    {
+      "path": "evals/visual-judgment/styles.css",
+      "sha256": "6521b3a46ab0918a9f7108b471271dd4a106ccb89c7240abd743cd9848349cd9"
+    },
+    {
+      "path": "evals/titlebot-hierarchy/assets/fonts/inter-v20-latin.woff2",
+      "sha256": "c940764593d0fe5d596be327ca7558855e018039fb78509aa21921fd3644c3e4"
+    },
+    {
+      "path": "evals/titlebot-hierarchy/assets/fonts/inter-v20-cyrillic.woff2",
+      "sha256": "aebf2ab4a4ce6810d73c1ac7be7cafb4e5ec4cee2d6db5fb3e09691747ec4bd6"
+    },
+    {
+      "path": "scripts/visual-judgment.mjs",
+      "sha256": "0b44dbc1171712c2b97dc1aba4391bf0e781b2fd63bf7b2ea954d2d702a94b46"
+    },
+    {
+      "path": "scripts/ui-proof.mjs",
+      "sha256": "b451ac5918cf8cbf4d24950cc422903e6098bc144376b9ba2c08501b982b56f6"
+    },
+    {
+      "path": "scripts/browser-smoke.mjs",
+      "sha256": "c0729cba53c2c0f911e77849671b09ffe832603c057b532b5162ab3a57868701"
+    },
+    {
+      "path": "evals/visual-judgment/captures/evidence.json",
+      "sha256": "a8984ab3eec54a33fc2bd9cdaded94f43dfcbc27e4b8754a0e8fee07f970ee3e"
+    }
+  ],
+  "renders": [
+    {
+      "path": "evals/visual-judgment/captures/c-running-900.png",
+      "sha256": "486c691bb64fc58400be66f18f45c308728a20b4e0cc324139437822eff4b785",
+      "state": "running",
+      "viewport": "900x1000@1"
+    },
+    {
+      "path": "evals/visual-judgment/captures/c-complete-900.png",
+      "sha256": "3c2164dcc79fb063b58db8beab5f827b1e6c233a1d4d1ee6b9c6103d644e66e8",
+      "state": "complete",
+      "viewport": "900x1000@1"
+    },
+    {
+      "path": "evals/visual-judgment/captures/c-error-900.png",
+      "sha256": "bbfca7026e21381b726887e7d61e234965409522d0389203a07f62c588c56132",
+      "state": "error",
+      "viewport": "900x1000@1"
+    },
+    {
+      "path": "evals/visual-judgment/captures/c-running-390.png",
+      "sha256": "3c0f413a2eea5d3b8dbea088f4f05cab0d1ffcdf8d9ec0961cc37503919f3a5c",
+      "state": "running",
+      "viewport": "390x1000@1"
+    },
+    {
+      "path": "evals/visual-judgment/captures/c-complete-390.png",
+      "sha256": "263263510a847f804da60fd82fa65652bf25875ceaa5085d9b71a56e4f816651",
+      "state": "complete",
+      "viewport": "390x1000@1"
+    },
+    {
+      "path": "evals/visual-judgment/captures/c-error-390.png",
+      "sha256": "bc05eaee731ab4623c829a44ff0567edbae6bbb116c81baf328f43ccc38a53ec",
+      "state": "error",
+      "viewport": "390x1000@1"
+    }
+  ],
+  "visualAssessment": {
+    "verdict": "KEEP",
+    "finding": "Scoped attention review of authored cases. Technical PASS is common to every candidate; these visual judgments are explicit self-review, not inferred by the checker.",
+    "assessments": [
+      {
+        "state": "running",
+        "renders": [
+          "evals/visual-judgment/captures/c-running-900.png",
+          "evals/visual-judgment/captures/c-running-390.png"
+        ],
+        "observedAttention": [
+          "Current scan progress",
+          "Kingdom coverage",
+          "Earlier results"
+        ],
+        "finding": "Progress leads through scale and grouping; coverage and active/queued counts remain attached to the run on both widths.",
+        "verdict": "KEEP"
+      },
+      {
+        "state": "complete",
+        "renders": [
+          "evals/visual-judgment/captures/c-complete-900.png",
+          "evals/visual-judgment/captures/c-complete-390.png"
+        ],
+        "observedAttention": [
+          "Ready result and its action",
+          "Completed run identity",
+          "Kingdom coverage"
+        ],
+        "finding": "The ready result and its adjacent action lead. The completed percentage is smaller and supporting, while the history remains below the work region.",
+        "verdict": "KEEP"
+      },
+      {
+        "state": "error",
+        "renders": [
+          "evals/visual-judgment/captures/c-error-900.png",
+          "evals/visual-judgment/captures/c-error-390.png"
+        ],
+        "observedAttention": [
+          "Affected kingdoms",
+          "Retry action",
+          "Retained scan progress"
+        ],
+        "finding": "The named problem and its recovery action lead by position, type and contrast. Progress is retained in a supporting role and mobile wrapping keeps all names visible.",
+        "verdict": "KEEP"
+      }
+    ],
+    "findings": []
+  },
+  "userAcceptance": "UNCONFIRMED",
+  "notes": [
+    "Same content and font family across variants. The contrast is in role emphasis and state response, not an enforced style preference.",
+    "No independent evaluator, measured gaze, blinded comparison or future-generation improvement is claimed."
+  ]
+}

@@ -1,0 +1,167 @@
+{
+  "schema": "1.0",
+  "scope": "Title Bot bounded hierarchy and state legibility",
+  "states": [
+    {
+      "id": "working",
+      "question": "Which title, holder, successor and queue am I managing?",
+      "priority": [
+        "Selected title",
+        "Holder and next",
+        "Queue",
+        "Available action"
+      ],
+      "cues": [
+        "Selection marker and title label",
+        "Related assignment values",
+        "Distinct queue region"
+      ],
+      "competing": [
+        "Page heading",
+        "Supporting tools"
+      ]
+    },
+    {
+      "id": "empty",
+      "question": "Is this title vacant and is anyone waiting?",
+      "priority": [
+        "Vacancy",
+        "Queue state",
+        "Request commands"
+      ],
+      "cues": [
+        "Low-key empty values",
+        "Compact empty queue"
+      ],
+      "competing": [
+        "Empty space"
+      ]
+    },
+    {
+      "id": "loading",
+      "question": "Is the selected title data ready?",
+      "priority": [
+        "Loading status",
+        "Kingdom and title context"
+      ],
+      "cues": [
+        "Explicit loading state",
+        "No stale work content"
+      ],
+      "competing": [
+        "Unavailable data"
+      ]
+    },
+    {
+      "id": "recovery",
+      "question": "What failed and how can I continue with the retained context?",
+      "priority": [
+        "Error",
+        "Retry action",
+        "Retained context"
+      ],
+      "cues": [
+        "Error beside the affected operation",
+        "Data and input context remain available"
+      ],
+      "competing": [
+        "Unchanged progress or form fields"
+      ]
+    },
+    {
+      "id": "readonly",
+      "question": "What can I inspect without management rights?",
+      "priority": [
+        "Permission state",
+        "Selected title data",
+        "Available tools"
+      ],
+      "cues": [
+        "Visible permission message",
+        "Editing actions disabled"
+      ],
+      "competing": [
+        "Inactive controls"
+      ]
+    },
+    {
+      "id": "configuration",
+      "question": "Which policy or duration is being edited and how is it applied?",
+      "priority": [
+        "Settings scope",
+        "Duration fields",
+        "Save or cancel"
+      ],
+      "cues": [
+        "Named modal",
+        "Regular and VIP groups",
+        "Reachable footer"
+      ],
+      "competing": [
+        "Background page"
+      ]
+    },
+    {
+      "id": "confirmation",
+      "question": "Which title and players will change if I confirm?",
+      "priority": [
+        "Affected title and players",
+        "Confirm or cancel"
+      ],
+      "cues": [
+        "Named title context",
+        "Current and next identities",
+        "Explicit action"
+      ],
+      "competing": [
+        "Background page"
+      ]
+    },
+    {
+      "id": "membership",
+      "question": "Which list and player does this operation concern?",
+      "priority": [
+        "Active list",
+        "Player identification",
+        "List action"
+      ],
+      "cues": [
+        "Named VIP or blocked dialog",
+        "Names with IDs",
+        "Per-player operations"
+      ],
+      "competing": [
+        "Background page"
+      ]
+    },
+    {
+      "id": "reference",
+      "question": "Which command requests the selected title?",
+      "priority": [
+        "Selected title commands",
+        "Return to work"
+      ],
+      "cues": [
+        "Local disclosure attached to the selected title"
+      ],
+      "competing": [
+        "Persistent reference copy"
+      ]
+    },
+    {
+      "id": "submitting",
+      "question": "Is my change being saved?",
+      "priority": [
+        "Saving state",
+        "Preserved input values"
+      ],
+      "cues": [
+        "Pending action label",
+        "Repeated submit disabled"
+      ],
+      "competing": [
+        "Other editing actions"
+      ]
+    }
+  ]
+}

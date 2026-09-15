@@ -20,6 +20,10 @@ findings, corrections, and rerenders
 
 A generated plan alone can reveal anchoring or bureaucracy but cannot prove visual quality, interaction, or responsive coherence.
 
+For visual acceptance, include technically valid but weak outcomes: an unclear emphasis, a priority that stays wrong after the task state changes, a corrected candidate on the same content, and a justified restrained interface. Inspect their renders before assigning visual verdicts; do not infer quality from variant names. The technical suite should pass the legible weak cases, while the visual review records their actual weaknesses. A rejected example is successful evaluation evidence only when the diagnosis and scope are credible, not merely because its report contains REVISE.
+
+Use the method/verdict distinction in [quality-gates.md](quality-gates.md#explicit-visual-disposition). For sequential work without another evaluator, label the second pass as self-review; do not call it blind or independent. A stronger report contract demonstrates reliable bookkeeping. Better generation or criticism still needs repeated observed tasks and fair comparisons.
+
 ## Build a Scenario Portfolio
 
 Use materially different businesses, user contexts, content structures, stakes, platforms, and conversion/task goals. Include sparse and dense products, commerce and non-commerce, repeat work and first-time persuasion, identity-led and utility-led contexts, and at least one brief where imagery or motion is likely unnecessary.

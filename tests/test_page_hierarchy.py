@@ -32,6 +32,7 @@ class PageHierarchyTests(unittest.TestCase):
         self.assertEqual(hashlib.sha256(evidence).hexdigest(), review["evidence"]["sha256"])
         self.assertEqual("UNCONFIRMED", review["userAcceptance"])
         self.assertTrue(review["visualAssessment"]["finding"])
+        self.assertIn(review["visualAssessment"].get("verdict"), {"KEEP", "REVISE", "REJECT", "UNKNOWN"})
         for section, root in (("sources", PILOT), ("runnerSources", ROOT)):
             for item in manifest[section]:
                 self.assertEqual(item["sha256"], hashlib.sha256((root / item["file"]).read_bytes()).hexdigest(), item["file"])

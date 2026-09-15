@@ -17,7 +17,7 @@ Repository-only deterministic contracts, five rendered implementations, an opera
 |---|---|---|
 | Installable product | `skill/snowe-ui-skill/` | Copied skill, specialist references, local evidence, validators, metadata, and license. |
 | Agent workflow | `SKILL.md`, `references/` | Consequence/change-surface calibration from Direct through Focused to Portfolio, then only the relevant framing, exploration, implementation, and rendered learning. |
-| Local decision support | `skill/snowe-ui-skill/scripts/` | Explicit lexical retrieval, unresolved decision packets, checked correction memory, persistence, SVG checks, and contrast checks. |
+| Local decision support | `skill/snowe-ui-skill/scripts/` | Explicit retrieval, unresolved packets, correction memory, checked visual verdicts, persistence, SVG and contrast checks. Shared bounded evidence reads are owned by `checked_evidence.py`. |
 | Evidence catalogs | `skill/snowe-ui-skill/data/` | Subordinate snapshots and stack guidance; never automatic classification or a solution boundary. |
 | Deterministic contract regression | `evals/designer-behavior/` | Multilingual, ambiguity, perturbation, absence, discretion, progressive-disclosure, and six authored scope traces; `HOST-PROBES.md` is separately labelled bounded observed-host evidence. |
 | Operational icon proof | `evals/icon-decisions/` | Existing/custom/no-icon decisions, exact SVG/metadata/source binding, deterministic comparison generation, representative controls, and real-host selector/browser checks without aesthetic certification. |
@@ -105,3 +105,9 @@ There is no database, long-running product process, shared runtime cache, teleme
 ## Known-page composition boundary
 
 `references/page-hierarchy.md` owns the Focused page map, useful-copy audit and action identity (`operation + target + outcome + context`) before component choice. The root router, exploration and architecture references route known page jobs here; unresolved page jobs or wider product contracts retain Portfolio framing. Direct property corrections do not create a page-map document. These clauses and the existing six scope traces are explicit authored contracts, not an automatic task classifier. Technical, evidence-integrity, visual and user-acceptance outcomes stay separate.
+
+## Explicit visual review contract
+
+`visual_review.py` is a read-only standard-library checker for a schema-2 review linked to an independently authored schema-1 attention contract, source files and renders. It keeps review method, visual verdict, evidence integrity and user acceptance separate. Negative/unknown verdicts, open blocking findings, incomplete states and stale evidence cannot pass. It cannot grade pixels or infer taste. `corrections.py` optionally follows a bound formal report and rejects non-KEEP or stale visual proof; existing inline receipts remain readable. Both consumers reuse unchanged JSON/file-digest routines extracted into `checked_evidence.py`.
+
+The repository-only `evals/visual-judgment` cases contrast technically valid A/B weaknesses with a corrected C and restrained D across running/completed/error states. `scripts/visual-judgment.mjs` handles their browser proof through the canonical lifecycle. Formal reports record implementer self-review; source/record validation never establishes independent quality.

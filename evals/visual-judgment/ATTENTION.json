@@ -1,0 +1,9 @@
+{
+  "schema": "1.0",
+  "scope": "Scan operator state priority",
+  "states": [
+    {"id":"running","question":"Is the current scan progressing and what is still in progress?","priority":["Current scan progress","Kingdom coverage","Next scheduled run","Earlier results"],"cues":["Progress and coverage belong to the current run","New work is distinguishable from monitoring current work"],"competing":["New scan button","Historical counts"]},
+    {"id":"complete","question":"Which run finished and where is its usable result?","priority":["Ready result and its action","Completed run identity","Kingdom coverage","Earlier results"],"cues":["Completion and the result action are read together","The finished percentage has a supporting role"],"competing":["Finished progress percentage","New scan button"]},
+    {"id":"error","question":"Which kingdoms failed and how can this run recover?","priority":["Affected kingdoms","Retry action","Retained scan progress","Earlier results"],"cues":["The problem is attached to its recovery action","Retained progress remains available without suggesting a healthy run"],"competing":["Progress percentage","New scan button"]}
+  ]
+}

@@ -42,7 +42,7 @@
   "runnerSources": [
     {
       "file": "scripts/browser-smoke.mjs",
-      "sha256": "2cf50a833bab36907e7de477a7010bbe6247a6c0c3abccd5f2fd88cee9ea3397"
+      "sha256": "c0729cba53c2c0f911e77849671b09ffe832603c057b532b5162ab3a57868701"
     },
     {
       "file": "scripts/titlebot-pilot.mjs",

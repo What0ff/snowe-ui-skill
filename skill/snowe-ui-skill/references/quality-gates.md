@@ -40,11 +40,19 @@ Before repeating a new or materially revised visual system across pages, render 
 
 Establish the reading/task order, content grouping, typographic emphasis, and control hierarchy before spreading decorative treatments. Look for capsules around static eyebrows or metadata, equal-weight cards around unrelated content, nested surfaces, ornamental icons, and effects that compete with the offer or task. These are inspection triggers, not forbidden styles or numeric budgets.
 
-When a treatment's value is unresolved, render a subtraction challenger on identical content, viewport, and state. Remove the disputed wrappers/effects while preserving required labels, state cues, grouping, and hit targets; rebalance type, spacing, and alignment so the challenger is credible. Compare the attention order, scan path, density, affordances, and product identity. Retain the richer version when it visibly wins. A text-only argument, token swap, deliberately weakened challenger, or radius-only change cannot settle a compositional finding.
+When a treatment's value is unresolved, render a credible challenger on identical content, viewport, and state. Choose the move from the diagnosed cause: subtraction can reduce competing wrappers, while a weak focal hierarchy or visual proposition may need stronger grouping, type, material or graphics. Use [art-direction-gate.md](art-direction-gate.md) for the constructive choice. Preserve required content and hit targets. Compare attention, scan path, density, affordances and identity; retain the richer or quieter version when it visibly works better. A text-only argument, token swap, deliberately weakened challenger, or radius-only change cannot settle a compositional finding.
 
 Check product specificity without demanding novelty: temporarily disregard the logo/name and ask which content relationships, composition, type, imagery, or behavior still follow this brief. A familiar layout can pass on task fit. A claimed distinctive identity needs visible support beyond interchangeable adjectives, badges, and effects. Do not force a signature motif onto a utility interface.
 
 ## Acceptance Rules
+
+### Explicit Visual Disposition
+
+Record review method separately from `KEEP | REVISE | REJECT | UNKNOWN`. “Self-reviewed,” “screenshots inspected” and technical PASS describe evidence or process, not visual acceptance. Assess the intended attention/cue contract against the actual render for the material states, then identify the concrete owner, visible observation and user consequence for each material problem. Do not require a fixed number of defects or invent novelty to fail an approved quiet interface.
+
+Use KEEP only when the inspected scope has no unresolved blocking visual finding. REVISE identifies a repairable weakness; REJECT rejects the current direction; UNKNOWN identifies missing judgment or evidence. A resolution needs an explained change and a current confirming render. User acceptance is a separate disposition; neither a self-review nor silence creates it.
+
+For material visual-system work with a reusable report, use the [checked visual report](cli-reference.md#check-a-recorded-visual-verdict). Its checker validates the recorded disposition, scope coverage and evidence freshness. It cannot establish perceptual quality from prose, CSS metrics or a screenshot hash. Existing short Direct records can use the same method/verdict distinction inline; do not create a JSON report for every local property fix.
 
 ### Icon Backings and Nested Surfaces
 

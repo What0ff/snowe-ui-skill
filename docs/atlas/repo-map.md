@@ -49,10 +49,14 @@ snowe-ui-skill/
 │   ├── titlebot-hierarchy/
 │   │   ├── assets/
 │   │   │   └── fonts/
-│   │   └── captures/
+│   │   ├── captures/
+│   │   └── review-history/
 │   ├── typography/
-│   └── visual-acceptance/
-│       └── captures/
+│   ├── visual-acceptance/
+│   │   └── captures/
+│   └── visual-judgment/
+│       ├── captures/
+│       └── reviews/
 ├── scripts/  # repository maintenance tooling
 │   └── atlas/
 ├── skill/  # installable product boundary
@@ -106,21 +110,21 @@ The generated map itself is excluded from the counts.
 
 | Extension | Files |
 | --- | --- |
-| `.png` | 73 |
-| `.md` | 64 |
+| `.png` | 97 |
+| `.md` | 65 |
 | `.jpg` | 52 |
 | `.csv` | 32 |
-| `.json` | 23 |
-| `.py` | 23 |
-| `.html` | 12 |
+| `.json` | 31 |
+| `.py` | 27 |
+| `.html` | 13 |
 | `.svg` | 12 |
 | `.woff2` | 8 |
+| `.css` | 7 |
+| `.js` | 7 |
 | `.txt` | 7 |
-| `.css` | 6 |
-| `.js` | 6 |
+| `.mjs` | 4 |
 | `.webp` | 4 |
 | `[no extension]` | 4 |
-| `.mjs` | 3 |
 | `.yml` | 2 |
 | `.gif` | 1 |
 | `.yaml` | 1 |
@@ -144,6 +148,8 @@ The generated map itself is excluded from the counts.
 | Change the operational icon decision proof | `evals/icon-decisions/` |
 | Change or inspect the isolated Title Bot hierarchy pilot | `evals/titlebot-hierarchy/` |
 | Change required-content visibility or declared action identity checks | `scripts/ui-proof.mjs` |
+| Change checked visual verdicts and state/source evidence | `skill/snowe-ui-skill/scripts/visual_review.py` |
+| Inspect technically valid but weak visual examples | `evals/visual-judgment/` |
 | Change or inspect the rendered bicycle benchmark | `benchmarks/bicycle-commerce/` |
 | Change standalone installation or update behavior | `scripts/install_skill.py` |
 | Add or focus regression coverage | `tests/` |

@@ -1,0 +1,187 @@
+{
+  "schema": "2.0",
+  "scope": "Scan operator state priority",
+  "method": "self-review",
+  "reviewer": "Implementing Codex agent",
+  "date": "2026-09-15",
+  "contract": {
+    "path": "evals/visual-judgment/ATTENTION.json",
+    "sha256": "e5f42248d2fbefc4895be1111b4eade6f61d0c5efadd1fa067fbcbc8e23f12b2"
+  },
+  "sources": [
+    {
+      "path": "evals/visual-judgment/index.html",
+      "sha256": "b9dad3b410fb231a2c4df77c838a79f0cfc83502fe5e84fa76cec42e01fc124f"
+    },
+    {
+      "path": "evals/visual-judgment/app.js",
+      "sha256": "eccd9916099a0aa3da84c9412d7f654e49d6cdea0d9b558099248a84820dccb4"
+    },
+    {
+      "path": "evals/visual-judgment/styles.css",
+      "sha256": "6521b3a46ab0918a9f7108b471271dd4a106ccb89c7240abd743cd9848349cd9"
+    },
+    {
+      "path": "evals/titlebot-hierarchy/assets/fonts/inter-v20-latin.woff2",
+      "sha256": "c940764593d0fe5d596be327ca7558855e018039fb78509aa21921fd3644c3e4"
+    },
+    {
+      "path": "evals/titlebot-hierarchy/assets/fonts/inter-v20-cyrillic.woff2",
+      "sha256": "aebf2ab4a4ce6810d73c1ac7be7cafb4e5ec4cee2d6db5fb3e09691747ec4bd6"
+    },
+    {
+      "path": "scripts/visual-judgment.mjs",
+      "sha256": "0b44dbc1171712c2b97dc1aba4391bf0e781b2fd63bf7b2ea954d2d702a94b46"
+    },
+    {
+      "path": "scripts/ui-proof.mjs",
+      "sha256": "b451ac5918cf8cbf4d24950cc422903e6098bc144376b9ba2c08501b982b56f6"
+    },
+    {
+      "path": "scripts/browser-smoke.mjs",
+      "sha256": "c0729cba53c2c0f911e77849671b09ffe832603c057b532b5162ab3a57868701"
+    },
+    {
+      "path": "evals/visual-judgment/captures/evidence.json",
+      "sha256": "a8984ab3eec54a33fc2bd9cdaded94f43dfcbc27e4b8754a0e8fee07f970ee3e"
+    }
+  ],
+  "renders": [
+    {
+      "path": "evals/visual-judgment/captures/a-running-900.png",
+      "sha256": "afbb51c43abd5c8a53e22251856a357de13f65bd11030d5eba31f1c5088b0ed0",
+      "state": "running",
+      "viewport": "900x1000@1"
+    },
+    {
+      "path": "evals/visual-judgment/captures/a-complete-900.png",
+      "sha256": "87f2ced429237cb5f68390c51591eade28d90fa258a664fb83cdf38d60df72d5",
+      "state": "complete",
+      "viewport": "900x1000@1"
+    },
+    {
+      "path": "evals/visual-judgment/captures/a-error-900.png",
+      "sha256": "44a65dd789e6a73d0360c1cf4ba7dfc60cddd1986e04c5f4b745fce64f3ce93a",
+      "state": "error",
+      "viewport": "900x1000@1"
+    },
+    {
+      "path": "evals/visual-judgment/captures/a-running-390.png",
+      "sha256": "ea6d9324d6dd13f11f26568f0e8516a3d0793a8ada8dbc92113df7be738307ee",
+      "state": "running",
+      "viewport": "390x1000@1"
+    },
+    {
+      "path": "evals/visual-judgment/captures/a-complete-390.png",
+      "sha256": "ee226d255395ad8e57f318014dde334c1fad4ace617dd2d5d907ca1f6b54f2ce",
+      "state": "complete",
+      "viewport": "390x1000@1"
+    },
+    {
+      "path": "evals/visual-judgment/captures/a-error-390.png",
+      "sha256": "c298960c2bbcce8712b6494e54b5456dbae6e0a4343ee5489b228326cad56596",
+      "state": "error",
+      "viewport": "390x1000@1"
+    }
+  ],
+  "visualAssessment": {
+    "verdict": "REVISE",
+    "finding": "Scoped attention review of authored cases. Technical PASS is common to every candidate; these visual judgments are explicit self-review, not inferred by the checker.",
+    "assessments": [
+      {
+        "state": "running",
+        "renders": [
+          "evals/visual-judgment/captures/a-running-900.png",
+          "evals/visual-judgment/captures/a-running-390.png"
+        ],
+        "observedAttention": [
+          "New scan action",
+          "Page heading",
+          "Current run metadata"
+        ],
+        "finding": "The current percentage and run name share small muted styling, while the new-run button is the strongest colored control. Monitoring current work is visually subordinate to starting unrelated work.",
+        "verdict": "REVISE"
+      },
+      {
+        "state": "complete",
+        "renders": [
+          "evals/visual-judgment/captures/a-complete-900.png",
+          "evals/visual-judgment/captures/a-complete-390.png"
+        ],
+        "observedAttention": [
+          "New scan action",
+          "Page heading",
+          "Available result"
+        ],
+        "finding": "The ready result and its action remain ordinary metadata beside a completed progress bar. The bright new-run entry still competes with retrieval.",
+        "verdict": "REVISE"
+      },
+      {
+        "state": "error",
+        "renders": [
+          "evals/visual-judgment/captures/a-error-900.png",
+          "evals/visual-judgment/captures/a-error-390.png"
+        ],
+        "observedAttention": [
+          "New scan action",
+          "Page heading",
+          "Problem text"
+        ],
+        "finding": "The failed-kingdom message and retained percentage have the same small muted treatment. The visible problem lacks emphasis appropriate to recovery.",
+        "verdict": "REVISE"
+      }
+    ],
+    "findings": [
+      {
+        "id": "a-running-priority",
+        "states": [
+          "running"
+        ],
+        "owner": "Current-run emphasis and competing actions",
+        "observation": "The current percentage and run name share small muted styling, while the new-run button is the strongest colored control. Monitoring current work is visually subordinate to starting unrelated work.",
+        "consequence": "An operator may attend to starting new work before noticing the current active run.",
+        "blocking": true,
+        "status": "open",
+        "renders": [
+          "evals/visual-judgment/captures/a-running-900.png",
+          "evals/visual-judgment/captures/a-running-390.png"
+        ]
+      },
+      {
+        "id": "a-complete-priority",
+        "states": [
+          "complete"
+        ],
+        "owner": "Current-run emphasis and competing actions",
+        "observation": "The ready result and its action remain ordinary metadata beside a completed progress bar. The bright new-run entry still competes with retrieval.",
+        "consequence": "Finding and retrieving the completed output requires looking past the stronger create/progress emphasis.",
+        "blocking": true,
+        "status": "open",
+        "renders": [
+          "evals/visual-judgment/captures/a-complete-900.png",
+          "evals/visual-judgment/captures/a-complete-390.png"
+        ]
+      },
+      {
+        "id": "a-error-priority",
+        "states": [
+          "error"
+        ],
+        "owner": "Current-run emphasis and competing actions",
+        "observation": "The failed-kingdom message and retained percentage have the same small muted treatment. The visible problem lacks emphasis appropriate to recovery.",
+        "consequence": "The actionable failure can be overlooked while retained progress or unrelated creation remains more salient.",
+        "blocking": true,
+        "status": "open",
+        "renders": [
+          "evals/visual-judgment/captures/a-error-900.png",
+          "evals/visual-judgment/captures/a-error-390.png"
+        ]
+      }
+    ]
+  },
+  "userAcceptance": "UNCONFIRMED",
+  "notes": [
+    "Same content and font family across variants. The contrast is in role emphasis and state response, not an enforced style preference.",
+    "No independent evaluator, measured gaze, blinded comparison or future-generation improvement is claimed."
+  ]
+}

@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="ru">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Менеджер сканов</title><link rel="stylesheet" href="styles.css"><script src="app.js" defer></script></head>
+<body>
+<main>
+  <div class="context">Кабинет</div>
+  <header class="page-head"><h1>Менеджер сканов</h1><button id="new-scan" class="secondary">Новый скан</button></header>
+  <section class="current" aria-labelledby="run-name">
+    <header class="run-head"><div><h2 id="run-name">KVK 417 · Дневной скан</h2><p class="metadata">Full KVK · Ратуша 25 · Начат в 14:08</p></div><span id="run-state"></span></header>
+    <div class="work-summary">
+      <div class="progress-group"><strong id="progress-value"></strong><span id="coverage"></span><div class="progress" id="progress-track" role="progressbar" aria-label="Выполнение скана" aria-valuemin="0" aria-valuemax="100"><span></span></div></div>
+      <div class="answer-group"><strong id="state-answer"></strong><p id="state-detail"></p><div class="work-actions"><button id="result" class="secondary">Открыть результат</button><button id="retry" class="secondary" hidden>Повторить для двух KD</button></div></div>
+    </div>
+    <details id="kingdoms"><summary>Королевства · 24</summary><div id="kingdom-list"></div></details>
+  </section>
+  <div class="schedule"><strong>Автоскан</strong><span>KVK 417</span><span>Следующий в <b>14:30</b></span><span>Каждые 30 мин</span></div>
+  <section class="history" aria-labelledby="history-title"><header><h2 id="history-title">История</h2><span>Последние 3 скана</span></header><div class="history-scroll" role="region" aria-label="История сканов" tabindex="0"><table><thead><tr><th>Скан</th><th>Результат</th><th>Создан</th><th><span class="sr-only">Действие</span></th></tr></thead><tbody id="history-rows"></tbody></table></div></section>
+</main>
+<dialog id="dialog" aria-labelledby="dialog-title"><h2 id="dialog-title"></h2><div id="dialog-content"></div><button id="close-dialog" class="secondary">Закрыть</button></dialog>
+</body></html>

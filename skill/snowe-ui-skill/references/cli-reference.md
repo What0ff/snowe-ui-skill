@@ -216,6 +216,35 @@ New icon comparison manifests use schema `1.1` and explicit `lang` (language tag
 
 For identity-bound correction commands, JSON schemas, proof requirements and exit codes, use [correction-memory.md](correction-memory.md#checked-journal-commands). These commands work independently of decision-packet generation and preserve an existing `DECISIONS.md`. A changed definition/proof or legacy verification without its snapshot requires explicit re-verification; a scope edit cannot hide the last confirmed obligation. See the journal reference for the separate `list.review_required` result and `check` exit dispositions.
 
+## Check a Recorded Visual Verdict
+
+For a material visual decision whose review must be reused or handed off:
+
+```text
+python <skill-directory>/scripts/visual_review.py design/REVIEW.json --workspace .
+```
+
+This read-only command checks a caller-authored report. It does not inspect pixels, infer attention from CSS, assign a taste score or convert self-review into user approval. Keep ordinary Direct corrections in the existing short record; a JSON report is not mandatory for every correction.
+
+The separate attention contract is authored before evaluation:
+
+```json
+{"schema":"1.0","scope":"Run monitoring","states":[{"id":"running","question":"Is this run progressing?","priority":["Run progress","Affected records"],"cues":["Progress value grouped with coverage"],"competing":["Create new"]}]}
+```
+
+Report schema `2.0` has:
+
+- `scope` matching the contract; `method` (`self-review`, `peer-review`, `user-review`); named `reviewer`; and separate `userAcceptance` (`UNCONFIRMED`, `ACCEPTED`, `REJECTED`). A method never supplies either verdict automatically.
+- `contract`: `{path, sha256}` for the independent expectation file; nonempty `sources` with the same binding shape; nonempty `renders` with `{path, sha256, state, viewport}`. Paths are relative to `--workspace`, with forward slashes. Viewport is explicit, such as `390x844@1`. Bind every implementation owner and inspected render. All required contract states must be covered.
+- `visualAssessment`: explicit `verdict` (`KEEP`, `REVISE`, `REJECT`, `UNKNOWN`), a concrete overall `finding`, `assessments` and `findings` arrays. Each state assessment records `{state, renders, observedAttention, finding, verdict}`. Every bound render is assessed once, in its declared state. Observed attention is the reviewer's judgment, not measured eye tracking or an automatically copied expectation.
+- Each material finding records `{id, states, owner, observation, consequence, blocking, status, renders}`. `status` is `open`, `resolved` or `accepted`. Resolution/acceptance also requires a `resolution` reason; a blocking defect cannot be accepted away. Its bound renders cover its declared states. A negative state verdict needs an open causal finding, rather than a generic bad-design label.
+
+Use empty findings only when there are no observed findings; do not invent defects to fill the format. Optional `date`, `notes`, `evidence` and `inspectedCaptures` preserve supporting metadata; they do not replace the checked bindings. Existing schema-1 reports remain readable as `REVIEW_REQUIRED`. Re-review them explicitly and preserve their prior version; the checker never rewrites or upgrades a report to KEEP.
+
+Exit dispositions are `0/PASS` for a current, consistent recorded KEEP; `2/BLOCKED` for unresolved blocking findings, REVISE/REJECT or user rejection; `3/REVIEW_REQUIRED` for missing/unknown judgment, incomplete coverage or stale evidence; `1` for invalid structure, paths or I/O. Output separates `integrity`, `visual_verdict`, `method` and `user_acceptance`. A PASS confirms the recorded acceptance conditions, not aesthetic truth.
+
+When closing a material visual correction, include `method`, `verdict` and `report` (its workspace-relative path) in the correction proof's existing `review` object. Bind that report in `proof.artifacts` as well. `corrections.py` checks its disposition, source owners, state and nested evidence freshness. Explicit non-KEEP verdicts cannot close visual proof. Legacy inline receipts remain readable; new work should state its visual verdict explicitly.
+
 ## Check an Exact Opaque Color Pair
 
 ```text

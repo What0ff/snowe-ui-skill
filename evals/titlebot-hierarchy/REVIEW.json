@@ -1,29 +1,408 @@
 {
-  "schema": "1.0",
-  "reviewer": "Implementing Codex agent; self-review, no subagents",
+  "schema": "2.0",
+  "scope": "Title Bot bounded hierarchy and state legibility",
+  "method": "self-review",
+  "reviewer": "Implementing Codex agent",
   "date": "2026-09-15",
-  "evidence": {
-    "file": "captures/evidence.json",
-    "sha256": "2f58849289ae5560c1737ddb7457053e2c87a46538c4e991a85cf211677acc71"
+  "contract": {
+    "path": "evals/titlebot-hierarchy/ATTENTION.json",
+    "sha256": "badd27af967665caa706db126ea93abe2470ba688a8467a687bc16fdbd1282ef"
   },
-  "technicalContract": "PASS in the bound runner evidence",
-  "evidenceIntegrity": "Source, runner and image digests are checked separately by tests.test_page_hierarchy",
+  "sources": [
+    {
+      "path": "evals/titlebot-hierarchy/index.html",
+      "sha256": "12713fe871c296fd29bec3ac55091965da2823407e360691c5926876b7b7d211"
+    },
+    {
+      "path": "evals/titlebot-hierarchy/styles.css",
+      "sha256": "2c669a309b5f569c1c85e6cf32b61b9d5ffb5135d8132a3f5f06a37fc495ed12"
+    },
+    {
+      "path": "evals/titlebot-hierarchy/app.js",
+      "sha256": "f83a06c4a928790342ac076d58c9fd27dbdb200db521bf06a1b7af7494b1e10c"
+    },
+    {
+      "path": "evals/titlebot-hierarchy/fixtures.json",
+      "sha256": "d5c2c27180874d9ec4ee1afb8a8758f0de2c99723e103b4c2f40d88a8242dcda"
+    },
+    {
+      "path": "evals/titlebot-hierarchy/PAGE-MAP.md",
+      "sha256": "0555960be3c5a381df9ce46dbe86aaa7310574c304d240f3aa707e9cc80b778c"
+    },
+    {
+      "path": "evals/titlebot-hierarchy/sources.json",
+      "sha256": "949699731329d79a5ebd579ad20685a60c5b83e97eab35e4b17e1021fe827410"
+    },
+    {
+      "path": "evals/titlebot-hierarchy/baseline.png",
+      "sha256": "83310309ccc239a34b0b75a9eff0c085c0724b6b5bdf97282370121591b0fd83"
+    },
+    {
+      "path": "evals/titlebot-hierarchy/assets/fonts/inter-v20-latin.woff2",
+      "sha256": "c940764593d0fe5d596be327ca7558855e018039fb78509aa21921fd3644c3e4"
+    },
+    {
+      "path": "evals/titlebot-hierarchy/assets/fonts/inter-v20-cyrillic.woff2",
+      "sha256": "aebf2ab4a4ce6810d73c1ac7be7cafb4e5ec4cee2d6db5fb3e09691747ec4bd6"
+    },
+    {
+      "path": "scripts/browser-smoke.mjs",
+      "sha256": "c0729cba53c2c0f911e77849671b09ffe832603c057b532b5162ab3a57868701"
+    },
+    {
+      "path": "scripts/titlebot-pilot.mjs",
+      "sha256": "62b3ea3b216b3a74bcaddfbf80daa945d98bee62d20410f5d7eda7826fb465f7"
+    },
+    {
+      "path": "scripts/ui-proof.mjs",
+      "sha256": "b451ac5918cf8cbf4d24950cc422903e6098bc144376b9ba2c08501b982b56f6"
+    },
+    {
+      "path": "evals/titlebot-hierarchy/captures/evidence.json",
+      "sha256": "2ae2d23b6fb5bda1f21ab88705e45e75e16500c28e808379010e82a0730b076c"
+    }
+  ],
+  "renders": [
+    {
+      "path": "evals/titlebot-hierarchy/captures/ready-320.png",
+      "sha256": "87a884c0fe0dd1b292e755f73470e41a5119da0756147518846a07002b5beacb",
+      "state": "working",
+      "viewport": "320x900@1"
+    },
+    {
+      "path": "evals/titlebot-hierarchy/captures/text200-320.png",
+      "sha256": "f33e49ed487ca85f184641f9fb93b57cbe6a07167fb3e8ee8d9707d3d93159d2",
+      "state": "working",
+      "viewport": "320x900@1"
+    },
+    {
+      "path": "evals/titlebot-hierarchy/captures/ready-390.png",
+      "sha256": "00f7c12c17782ea1d8ff2ae136a5f9618c33f17e8fffebbc2b0626b6822df882",
+      "state": "working",
+      "viewport": "390x900@1"
+    },
+    {
+      "path": "evals/titlebot-hierarchy/captures/text200-390.png",
+      "sha256": "610ca519505c7313444e525c763e2b2acda8e43db12fe8de09763f97ee8c9a6f",
+      "state": "working",
+      "viewport": "390x900@1"
+    },
+    {
+      "path": "evals/titlebot-hierarchy/captures/ready-900.png",
+      "sha256": "67f22a4b8973be83311e8e99b4b094c3aedbe9e3e192b02dc2f4231accd86fc3",
+      "state": "working",
+      "viewport": "900x900@1"
+    },
+    {
+      "path": "evals/titlebot-hierarchy/captures/text200-900.png",
+      "sha256": "dc6e529fc7b7c713644914d936f76111a3483a528fe0d3d59da57f1c9f035e90",
+      "state": "working",
+      "viewport": "900x900@1"
+    },
+    {
+      "path": "evals/titlebot-hierarchy/captures/ready-1440.png",
+      "sha256": "671e59e84f88e9dbd2b8d455190016092c38a558b231d51646379cfc6adc1067",
+      "state": "working",
+      "viewport": "1440x900@1"
+    },
+    {
+      "path": "evals/titlebot-hierarchy/captures/text200-1440.png",
+      "sha256": "9e6e84b7fffc13be4d706c90e22c3e841ceb9ab0e10034267835c398e1ea0054",
+      "state": "working",
+      "viewport": "1440x900@1"
+    },
+    {
+      "path": "evals/titlebot-hierarchy/captures/russian-390.png",
+      "sha256": "f240b43e9cd09d3bb6ebd05dbdee0fc659cb77ada212ce1098f7fbe570f5e954",
+      "state": "working",
+      "viewport": "390x900@1"
+    },
+    {
+      "path": "evals/titlebot-hierarchy/captures/justice-1440.png",
+      "sha256": "0171a10949a64e07d0a8802d2e515d599f8e609ddea1c084f4b525489582e90f",
+      "state": "working",
+      "viewport": "1440x900@1"
+    },
+    {
+      "path": "evals/titlebot-hierarchy/captures/duke-1440.png",
+      "sha256": "8331b2b7fb23214c5e756fd44fbc183a46609887e34196ba0a7737b51b155adb",
+      "state": "empty",
+      "viewport": "1440x900@1"
+    },
+    {
+      "path": "evals/titlebot-hierarchy/captures/architect-1440.png",
+      "sha256": "9424a786b9835f90afd5b21fdd0d574c1f742eb93f1751a37728c9051d63907c",
+      "state": "working",
+      "viewport": "1440x900@1"
+    },
+    {
+      "path": "evals/titlebot-hierarchy/captures/scientist-1440.png",
+      "sha256": "ca4725debbf4758adc0559b3d5895265df3a99f973e58fca90d28148a0f455d7",
+      "state": "working",
+      "viewport": "1440x900@1"
+    },
+    {
+      "path": "evals/titlebot-hierarchy/captures/commands-1440.png",
+      "sha256": "e3bf676c255e58a52760f3fd8aedb83f92fd7a7ca9967b486585a6fbe5a2f4f0",
+      "state": "reference",
+      "viewport": "1440x900@1"
+    },
+    {
+      "path": "evals/titlebot-hierarchy/captures/settings-1440.png",
+      "sha256": "e8c1d2fe2673fee98564bf55359d40e618213fb7c248f386359eb5ca6a5a9cef",
+      "state": "configuration",
+      "viewport": "1440x900@1"
+    },
+    {
+      "path": "evals/titlebot-hierarchy/captures/confirmation-1440.png",
+      "sha256": "e31b25de1fab5e1b3942ee995453ecc730bca93a8310d7d31aad9b1b505fa47e",
+      "state": "confirmation",
+      "viewport": "1440x900@1"
+    },
+    {
+      "path": "evals/titlebot-hierarchy/captures/vip-1440.png",
+      "sha256": "8157a149d97df1b62cb73bb2734a88fea377940af4a618e6f15fe31bb7c6e207",
+      "state": "membership",
+      "viewport": "1440x900@1"
+    },
+    {
+      "path": "evals/titlebot-hierarchy/captures/blocked-1440.png",
+      "sha256": "02cd4667b660adfedb5612e953d7359e4b821009d8a437c76b548ae00a84f7c3",
+      "state": "membership",
+      "viewport": "1440x900@1"
+    },
+    {
+      "path": "evals/titlebot-hierarchy/captures/saving-390.png",
+      "sha256": "63c8ee356a93f08e6d849391487034693396d81b132dba476da74b8cbe686811",
+      "state": "submitting",
+      "viewport": "390x900@1"
+    },
+    {
+      "path": "evals/titlebot-hierarchy/captures/error-save-390.png",
+      "sha256": "364ef12da93c4f136306ef1697bcb2073ed4767f88fe0a478e81135b4d82c733",
+      "state": "recovery",
+      "viewport": "390x900@1"
+    },
+    {
+      "path": "evals/titlebot-hierarchy/captures/error-advance-390.png",
+      "sha256": "55beac98b476becec31a50237b9ae346edee57e9ccf3d06aa6a37086c488b234",
+      "state": "recovery",
+      "viewport": "390x900@1"
+    },
+    {
+      "path": "evals/titlebot-hierarchy/captures/error-remove-390.png",
+      "sha256": "1a22ee84e839ce4d019c5cf8c0dec6a73e52e7822503f42aba7098e7a415300a",
+      "state": "recovery",
+      "viewport": "390x900@1"
+    },
+    {
+      "path": "evals/titlebot-hierarchy/captures/error-add-390.png",
+      "sha256": "bd5f9cf204f403aaf881e2ea3d994f5a4d5bec28c64dd91ffb6f4c9a2687598a",
+      "state": "recovery",
+      "viewport": "390x900@1"
+    },
+    {
+      "path": "evals/titlebot-hierarchy/captures/empty-390.png",
+      "sha256": "d515350b86a922e997de79e919c813dd1c2758abd84481db95554b9a157ca7e5",
+      "state": "empty",
+      "viewport": "390x900@1"
+    },
+    {
+      "path": "evals/titlebot-hierarchy/captures/loading-390.png",
+      "sha256": "40f10fa20ce190dfe4cd94e80a4721596b23a86b7e5a15d4aebc2c5d3f6f1155",
+      "state": "loading",
+      "viewport": "390x900@1"
+    },
+    {
+      "path": "evals/titlebot-hierarchy/captures/error-390.png",
+      "sha256": "1f576765a9c54ca881e1c48d3ec43ea49128b94e8ff709fbd06dc1baf673186b",
+      "state": "recovery",
+      "viewport": "390x900@1"
+    },
+    {
+      "path": "evals/titlebot-hierarchy/captures/readonly-390.png",
+      "sha256": "037361a71a4ceb78ca78e1523ce9c87ab60f64672a0b2e95e216052f82ea2590",
+      "state": "readonly",
+      "viewport": "390x900@1"
+    },
+    {
+      "path": "evals/titlebot-hierarchy/captures/settings-390.png",
+      "sha256": "2be2721d6b3e25626935c3490bc009a0fbb896c23528cc478289b164428ff234",
+      "state": "configuration",
+      "viewport": "390x900@1"
+    },
+    {
+      "path": "evals/titlebot-hierarchy/captures/settings-russian-320.png",
+      "sha256": "2ab12520bb247f783587c6d21f59179005ad832c8ab06f45d90abca4c401002d",
+      "state": "configuration",
+      "viewport": "320x900@1"
+    },
+    {
+      "path": "evals/titlebot-hierarchy/captures/settings-russian-bottom-320.png",
+      "sha256": "59b81d3cd32a3be109e0278bdf4622f3e2b49a501d223a51cb622e5ac9aad0c2",
+      "state": "configuration",
+      "viewport": "320x900@1"
+    }
+  ],
   "visualAssessment": {
-    "status": "SELF_REVIEWED",
-    "finding": "The page now distinguishes resource context, title selection, related assignment facts, the current operation and the queue. The single assignment surface groups owner/next/durations; the queue has a consistent reading rhythm. No clipped or overlapping required text remained in the inspected current states. This is a restrained candidate within the original palette, not a newly approved visual identity.",
-    "corrections": [
-      "Initial admin-like treatment revised through grouping, role prominence and consistent checkboxes.",
-      "Broken narrow Russian title replaced by a full-width navigation row.",
-      "Narrow settings error moved out of the scrolling body next to the footer actions; failure also restores keyboard focus.",
-      "Modal screenshots restricted to the real viewport rather than synthesizing below-viewport backdrop pixels."
+    "verdict": "KEEP",
+    "finding": "KEEP for the declared bounded hierarchy/state-legibility pilot after source-bound recapture and state review. This does not accept a finished SnoweStats brand direction or establish user approval.",
+    "assessments": [
+      {
+        "state": "working",
+        "renders": [
+          "evals/titlebot-hierarchy/captures/ready-320.png",
+          "evals/titlebot-hierarchy/captures/text200-320.png",
+          "evals/titlebot-hierarchy/captures/ready-390.png",
+          "evals/titlebot-hierarchy/captures/text200-390.png",
+          "evals/titlebot-hierarchy/captures/ready-900.png",
+          "evals/titlebot-hierarchy/captures/text200-900.png",
+          "evals/titlebot-hierarchy/captures/ready-1440.png",
+          "evals/titlebot-hierarchy/captures/text200-1440.png",
+          "evals/titlebot-hierarchy/captures/russian-390.png",
+          "evals/titlebot-hierarchy/captures/justice-1440.png",
+          "evals/titlebot-hierarchy/captures/architect-1440.png",
+          "evals/titlebot-hierarchy/captures/scientist-1440.png"
+        ],
+        "observedAttention": [
+          "Selected title",
+          "Holder and next",
+          "Queue",
+          "Available action"
+        ],
+        "finding": "The selected tab is distinct and related identities share one surface. Queue entries retain their own reading region. The strong action is attached to the selected title rather than repeated in the toolbar.",
+        "verdict": "KEEP"
+      },
+      {
+        "state": "empty",
+        "renders": [
+          "evals/titlebot-hierarchy/captures/duke-1440.png",
+          "evals/titlebot-hierarchy/captures/empty-390.png"
+        ],
+        "observedAttention": [
+          "Vacancy",
+          "Queue state",
+          "Request commands"
+        ],
+        "finding": "Vacancy and absence of a successor stay factual and small. The empty queue does not become an oversized working well.",
+        "verdict": "KEEP"
+      },
+      {
+        "state": "loading",
+        "renders": [
+          "evals/titlebot-hierarchy/captures/loading-390.png"
+        ],
+        "observedAttention": [
+          "Loading status",
+          "Kingdom and title context"
+        ],
+        "finding": "Loading replaces the work area while preserving the context and local title navigation.",
+        "verdict": "KEEP"
+      },
+      {
+        "state": "recovery",
+        "renders": [
+          "evals/titlebot-hierarchy/captures/error-save-390.png",
+          "evals/titlebot-hierarchy/captures/error-advance-390.png",
+          "evals/titlebot-hierarchy/captures/error-remove-390.png",
+          "evals/titlebot-hierarchy/captures/error-add-390.png",
+          "evals/titlebot-hierarchy/captures/error-390.png"
+        ],
+        "observedAttention": [
+          "Error",
+          "Retry action",
+          "Retained context"
+        ],
+        "finding": "The page error and modal footer errors remain perceptible near the affected operation; the original data is retained. Narrow settings no longer place recovery below the scrolled body.",
+        "verdict": "KEEP"
+      },
+      {
+        "state": "readonly",
+        "renders": [
+          "evals/titlebot-hierarchy/captures/readonly-390.png"
+        ],
+        "observedAttention": [
+          "Permission state",
+          "Selected title data",
+          "Available tools"
+        ],
+        "finding": "A page-level rights message explains the disabled editing actions; title data and available list tools remain usable.",
+        "verdict": "KEEP"
+      },
+      {
+        "state": "configuration",
+        "renders": [
+          "evals/titlebot-hierarchy/captures/settings-1440.png",
+          "evals/titlebot-hierarchy/captures/settings-390.png",
+          "evals/titlebot-hierarchy/captures/settings-russian-320.png",
+          "evals/titlebot-hierarchy/captures/settings-russian-bottom-320.png"
+        ],
+        "observedAttention": [
+          "Settings scope",
+          "Duration fields",
+          "Save or cancel"
+        ],
+        "finding": "The named modal groups regular/VIP inputs and keeps the footer available. Narrow settings scroll inside the body; both ends are represented.",
+        "verdict": "KEEP"
+      },
+      {
+        "state": "confirmation",
+        "renders": [
+          "evals/titlebot-hierarchy/captures/confirmation-1440.png"
+        ],
+        "observedAttention": [
+          "Affected title and players",
+          "Confirm or cancel"
+        ],
+        "finding": "Title context and the actual current/next names are visible above the two distinct completion choices.",
+        "verdict": "KEEP"
+      },
+      {
+        "state": "membership",
+        "renders": [
+          "evals/titlebot-hierarchy/captures/vip-1440.png",
+          "evals/titlebot-hierarchy/captures/blocked-1440.png"
+        ],
+        "observedAttention": [
+          "Active list",
+          "Player identification",
+          "List action"
+        ],
+        "finding": "VIP and blocked dialogs have distinct names and preserve player IDs. Repeated row controls apply to separate players.",
+        "verdict": "KEEP"
+      },
+      {
+        "state": "reference",
+        "renders": [
+          "evals/titlebot-hierarchy/captures/commands-1440.png"
+        ],
+        "observedAttention": [
+          "Selected title commands",
+          "Return to work"
+        ],
+        "finding": "The local disclosure exposes current command aliases without persistent reference copy beside the title.",
+        "verdict": "KEEP"
+      },
+      {
+        "state": "submitting",
+        "renders": [
+          "evals/titlebot-hierarchy/captures/saving-390.png"
+        ],
+        "observedAttention": [
+          "Saving state",
+          "Preserved input values"
+        ],
+        "finding": "The pending action text remains visible and the input values remain in place while duplicate editing is disabled.",
+        "verdict": "KEEP"
+      }
     ],
-    "limits": [
-      "Enlarged text deliberately increases vertical page length; the data queue still has its own scroll owner.",
-      "Narrow settings require scrolling inside the body; top and bottom states were inspected.",
-      "One author and one pilot do not establish independent taste, user recognition or future generation quality."
-    ]
+    "findings": []
   },
   "userAcceptance": "UNCONFIRMED",
+  "evidence": {
+    "file": "captures/evidence.json",
+    "sha256": "2ae2d23b6fb5bda1f21ab88705e45e75e16500c28e808379010e82a0730b076c"
+  },
   "inspectedCaptures": [
     "ready-320.png",
     "text200-320.png",
@@ -56,30 +435,9 @@
     "settings-russian-320.png",
     "settings-russian-bottom-320.png"
   ],
-  "stateFindings": [
-    {
-      "scope": "ready and four title contexts",
-      "finding": "Selected title is distinct; holder, next, duration and action remain one related group. Empty states have no artificial tall well."
-    },
-    {
-      "scope": "320/390/900/1440 and 200% text",
-      "finding": "Text remains readable and complete. Enlargement changes line and tab wrapping; it is accessibility stress, not an alternate default density."
-    },
-    {
-      "scope": "Russian page and settings scroller",
-      "finding": "Long title is whole; field labels, units, footer actions and both scroll positions remain legible."
-    },
-    {
-      "scope": "commands, VIP, blocked, confirmation",
-      "finding": "Reference aliases and IDs are present in their proper context. Separate operations have distinct destinations; no second settings entry appears."
-    },
-    {
-      "scope": "loading, unavailable, view-only and pending",
-      "finding": "State/recovery copy is local to the task. Disabled actions remain distinguishable from available supporting operations."
-    },
-    {
-      "scope": "save/advance/remove/add failures",
-      "finding": "Current data is retained and the recovery message is visible near the affected operation. The settings footer error was checked after repair."
-    }
+  "notes": [
+    "The schema-1 report is preserved byte-for-byte under review-history/2026-09-15-schema1.json. The new verdict is an explicit scoped reassessment, not inferred from SELF_REVIEWED.",
+    "ATTENTION.json transcribes the already existing pre-component PAGE-MAP before this reassessment; it is not derived from current CSS measurements.",
+    "Current default, narrow recovery and narrow settings were reinspected; the remaining unchanged state layouts retain the prior inspected evidence and were recaptured by the full pilot scenario. All judgments are self-review, not an independent evaluation."
   ]
 }

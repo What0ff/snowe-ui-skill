@@ -59,6 +59,31 @@ class CorrectionTests(unittest.TestCase):
         with self.assertRaises(ValueError): self.call("verify", {"id": "type-role", "proof": proof})
         self.assertEqual("BLOCKED", self.call("check")["status"])
 
+    def test_negative_visual_verdict_cannot_close_correction(self):
+        proof = self.prepare()
+        proof["results"][0]["review"].update(method="self-review", verdict="REVISE")
+        with self.assertRaises(ValueError): self.call("verify", {"id": "type-role", "proof": proof})
+        self.assertEqual("BLOCKED", self.call("check")["status"])
+
+    def test_linked_visual_report_and_its_contract_stay_current(self):
+        proof = self.prepare()
+        contract = {"schema": "1.0", "scope": "Page typography", "states": [{"id": "default", "question": "Read page",
+            "priority": ["Main content"], "cues": ["Accepted type role"], "competing": []}]}
+        (self.root / "attention.json").write_text(json.dumps(contract), encoding="utf-8")
+        def bound(name): return {"path": name, "sha256": hashlib.sha256((self.root / name).read_bytes()).hexdigest()}
+        report = {"schema": "2.0", "scope": "Page typography", "method": "self-review", "reviewer": "Authored test",
+            "contract": bound("attention.json"), "sources": proof["sources"],
+            "renders": [{**bound("review.png"), "state": "default", "viewport": "390x844@1"}],
+            "visualAssessment": {"verdict": "KEEP", "finding": "Authored record", "assessments": [{"state": "default", "renders": ["review.png"], "observedAttention": ["Main content"], "finding": "Authored state", "verdict": "KEEP"}], "findings": []},
+            "userAcceptance": "UNCONFIRMED"}
+        (self.root / "visual.json").write_text(json.dumps(report), encoding="utf-8")
+        proof["artifacts"].append(bound("visual.json"))
+        proof["results"][0]["review"].update(method="self-review", verdict="KEEP", report="visual.json")
+        self.call("verify", {"id": "type-role", "proof": proof})
+        self.assertEqual("PASS", self.call("check")["status"])
+        (self.root / "attention.json").write_text(json.dumps(contract)+" ", encoding="utf-8")
+        self.assertEqual("REVIEW_REQUIRED", self.call("check")["status"])
+
     def test_user_rejection_reopens_verified_work_without_source_changes(self):
         proof = self.prepare()
         self.call("verify", {"id": "type-role", "proof": proof})
