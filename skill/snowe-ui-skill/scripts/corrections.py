@@ -124,7 +124,8 @@ def file_digest(root, relative):
     return digest.hexdigest()
 
 
-def validate_proof(entry, proof):
+def validate_proof_shape(proof):
+    """Validate receipt structure without treating it as confirmation of a definition."""
     object_fields(proof, {"sources", "artifacts", "results"})
     paths = set()
     for key in ("sources", "artifacts"):
@@ -135,6 +136,30 @@ def validate_proof(entry, proof):
             if not isinstance(item["sha256"], str) or not re.fullmatch(r"[a-f0-9]{64}", item["sha256"]): raise ValueError("Expected SHA-256")
             if item["path"] in paths: raise ValueError("Duplicate source/artifact path")
             paths.add(item["path"])
+    if not isinstance(proof["results"], list) or not proof["results"]:
+        raise ValueError("Proof needs criterion results")
+    for result in proof["results"]:
+        object_fields(result, {"criterion", "status", "artifacts"}, {"review"})
+        identifier(result["criterion"])
+        if result["status"] != "PASS": raise ValueError("Only passing results can be submitted for verification")
+        if not isinstance(result["artifacts"], list) or not result["artifacts"]: raise ValueError("Result needs artifact paths")
+        for path in result["artifacts"]: text(path, "result artifact")
+        if "review" in result:
+            object_fields(result["review"], {"reviewer", "finding", "viewport", "state"})
+            for field, value in result["review"].items(): text(value, field)
+
+
+def confirmation_issues(entry):
+    """History is a binding to the recorded definition, not a tamper-proof signature."""
+    snapshot = entry["history"][-1].get("snapshot")
+    if snapshot is None:
+        return ["Legacy verification has no definition snapshot; explicit verification is required"] if entry["status"] == "verified" else []
+    current = {key: value for key, value in entry.items() if key != "history"}
+    return [] if current == snapshot else ["Current definition or proof differs from the last recorded snapshot"]
+
+
+def validate_proof(entry, proof):
+    validate_proof_shape(proof)
     expected = {item["id"]: item for item in entry["criteria"]}
     if not set(entry["scope"]["owners"]) <= {item["path"] for item in proof["sources"]}:
         raise ValueError("Proof must bind every declared source owner")
@@ -193,7 +218,9 @@ def load_journal(path, identity):
                 if snapshot["id"] != entry["id"] or snapshot["status"] != item["status"]: raise ValueError("History snapshot mismatch")
                 if snapshot["status"] == "verified": validate_proof(snapshot, snapshot.get("proof"))
         if entry["history"][-1]["status"] != entry["status"]: raise ValueError("History/state mismatch")
-        if entry["status"] == "verified": validate_proof(entry, entry.get("proof"))
+        if entry["status"] == "verified":
+            validate_proof_shape(entry.get("proof"))
+            if not confirmation_issues(entry): validate_proof(entry, entry["proof"])
         if entry["status"] == "superseded": identifier(entry.get("replacement"))
     by_id = {entry["id"]: entry for entry in journal["records"]}
     for entry in journal["records"]:
@@ -225,7 +252,18 @@ def execute(command, *, workspace, project, payload=None):
         entries = journal["records"]
         if readonly:
             if data is not None: scope(data)
-            selected = [entry for entry in entries if applies(entry, data)]
+            integrity = {entry["id"]: confirmation_issues(entry) for entry in entries}
+            def applicable(entry):
+                if applies(entry, data): return True
+                if integrity[entry["id"]]:
+                    # A direct edit must not move an obligation out of its recorded scope.
+                    prior = [item["snapshot"] for item in entry["history"] if "snapshot" in item]
+                    confirmed = next((snapshot for snapshot in reversed(prior) if snapshot["status"] == "verified"), None)
+                    return any(applies(snapshot, data) for snapshot in prior[-1:]) or (
+                        confirmed is not None and applies(confirmed, data)
+                    )
+                return False
+            selected = [entry for entry in entries if applicable(entry)]
             # Supersession cannot hide an original obligation if its replacement scope changes.
             by_id = {entry["id"]: entry for entry in entries}
             included = {entry["id"] for entry in selected}
@@ -233,13 +271,14 @@ def execute(command, *, workspace, project, payload=None):
                 if entry["status"] == "superseded" and entry["replacement"] not in included:
                     selected.append(by_id[entry["replacement"]])
                     included.add(entry["replacement"])
-            if command == "list": return {"project_identity": identity, "records": selected}
+            if command == "list": return {"project_identity": identity, "records": selected,
+                "review_required": [{"id": e["id"], "issues": integrity[e["id"]]} for e in selected if integrity[e["id"]]]}
             blocked, stale = [], []
             for entry in selected:
                 if entry["status"] in {"requested", "implemented"}: blocked.append(entry["id"])
-                elif entry["status"] == "verified":
-                    issues = proof_current(root, entry["proof"])
-                    if issues: stale.append({"id": entry["id"], "issues": issues})
+                issues = list(integrity[entry["id"]])
+                if entry["status"] == "verified": issues.extend(proof_current(root, entry["proof"]))
+                if issues: stale.append({"id": entry["id"], "issues": issues})
             return {"status": "BLOCKED" if blocked else "REVIEW_REQUIRED" if stale else "PASS", "project_identity": identity, "applicable": [e["id"] for e in selected], "blocked": blocked, "stale": stale, "boundary": "Recorded proof integrity; not independent visual certification"}
         if command == "record":
             base_record(data)

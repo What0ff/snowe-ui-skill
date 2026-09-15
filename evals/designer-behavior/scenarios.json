@@ -158,7 +158,7 @@
       "expected": {
         "depth": "Direct",
         "loaded_references": ["quality-gates.md"],
-        "skipped_references": ["exploration-protocol.md", "experience-architecture.md", "art-direction-gate.md", "design-foundations.md", "imagery-and-assets.md", "iconography-system.md", "motion-and-interaction.md", "research-and-evidence.md", "designer-evaluation.md", "cli-reference.md"],
+        "skipped_references": ["exploration-protocol.md", "experience-architecture.md", "art-direction-gate.md", "design-foundations.md", "imagery-and-assets.md", "iconography-system.md", "motion-and-interaction.md", "research-and-evidence.md", "designer-evaluation.md", "cli-reference.md", "page-hierarchy.md"],
         "skipped_process": ["decision packet", "broad research", "candidate generation", "architecture work", "asset exploration", "motion exploration", "designer evaluation"],
         "artifacts": ["depth record", "affected invariant", "rendered state"],
         "delivery": ["calibrated depth and loaded/skipped routes", "owner and affected invariant", "implementation scope", "affected states and proof", "corrections after review", "remaining unknowns", "executed evidence versus inference"],
@@ -182,7 +182,7 @@
       "expected": {
         "depth": "Direct",
         "loaded_references": ["quality-gates.md"],
-        "skipped_references": ["exploration-protocol.md", "experience-architecture.md", "art-direction-gate.md", "design-foundations.md", "imagery-and-assets.md", "iconography-system.md", "motion-and-interaction.md", "research-and-evidence.md", "designer-evaluation.md", "cli-reference.md"],
+        "skipped_references": ["exploration-protocol.md", "experience-architecture.md", "art-direction-gate.md", "design-foundations.md", "imagery-and-assets.md", "iconography-system.md", "motion-and-interaction.md", "research-and-evidence.md", "designer-evaluation.md", "cli-reference.md", "page-hierarchy.md"],
         "skipped_process": ["decision packet", "broad research", "candidate generation", "architecture work", "asset exploration", "motion exploration", "designer evaluation"],
         "artifacts": ["depth record", "affected invariant", "rendered state"],
         "delivery": ["calibrated depth and loaded/skipped routes", "owner and affected invariant", "implementation scope", "affected states and proof", "corrections after review", "remaining unknowns", "executed evidence versus inference"],
@@ -206,7 +206,7 @@
       "expected": {
         "depth": "Focused",
         "loaded_references": ["exploration-protocol.md", "quality-gates.md"],
-        "skipped_references": ["experience-architecture.md", "art-direction-gate.md", "design-foundations.md", "imagery-and-assets.md", "iconography-system.md", "motion-and-interaction.md", "research-and-evidence.md", "designer-evaluation.md", "cli-reference.md"],
+        "skipped_references": ["experience-architecture.md", "art-direction-gate.md", "design-foundations.md", "imagery-and-assets.md", "iconography-system.md", "motion-and-interaction.md", "research-and-evidence.md", "designer-evaluation.md", "cli-reference.md", "page-hierarchy.md"],
         "skipped_process": ["decision packet", "broad research", "whole-journey framing", "Portfolio candidate set", "unrelated asset exploration", "unrelated motion exploration", "designer evaluation"],
         "artifacts": ["depth record", "shared-system proof", "baseline and challenger", "sibling-context render"],
         "delivery": ["calibrated depth and loaded/skipped routes", "affected causal decision", "baseline and closest challenger", "representative sibling contexts when shared", "implementation scope", "affected states and proof", "corrections after review", "remaining unknowns", "executed evidence versus inference"],
@@ -230,7 +230,7 @@
       "expected": {
         "depth": "Focused",
         "loaded_references": ["exploration-protocol.md", "quality-gates.md"],
-        "skipped_references": ["experience-architecture.md", "art-direction-gate.md", "design-foundations.md", "imagery-and-assets.md", "iconography-system.md", "motion-and-interaction.md", "research-and-evidence.md", "designer-evaluation.md", "cli-reference.md"],
+        "skipped_references": ["experience-architecture.md", "art-direction-gate.md", "design-foundations.md", "imagery-and-assets.md", "iconography-system.md", "motion-and-interaction.md", "research-and-evidence.md", "designer-evaluation.md", "cli-reference.md", "page-hierarchy.md"],
         "skipped_process": ["decision packet", "broad research", "whole-journey framing", "Portfolio candidate set", "unrelated asset exploration", "unrelated motion exploration", "designer evaluation"],
         "artifacts": ["depth record", "causal decision record", "baseline and challenger", "affected responsive render"],
         "delivery": ["calibrated depth and loaded/skipped routes", "affected causal decision", "baseline and closest challenger", "representative sibling contexts when shared", "implementation scope", "affected states and proof", "corrections after review", "remaining unknowns", "executed evidence versus inference"],
@@ -254,7 +254,7 @@
       "expected": {
         "depth": "Portfolio",
         "loaded_references": ["exploration-protocol.md", "experience-architecture.md", "designer-evaluation.md", "quality-gates.md"],
-        "skipped_references": ["art-direction-gate.md", "design-foundations.md", "imagery-and-assets.md", "iconography-system.md", "motion-and-interaction.md", "research-and-evidence.md", "cli-reference.md"],
+        "skipped_references": ["art-direction-gate.md", "design-foundations.md", "imagery-and-assets.md", "iconography-system.md", "motion-and-interaction.md", "research-and-evidence.md", "cli-reference.md", "page-hierarchy.md"],
         "skipped_process": ["broad research", "unrelated imagery exploration", "unrelated custom icon work", "unrelated motion exploration"],
         "artifacts": ["depth record", "whole-journey model", "structurally different candidates", "proof slice", "strongest rejected alternative"],
         "delivery": ["calibrated depth and loaded/skipped routes", "chosen architecture and thesis", "material causal decisions", "strongest rejected alternative", "external evidence that changed the outcome, if any", "asset and motion decisions when live", "implementation scope", "rendered proof slices", "accessibility and performance checks", "corrections after review", "remaining unknowns", "executed evidence versus inference"],
@@ -278,7 +278,7 @@
       "expected": {
         "depth": "Direct",
         "loaded_references": ["quality-gates.md"],
-        "skipped_references": ["exploration-protocol.md", "experience-architecture.md", "art-direction-gate.md", "design-foundations.md", "imagery-and-assets.md", "iconography-system.md", "motion-and-interaction.md", "research-and-evidence.md", "designer-evaluation.md", "cli-reference.md"],
+        "skipped_references": ["exploration-protocol.md", "experience-architecture.md", "art-direction-gate.md", "design-foundations.md", "imagery-and-assets.md", "iconography-system.md", "motion-and-interaction.md", "research-and-evidence.md", "designer-evaluation.md", "cli-reference.md", "page-hierarchy.md"],
         "skipped_process": ["decision packet", "broad research", "candidate generation", "architecture work", "asset exploration", "motion exploration", "designer evaluation"],
         "artifacts": ["depth record", "affected invariant", "rendered state", "high-consequence proof"],
         "delivery": ["calibrated depth and loaded/skipped routes", "owner and affected invariant", "implementation scope", "affected states and proof", "corrections after review", "remaining unknowns", "executed evidence versus inference"],

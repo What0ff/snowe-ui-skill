@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Title Bot</title><link rel="stylesheet" href="styles.css"><script type="module" src="app.js"></script></head>
+<body>
+<main class="page" id="page">
+  <div class="resource" id="kingdom-context"></div>
+  <header class="page-header"><h1 id="page-title">Title Bot</h1><div class="page-tools" id="page-tools"></div></header>
+  <p class="access-note" id="access-note" role="status" hidden></p>
+  <nav class="title-tabs" id="title-tabs" role="tablist" aria-label="Titles"></nav>
+  <section class="workspace" id="workspace" role="tabpanel" aria-labelledby="tab-justice">
+    <div id="data-state" class="data-state" hidden></div>
+    <div id="ready-state">
+      <div class="assignment" id="assignment"></div>
+      <div class="queue-heading"><div class="queue-title"><h2 id="queue-title">Queue</h2><span id="queue-count"></span></div><details id="command-help"><summary id="command-summary" data-operation="toggle-help" data-target="title-commands" data-outcome="commands-disclosure">Commands</summary><div class="command-content" id="command-content"></div></details></div>
+      <p class="inline-error" id="page-error" role="alert" hidden></p>
+      <div class="queue-scroll" id="queue-scroll" tabindex="0" role="region" aria-labelledby="queue-title"><div id="queue-content"></div></div>
+    </div>
+  </section>
+</main>
+<dialog id="dialog" aria-labelledby="dialog-title"><div class="dialog-header"><h2 id="dialog-title"></h2><p id="dialog-context"></p></div><div id="dialog-body" class="dialog-body"></div><p id="dialog-error" class="inline-error dialog-feedback" role="alert" hidden></p><div id="dialog-footer" class="dialog-footer"></div></dialog>
+</body></html>

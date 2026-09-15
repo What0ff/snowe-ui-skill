@@ -32,3 +32,7 @@ python -m unittest tests.test_visual_acceptance tests.test_corrections -v
 The correction-memory regression also verifies that an explicit user rejection reopens previously verified work even when source hashes remain unchanged. Technical PASS cannot overrule that feedback. The existing unchanged editorial example remains a counterexample to mandatory compression.
 
 Visual assessment here is implementer self-review, not a blind model test or a guarantee of future creativity. Current candidate screenshots are proposals; passing geometry, font and scrolling checks does not itself establish visual KEEP or user acceptance.
+
+## Customer copy boundary
+
+Experimental notices belong to this report. The fixture no longer renders the technical footer or, for the six cases, instructions describing its own acceptance exercise. Source-bound captures were regenerated after this copy correction. The standalone functional hierarchy pilot is documented in [Title Bot hierarchy](../titlebot-hierarchy/README.md); this older fixture is still regression evidence only.

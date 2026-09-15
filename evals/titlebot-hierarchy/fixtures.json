@@ -1,0 +1,311 @@
+{
+  "kingdom": 2289,
+  "labels": {
+    "en": {
+      "architect": "Architect",
+      "duke": "Duke",
+      "justice": "Justice",
+      "scientist": "Scientist"
+    },
+    "ru": {
+      "architect": "Архитектор",
+      "duke": "Герцог",
+      "justice": "Справедливость",
+      "scientist": "Учёный"
+    }
+  },
+  "titles": [
+    {
+      "key": "justice",
+      "commands": [
+        "justice",
+        "just"
+      ]
+    },
+    {
+      "key": "duke",
+      "commands": [
+        "duke"
+      ]
+    },
+    {
+      "key": "architect",
+      "commands": [
+        "architect",
+        "arch"
+      ]
+    },
+    {
+      "key": "scientist",
+      "commands": [
+        "scientist",
+        "sci"
+      ]
+    }
+  ],
+  "settings": {
+    "locked": false,
+    "locked_titles": [],
+    "duration_mode": "perTitle",
+    "vip_duration_mode": "perTitle",
+    "global_duration_sec": 300,
+    "vip_max_duration_sec": 14400,
+    "durations": {
+      "justice": 300,
+      "duke": 600,
+      "architect": 900,
+      "scientist": 420
+    },
+    "vip_durations": {
+      "justice": 14400,
+      "duke": 18000,
+      "architect": 21600,
+      "scientist": 14400
+    },
+    "limits": {
+      "min_duration_sec": 60,
+      "max_duration_sec": 7200,
+      "min_vip_duration_sec": 7260,
+      "max_vip_duration_sec": 86400
+    }
+  },
+  "runtime": {
+    "active": {
+      "justice": {
+        "player_id": "701001",
+        "player_name": "Aster",
+        "alliance_abbr": "NVA"
+      },
+      "duke": {},
+      "architect": {
+        "player_id": "702001",
+        "player_name": "Cedar",
+        "alliance_abbr": "ARC"
+      },
+      "scientist": {
+        "player_id": "703001",
+        "player_name": "Vega",
+        "alliance_abbr": "LAB"
+      }
+    },
+    "queues": {
+      "justice": [
+        {
+          "player_id": "701002",
+          "player_name": "Orion",
+          "alliance_abbr": "NVA"
+        },
+        {
+          "player_id": "701003",
+          "player_name": "Lyra",
+          "alliance_abbr": "SOL"
+        }
+      ],
+      "duke": [],
+      "architect": [],
+      "scientist": [
+        {
+          "player_id": "704000",
+          "player_name": "Researcher 1",
+          "alliance_abbr": "LAB"
+        },
+        {
+          "player_id": "704001",
+          "player_name": "Researcher 2",
+          "alliance_abbr": "LAB"
+        },
+        {
+          "player_id": "704002",
+          "player_name": "Researcher 3",
+          "alliance_abbr": "LAB"
+        },
+        {
+          "player_id": "704003",
+          "player_name": "Researcher 4",
+          "alliance_abbr": "LAB"
+        },
+        {
+          "player_id": "704004",
+          "player_name": "Researcher 5",
+          "alliance_abbr": "LAB"
+        },
+        {
+          "player_id": "704005",
+          "player_name": "Researcher 6",
+          "alliance_abbr": "LAB"
+        },
+        {
+          "player_id": "704006",
+          "player_name": "Researcher 7",
+          "alliance_abbr": "LAB"
+        },
+        {
+          "player_id": "704007",
+          "player_name": "Researcher 8",
+          "alliance_abbr": "LAB"
+        },
+        {
+          "player_id": "704008",
+          "player_name": "Researcher 9",
+          "alliance_abbr": "LAB"
+        },
+        {
+          "player_id": "704009",
+          "player_name": "Researcher 10",
+          "alliance_abbr": "LAB"
+        },
+        {
+          "player_id": "704010",
+          "player_name": "Researcher 11",
+          "alliance_abbr": "LAB"
+        },
+        {
+          "player_id": "704011",
+          "player_name": "Researcher 12",
+          "alliance_abbr": "LAB"
+        },
+        {
+          "player_id": "704012",
+          "player_name": "Researcher 13",
+          "alliance_abbr": "LAB"
+        },
+        {
+          "player_id": "704013",
+          "player_name": "Researcher 14",
+          "alliance_abbr": "LAB"
+        },
+        {
+          "player_id": "704014",
+          "player_name": "Researcher 15",
+          "alliance_abbr": "LAB"
+        },
+        {
+          "player_id": "704015",
+          "player_name": "Researcher 16",
+          "alliance_abbr": "LAB"
+        },
+        {
+          "player_id": "704016",
+          "player_name": "Researcher 17",
+          "alliance_abbr": "LAB"
+        },
+        {
+          "player_id": "704017",
+          "player_name": "Researcher 18",
+          "alliance_abbr": "LAB"
+        },
+        {
+          "player_id": "704018",
+          "player_name": "Researcher 19",
+          "alliance_abbr": "LAB"
+        },
+        {
+          "player_id": "704019",
+          "player_name": "Researcher 20",
+          "alliance_abbr": "LAB"
+        },
+        {
+          "player_id": "704020",
+          "player_name": "Researcher 21",
+          "alliance_abbr": "LAB"
+        },
+        {
+          "player_id": "704021",
+          "player_name": "Researcher 22",
+          "alliance_abbr": "LAB"
+        },
+        {
+          "player_id": "704022",
+          "player_name": "Researcher 23",
+          "alliance_abbr": "LAB"
+        },
+        {
+          "player_id": "704023",
+          "player_name": "Researcher 24",
+          "alliance_abbr": "LAB"
+        },
+        {
+          "player_id": "704024",
+          "player_name": "Researcher 25",
+          "alliance_abbr": "LAB"
+        },
+        {
+          "player_id": "704025",
+          "player_name": "Researcher 26",
+          "alliance_abbr": "LAB"
+        },
+        {
+          "player_id": "704026",
+          "player_name": "Researcher 27",
+          "alliance_abbr": "LAB"
+        },
+        {
+          "player_id": "704027",
+          "player_name": "Researcher 28",
+          "alliance_abbr": "LAB"
+        },
+        {
+          "player_id": "704028",
+          "player_name": "Researcher 29",
+          "alliance_abbr": "LAB"
+        },
+        {
+          "player_id": "704029",
+          "player_name": "Researcher 30",
+          "alliance_abbr": "LAB"
+        },
+        {
+          "player_id": "704030",
+          "player_name": "Researcher 31",
+          "alliance_abbr": "LAB"
+        },
+        {
+          "player_id": "704031",
+          "player_name": "Researcher 32",
+          "alliance_abbr": "LAB"
+        }
+      ]
+    }
+  },
+  "players": [
+    {
+      "player_id": "701001",
+      "player_name": "Aster",
+      "alliance_abbr": "NVA"
+    },
+    {
+      "player_id": "701002",
+      "player_name": "Orion",
+      "alliance_abbr": "NVA"
+    },
+    {
+      "player_id": "701003",
+      "player_name": "Lyra",
+      "alliance_abbr": "SOL"
+    },
+    {
+      "player_id": "702001",
+      "player_name": "Cedar",
+      "alliance_abbr": "ARC"
+    },
+    {
+      "player_id": "703001",
+      "player_name": "Vega",
+      "alliance_abbr": "LAB"
+    }
+  ],
+  "vips": [
+    {
+      "player_id": "701002",
+      "player_name": "Orion",
+      "alliance_abbr": "NVA"
+    }
+  ],
+  "blacklist": [
+    {
+      "player_id": "709001",
+      "player_name": "Falcon",
+      "alliance_abbr": "OLD"
+    }
+  ]
+}

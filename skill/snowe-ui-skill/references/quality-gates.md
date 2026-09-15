@@ -4,6 +4,8 @@ Use this reference to prove that the accepted design works. Quality gates protec
 
 ## Define Proof Before Polish
 
+For a new or reworked page hierarchy, start with the [page map, copy and action inventory](page-hierarchy.md) before choosing containers. At acceptance, inspect the whole affected surface for role distinction, useful text and redundant operations. Required content must be visible/accessibly named and free of relevant clipping/occlusion; text existing in the DOM is not sufficient. Keep technical, evidence-integrity, visual and user-acceptance outcomes separate.
+
 For each material decision, state what evidence could keep, revise, or reject it. Cover only applicable surfaces, but always include the primary outcome, truthful content, accessibility, responsive behavior, important states, and build/runtime integrity.
 
 Use one record:

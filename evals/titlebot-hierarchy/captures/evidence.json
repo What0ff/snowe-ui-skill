@@ -1,0 +1,702 @@
+{
+  "schema": "1.0",
+  "evidenceKind": "authored isolated pilot; implementer self-check",
+  "sources": [
+    {
+      "file": "index.html",
+      "sha256": "12713fe871c296fd29bec3ac55091965da2823407e360691c5926876b7b7d211"
+    },
+    {
+      "file": "styles.css",
+      "sha256": "2c669a309b5f569c1c85e6cf32b61b9d5ffb5135d8132a3f5f06a37fc495ed12"
+    },
+    {
+      "file": "app.js",
+      "sha256": "f83a06c4a928790342ac076d58c9fd27dbdb200db521bf06a1b7af7494b1e10c"
+    },
+    {
+      "file": "fixtures.json",
+      "sha256": "d5c2c27180874d9ec4ee1afb8a8758f0de2c99723e103b4c2f40d88a8242dcda"
+    },
+    {
+      "file": "PAGE-MAP.md",
+      "sha256": "0555960be3c5a381df9ce46dbe86aaa7310574c304d240f3aa707e9cc80b778c"
+    },
+    {
+      "file": "sources.json",
+      "sha256": "949699731329d79a5ebd579ad20685a60c5b83e97eab35e4b17e1021fe827410"
+    },
+    {
+      "file": "baseline.png",
+      "sha256": "83310309ccc239a34b0b75a9eff0c085c0724b6b5bdf97282370121591b0fd83"
+    },
+    {
+      "file": "assets/fonts/inter-v20-latin.woff2",
+      "sha256": "c940764593d0fe5d596be327ca7558855e018039fb78509aa21921fd3644c3e4"
+    },
+    {
+      "file": "assets/fonts/inter-v20-cyrillic.woff2",
+      "sha256": "aebf2ab4a4ce6810d73c1ac7be7cafb4e5ec4cee2d6db5fb3e09691747ec4bd6"
+    }
+  ],
+  "runnerSources": [
+    {
+      "file": "scripts/browser-smoke.mjs",
+      "sha256": "2cf50a833bab36907e7de477a7010bbe6247a6c0c3abccd5f2fd88cee9ea3397"
+    },
+    {
+      "file": "scripts/titlebot-pilot.mjs",
+      "sha256": "62b3ea3b216b3a74bcaddfbf80daa945d98bee62d20410f5d7eda7826fb465f7"
+    },
+    {
+      "file": "scripts/ui-proof.mjs",
+      "sha256": "b451ac5918cf8cbf4d24950cc422903e6098bc144376b9ba2c08501b982b56f6"
+    }
+  ],
+  "technical": {
+    "status": "PASS",
+    "outcomes": [
+      "Four widths (320/390/900/1440), 200% text and Russian: required roles reachable, visible, named and unclipped; no horizontal overflow.",
+      "Opacity, clipping and overlap mutations rejected; Settings/Edit rules duplicate rejected through a shared real handler; distinct players and justified repeated entries preserved.",
+      "All four titles bind their own holder/next/queue/durations/action; keyboard tabs and bounded long-queue scrolling work; IDs and command aliases remain.",
+      "Settings cancel, validation, title scope, global/per-title durations, confirmation/cancel, advance, release and per-player removal passed.",
+      "VIP lookup/add/remove and blocked ID validation/add/remove, Escape and modal focus passed.",
+      "All four local mutation failures preserve data, report recovery, reject repeated submit and allow retry.",
+      "Empty/loading/error/retry/view-only states and narrow English/Russian dialogs passed."
+    ]
+  },
+  "visual": "Separate render review required; no automatic verdict",
+  "userAcceptance": "NOT_REQUESTED",
+  "captures": [
+    {
+      "file": "ready-320.png",
+      "sha256": "87a884c0fe0dd1b292e755f73470e41a5119da0756147518846a07002b5beacb",
+      "viewport": {
+        "width": 320,
+        "height": 900,
+        "dpr": 1
+      },
+      "image": {
+        "width": 320,
+        "height": 900
+      },
+      "state": {
+        "mode": "ready",
+        "selected": "justice",
+        "dialog": null,
+        "pending": false,
+        "textScale": 1
+      },
+      "url": "/evals/titlebot-hierarchy/index.html?"
+    },
+    {
+      "file": "text200-320.png",
+      "sha256": "f33e49ed487ca85f184641f9fb93b57cbe6a07167fb3e8ee8d9707d3d93159d2",
+      "viewport": {
+        "width": 320,
+        "height": 900,
+        "dpr": 1
+      },
+      "image": {
+        "width": 320,
+        "height": 1775
+      },
+      "state": {
+        "mode": "ready",
+        "selected": "justice",
+        "dialog": null,
+        "pending": false,
+        "textScale": 2
+      },
+      "url": "/evals/titlebot-hierarchy/index.html?"
+    },
+    {
+      "file": "ready-390.png",
+      "sha256": "00f7c12c17782ea1d8ff2ae136a5f9618c33f17e8fffebbc2b0626b6822df882",
+      "viewport": {
+        "width": 390,
+        "height": 900,
+        "dpr": 1
+      },
+      "image": {
+        "width": 390,
+        "height": 900
+      },
+      "state": {
+        "mode": "ready",
+        "selected": "justice",
+        "dialog": null,
+        "pending": false,
+        "textScale": 1
+      },
+      "url": "/evals/titlebot-hierarchy/index.html?"
+    },
+    {
+      "file": "text200-390.png",
+      "sha256": "610ca519505c7313444e525c763e2b2acda8e43db12fe8de09763f97ee8c9a6f",
+      "viewport": {
+        "width": 390,
+        "height": 900,
+        "dpr": 1
+      },
+      "image": {
+        "width": 390,
+        "height": 1496
+      },
+      "state": {
+        "mode": "ready",
+        "selected": "justice",
+        "dialog": null,
+        "pending": false,
+        "textScale": 2
+      },
+      "url": "/evals/titlebot-hierarchy/index.html?"
+    },
+    {
+      "file": "ready-900.png",
+      "sha256": "67f22a4b8973be83311e8e99b4b094c3aedbe9e3e192b02dc2f4231accd86fc3",
+      "viewport": {
+        "width": 900,
+        "height": 900,
+        "dpr": 1
+      },
+      "image": {
+        "width": 900,
+        "height": 900
+      },
+      "state": {
+        "mode": "ready",
+        "selected": "justice",
+        "dialog": null,
+        "pending": false,
+        "textScale": 1
+      },
+      "url": "/evals/titlebot-hierarchy/index.html?"
+    },
+    {
+      "file": "text200-900.png",
+      "sha256": "dc6e529fc7b7c713644914d936f76111a3483a528fe0d3d59da57f1c9f035e90",
+      "viewport": {
+        "width": 900,
+        "height": 900,
+        "dpr": 1
+      },
+      "image": {
+        "width": 900,
+        "height": 1070
+      },
+      "state": {
+        "mode": "ready",
+        "selected": "justice",
+        "dialog": null,
+        "pending": false,
+        "textScale": 2
+      },
+      "url": "/evals/titlebot-hierarchy/index.html?"
+    },
+    {
+      "file": "ready-1440.png",
+      "sha256": "671e59e84f88e9dbd2b8d455190016092c38a558b231d51646379cfc6adc1067",
+      "viewport": {
+        "width": 1440,
+        "height": 900,
+        "dpr": 1
+      },
+      "image": {
+        "width": 1440,
+        "height": 900
+      },
+      "state": {
+        "mode": "ready",
+        "selected": "justice",
+        "dialog": null,
+        "pending": false,
+        "textScale": 1
+      },
+      "url": "/evals/titlebot-hierarchy/index.html?"
+    },
+    {
+      "file": "text200-1440.png",
+      "sha256": "9e6e84b7fffc13be4d706c90e22c3e841ceb9ab0e10034267835c398e1ea0054",
+      "viewport": {
+        "width": 1440,
+        "height": 900,
+        "dpr": 1
+      },
+      "image": {
+        "width": 1440,
+        "height": 900
+      },
+      "state": {
+        "mode": "ready",
+        "selected": "justice",
+        "dialog": null,
+        "pending": false,
+        "textScale": 2
+      },
+      "url": "/evals/titlebot-hierarchy/index.html?"
+    },
+    {
+      "file": "russian-390.png",
+      "sha256": "f240b43e9cd09d3bb6ebd05dbdee0fc659cb77ada212ce1098f7fbe570f5e954",
+      "viewport": {
+        "width": 390,
+        "height": 900,
+        "dpr": 1
+      },
+      "image": {
+        "width": 390,
+        "height": 900
+      },
+      "state": {
+        "mode": "ready",
+        "selected": "justice",
+        "dialog": null,
+        "pending": false,
+        "textScale": 1
+      },
+      "url": "/evals/titlebot-hierarchy/index.html?lang=ru"
+    },
+    {
+      "file": "justice-1440.png",
+      "sha256": "0171a10949a64e07d0a8802d2e515d599f8e609ddea1c084f4b525489582e90f",
+      "viewport": {
+        "width": 1440,
+        "height": 900,
+        "dpr": 1
+      },
+      "image": {
+        "width": 1440,
+        "height": 900
+      },
+      "state": {
+        "mode": "ready",
+        "selected": "justice",
+        "dialog": null,
+        "pending": false,
+        "textScale": 1
+      },
+      "url": "/evals/titlebot-hierarchy/index.html?"
+    },
+    {
+      "file": "duke-1440.png",
+      "sha256": "8331b2b7fb23214c5e756fd44fbc183a46609887e34196ba0a7737b51b155adb",
+      "viewport": {
+        "width": 1440,
+        "height": 900,
+        "dpr": 1
+      },
+      "image": {
+        "width": 1440,
+        "height": 900
+      },
+      "state": {
+        "mode": "ready",
+        "selected": "duke",
+        "dialog": null,
+        "pending": false,
+        "textScale": 1
+      },
+      "url": "/evals/titlebot-hierarchy/index.html?"
+    },
+    {
+      "file": "architect-1440.png",
+      "sha256": "9424a786b9835f90afd5b21fdd0d574c1f742eb93f1751a37728c9051d63907c",
+      "viewport": {
+        "width": 1440,
+        "height": 900,
+        "dpr": 1
+      },
+      "image": {
+        "width": 1440,
+        "height": 900
+      },
+      "state": {
+        "mode": "ready",
+        "selected": "architect",
+        "dialog": null,
+        "pending": false,
+        "textScale": 1
+      },
+      "url": "/evals/titlebot-hierarchy/index.html?"
+    },
+    {
+      "file": "scientist-1440.png",
+      "sha256": "ca4725debbf4758adc0559b3d5895265df3a99f973e58fca90d28148a0f455d7",
+      "viewport": {
+        "width": 1440,
+        "height": 900,
+        "dpr": 1
+      },
+      "image": {
+        "width": 1440,
+        "height": 900
+      },
+      "state": {
+        "mode": "ready",
+        "selected": "scientist",
+        "dialog": null,
+        "pending": false,
+        "textScale": 1
+      },
+      "url": "/evals/titlebot-hierarchy/index.html?"
+    },
+    {
+      "file": "commands-1440.png",
+      "sha256": "e3bf676c255e58a52760f3fd8aedb83f92fd7a7ca9967b486585a6fbe5a2f4f0",
+      "viewport": {
+        "width": 1440,
+        "height": 900,
+        "dpr": 1
+      },
+      "image": {
+        "width": 1440,
+        "height": 900
+      },
+      "state": {
+        "mode": "ready",
+        "selected": "justice",
+        "dialog": null,
+        "pending": false,
+        "textScale": 1
+      },
+      "url": "/evals/titlebot-hierarchy/index.html?"
+    },
+    {
+      "file": "settings-1440.png",
+      "sha256": "e8c1d2fe2673fee98564bf55359d40e618213fb7c248f386359eb5ca6a5a9cef",
+      "viewport": {
+        "width": 1440,
+        "height": 900,
+        "dpr": 1
+      },
+      "image": {
+        "width": 1440,
+        "height": 900
+      },
+      "state": {
+        "mode": "ready",
+        "selected": "justice",
+        "dialog": "settings",
+        "pending": false,
+        "textScale": 1
+      },
+      "url": "/evals/titlebot-hierarchy/index.html?"
+    },
+    {
+      "file": "confirmation-1440.png",
+      "sha256": "e31b25de1fab5e1b3942ee995453ecc730bca93a8310d7d31aad9b1b505fa47e",
+      "viewport": {
+        "width": 1440,
+        "height": 900,
+        "dpr": 1
+      },
+      "image": {
+        "width": 1440,
+        "height": 900
+      },
+      "state": {
+        "mode": "ready",
+        "selected": "justice",
+        "dialog": "advance",
+        "pending": false,
+        "textScale": 1
+      },
+      "url": "/evals/titlebot-hierarchy/index.html?"
+    },
+    {
+      "file": "vip-1440.png",
+      "sha256": "8157a149d97df1b62cb73bb2734a88fea377940af4a618e6f15fe31bb7c6e207",
+      "viewport": {
+        "width": 1440,
+        "height": 900,
+        "dpr": 1
+      },
+      "image": {
+        "width": 1440,
+        "height": 900
+      },
+      "state": {
+        "mode": "ready",
+        "selected": "justice",
+        "dialog": "vip",
+        "pending": false,
+        "textScale": 1
+      },
+      "url": "/evals/titlebot-hierarchy/index.html?"
+    },
+    {
+      "file": "blocked-1440.png",
+      "sha256": "02cd4667b660adfedb5612e953d7359e4b821009d8a437c76b548ae00a84f7c3",
+      "viewport": {
+        "width": 1440,
+        "height": 900,
+        "dpr": 1
+      },
+      "image": {
+        "width": 1440,
+        "height": 900
+      },
+      "state": {
+        "mode": "ready",
+        "selected": "justice",
+        "dialog": "blocked",
+        "pending": false,
+        "textScale": 1
+      },
+      "url": "/evals/titlebot-hierarchy/index.html?"
+    },
+    {
+      "file": "saving-390.png",
+      "sha256": "63c8ee356a93f08e6d849391487034693396d81b132dba476da74b8cbe686811",
+      "viewport": {
+        "width": 390,
+        "height": 900,
+        "dpr": 1
+      },
+      "image": {
+        "width": 390,
+        "height": 900
+      },
+      "state": {
+        "mode": "ready",
+        "selected": "justice",
+        "dialog": "settings",
+        "pending": true,
+        "textScale": 1
+      },
+      "url": "/evals/titlebot-hierarchy/index.html?fail=save&delay=650"
+    },
+    {
+      "file": "error-save-390.png",
+      "sha256": "364ef12da93c4f136306ef1697bcb2073ed4767f88fe0a478e81135b4d82c733",
+      "viewport": {
+        "width": 390,
+        "height": 900,
+        "dpr": 1
+      },
+      "image": {
+        "width": 390,
+        "height": 900
+      },
+      "state": {
+        "mode": "ready",
+        "selected": "justice",
+        "dialog": "settings",
+        "pending": false,
+        "textScale": 1
+      },
+      "url": "/evals/titlebot-hierarchy/index.html?fail=save&delay=650"
+    },
+    {
+      "file": "error-advance-390.png",
+      "sha256": "55beac98b476becec31a50237b9ae346edee57e9ccf3d06aa6a37086c488b234",
+      "viewport": {
+        "width": 390,
+        "height": 900,
+        "dpr": 1
+      },
+      "image": {
+        "width": 390,
+        "height": 900
+      },
+      "state": {
+        "mode": "ready",
+        "selected": "justice",
+        "dialog": "advance",
+        "pending": false,
+        "textScale": 1
+      },
+      "url": "/evals/titlebot-hierarchy/index.html?fail=advance&delay=650"
+    },
+    {
+      "file": "error-remove-390.png",
+      "sha256": "1a22ee84e839ce4d019c5cf8c0dec6a73e52e7822503f42aba7098e7a415300a",
+      "viewport": {
+        "width": 390,
+        "height": 900,
+        "dpr": 1
+      },
+      "image": {
+        "width": 390,
+        "height": 900
+      },
+      "state": {
+        "mode": "ready",
+        "selected": "justice",
+        "dialog": null,
+        "pending": false,
+        "textScale": 1
+      },
+      "url": "/evals/titlebot-hierarchy/index.html?fail=remove&delay=650"
+    },
+    {
+      "file": "error-add-390.png",
+      "sha256": "bd5f9cf204f403aaf881e2ea3d994f5a4d5bec28c64dd91ffb6f4c9a2687598a",
+      "viewport": {
+        "width": 390,
+        "height": 900,
+        "dpr": 1
+      },
+      "image": {
+        "width": 390,
+        "height": 900
+      },
+      "state": {
+        "mode": "ready",
+        "selected": "justice",
+        "dialog": "blocked",
+        "pending": false,
+        "textScale": 1
+      },
+      "url": "/evals/titlebot-hierarchy/index.html?fail=add&delay=650"
+    },
+    {
+      "file": "empty-390.png",
+      "sha256": "d515350b86a922e997de79e919c813dd1c2758abd84481db95554b9a157ca7e5",
+      "viewport": {
+        "width": 390,
+        "height": 900,
+        "dpr": 1
+      },
+      "image": {
+        "width": 390,
+        "height": 900
+      },
+      "state": {
+        "mode": "empty",
+        "selected": "justice",
+        "dialog": null,
+        "pending": false,
+        "textScale": 1
+      },
+      "url": "/evals/titlebot-hierarchy/index.html?state=empty"
+    },
+    {
+      "file": "loading-390.png",
+      "sha256": "40f10fa20ce190dfe4cd94e80a4721596b23a86b7e5a15d4aebc2c5d3f6f1155",
+      "viewport": {
+        "width": 390,
+        "height": 900,
+        "dpr": 1
+      },
+      "image": {
+        "width": 390,
+        "height": 900
+      },
+      "state": {
+        "mode": "loading",
+        "selected": "justice",
+        "dialog": null,
+        "pending": false,
+        "textScale": 1
+      },
+      "url": "/evals/titlebot-hierarchy/index.html?state=loading"
+    },
+    {
+      "file": "error-390.png",
+      "sha256": "1f576765a9c54ca881e1c48d3ec43ea49128b94e8ff709fbd06dc1baf673186b",
+      "viewport": {
+        "width": 390,
+        "height": 900,
+        "dpr": 1
+      },
+      "image": {
+        "width": 390,
+        "height": 900
+      },
+      "state": {
+        "mode": "error",
+        "selected": "justice",
+        "dialog": null,
+        "pending": false,
+        "textScale": 1
+      },
+      "url": "/evals/titlebot-hierarchy/index.html?state=error"
+    },
+    {
+      "file": "readonly-390.png",
+      "sha256": "037361a71a4ceb78ca78e1523ce9c87ab60f64672a0b2e95e216052f82ea2590",
+      "viewport": {
+        "width": 390,
+        "height": 900,
+        "dpr": 1
+      },
+      "image": {
+        "width": 390,
+        "height": 900
+      },
+      "state": {
+        "mode": "readonly",
+        "selected": "justice",
+        "dialog": null,
+        "pending": false,
+        "textScale": 1
+      },
+      "url": "/evals/titlebot-hierarchy/index.html?state=readonly"
+    },
+    {
+      "file": "settings-390.png",
+      "sha256": "2be2721d6b3e25626935c3490bc009a0fbb896c23528cc478289b164428ff234",
+      "viewport": {
+        "width": 390,
+        "height": 900,
+        "dpr": 1
+      },
+      "image": {
+        "width": 390,
+        "height": 900
+      },
+      "state": {
+        "mode": "ready",
+        "selected": "justice",
+        "dialog": "settings",
+        "pending": false,
+        "textScale": 1
+      },
+      "url": "/evals/titlebot-hierarchy/index.html?"
+    },
+    {
+      "file": "settings-russian-320.png",
+      "sha256": "2ab12520bb247f783587c6d21f59179005ad832c8ab06f45d90abca4c401002d",
+      "viewport": {
+        "width": 320,
+        "height": 900,
+        "dpr": 1
+      },
+      "image": {
+        "width": 320,
+        "height": 900
+      },
+      "state": {
+        "mode": "ready",
+        "selected": "justice",
+        "dialog": "settings",
+        "pending": false,
+        "textScale": 1
+      },
+      "url": "/evals/titlebot-hierarchy/index.html?lang=ru"
+    },
+    {
+      "file": "settings-russian-bottom-320.png",
+      "sha256": "59b81d3cd32a3be109e0278bdf4622f3e2b49a501d223a51cb622e5ac9aad0c2",
+      "viewport": {
+        "width": 320,
+        "height": 900,
+        "dpr": 1
+      },
+      "image": {
+        "width": 320,
+        "height": 900
+      },
+      "state": {
+        "mode": "ready",
+        "selected": "justice",
+        "dialog": "settings",
+        "pending": false,
+        "textScale": 1
+      },
+      "url": "/evals/titlebot-hierarchy/index.html?lang=ru"
+    }
+  ]
+}

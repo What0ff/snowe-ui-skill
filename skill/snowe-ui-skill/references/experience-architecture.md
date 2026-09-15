@@ -2,6 +2,8 @@
 
 Use this reference before art direction for new sites, products, page families, navigation systems, conversion journeys, and structural redesigns. Its purpose is to let architecture emerge from people, outcomes, content, and product relationships—not from a landing-page or dashboard recipe.
 
+For the hierarchy of one page with a known job and surrounding flow, use [page-hierarchy.md](page-hierarchy.md) at Focused depth. Do not begin a whole-journey exercise for that local composition. Use this broader reference when the product topology, page job or relationships themselves are unresolved.
+
 ## 1. Model the Whole Journey
 
 Start outside the interface.
@@ -85,19 +87,7 @@ Rules:
 
 ## 6. Define Every Page by Its Job
 
-A page contract contains:
-
-- entry states and user intent;
-- what the user must understand, decide, or do;
-- required objects, content, evidence, and states;
-- dominant question or action;
-- dependencies that determine content order;
-- contextual navigation and exits;
-- conversion or completion readiness;
-- loading, empty, partial, error, success, unavailable, permission, and recovery behavior;
-- responsive transformation and media strategy.
-
-Then compose the page. No opening hero, centered headline, feature grid, card count, sidebar, product gallery, testimonial section, or FAQ is mandatory. Use a conventional page structure when it is the clearest answer, but derive it from the page job.
+Define the page's entry state, job, objects, decision readiness and place in the journey. Then use [page-hierarchy.md](page-hierarchy.md) for its internal roles, reading/action order, copy, navigation and state-dependent grouping before selecting components. No hero, sidebar or card count is mandatory.
 
 ## 7. Commerce Architecture
 

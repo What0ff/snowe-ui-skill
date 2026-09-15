@@ -142,6 +142,7 @@ UNCERTAINTY_SURFACE_FIELDS = {
 }
 
 DIRECT_BROAD_REFERENCES = {
+    "page-hierarchy.md",
     "exploration-protocol.md",
     "experience-architecture.md",
     "art-direction-gate.md",
@@ -154,6 +155,7 @@ DIRECT_BROAD_REFERENCES = {
 }
 
 SCOPE_REFERENCE_UNIVERSE = {
+    "page-hierarchy.md",
     "exploration-protocol.md",
     "experience-architecture.md",
     "art-direction-gate.md",
@@ -335,8 +337,8 @@ escalation trigger:
 Inspect the real owner, its dependencies, sibling consumers, relevant states and breakpoints, and any shared contract before choosing a route. This is a change-surface inspection, not a semantic classifier. Start with the high-salience consequence—the user or system failure that matters if the correction is wrong—then trace the change surface: the actual set of owners and consumers that can be affected.
 Choose the smallest depth supported by that record:
 - **Direct** requires a bounded invariant in a coherent accepted system, a known or learned answer, and no newly affected sibling consumer or shared contract. Inspect the local owner and context, implement, render the affected state, and stop at the affected invariant. Direct work does not open a decision packet, broad research, candidate generation, architecture work, asset or motion exploration, or designer evaluation. It may load a directly relevant validation reference and may use rendered QA.
-- **Focused** is for one material choice inside an established experience, including a local symptom whose actual owner is shared. Prove the current baseline and the smallest credible challenger in the affected context and, for a shared owner, in representative sibling contexts. This is a shared-system proof, not a Portfolio workshop; do not widen to a whole journey unless the proof exposes a material contract uncertainty.
-- **Portfolio** activates only when inspection reveals material uncertainty in user goals, topology, journey, content/object relationships, interaction contracts, responsive transformations, or system contracts. A genuinely new experience, architecture, or identity normally exposes one or more of those uncertainties; prove which one before widening. Portfolio earns whole-journey framing, structurally different candidates, risky-slice prototypes, and the full relevant loop.
+- **Focused** is for a material choice in a known product/flow, including a shared owner or rebuilding the hierarchy of one page whose job and objects are understood. Use a page map before component choices for that hierarchy decision. Prove the current baseline and the smallest credible challenger in the affected context and, for a shared owner, in representative sibling contexts. This is a shared-system proof, not a Portfolio workshop; do not widen to a whole journey unless the proof exposes a material contract uncertainty.
+- **Portfolio** activates only when inspection reveals material uncertainty in user goals, topology, journey, content/object relationships, interaction contracts, responsive transformations, or system contracts. These are unresolved page jobs or wider product contracts, not merely the composition of known objects on one page. A genuinely new experience, architecture, or identity normally exposes one or more of those uncertainties; prove which one before widening. Portfolio earns whole-journey framing, structurally different candidates, risky-slice prototypes, and the full relevant loop.
 Depth is provisional. Escalate only when implementation or proof reveals one of the Portfolio uncertainties above, a newly affected owner/consumer, or a failed invariant that cannot be repaired locally. De-escalate when evidence closes the uncertainty. The record must name what was loaded, what was skipped, the proof that supports the chosen depth, and the explicit stop or escalation trigger; absence of a trigger is not evidence for broad work.
 Consequence changes proof intensity independently of process breadth. A narrow safety-, privacy-, financial-, or accessibility-critical invariant may remain Direct when its owner and answer are bounded, but its proof must cover the relevant failure/recovery path, input and assistive modes, adverse states, and rollback condition. High consequence is not permission to open unrelated architecture, research, or candidate work."""
 )
@@ -345,6 +347,7 @@ SKILL_ROUTE_CONTRACT_LINES = canonical_contract_lines(
     """## Route the Work
 Load only the references whose decision is active. Do not preload the library, and do not follow a nested link merely because another reference mentions that domain.
 - Read [exploration-protocol.md](references/exploration-protocol.md) when a material decision needs alternatives, causal comparison, or convergence. Skip it for a direct, already-bounded implementation fix.
+- Read [page-hierarchy.md](references/page-hierarchy.md) before component selection for an open single-page hierarchy, user-facing copy or action-duplication decision. It does not open whole-product architecture for a known page job.
 - Read [experience-architecture.md](references/experience-architecture.md) for a new site/product topology, page family, navigation model, conversion/task flow, or structural redesign. A narrow component fix does not need it.
 - Read [art-direction-gate.md](references/art-direction-gate.md) and [design-foundations.md](references/design-foundations.md) for a new identity, campaign, or material visual-system change. Preserve a coherent existing system unless evidence opens that decision.
 - Read [imagery-and-assets.md](references/imagery-and-assets.md) only when photography, illustration, diagrams, generated imagery, or a material custom visual is genuinely under consideration. A recorded no-image decision ends this route.
@@ -379,8 +382,8 @@ escalation trigger
 ```
 This is an evidence trace, not keyword or semantic classification. A request mentioning one component is not automatically Direct, and a multi-file change is not automatically Portfolio. Start with the high-salience consequence—the user or system failure that matters if the work is wrong—then trace the change surface: the real owner/consumer graph.
 - **Direct:** continue with this reference only if the answer is not already a bounded invariant. A coherent owner, no newly affected sibling consumer/shared contract, and known or learned behavior justify local implementation plus rendered QA. Stop at the affected invariant. Do not open a packet, broad research, candidate set, architecture exercise, asset/motion exploration, or evaluation route.
-- **Focused:** use this protocol for one material choice in an accepted experience, including a local symptom with a shared owner. Compare the current baseline with the smallest credible challenger in the affected context and representative sibling contexts. Call that a **shared-system proof**, not a whole-product workshop.
-- **Portfolio:** use the complete protocol only when evidence shows material uncertainty in user goals, topology, journey, content/object relationships, interaction, responsive transformation, or system contracts. A genuinely new experience/architecture/identity normally exposes one or more of those uncertainties; name the uncertainty before widening. Whole-journey framing and structurally different candidates are then proportionate.
+- **Focused:** use this protocol for one material choice in a known product/flow, including an open page hierarchy or a local symptom with a shared owner. Compare the current baseline with the smallest credible challenger in the affected context and representative sibling contexts. Call that a **shared-system proof**, not a whole-product workshop.
+- **Portfolio:** use the complete protocol only when evidence shows material uncertainty in user goals, topology, journey, content/object relationships, interaction, responsive transformation, or system contracts. These concern unresolved page jobs or wider product contracts; composition of known page objects stays Focused. A genuinely new experience/architecture/identity normally exposes one or more of those uncertainties; name the uncertainty before widening. Whole-journey framing and structurally different candidates are then proportionate.
 The depth record must state `references loaded`, `references not loaded`, `proof`, `stop`, and `escalation`. Escalate only if proof reveals a new owner/consumer, a failed invariant that cannot be repaired locally, or one of the material Portfolio uncertainties. Stop when the calibrated proof closes the live uncertainty; do not widen merely because more references exist."""
 )
 
@@ -396,14 +399,14 @@ Evidence required:
 - the affected invariant and state;
 - targeted implementation and rerender.
 ### Focused
-Use when one material choice inside an established experience is unresolved or a shared owner needs proof across sibling consumers. Keep the current product as a baseline and introduce challengers only for the decision that can materially improve. Do not promote a shared-system proof into Portfolio unless it exposes a material goal, topology, journey, content, interaction, responsive, or system-contract uncertainty.
+Use when a material choice inside a known page/flow is unresolved, its internal hierarchy needs rebuilding, or a shared owner needs proof across sibling consumers. Keep the current product as a baseline and introduce challengers only for the decision that can materially improve. Do not promote a shared-system proof into Portfolio unless it exposes a material goal, topology, journey, content, interaction, responsive, or system-contract uncertainty.
 Evidence required:
 - causal driver and expected consequence;
 - current baseline plus credible alternatives;
 - same-content comparison at the affected sizes and states;
 - accepted decision and revisit trigger.
 ### Portfolio
-Use for new experiences, site/page architecture, navigation, conversion models, identities, or high-impact unresolved work only when the calibration shows material uncertainty in those contracts. Generate enough candidates to cover the real trade-offs; do not enforce an arbitrary concept count.
+Use for new experiences, whole-product topology, unresolved page jobs, navigation, conversion models, identities, or high-impact unresolved work only when the calibration shows material uncertainty in those contracts. Generate enough candidates to cover the real trade-offs; do not enforce an arbitrary concept count.
 Evidence required:
 - whole-journey and content/object model;
 - structurally distinct candidates;
@@ -451,6 +454,28 @@ def scope_document_contract_failures(skill_text: str, exploration_text: str) -> 
     for line in skill_text.splitlines():
         if line.strip().startswith(("Every task must run architecture", "Preload the entire library for every task")):
             failures.append("Contradictory global scoped contract obligation")
+    return failures
+
+
+PAGE_HIERARCHY_CLAUSES = (
+    "A specified local property correction stays Direct.",
+    "This is a Focused route when the objects and surrounding product flow are known.",
+    "Only then choose grouping, composition, components and visual emphasis.",
+    "Never use a global forbidden-word list.",
+    "Identical row buttons for different objects are legitimate distinct actions.",
+    "verify it against the handler/destination",
+    "Record four separate outcomes: technical contract, evidence integrity, visual assessment and user acceptance.",
+    "Equally, approved quiet or native-looking controls are valid",
+)
+
+
+def page_hierarchy_contract_failures(documents: dict[str, str]) -> list[str]:
+    """Critical authored clauses/routes only; no semantic or aesthetic certification."""
+    guide = documents.get("page-hierarchy.md", "")
+    failures = [f"Page hierarchy clause missing: {clause}" for clause in PAGE_HIERARCHY_CLAUSES if clause not in guide]
+    for owner in ("SKILL.md", "experience-architecture.md", "exploration-protocol.md", "quality-gates.md"):
+        if "page-hierarchy.md" not in documents.get(owner, ""):
+            failures.append(f"Page hierarchy route missing: {owner}")
     return failures
 
 
@@ -506,6 +531,10 @@ def scope_calibration_contract(
     combined = (skill_text + "\n" + exploration_text).lower()
 
     failures.extend(scope_document_contract_failures(skill_text, exploration_text))
+    hierarchy_documents = {name: (SKILL_ROOT / "references" / name).read_text(encoding="utf-8")
+                           for name in ("page-hierarchy.md", "experience-architecture.md", "quality-gates.md")}
+    hierarchy_documents.update({"SKILL.md": skill_text, "exploration-protocol.md": exploration_text})
+    failures.extend(page_hierarchy_contract_failures(hierarchy_documents))
 
     missing_markers = [marker for marker in SCOPE_MARKERS if marker not in combined]
     if missing_markers:

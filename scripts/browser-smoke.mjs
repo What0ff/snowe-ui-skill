@@ -9,6 +9,8 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
+import { inspectUiContract } from "./ui-proof.mjs";
+import { runTitleBotPilot } from "./titlebot-pilot.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const CAPTURE = process.argv.includes("--capture");
@@ -19,7 +21,8 @@ const CAPTURE_VISUAL_ACCEPTANCE = process.argv.includes("--capture-visual-accept
 const CAPTURE_CORRECTION_TRANSFER = process.argv.includes("--capture-correction-transfer");
 const CAPTURE_ACCEPTANCE = process.argv.includes("--capture-acceptance-cases");
 const CAPTURE_DENSITY = process.argv.includes("--capture-density");
-const CHECKS_ONLY = process.argv.includes("--smoke") || (!CAPTURE && !CAPTURE_SODA && !CAPTURE_SODA_MOTION && !CAPTURE_GOODTURN && !CAPTURE_VISUAL_ACCEPTANCE && !CAPTURE_CORRECTION_TRANSFER && !CAPTURE_ACCEPTANCE && !CAPTURE_DENSITY);
+const CAPTURE_TITLEBOT = process.argv.includes("--capture-titlebot");
+const CHECKS_ONLY = process.argv.includes("--smoke") || (!CAPTURE && !CAPTURE_SODA && !CAPTURE_SODA_MOTION && !CAPTURE_GOODTURN && !CAPTURE_VISUAL_ACCEPTANCE && !CAPTURE_CORRECTION_TRANSFER && !CAPTURE_ACCEPTANCE && !CAPTURE_DENSITY && !CAPTURE_TITLEBOT);
 const SCENARIO_OPTION_INDEX = process.argv.indexOf("--scenario");
 const REQUESTED_SCENARIO = SCENARIO_OPTION_INDEX >= 0 ? process.argv[SCENARIO_OPTION_INDEX + 1] : null;
 if (SCENARIO_OPTION_INDEX >= 0 && (!REQUESTED_SCENARIO || REQUESTED_SCENARIO.startsWith("--"))) {
@@ -327,6 +330,11 @@ let diagnostics = null;
 
 async function configureClient(client, origin) {
   diagnostics = { exceptions: [], consoleErrors: [], failedRequests: [], badResponses: [] };
+  const requests = new Map();
+  client.on("Network.requestWillBeSent", ({requestId, request}) => {
+    requests.set(requestId, `${request.method} ${request.url}`);
+    if (requests.size > 2000) requests.delete(requests.keys().next().value);
+  });
   client.on("Runtime.exceptionThrown", ({ exceptionDetails }) => {
     diagnostics.exceptions.push(exceptionDetails?.exception?.description || exceptionDetails?.text || "Unknown runtime exception");
   });
@@ -335,7 +343,8 @@ async function configureClient(client, origin) {
     diagnostics.consoleErrors.push(args.map((arg) => arg.value ?? arg.description ?? "").join(" "));
   });
   client.on("Network.loadingFailed", ({ canceled, errorText, requestId }) => {
-    if (!canceled && errorText !== "net::ERR_ABORTED") diagnostics.failedRequests.push(`${requestId}: ${errorText}`);
+    if (!canceled && errorText !== "net::ERR_ABORTED") diagnostics.failedRequests.push(`${requests.get(requestId) || requestId}: ${errorText}`);
+    requests.delete(requestId);
   });
   client.on("Network.responseReceived", ({ response }) => {
     if (response.url.startsWith(origin) && response.status >= 400) diagnostics.badResponses.push(`${response.status} ${response.url}`);
@@ -568,7 +577,8 @@ async function setValue(client, selector, value) {
 }
 
 async function key(client, keyValue, code = keyValue) {
-  const nativeCode = keyValue === "End" ? {windowsVirtualKeyCode:35} : {};
+  const keyCodes = {End:35,Home:36,Escape:27,Tab:9,Enter:13,ArrowLeft:37,ArrowRight:39};
+  const nativeCode = keyCodes[keyValue] ? {windowsVirtualKeyCode:keyCodes[keyValue]} : {};
   await client.send("Input.dispatchKeyEvent", { type: "keyDown", key: keyValue, code, ...nativeCode });
   await client.send("Input.dispatchKeyEvent", { type: "keyUp", key: keyValue, code, ...nativeCode });
   await sleep(30);
@@ -1014,7 +1024,7 @@ async function auditGoodturnTypography(client, probe) {
 }
 
 async function runSmoke(client, origin) {
-  const available = new Set([...scenarios.map((scenario) => scenario.slug), "icon-decisions", "acceptance-cases", "density"]);
+  const available = new Set([...scenarios.map((scenario) => scenario.slug), "icon-decisions", "acceptance-cases", "density", "titlebot-hierarchy"]);
   if (REQUESTED_SCENARIO && !available.has(REQUESTED_SCENARIO)) {
     throw new Error(`Unknown --scenario ${REQUESTED_SCENARIO}; expected one of: ${[...available].join(", ")}`);
   }
@@ -1632,6 +1642,14 @@ async function runSmoke(client, origin) {
   }
   if (!REQUESTED_SCENARIO || REQUESTED_SCENARIO === 'acceptance-cases') await runAcceptanceCases(client, origin);
   if (!REQUESTED_SCENARIO || REQUESTED_SCENARIO === 'density') await runDensityCases(client, origin);
+  if (!REQUESTED_SCENARIO || REQUESTED_SCENARIO === 'titlebot-hierarchy') await runPilot(client, origin);
+}
+
+async function runPilot(client, origin, capture=false) {
+  const auditDiagnostics=()=>{
+    for(const [kind,items] of Object.entries(diagnostics)) check(items.length===0,`Title Bot ${kind}: ${items.join(' | ')}`);
+  };
+  passes.push(await runTitleBotPilot({client,origin,root:ROOT,navigate,evaluate,waitFor,setValue,key,check,auditDiagnostics,visibilityRegressions:runVisibilityRegressions},capture));
 }
 
 async function runDensityCases(client, origin, capture=false) {
@@ -1662,6 +1680,9 @@ async function runDensityCases(client, origin, capture=false) {
             placeholderSize:document.body.dataset.state==='empty'?getComputedStyle(document.querySelector('#holder')).fontSize:null};
         })()`);
         check(report.width===width && report.state===state && report.version===version && report.overflow<=1,'Density: wrong viewport/state or unexpected horizontal overflow');
+        const visibleContract = {required:[{id:'current-holder',selector:'#holder',kind:'text'}]};
+        const visible = await evaluate(client, `(${inspectUiContract.toString()})(${JSON.stringify(visibleContract)})`);
+        check(!visible.findings.length, `Density: required information is unavailable ${JSON.stringify(visible.findings)}`);
         if(version==='before') baseline=report;
         else {
           afterQueueAnchors.push(report.queueTop);
@@ -1683,12 +1704,33 @@ async function runDensityCases(client, origin, capture=false) {
           const file=`${version}-${state}-${width}.png`;await screenshotPng(client,path.join(dir,file));
           evidence.push({file,sha256:createHash('sha256').update(await readFile(path.join(dir,file))).digest('hex'),report});
         }
+        if(version==='after' && state==='empty' && width===1280) await runVisibilityRegressions(client,visibleContract);
       }
     }
     check(Math.max(...afterQueueAnchors)-Math.min(...afterQueueAnchors)<=8,'Density: state changes destabilized the working-content anchor');
   }
   if(capture) await writeFile(path.join(dir,'evidence.json'),JSON.stringify({fixtureSha256:createHash('sha256').update(await readFile(path.join(ROOT,'evals/density/fixture.html'))).digest('hex'),fontSha256:createHash('sha256').update(await readFile(path.join(ROOT,'benchmarks/bicycle-commerce/assets/fonts/manrope-latin.woff2'))).digest('hex'),captures:evidence},null,2)+'\n');
   passes.push('Operator density: identical empty/sparse/populated content, fixed chrome, preserved label/target sizes and long-queue keyboard scrolling at 1280/820/390; authored contract, not aesthetic certification');
+}
+
+async function runVisibilityRegressions(client, contract) {
+  const selector = contract.required[0].selector;
+  const original = await evaluate(client,`document.querySelector(${JSON.stringify(selector)}).getAttribute('style')`);
+  for (const mutation of ['opacity','clip','cover']) {
+    try {
+      await evaluate(client,`(() => {
+        const node=document.querySelector(${JSON.stringify(selector)});
+        if(${JSON.stringify(mutation)}==='opacity')node.style.opacity='0';
+        if(${JSON.stringify(mutation)}==='clip'){node.style.display='inline-block';node.style.maxWidth='8px';node.style.overflow='hidden';node.style.whiteSpace='nowrap';}
+        if(${JSON.stringify(mutation)}==='cover'){const b=node.getBoundingClientRect(),overlay=document.createElement('div');overlay.id='proof-occlusion';overlay.style.cssText='position:fixed;z-index:2147483647;background:#000;left:'+b.left+'px;top:'+b.top+'px;width:'+b.width+'px;height:'+b.height+'px';document.body.append(overlay);}
+      })()`);
+      const result = await evaluate(client,`(${inspectUiContract.toString()})(${JSON.stringify(contract)})`);
+      check(result.findings.some(item=>item.id===contract.required[0].id),`Visibility checker missed ${mutation}`);
+    } finally {
+      await evaluate(client,`(() => {const node=document.querySelector(${JSON.stringify(selector)});if(${JSON.stringify(original)}===null)node.removeAttribute('style');else node.setAttribute('style',${JSON.stringify(original)});document.querySelector('#proof-occlusion')?.remove()})()`);
+    }
+  }
+  check(!(await evaluate(client,`(${inspectUiContract.toString()})(${JSON.stringify(contract)})`)).findings.length,'Visibility mutations were not restored');
 }
 
 async function runIconStress(client, origin) {
@@ -2001,6 +2043,7 @@ async function main() {
     if (CAPTURE_CORRECTION_TRANSFER && failures.length === 0) await captureVisualAcceptance(client, origin, "correction-transfer");
     if (CAPTURE_ACCEPTANCE && failures.length === 0) await runAcceptanceCases(client, origin, true);
     if (CAPTURE_DENSITY && failures.length === 0) await runDensityCases(client, origin, true);
+    if (CAPTURE_TITLEBOT && failures.length === 0) await runPilot(client, origin, true);
   } finally {
     if (client) {
       try {

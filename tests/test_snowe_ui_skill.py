@@ -55,6 +55,7 @@ class SkillPackageTests(unittest.TestCase):
         references = (
             "exploration-protocol.md",
             "experience-architecture.md",
+            "page-hierarchy.md",
             "art-direction-gate.md",
             "design-foundations.md",
             "imagery-and-assets.md",

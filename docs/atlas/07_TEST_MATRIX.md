@@ -24,7 +24,7 @@ Checks installable Python syntax/import compilation. It does not validate Markdo
 python -m unittest discover -s tests -v
 ```
 
-Current inspected result: **205 tests run successfully, with one Windows directory-symlink capability skip**.
+Current inspected result: **215 tests run successfully, with one Windows directory-symlink capability skip**.
 
 - `tests/test_snowe_ui_skill.py`: package routing/docs, schema-3 unresolved framing, multilingual/ambiguity/unknown behavior, opt-in analogs, persistence/path safety, evidence deletion/schemas/claims, icon constraints, contrast, SVG, and CLI.
 - `tests/test_bicycle_benchmark.py`: Goodturn commercial content, local/provenanced assets, semantics, interactions, responsive/reduced motion, design trace, and screenshot coverage.
@@ -32,7 +32,8 @@ Current inspected result: **205 tests run successfully, with one Windows directo
 - `tests/test_soda_benchmark.py`: local/semantic product content, flavor/conversion disclosure, motion/responsive/reduced ownership, complete design trace/provenance, local SVG safety, screenshot/GIF evidence, README/live-URL positioning, Doppler smoke contracts, and Pages workflow/artifact-root contracts.
 - `tests/test_installation.py`: fresh exact install, stale-file-free reinstall, interrupted-run recovery/preservation, staging-failure cleanup, activation rollback, source/destination containment, exact public CLI copy, and current installation guidance.
 - `tests/test_scope_contract.py`: six materially different consequence/change-surface traces; exact reference/process/artifact/stop/escalation/reason mutations; unjustified widening and consequential flattening; high-consequence proof floors; depth-proportional delivery; and target-discovery guidance.
-- `tests/test_corrections.py`: identity-bound lifecycle, idempotency/conflicts, scope, required owner/state proof, stale/lost evidence, supersession inheritance, ledger preservation, hardlinks, atomic failure and concurrent records.
+- `tests/test_page_hierarchy.py`: critical page/copy/action routes and removal mutations, isolated pilot source/runner/capture/review bindings, distinct per-title fixture coverage and report-copy boundaries.
+- `tests/test_corrections.py`: definition/proof drift, pre-filter scope retention, legacy unbound confirmation, explicit re-verification, invalid structure, identity-bound lifecycle, idempotency/conflicts, scope, required owner/state proof, stale/lost evidence, supersession inheritance, ledger preservation, hardlinks, atomic failure and concurrent records.
 - `tests/test_install_migration.py`: identical/differing legacy copies, duplicate diagnostics, post-move rollback, process-death recovery and unsafe targets.
 - `tests/test_visual_acceptance.py`: visual-acceptance and correction-transfer fixture/capture hash binding, variant coverage, decoded JPEG width and measured viewport/document geometry, plus rejection of stale-source reuse; no aesthetic assertion.
 - `tests/test_icon_workflow.py`: strict SVG grammar/geometry/paint/path safety and resource budgets, structured source/license evidence byte bindings, metadata/provenance/schema boundaries, typed/digest/one-to-one host-state icon manifest binding, actual-owner dialog selection, deterministic comparison regeneration, no-icon behavior, unresolved repository-derived selection rejection, and manifest/asset/output redirection or alias protection.
@@ -229,3 +230,16 @@ Main smoke includes six authored before/after cases with current 900/390 PNGs: p
 The instruction fingerprint is an output revision identifier only. Critical route clauses and six authored consequence/scope traces still reject their tested contradictions; removed whole-document equality and obsolete stage wording are not semantic-quality evidence. Internal proof records remain detailed, while user-facing delivery is brief.
 
 The density fixture’s first tighter visual proposal was user-rejected and is not a visual KEEP. The current candidate changes grouping/selector composition and uses scoped identity cues; README distinguishes its technical contract from proposal/user acceptance. A correction regression ensures new user rejection reopens verified work even without source changes.
+
+### Single-page hierarchy and perceptible content
+
+```powershell
+node --check scripts/ui-proof.mjs
+node --check scripts/titlebot-pilot.mjs
+node --check evals/titlebot-hierarchy/app.js
+node scripts/browser-smoke.mjs --smoke --scenario titlebot-hierarchy
+node scripts/browser-smoke.mjs --capture-titlebot
+python -m unittest tests.test_page_hierarchy tests.test_corrections -v
+```
+
+Main smoke includes the isolated Title Bot pilot. It covers four widths (320/390/900/1440), 200% text, Russian, native accessible names, pointer/keyboard/focus behavior, independently keyed title data, one Settings entry, valid per-player actions, modal editing/validation/cancel/save, permission/loading/error states, local mutation failures/retries and duplicate-submit guards. Thirty lossless captures bind sources, runner, state and dimensions. The narrow settings scroller is inspected at both ends. Required-content mutation checks reject opacity-zero, clipped and covered values; action mutation checks reject different labels that call the same settings handler. Bounds and sampled occlusion are incomplete substitutes for human rendering review; they are never a taste score. The pilot README records the optional inspector-font probe limitation and separate manual review.

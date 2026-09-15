@@ -46,6 +46,10 @@ snowe-ui-skill/
 │   ├── designer-behavior/
 │   ├── icon-decisions/
 │   │   └── assets/
+│   ├── titlebot-hierarchy/
+│   │   ├── assets/
+│   │   │   └── fonts/
+│   │   └── captures/
 │   ├── typography/
 │   └── visual-acceptance/
 │       └── captures/
@@ -102,23 +106,23 @@ The generated map itself is excluded from the counts.
 
 | Extension | Files |
 | --- | --- |
-| `.md` | 61 |
+| `.png` | 73 |
+| `.md` | 64 |
 | `.jpg` | 52 |
-| `.png` | 42 |
 | `.csv` | 32 |
-| `.py` | 22 |
-| `.json` | 19 |
+| `.json` | 23 |
+| `.py` | 23 |
+| `.html` | 12 |
 | `.svg` | 12 |
-| `.html` | 11 |
-| `.txt` | 6 |
-| `.woff2` | 6 |
-| `.css` | 5 |
-| `.js` | 5 |
+| `.woff2` | 8 |
+| `.txt` | 7 |
+| `.css` | 6 |
+| `.js` | 6 |
 | `.webp` | 4 |
 | `[no extension]` | 4 |
+| `.mjs` | 3 |
 | `.yml` | 2 |
 | `.gif` | 1 |
-| `.mjs` | 1 |
 | `.yaml` | 1 |
 
 ## Where to look
@@ -138,6 +142,8 @@ The generated map itself is excluded from the counts.
 | Change a runtime dataset or schema (verify configured headers) | `skill/snowe-ui-skill/scripts/core.py` |
 | Change process-depth contracts or inspect bounded observed-host probes | `evals/designer-behavior/` |
 | Change the operational icon decision proof | `evals/icon-decisions/` |
+| Change or inspect the isolated Title Bot hierarchy pilot | `evals/titlebot-hierarchy/` |
+| Change required-content visibility or declared action identity checks | `scripts/ui-proof.mjs` |
 | Change or inspect the rendered bicycle benchmark | `benchmarks/bicycle-commerce/` |
 | Change standalone installation or update behavior | `scripts/install_skill.py` |
 | Add or focus regression coverage | `tests/` |

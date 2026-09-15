@@ -1,0 +1,85 @@
+{
+  "schema": "1.0",
+  "reviewer": "Implementing Codex agent; self-review, no subagents",
+  "date": "2026-09-15",
+  "evidence": {
+    "file": "captures/evidence.json",
+    "sha256": "2f58849289ae5560c1737ddb7457053e2c87a46538c4e991a85cf211677acc71"
+  },
+  "technicalContract": "PASS in the bound runner evidence",
+  "evidenceIntegrity": "Source, runner and image digests are checked separately by tests.test_page_hierarchy",
+  "visualAssessment": {
+    "status": "SELF_REVIEWED",
+    "finding": "The page now distinguishes resource context, title selection, related assignment facts, the current operation and the queue. The single assignment surface groups owner/next/durations; the queue has a consistent reading rhythm. No clipped or overlapping required text remained in the inspected current states. This is a restrained candidate within the original palette, not a newly approved visual identity.",
+    "corrections": [
+      "Initial admin-like treatment revised through grouping, role prominence and consistent checkboxes.",
+      "Broken narrow Russian title replaced by a full-width navigation row.",
+      "Narrow settings error moved out of the scrolling body next to the footer actions; failure also restores keyboard focus.",
+      "Modal screenshots restricted to the real viewport rather than synthesizing below-viewport backdrop pixels."
+    ],
+    "limits": [
+      "Enlarged text deliberately increases vertical page length; the data queue still has its own scroll owner.",
+      "Narrow settings require scrolling inside the body; top and bottom states were inspected.",
+      "One author and one pilot do not establish independent taste, user recognition or future generation quality."
+    ]
+  },
+  "userAcceptance": "UNCONFIRMED",
+  "inspectedCaptures": [
+    "ready-320.png",
+    "text200-320.png",
+    "ready-390.png",
+    "text200-390.png",
+    "ready-900.png",
+    "text200-900.png",
+    "ready-1440.png",
+    "text200-1440.png",
+    "russian-390.png",
+    "justice-1440.png",
+    "duke-1440.png",
+    "architect-1440.png",
+    "scientist-1440.png",
+    "commands-1440.png",
+    "settings-1440.png",
+    "confirmation-1440.png",
+    "vip-1440.png",
+    "blocked-1440.png",
+    "saving-390.png",
+    "error-save-390.png",
+    "error-advance-390.png",
+    "error-remove-390.png",
+    "error-add-390.png",
+    "empty-390.png",
+    "loading-390.png",
+    "error-390.png",
+    "readonly-390.png",
+    "settings-390.png",
+    "settings-russian-320.png",
+    "settings-russian-bottom-320.png"
+  ],
+  "stateFindings": [
+    {
+      "scope": "ready and four title contexts",
+      "finding": "Selected title is distinct; holder, next, duration and action remain one related group. Empty states have no artificial tall well."
+    },
+    {
+      "scope": "320/390/900/1440 and 200% text",
+      "finding": "Text remains readable and complete. Enlargement changes line and tab wrapping; it is accessibility stress, not an alternate default density."
+    },
+    {
+      "scope": "Russian page and settings scroller",
+      "finding": "Long title is whole; field labels, units, footer actions and both scroll positions remain legible."
+    },
+    {
+      "scope": "commands, VIP, blocked, confirmation",
+      "finding": "Reference aliases and IDs are present in their proper context. Separate operations have distinct destinations; no second settings entry appears."
+    },
+    {
+      "scope": "loading, unavailable, view-only and pending",
+      "finding": "State/recovery copy is local to the task. Disabled actions remain distinguishable from available supporting operations."
+    },
+    {
+      "scope": "save/advance/remove/add failures",
+      "finding": "Current data is retained and the recovery message is visible near the affected operation. The settings footer error was checked after repair."
+    }
+  ]
+}

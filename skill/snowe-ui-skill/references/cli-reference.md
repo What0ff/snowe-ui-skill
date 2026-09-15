@@ -214,7 +214,7 @@ The sheet is representative comparison evidence, not a pixel-identical host rend
 
 New icon comparison manifests use schema `1.1` and explicit `lang` (language tag) and `dir` (`ltr`, `rtl`, `auto`) on every context. Version `1.0` remains readable with `en`/`ltr` defaults. The attributes belong to the preview content; English inspector metadata retains its own language. The renderer handles long headers and text alternatives with wrapping and height growth, not clipping. Language is never inferred from label vocabulary.
 
-For identity-bound correction commands, JSON schemas, proof requirements and exit codes, use [correction-memory.md](correction-memory.md#checked-journal-commands). These commands work independently of decision-packet generation and preserve an existing `DECISIONS.md`.
+For identity-bound correction commands, JSON schemas, proof requirements and exit codes, use [correction-memory.md](correction-memory.md#checked-journal-commands). These commands work independently of decision-packet generation and preserve an existing `DECISIONS.md`. A changed definition/proof or legacy verification without its snapshot requires explicit re-verification; a scope edit cannot hide the last confirmed obligation. See the journal reference for the separate `list.review_required` result and `check` exit dispositions.
 
 ## Check an Exact Opaque Color Pair
 

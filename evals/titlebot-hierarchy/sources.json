@@ -1,0 +1,17 @@
+{
+  "boundary": "Read-only frontend contract snapshot; no dependency on its filesystem location",
+  "snapshot_date": "2026-09-15",
+  "frontend_files": {
+    "TitleBotPanel.js": "bcf5420c0a0be3e0a429e7b12ef4cdae05e7da65f26cd780e0f9cf6cdb9d31d4",
+    "titleBotModel.js": "4860b47f4c22b734cbac40260b667f4b1231a6e487fa1b732d0c28403fb280ea",
+    "TitleBotSettingsDialog.js": "a4338fdfa881f4beda5c832227e81892610bb0846fc533fbea7f470ecca5cb0a",
+    "TitleBotListDialog.js": "ed205d512798b74dd88b1d0aa64a5f7cf9217752c4e117bed8da892bda59299b",
+    "titleBot.css": "aae3b976460211f9ed83c92fb4369ba8b7b51be816d9951c3bd5ea29653bd717",
+    "TitleBotIcon.js": "2d99c0cd8980586e2c128f9719cbfd3463e7897be7baa23c47758f33606f3c3a"
+  },
+  "fonts": {
+    "inter-v20-cyrillic.woff2": "aebf2ab4a4ce6810d73c1ac7be7cafb4e5ec4cee2d6db5fb3e09691747ec4bd6",
+    "inter-v20-latin.woff2": "c940764593d0fe5d596be327ca7558855e018039fb78509aa21921fd3644c3e4",
+    "OFL-inter.txt": "5b9321a4298cfeb6b34354164a1c3afc3db114569984c502b9b35d988fd58c57"
+  }
+}
