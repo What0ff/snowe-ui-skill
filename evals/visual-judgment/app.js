@@ -1,5 +1,6 @@
 // Fictional evaluation data; no production service, network mutation or debug UI.
 const query=new URLSearchParams(location.search);
+document.body.dataset.palette=['soft','vivid','ocean','plum'].includes(query.get('palette'))?query.get('palette'):'soft';
 document.body.dataset.variant=['a','b','c','d'].includes(query.get('v'))?query.get('v'):'c';
 let state=['running','complete','error'].includes(query.get('state'))?query.get('state'):'running';
 const states={

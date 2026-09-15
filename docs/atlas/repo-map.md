@@ -39,6 +39,9 @@ snowe-ui-skill/
 ├── evals/  # deterministic behavior contracts and bounded operational proofs
 │   ├── acceptance-cases/
 │   │   └── captures/
+│   ├── color-intensity/
+│   │   ├── captures/
+│   │   └── reviews/
 │   ├── correction-transfer/
 │   │   └── captures/
 │   ├── density/
@@ -110,12 +113,12 @@ The generated map itself is excluded from the counts.
 
 | Extension | Files |
 | --- | --- |
-| `.png` | 97 |
-| `.md` | 65 |
+| `.png` | 121 |
+| `.md` | 66 |
 | `.jpg` | 52 |
+| `.json` | 39 |
 | `.csv` | 32 |
-| `.json` | 31 |
-| `.py` | 27 |
+| `.py` | 28 |
 | `.html` | 13 |
 | `.svg` | 12 |
 | `.woff2` | 8 |
@@ -150,6 +153,7 @@ The generated map itself is excluded from the counts.
 | Change required-content visibility or declared action identity checks | `scripts/ui-proof.mjs` |
 | Change checked visual verdicts and state/source evidence | `skill/snowe-ui-skill/scripts/visual_review.py` |
 | Inspect technically valid but weak visual examples | `evals/visual-judgment/` |
+| Inspect full-page color roles and contextual rejection | `evals/color-intensity/` |
 | Change or inspect the rendered bicycle benchmark | `benchmarks/bicycle-commerce/` |
 | Change standalone installation or update behavior | `scripts/install_skill.py` |
 | Add or focus regression coverage | `tests/` |

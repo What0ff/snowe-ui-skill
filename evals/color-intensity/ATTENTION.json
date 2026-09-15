@@ -1,0 +1,68 @@
+{
+  "schema": "1.0",
+  "scope": "Context-appropriate whole-page color selection for the SnoweStats operator page",
+  "states": [
+    {
+      "id": "complete",
+      "question": "Does color character extend through the completed-run page and its data region?",
+      "priority": [
+        "Palette belongs to the product and the stated direction",
+        "Coherent canvas, panel and table colors",
+        "Result action",
+        "Readable status colors"
+      ],
+      "cues": [
+        "Related colored surfaces with distinct layer tones",
+        "Separate filled-action and foreground roles",
+        "Legible body and table-header text",
+        "Hue family and large color areas have a contextual reason beyond avoiding gray"
+      ],
+      "competing": [
+        "Unexplained default gray surfaces",
+        "Uniform pale accents",
+        "An unrelated full-page color skin"
+      ]
+    },
+    {
+      "id": "error",
+      "question": "Does the error remain clear inside the same complete color system?",
+      "priority": [
+        "Palette belongs to the product and the stated direction",
+        "Problem and recovery",
+        "Related page/table palette",
+        "Supporting status colors"
+      ],
+      "cues": [
+        "Readable error foreground",
+        "On-color action text",
+        "Palette continuity beyond the main action",
+        "Hue family and large color areas have a contextual reason beyond avoiding gray"
+      ],
+      "competing": [
+        "Saturation everywhere without role distinction",
+        "Residual neutral component defaults",
+        "An unrelated full-page color skin"
+      ]
+    },
+    {
+      "id": "modal",
+      "question": "Does the open dialog belong to the page palette with readable content and controls?",
+      "priority": [
+        "Palette belongs to the product and the stated direction",
+        "Dialog surface and content",
+        "Dialog control",
+        "Dimmed page context"
+      ],
+      "cues": [
+        "A related elevated surface tone",
+        "Foreground and control contrast",
+        "No unplanned gray dialog fallback",
+        "Hue family and large color areas have a contextual reason beyond avoiding gray"
+      ],
+      "competing": [
+        "Independent library-default modal colors",
+        "An unrelated full-page color skin"
+      ]
+    }
+  ]
+}

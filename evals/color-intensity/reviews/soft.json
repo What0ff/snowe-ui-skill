@@ -1,0 +1,160 @@
+{
+  "schema": "2.0",
+  "scope": "Context-appropriate whole-page color selection for the SnoweStats operator page",
+  "method": "self-review",
+  "reviewer": "Implementing Codex agent after user feedback",
+  "contract": {
+    "path": "evals/color-intensity/ATTENTION.json",
+    "sha256": "32f5d9c90a1ac2e6dca7e9a403367c602d13942cf3bef4a8974f4992c3d11091"
+  },
+  "sources": [
+    {
+      "path": "evals/color-intensity/PALETTES.json",
+      "sha256": "a9ce8eba0b297df734defc14584ade2a4acd7b415649e10449d368b34570f44d"
+    },
+    {
+      "path": "evals/visual-judgment/index.html",
+      "sha256": "b9dad3b410fb231a2c4df77c838a79f0cfc83502fe5e84fa76cec42e01fc124f"
+    },
+    {
+      "path": "evals/visual-judgment/app.js",
+      "sha256": "29c3769d5ae9fa676308fac03752316d8fbb0adce910223d28a13db7ce008ac4"
+    },
+    {
+      "path": "evals/visual-judgment/styles.css",
+      "sha256": "bdda07b63e240e32b1999546c336cfa242d676cf62fc8d1dcfef5fa60185cc91"
+    },
+    {
+      "path": "scripts/visual-judgment.mjs",
+      "sha256": "9b01d12ebc0734d89b598a4fc08dfa8166f6d15381b5985ad0531cfd71ac0d0a"
+    },
+    {
+      "path": "evals/color-intensity/captures/evidence.json",
+      "sha256": "e7bcfdeb4365d740fd4ff513bd752264b58aa2be35fe0a2203e55e0a33e374df"
+    },
+    {
+      "path": "evals/color-intensity/CONTEXT.json",
+      "sha256": "da942f7310216ad1d8ccddd791cd688f35922ec58ddfadfc3ba8d19433851e4b"
+    },
+    {
+      "path": "evals/titlebot-hierarchy/assets/fonts/inter-v20-latin.woff2",
+      "sha256": "c940764593d0fe5d596be327ca7558855e018039fb78509aa21921fd3644c3e4"
+    },
+    {
+      "path": "evals/titlebot-hierarchy/assets/fonts/inter-v20-cyrillic.woff2",
+      "sha256": "aebf2ab4a4ce6810d73c1ac7be7cafb4e5ec4cee2d6db5fb3e09691747ec4bd6"
+    }
+  ],
+  "renders": [
+    {
+      "path": "evals/color-intensity/captures/soft-complete-900.png",
+      "sha256": "3c2164dcc79fb063b58db8beab5f827b1e6c233a1d4d1ee6b9c6103d644e66e8",
+      "state": "complete",
+      "viewport": "900x1000@1"
+    },
+    {
+      "path": "evals/color-intensity/captures/soft-modal-900.png",
+      "sha256": "5416234cb497f865fe8416de8b25b9ec6ac9d1663261f6f12bb7edd99873218c",
+      "state": "modal",
+      "viewport": "900x1000@1"
+    },
+    {
+      "path": "evals/color-intensity/captures/soft-error-900.png",
+      "sha256": "bbfca7026e21381b726887e7d61e234965409522d0389203a07f62c588c56132",
+      "state": "error",
+      "viewport": "900x1000@1"
+    },
+    {
+      "path": "evals/color-intensity/captures/soft-complete-390.png",
+      "sha256": "263263510a847f804da60fd82fa65652bf25875ceaa5085d9b71a56e4f816651",
+      "state": "complete",
+      "viewport": "390x1000@1"
+    },
+    {
+      "path": "evals/color-intensity/captures/soft-modal-390.png",
+      "sha256": "4a610e992f61b8cd0fe9054ddf1db1459b0d3d29841e22c809890488109fbf6c",
+      "state": "modal",
+      "viewport": "390x1000@1"
+    },
+    {
+      "path": "evals/color-intensity/captures/soft-error-390.png",
+      "sha256": "bc05eaee731ab4623c829a44ff0567edbae6bbb116c81baf328f43ccc38a53ec",
+      "state": "error",
+      "viewport": "390x1000@1"
+    }
+  ],
+  "visualAssessment": {
+    "verdict": "REVISE",
+    "finding": "The pale accent roles and unchanged neutral surfaces do not resolve the user-requested whole-page color direction. Their technical readability is not an acceptance reason for this scope.",
+    "assessments": [
+      {
+        "state": "complete",
+        "renders": [
+          "evals/color-intensity/captures/soft-complete-900.png",
+          "evals/color-intensity/captures/soft-complete-390.png"
+        ],
+        "observedAttention": [
+          "Accent action",
+          "Neutral table/dialog surfaces"
+        ],
+        "finding": "The pale accent roles and unchanged neutral surfaces do not resolve the user-requested whole-page color direction. Their technical readability is not an acceptance reason for this scope.",
+        "verdict": "REVISE"
+      },
+      {
+        "state": "error",
+        "renders": [
+          "evals/color-intensity/captures/soft-error-900.png",
+          "evals/color-intensity/captures/soft-error-390.png"
+        ],
+        "observedAttention": [
+          "Accent action",
+          "Neutral table/dialog surfaces"
+        ],
+        "finding": "The pale accent roles and unchanged neutral surfaces do not resolve the user-requested whole-page color direction. Their technical readability is not an acceptance reason for this scope.",
+        "verdict": "REVISE"
+      },
+      {
+        "state": "modal",
+        "renders": [
+          "evals/color-intensity/captures/soft-modal-900.png",
+          "evals/color-intensity/captures/soft-modal-390.png"
+        ],
+        "observedAttention": [
+          "Accent action",
+          "Neutral table/dialog surfaces"
+        ],
+        "finding": "The pale accent roles and unchanged neutral surfaces do not resolve the user-requested whole-page color direction. Their technical readability is not an acceptance reason for this scope.",
+        "verdict": "REVISE"
+      }
+    ],
+    "findings": [
+      {
+        "id": "soft-context",
+        "states": [
+          "complete",
+          "error",
+          "modal"
+        ],
+        "owner": "Whole-page palette rationale and color area",
+        "observation": "The pale accent roles and unchanged neutral surfaces do not resolve the user-requested whole-page color direction. Their technical readability is not an acceptance reason for this scope.",
+        "consequence": "The proposed palette is not adequately justified for the requested product direction despite correct contrast.",
+        "blocking": true,
+        "status": "open",
+        "renders": [
+          "evals/color-intensity/captures/soft-complete-900.png",
+          "evals/color-intensity/captures/soft-modal-900.png",
+          "evals/color-intensity/captures/soft-error-900.png",
+          "evals/color-intensity/captures/soft-complete-390.png",
+          "evals/color-intensity/captures/soft-modal-390.png",
+          "evals/color-intensity/captures/soft-error-390.png"
+        ]
+      }
+    ]
+  },
+  "userAcceptance": "UNCONFIRMED",
+  "notes": [
+    "These are retained negative examples, not production recommendations or universal hue bans.",
+    "The technical color/contrast tests intentionally pass. Actual suitability requires a separate contextual judgment.",
+    "No third arbitrary palette was introduced in response to rejection; the selection rationale must be revisited first."
+  ]
+}

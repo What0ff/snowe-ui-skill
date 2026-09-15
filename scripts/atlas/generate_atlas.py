@@ -76,6 +76,7 @@ ROUTER = (
     ("Change required-content visibility or declared action identity checks", "scripts/ui-proof.mjs"),
     ("Change checked visual verdicts and state/source evidence", "skill/snowe-ui-skill/scripts/visual_review.py"),
     ("Inspect technically valid but weak visual examples", "evals/visual-judgment/"),
+    ("Inspect full-page color roles and contextual rejection", "evals/color-intensity/"),
     ("Change or inspect the rendered bicycle benchmark", "benchmarks/bicycle-commerce/"),
     ("Change standalone installation or update behavior", "scripts/install_skill.py"),
     ("Add or focus regression coverage", "tests/"),

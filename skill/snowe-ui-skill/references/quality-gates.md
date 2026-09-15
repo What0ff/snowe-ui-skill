@@ -176,6 +176,9 @@ Review the rendered whole before isolated components:
 - Is the opening's height and emphasis proportionate to the visitor's task and frequency? In a returning-user task surface, inspect how far branding or introductory copy displaces the first useful choice, particularly on narrow screens; preserve character without burying the task.
 - Does real content expose false symmetry, repetitive cards, weak grouping, or a generic page pattern?
 - Are type, color/material, shape, imagery/graphics, icons, and motion one thesis with explainable role boundaries?
+- Does actual color intensity match the intended role and user/brand direction? Check fill versus foreground and on-color text separately, including compositing and interactive states. If an open accent choice repeatedly collapses to pale tints, use the same-content intensity comparison in [design-foundations.md](design-foundations.md#color-and-material); neutrality or maximum saturation alone does not prove quality.
+- Is the whole palette resolved in tables, dialogs, fields and supporting surfaces as well as primary actions, and does it belong to this product? Inspect an open overlay and repeated data region beside the page. Neither unexplained default grays nor a mechanically tinted full-page skin closes that decision; name the contextual rationale and whether large color areas help or overpower the work.
+- Was the palette selected from a product-specific direction before implementation and then challenged in the render, or merely rationalized after painting? An unresolved comparison or readable but contextually weak palette is not a finished color result to hand to the user.
 - Is the identity carrier distinctive, useful, and repeated with restraint?
 - Do imagery and custom assets remain truthful, well cropped, optically balanced, and coherent at actual size?
 - Are controls recognizable and important actions proportionate rather than theatrically oversized?

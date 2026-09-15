@@ -51,6 +51,10 @@ Directions must differ where the product tension lives. They may differ through:
 
 Do not manufacture distinction with arbitrary palettes, radii, icon swaps, or effects. Do not force all dimensions to differ when the brief does not justify it.
 
+When color expression is the open decision, compare actual role palettes using the [color and material rules](design-foundations.md#color-and-material). Tie the chosen hue family and color area to product evidence and the intended task/identity, then explain the role of chroma and lightness. Neither a uniformly pale accent set nor an arbitrary full-page hue is an unquestioned starting point.
+
+Complete that selection before scaling the implementation or presenting it as finished. The agent owns ordinary reversible palette choices; internal comparison must lead to a justified selected direction, not a menu that requires the user to become the designer. A swatch set, readable color pairs or a theme-name explanation cannot replace the full-context judgment.
+
 ## 4. Work With Real Content
 
 Every direction must survive:

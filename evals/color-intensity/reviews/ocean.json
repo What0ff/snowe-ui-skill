@@ -1,0 +1,160 @@
+{
+  "schema": "2.0",
+  "scope": "Context-appropriate whole-page color selection for the SnoweStats operator page",
+  "method": "self-review",
+  "reviewer": "Implementing Codex agent after user feedback",
+  "contract": {
+    "path": "evals/color-intensity/ATTENTION.json",
+    "sha256": "32f5d9c90a1ac2e6dca7e9a403367c602d13942cf3bef4a8974f4992c3d11091"
+  },
+  "sources": [
+    {
+      "path": "evals/color-intensity/PALETTES.json",
+      "sha256": "a9ce8eba0b297df734defc14584ade2a4acd7b415649e10449d368b34570f44d"
+    },
+    {
+      "path": "evals/visual-judgment/index.html",
+      "sha256": "b9dad3b410fb231a2c4df77c838a79f0cfc83502fe5e84fa76cec42e01fc124f"
+    },
+    {
+      "path": "evals/visual-judgment/app.js",
+      "sha256": "29c3769d5ae9fa676308fac03752316d8fbb0adce910223d28a13db7ce008ac4"
+    },
+    {
+      "path": "evals/visual-judgment/styles.css",
+      "sha256": "bdda07b63e240e32b1999546c336cfa242d676cf62fc8d1dcfef5fa60185cc91"
+    },
+    {
+      "path": "scripts/visual-judgment.mjs",
+      "sha256": "9b01d12ebc0734d89b598a4fc08dfa8166f6d15381b5985ad0531cfd71ac0d0a"
+    },
+    {
+      "path": "evals/color-intensity/captures/evidence.json",
+      "sha256": "e7bcfdeb4365d740fd4ff513bd752264b58aa2be35fe0a2203e55e0a33e374df"
+    },
+    {
+      "path": "evals/color-intensity/CONTEXT.json",
+      "sha256": "da942f7310216ad1d8ccddd791cd688f35922ec58ddfadfc3ba8d19433851e4b"
+    },
+    {
+      "path": "evals/titlebot-hierarchy/assets/fonts/inter-v20-latin.woff2",
+      "sha256": "c940764593d0fe5d596be327ca7558855e018039fb78509aa21921fd3644c3e4"
+    },
+    {
+      "path": "evals/titlebot-hierarchy/assets/fonts/inter-v20-cyrillic.woff2",
+      "sha256": "aebf2ab4a4ce6810d73c1ac7be7cafb4e5ec4cee2d6db5fb3e09691747ec4bd6"
+    }
+  ],
+  "renders": [
+    {
+      "path": "evals/color-intensity/captures/ocean-complete-900.png",
+      "sha256": "d4bb7ceb071614bc4c35d63f92661b74a6a616f3874f3bb47ae001ac05a7d541",
+      "state": "complete",
+      "viewport": "900x1000@1"
+    },
+    {
+      "path": "evals/color-intensity/captures/ocean-modal-900.png",
+      "sha256": "293fe9fb280c18d83846e9a093db0697612072752e8d63cc2ef5d12f83bcb063",
+      "state": "modal",
+      "viewport": "900x1000@1"
+    },
+    {
+      "path": "evals/color-intensity/captures/ocean-error-900.png",
+      "sha256": "0a86ed49fe3870bced9e54c48117251159808ea25b27c50cdac976d939b5b0dc",
+      "state": "error",
+      "viewport": "900x1000@1"
+    },
+    {
+      "path": "evals/color-intensity/captures/ocean-complete-390.png",
+      "sha256": "51b19e93e0ce0dacd52637e431430fdb6ccbdd3b1f0eaaf9b20f4fc91be6d89d",
+      "state": "complete",
+      "viewport": "390x1000@1"
+    },
+    {
+      "path": "evals/color-intensity/captures/ocean-modal-390.png",
+      "sha256": "ecd78d77cf792e8d5a0d048381fa7c668ca5ac69a3959c71c07702b85fe40b9d",
+      "state": "modal",
+      "viewport": "390x1000@1"
+    },
+    {
+      "path": "evals/color-intensity/captures/ocean-error-390.png",
+      "sha256": "82fbafa4c4e5e0ea0595aa8a8d67be23dd8a605ca1d88444aec59c449af745fc",
+      "state": "error",
+      "viewport": "390x1000@1"
+    }
+  ],
+  "visualAssessment": {
+    "verdict": "REJECT",
+    "finding": "The ocean family is internally coherent and legible, but its large colored surfaces impose a new identity without a sufficient SnoweStats/task basis. The user questioned the suitability; author reassessment rejects this direction rather than treating non-gray paint as success.",
+    "assessments": [
+      {
+        "state": "complete",
+        "renders": [
+          "evals/color-intensity/captures/ocean-complete-900.png",
+          "evals/color-intensity/captures/ocean-complete-390.png"
+        ],
+        "observedAttention": [
+          "Large themed surfaces",
+          "Data and actions"
+        ],
+        "finding": "The ocean family is internally coherent and legible, but its large colored surfaces impose a new identity without a sufficient SnoweStats/task basis. The user questioned the suitability; author reassessment rejects this direction rather than treating non-gray paint as success.",
+        "verdict": "REJECT"
+      },
+      {
+        "state": "error",
+        "renders": [
+          "evals/color-intensity/captures/ocean-error-900.png",
+          "evals/color-intensity/captures/ocean-error-390.png"
+        ],
+        "observedAttention": [
+          "Large themed surfaces",
+          "Data and actions"
+        ],
+        "finding": "The ocean family is internally coherent and legible, but its large colored surfaces impose a new identity without a sufficient SnoweStats/task basis. The user questioned the suitability; author reassessment rejects this direction rather than treating non-gray paint as success.",
+        "verdict": "REJECT"
+      },
+      {
+        "state": "modal",
+        "renders": [
+          "evals/color-intensity/captures/ocean-modal-900.png",
+          "evals/color-intensity/captures/ocean-modal-390.png"
+        ],
+        "observedAttention": [
+          "Large themed surfaces",
+          "Data and actions"
+        ],
+        "finding": "The ocean family is internally coherent and legible, but its large colored surfaces impose a new identity without a sufficient SnoweStats/task basis. The user questioned the suitability; author reassessment rejects this direction rather than treating non-gray paint as success.",
+        "verdict": "REJECT"
+      }
+    ],
+    "findings": [
+      {
+        "id": "ocean-context",
+        "states": [
+          "complete",
+          "error",
+          "modal"
+        ],
+        "owner": "Whole-page palette rationale and color area",
+        "observation": "The ocean family is internally coherent and legible, but its large colored surfaces impose a new identity without a sufficient SnoweStats/task basis. The user questioned the suitability; author reassessment rejects this direction rather than treating non-gray paint as success.",
+        "consequence": "The proposed palette is not adequately justified for the requested product direction despite correct contrast.",
+        "blocking": true,
+        "status": "open",
+        "renders": [
+          "evals/color-intensity/captures/ocean-complete-900.png",
+          "evals/color-intensity/captures/ocean-modal-900.png",
+          "evals/color-intensity/captures/ocean-error-900.png",
+          "evals/color-intensity/captures/ocean-complete-390.png",
+          "evals/color-intensity/captures/ocean-modal-390.png",
+          "evals/color-intensity/captures/ocean-error-390.png"
+        ]
+      }
+    ]
+  },
+  "userAcceptance": "UNCONFIRMED",
+  "notes": [
+    "These are retained negative examples, not production recommendations or universal hue bans.",
+    "The technical color/contrast tests intentionally pass. Actual suitability requires a separate contextual judgment.",
+    "No third arbitrary palette was introduced in response to rejection; the selection rationale must be revisited first."
+  ]
+}

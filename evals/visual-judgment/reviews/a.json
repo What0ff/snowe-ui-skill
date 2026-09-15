@@ -15,11 +15,11 @@
     },
     {
       "path": "evals/visual-judgment/app.js",
-      "sha256": "eccd9916099a0aa3da84c9412d7f654e49d6cdea0d9b558099248a84820dccb4"
+      "sha256": "29c3769d5ae9fa676308fac03752316d8fbb0adce910223d28a13db7ce008ac4"
     },
     {
       "path": "evals/visual-judgment/styles.css",
-      "sha256": "6521b3a46ab0918a9f7108b471271dd4a106ccb89c7240abd743cd9848349cd9"
+      "sha256": "bdda07b63e240e32b1999546c336cfa242d676cf62fc8d1dcfef5fa60185cc91"
     },
     {
       "path": "evals/titlebot-hierarchy/assets/fonts/inter-v20-latin.woff2",
@@ -31,7 +31,7 @@
     },
     {
       "path": "scripts/visual-judgment.mjs",
-      "sha256": "0b44dbc1171712c2b97dc1aba4391bf0e781b2fd63bf7b2ea954d2d702a94b46"
+      "sha256": "9b01d12ebc0734d89b598a4fc08dfa8166f6d15381b5985ad0531cfd71ac0d0a"
     },
     {
       "path": "scripts/ui-proof.mjs",
@@ -43,7 +43,7 @@
     },
     {
       "path": "evals/visual-judgment/captures/evidence.json",
-      "sha256": "a8984ab3eec54a33fc2bd9cdaded94f43dfcbc27e4b8754a0e8fee07f970ee3e"
+      "sha256": "0e7fcea4a8f28da3c856375d9a4225a8653e8dda0f38ed9d4fa875777ffc8644"
     }
   ],
   "renders": [
@@ -182,6 +182,7 @@
   "userAcceptance": "UNCONFIRMED",
   "notes": [
     "Same content and font family across variants. The contrast is in role emphasis and state response, not an enforced style preference.",
-    "No independent evaluator, measured gaze, blinded comparison or future-generation improvement is claimed."
+    "No independent evaluator, measured gaze, blinded comparison or future-generation improvement is claimed.",
+    "Color-role follow-up: the expanded palette study changes full-page color roles, while all 24 default hierarchy captures remain byte-identical to the prior reviewed baseline. Their source bindings were refreshed without changing the hierarchy verdicts."
   ]
 }

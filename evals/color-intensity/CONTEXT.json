@@ -1,0 +1,16 @@
+{
+  "boundary": "Read-only context snapshot, not automatic design approval or a portable source dependency",
+  "source_files": {
+    "src/shared/styles/base.css": "84967aeaa84326a5ee8817b835772ea3824f6cf88b7dbf009d8b2b5080806613",
+    "src/features/cabinet/ark-planner/arkEvents.css": "812d4cdd55ab46da9ea396a821eb7cffdfd2cd76d4122a8c3ce925d8f97f87f9",
+    "src/features/cabinet/map/mapUi.css": "e9417708f0e432bf51d362931e53b538a3b37f524caaa0afd3a6937e15ef276b",
+    "src/features/cabinet/title-bot/titleBot.css": "aae3b976460211f9ed83c92fb4369ba8b7b51be816d9951c3bd5ea29653bd717",
+    "src/features/cabinet/scan/scanManager.css": "81ce8d721f225e80f1145a16096df8b8f2b4178a71c578c496144c1e9d7acf5a"
+  },
+  "observations": [
+    "Several cabinet feature owners use dark working surfaces with orange action accents; the global base also defines a blue accent. Exact owners matter.",
+    "The user asked for a coherent page palette, then questioned the suitability of the demonstrated ocean/plum schemes.",
+    "The ocean/plum candidates had no sufficient product-specific basis; their large colored surfaces were selected primarily to avoid neutral grays."
+  ],
+  "disposition": "Reject these candidate directions for this task; no universal rejection of blue, purple, neutral or pastel systems."
+}
