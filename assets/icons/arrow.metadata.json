@@ -1,0 +1,45 @@
+{
+  "name": "doppler-arrow",
+  "asset_type": "interface-icon",
+  "role": "Familiar arrow action in Doppler controls",
+  "grid": 24,
+  "live_area": {
+    "min_x": 4,
+    "min_y": 4,
+    "max_x": 20,
+    "max_y": 20
+  },
+  "drawing_language": {
+    "mode": "stroke",
+    "stroke_width": 2,
+    "linecap": "round",
+    "linejoin": "round",
+    "corner_language": "open geometric construction with restrained round terminals",
+    "detail_budget": "one essential action silhouette; no decorative backing"
+  },
+  "target_sizes": [
+    18
+  ],
+  "source": "Original repository-owned Doppler control drawing",
+  "license": "Repository MIT license",
+  "accessibility_owner": "Owning labelled link/button; glyph is decorative",
+  "provenance": {
+    "kind": "original",
+    "creator": "Snowe UI Skill authors",
+    "source_ref": "benchmarks/soda-campaign/assets/icons/SOURCE.md",
+    "reviewed": "2026-10-08",
+    "sha256": "a9dbbf0543e8674ccca2e47bec94e49b71c662c8949aa07fd866247a73ac8d6b"
+  },
+  "evidence": {
+    "source": {
+      "kind": "local",
+      "path": "SOURCE.md",
+      "sha256": "7f1164a0e7d8ef720be7172412ebc9dc4364c14d588247f11efc0b46d74aa976",
+      "locator": "#doppler-control-glyphs"
+    },
+    "license": {
+      "path": "LICENSE",
+      "sha256": "0cd15032a964eb7b46b1bb74f96b89ed411a33fcd6b877925f5ced02ec8a9c87"
+    }
+  }
+}
