@@ -91,5 +91,13 @@ jobs:
         with:
           node-version: "22"
 
+      - name: Set up Python for copied-product evidence validation
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
       - name: Check runtime, interactions, focus, responsive states, and reduced motion
         run: node scripts/browser-smoke.mjs --smoke
+
+      - name: Check copied observation product and injected Doppler detail defects
+        run: node scripts/doppler-detail-probe.mjs

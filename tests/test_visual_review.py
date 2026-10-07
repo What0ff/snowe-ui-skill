@@ -19,17 +19,9 @@ class VisualReviewTests(unittest.TestCase):
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name)
         (self.root / "page.css").write_text("body{color:black}", encoding="utf-8")
-        (self.root / "render.png").write_bytes(b"unit-test artifact; not an inspected picture")
-        self.contract = {"schema": "1.0", "scope": "Run monitoring", "states": [{"id": "running",
-            "question": "How is the current run progressing?", "priority": ["Run progress", "Kingdom status"],
-            "cues": ["Progress value and related data form one group"], "competing": ["Create new"]}]}
-        self.write("attention.json", self.contract)
-        self.report = {"schema": "2.0", "scope": "Run monitoring", "method": "self-review", "reviewer": "Authored unit test",
-            "contract": self.binding("attention.json"), "sources": [self.binding("page.css")],
-            "renders": [{**self.binding("render.png"), "state": "running", "viewport": "900x700@1"}],
-            "visualAssessment": {"verdict": "KEEP", "finding": "Authored passing record, not a visual assertion",
-                "assessments": [{"state": "running", "renders": ["render.png"], "observedAttention": ["Run progress", "Kingdom status"], "finding": "Authored comparison", "verdict": "KEEP"}], "findings": []},
-            "userAcceptance": "UNCONFIRMED"}
+        from tests.evidence_factory import make_review
+        self.report = make_review(self.root)
+        self.contract = json.loads((self.root / "attention.json").read_text(encoding="utf-8"))
 
     def write(self, filename, value):
         (self.root / filename).write_text(json.dumps(value, ensure_ascii=False), encoding="utf-8")

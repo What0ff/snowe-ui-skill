@@ -1,5 +1,21 @@
 # Quality Gates
 
+For reusable visual proof, use the scoped [system map and observation contract](visual-system-and-observation.md). Inspect real paint owners, repeated consumers and overlays; require independently planned browser combinations and current dependency closure. Historical receipts remain history. For perceptual diagnosis and professionally explained image pairs, use [visual reasoning](visual-reasoning.md); a mechanically consistent map still needs a strong whole-screen judgment.
+
+For menus, modals, drawers, selects, comboboxes, popovers and other secondary surfaces, use [overlays-and-selection.md](overlays-and-selection.md) when that owner is active. Inspect the whole open composition, portal/theme context, hierarchy, type, material, row rhythm, anchoring, close/action details and state distinctions. A polished trigger or technically reachable content cannot close acceptance of a raw or unrelated secondary surface.
+
+## Detail and artifact acceptance
+
+For every touched composition, inspect the whole screen, the actual-size affected owner with its neighbors, and diagnostic detail at high-risk joins. A thumbnail can establish mass and hierarchy while hiding a broken rim, extra highlight, clipped glyph or merged icon counter. A formal browser plan therefore includes bound detail crops as well as the whole composition; the review must explicitly assess all of them. Direct work needs only its local affected owner and dependencies, not a whole-product audit.
+
+Sweep silhouettes, joints, corners, masks/crops, borders, baselines, small typography, image edges and material highlights. Trace unexplained paint to the actual owner: descendants, pseudo-elements, ancestors, portal/backdrop, SVG, shader/media or an independently transformed layer. Do not explain an isolated bright sliver away as “lighting” without verifying its surface attachment and continuity. Overlapping highlights, a floating cap, a seam at a mask boundary or a raw icon join are defects even if the geometry fits its bounding box.
+
+For motion/3D/media, inspect start, peak, interruption, representative orientation and settled frames at native size; check that attached parts share the same spatial model. A static front view can conceal a bad side or a detached layer. Compare the reduced/static equivalent separately. Use enlarged crops for diagnosis, then confirm at the actual display size and current viewport/DPR. A reported artifact reopens the affected KEEP; its correction requires a current confirming detail and collateral full-context check.
+
+Distinguish local geometry from projected measurement. `getBoundingClientRect()` includes ancestor transforms and gives an axis-aligned screen box; using that width to construct a rotated cylinder while its lid uses local CSS width makes the parts incompatible. Derive object geometry from local resolved dimensions and apply one coherent projection. The same distinction matters for SVG slots, canvas coordinates, pointer conversion and transformed overlays. Verify both the construction relation and actual painted contact; neither an attached DOM parent nor matching external boxes is enough.
+
+Record the concrete observation and cause, the owner-level change, a comparable rerender and any adverse consequence. A source/PNG hash proves freshness, not absence of artifacts. Structural and injected-defect tests close only their declared construction/visibility contracts; unresolved visual ambiguity remains UNKNOWN or REVISE. For custom glyphs use [icon-craft.md](icon-craft.md), retaining clean geometry, optical placement and recognizable context rather than merely producing original SVG bytes.
+
 Use this reference to prove that the accepted design works. Quality gates protect outcomes and system integrity; they do not prescribe a style or turn every project into the same checklist.
 
 ## Define Proof Before Polish

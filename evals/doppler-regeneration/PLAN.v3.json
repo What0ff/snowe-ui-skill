@@ -1,0 +1,2547 @@
+{
+  "schema": "1.0",
+  "scope": "Doppler campaign regeneration",
+  "sourceRoots": [
+    "benchmarks/soda-campaign/index.html",
+    "benchmarks/soda-campaign/styles.css",
+    "benchmarks/soda-campaign/app.js",
+    "benchmarks/soda-campaign/can.css",
+    "benchmarks/soda-campaign/assets"
+  ],
+  "cases": [
+    {
+      "id": "wide",
+      "state": "page",
+      "viewport": "1440x1000@1",
+      "theme": "light",
+      "input": "pointer",
+      "motion": "normal",
+      "context": "page",
+      "route": "/benchmarks/soda-campaign/index.html",
+      "steps": [],
+      "probes": [
+        {
+          "selector": "body",
+          "pseudo": ""
+        },
+        {
+          "selector": "#hero-title",
+          "pseudo": ""
+        },
+        {
+          "selector": ".button",
+          "pseudo": ""
+        },
+        {
+          "selector": ".flavor-button",
+          "pseudo": ""
+        },
+        {
+          "selector": ".signal-row",
+          "pseudo": ""
+        },
+        {
+          "selector": ".can-rig",
+          "pseudo": ""
+        },
+        {
+          "selector": "[data-can-object]",
+          "pseudo": ""
+        },
+        {
+          "selector": ".can-panel",
+          "pseudo": "::after"
+        },
+        {
+          "selector": ".can-lid-visual",
+          "pseudo": ""
+        },
+        {
+          "selector": ".signal-poster",
+          "pseudo": ""
+        },
+        {
+          "selector": ".signal-poster",
+          "pseudo": "::before"
+        },
+        {
+          "selector": "[data-static-label]",
+          "pseudo": ""
+        },
+        {
+          "selector": ".pack-controls",
+          "pseudo": ""
+        },
+        {
+          "selector": ".pack-row",
+          "pseudo": ""
+        },
+        {
+          "selector": "[data-pack-submit]",
+          "pseudo": ""
+        },
+        {
+          "selector": ".site-nav",
+          "pseudo": ""
+        },
+        {
+          "selector": ".product-stage",
+          "pseudo": "::before"
+        },
+        {
+          "selector": ".product-stage",
+          "pseudo": "::after"
+        },
+        {
+          "selector": ".can-3d",
+          "pseudo": ""
+        },
+        {
+          "selector": ".masthead",
+          "pseudo": ""
+        },
+        {
+          "selector": ".flavor-button",
+          "pseudo": "::after"
+        },
+        {
+          "selector": "[data-poster-label]",
+          "pseudo": ""
+        },
+        {
+          "selector": ".hero__actions",
+          "pseudo": ""
+        },
+        {
+          "selector": ".ui-icon",
+          "pseudo": ""
+        },
+        {
+          "selector": ".button .ui-icon",
+          "pseudo": ""
+        },
+        {
+          "selector": ".stepper .ui-icon",
+          "pseudo": ""
+        }
+      ],
+      "details": [
+        {
+          "id": "product",
+          "selector": ".can-rig",
+          "padding": 20,
+          "scale": 1
+        },
+        {
+          "id": "join",
+          "selector": ".can-lid-visual",
+          "padding": 15,
+          "scale": 2
+        },
+        {
+          "id": "action",
+          "selector": ".hero__actions",
+          "padding": 12,
+          "scale": 1
+        },
+        {
+          "id": "quantity-icons",
+          "selector": ".pack-row",
+          "padding": 12,
+          "scale": 2
+        }
+      ],
+      "expect": [
+        {
+          "selector": "body",
+          "property": "attribute:data-flavor",
+          "equals": "sun"
+        }
+      ]
+    },
+    {
+      "id": "pressure",
+      "state": "page",
+      "viewport": "900x1000@1",
+      "theme": "light",
+      "input": "keyboard",
+      "motion": "normal",
+      "context": "page",
+      "route": "/benchmarks/soda-campaign/index.html",
+      "steps": [],
+      "probes": [
+        {
+          "selector": "body",
+          "pseudo": ""
+        },
+        {
+          "selector": "#hero-title",
+          "pseudo": ""
+        },
+        {
+          "selector": ".button",
+          "pseudo": ""
+        },
+        {
+          "selector": ".flavor-button",
+          "pseudo": ""
+        },
+        {
+          "selector": ".signal-row",
+          "pseudo": ""
+        },
+        {
+          "selector": ".can-rig",
+          "pseudo": ""
+        },
+        {
+          "selector": "[data-can-object]",
+          "pseudo": ""
+        },
+        {
+          "selector": ".can-panel",
+          "pseudo": "::after"
+        },
+        {
+          "selector": ".can-lid-visual",
+          "pseudo": ""
+        },
+        {
+          "selector": ".signal-poster",
+          "pseudo": ""
+        },
+        {
+          "selector": ".signal-poster",
+          "pseudo": "::before"
+        },
+        {
+          "selector": "[data-static-label]",
+          "pseudo": ""
+        },
+        {
+          "selector": ".pack-controls",
+          "pseudo": ""
+        },
+        {
+          "selector": ".pack-row",
+          "pseudo": ""
+        },
+        {
+          "selector": "[data-pack-submit]",
+          "pseudo": ""
+        },
+        {
+          "selector": ".site-nav",
+          "pseudo": ""
+        },
+        {
+          "selector": ".product-stage",
+          "pseudo": "::before"
+        },
+        {
+          "selector": ".product-stage",
+          "pseudo": "::after"
+        },
+        {
+          "selector": ".can-3d",
+          "pseudo": ""
+        },
+        {
+          "selector": ".masthead",
+          "pseudo": ""
+        },
+        {
+          "selector": ".flavor-button",
+          "pseudo": "::after"
+        },
+        {
+          "selector": "[data-poster-label]",
+          "pseudo": ""
+        },
+        {
+          "selector": ".hero__actions",
+          "pseudo": ""
+        },
+        {
+          "selector": ".ui-icon",
+          "pseudo": ""
+        },
+        {
+          "selector": ".button .ui-icon",
+          "pseudo": ""
+        },
+        {
+          "selector": ".stepper .ui-icon",
+          "pseudo": ""
+        }
+      ],
+      "details": [
+        {
+          "id": "product",
+          "selector": ".can-rig",
+          "padding": 20,
+          "scale": 1
+        },
+        {
+          "id": "join",
+          "selector": ".can-lid-visual",
+          "padding": 15,
+          "scale": 2
+        },
+        {
+          "id": "action",
+          "selector": ".hero__actions",
+          "padding": 12,
+          "scale": 1
+        },
+        {
+          "id": "quantity-icons",
+          "selector": ".pack-row",
+          "padding": 12,
+          "scale": 2
+        }
+      ],
+      "expect": [
+        {
+          "selector": "body",
+          "property": "attribute:data-flavor",
+          "equals": "sun"
+        }
+      ]
+    },
+    {
+      "id": "mobile",
+      "state": "page",
+      "viewport": "390x844@1",
+      "theme": "light",
+      "input": "touch",
+      "motion": "normal",
+      "context": "page",
+      "route": "/benchmarks/soda-campaign/index.html",
+      "steps": [],
+      "probes": [
+        {
+          "selector": "body",
+          "pseudo": ""
+        },
+        {
+          "selector": "#hero-title",
+          "pseudo": ""
+        },
+        {
+          "selector": ".button",
+          "pseudo": ""
+        },
+        {
+          "selector": ".flavor-button",
+          "pseudo": ""
+        },
+        {
+          "selector": ".signal-row",
+          "pseudo": ""
+        },
+        {
+          "selector": ".can-rig",
+          "pseudo": ""
+        },
+        {
+          "selector": "[data-can-object]",
+          "pseudo": ""
+        },
+        {
+          "selector": ".can-panel",
+          "pseudo": "::after"
+        },
+        {
+          "selector": ".can-lid-visual",
+          "pseudo": ""
+        },
+        {
+          "selector": ".signal-poster",
+          "pseudo": ""
+        },
+        {
+          "selector": ".signal-poster",
+          "pseudo": "::before"
+        },
+        {
+          "selector": "[data-static-label]",
+          "pseudo": ""
+        },
+        {
+          "selector": ".pack-controls",
+          "pseudo": ""
+        },
+        {
+          "selector": ".pack-row",
+          "pseudo": ""
+        },
+        {
+          "selector": "[data-pack-submit]",
+          "pseudo": ""
+        },
+        {
+          "selector": ".site-nav",
+          "pseudo": ""
+        },
+        {
+          "selector": ".product-stage",
+          "pseudo": "::before"
+        },
+        {
+          "selector": ".product-stage",
+          "pseudo": "::after"
+        },
+        {
+          "selector": ".can-3d",
+          "pseudo": ""
+        },
+        {
+          "selector": ".masthead",
+          "pseudo": ""
+        },
+        {
+          "selector": ".flavor-button",
+          "pseudo": "::after"
+        },
+        {
+          "selector": "[data-poster-label]",
+          "pseudo": ""
+        },
+        {
+          "selector": ".hero__actions",
+          "pseudo": ""
+        },
+        {
+          "selector": ".ui-icon",
+          "pseudo": ""
+        },
+        {
+          "selector": ".button .ui-icon",
+          "pseudo": ""
+        },
+        {
+          "selector": ".stepper .ui-icon",
+          "pseudo": ""
+        }
+      ],
+      "details": [
+        {
+          "id": "product",
+          "selector": ".can-rig",
+          "padding": 20,
+          "scale": 1
+        },
+        {
+          "id": "join",
+          "selector": ".can-lid-visual",
+          "padding": 15,
+          "scale": 2
+        },
+        {
+          "id": "action",
+          "selector": ".hero__actions",
+          "padding": 12,
+          "scale": 1
+        },
+        {
+          "id": "quantity-icons",
+          "selector": ".pack-row",
+          "padding": 12,
+          "scale": 2
+        }
+      ],
+      "expect": [
+        {
+          "selector": "body",
+          "property": "attribute:data-flavor",
+          "equals": "sun"
+        }
+      ]
+    },
+    {
+      "id": "pink",
+      "state": "flavor",
+      "viewport": "1440x1000@1",
+      "theme": "light",
+      "input": "pointer",
+      "motion": "normal",
+      "context": "flavor",
+      "route": "/benchmarks/soda-campaign/index.html",
+      "steps": [
+        {
+          "action": "click",
+          "selector": "[data-flavor-button=\"pink\"]"
+        }
+      ],
+      "probes": [
+        {
+          "selector": "body",
+          "pseudo": ""
+        },
+        {
+          "selector": "#hero-title",
+          "pseudo": ""
+        },
+        {
+          "selector": ".button",
+          "pseudo": ""
+        },
+        {
+          "selector": ".flavor-button",
+          "pseudo": ""
+        },
+        {
+          "selector": ".signal-row",
+          "pseudo": ""
+        },
+        {
+          "selector": ".can-rig",
+          "pseudo": ""
+        },
+        {
+          "selector": "[data-can-object]",
+          "pseudo": ""
+        },
+        {
+          "selector": ".can-panel",
+          "pseudo": "::after"
+        },
+        {
+          "selector": ".can-lid-visual",
+          "pseudo": ""
+        },
+        {
+          "selector": ".signal-poster",
+          "pseudo": ""
+        },
+        {
+          "selector": ".signal-poster",
+          "pseudo": "::before"
+        },
+        {
+          "selector": "[data-static-label]",
+          "pseudo": ""
+        },
+        {
+          "selector": ".pack-controls",
+          "pseudo": ""
+        },
+        {
+          "selector": ".pack-row",
+          "pseudo": ""
+        },
+        {
+          "selector": "[data-pack-submit]",
+          "pseudo": ""
+        },
+        {
+          "selector": ".site-nav",
+          "pseudo": ""
+        },
+        {
+          "selector": ".product-stage",
+          "pseudo": "::before"
+        },
+        {
+          "selector": ".product-stage",
+          "pseudo": "::after"
+        },
+        {
+          "selector": ".can-3d",
+          "pseudo": ""
+        },
+        {
+          "selector": ".masthead",
+          "pseudo": ""
+        },
+        {
+          "selector": ".flavor-button",
+          "pseudo": "::after"
+        },
+        {
+          "selector": "[data-poster-label]",
+          "pseudo": ""
+        },
+        {
+          "selector": ".hero__actions",
+          "pseudo": ""
+        },
+        {
+          "selector": ".ui-icon",
+          "pseudo": ""
+        },
+        {
+          "selector": ".button .ui-icon",
+          "pseudo": ""
+        },
+        {
+          "selector": ".stepper .ui-icon",
+          "pseudo": ""
+        }
+      ],
+      "details": [
+        {
+          "id": "product",
+          "selector": ".can-rig",
+          "padding": 20,
+          "scale": 1
+        },
+        {
+          "id": "join",
+          "selector": ".can-lid-visual",
+          "padding": 15,
+          "scale": 2
+        },
+        {
+          "id": "action",
+          "selector": ".hero__actions",
+          "padding": 12,
+          "scale": 1
+        },
+        {
+          "id": "quantity-icons",
+          "selector": ".pack-row",
+          "padding": 12,
+          "scale": 2
+        }
+      ],
+      "expect": [
+        {
+          "selector": "body",
+          "property": "attribute:data-flavor",
+          "equals": "pink"
+        }
+      ]
+    },
+    {
+      "id": "menu",
+      "state": "overlay",
+      "viewport": "390x844@1",
+      "theme": "dark",
+      "input": "touch",
+      "motion": "reduced",
+      "context": "overlay",
+      "route": "/benchmarks/soda-campaign/index.html",
+      "steps": [
+        {
+          "action": "click",
+          "selector": "#nav-toggle"
+        }
+      ],
+      "probes": [
+        {
+          "selector": "body",
+          "pseudo": ""
+        },
+        {
+          "selector": "#hero-title",
+          "pseudo": ""
+        },
+        {
+          "selector": ".button",
+          "pseudo": ""
+        },
+        {
+          "selector": ".flavor-button",
+          "pseudo": ""
+        },
+        {
+          "selector": ".signal-row",
+          "pseudo": ""
+        },
+        {
+          "selector": ".can-rig",
+          "pseudo": ""
+        },
+        {
+          "selector": "[data-can-object]",
+          "pseudo": ""
+        },
+        {
+          "selector": ".can-lid-visual",
+          "pseudo": ""
+        },
+        {
+          "selector": ".signal-poster",
+          "pseudo": ""
+        },
+        {
+          "selector": ".signal-poster",
+          "pseudo": "::before"
+        },
+        {
+          "selector": "[data-static-label]",
+          "pseudo": ""
+        },
+        {
+          "selector": ".pack-controls",
+          "pseudo": ""
+        },
+        {
+          "selector": ".pack-row",
+          "pseudo": ""
+        },
+        {
+          "selector": "[data-pack-submit]",
+          "pseudo": ""
+        },
+        {
+          "selector": ".site-nav",
+          "pseudo": ""
+        },
+        {
+          "selector": ".product-stage",
+          "pseudo": "::before"
+        },
+        {
+          "selector": ".product-stage",
+          "pseudo": "::after"
+        },
+        {
+          "selector": ".can-3d",
+          "pseudo": ""
+        },
+        {
+          "selector": ".masthead",
+          "pseudo": ""
+        },
+        {
+          "selector": ".flavor-button",
+          "pseudo": "::after"
+        },
+        {
+          "selector": "[data-poster-label]",
+          "pseudo": ""
+        },
+        {
+          "selector": ".static-can__top",
+          "pseudo": ""
+        },
+        {
+          "selector": ".hero__actions",
+          "pseudo": ""
+        },
+        {
+          "selector": ".ui-icon",
+          "pseudo": ""
+        },
+        {
+          "selector": ".button .ui-icon",
+          "pseudo": ""
+        },
+        {
+          "selector": ".stepper .ui-icon",
+          "pseudo": ""
+        }
+      ],
+      "details": [
+        {
+          "id": "product",
+          "selector": ".can-rig",
+          "padding": 20,
+          "scale": 1
+        },
+        {
+          "id": "join",
+          "selector": ".static-can__top",
+          "padding": 15,
+          "scale": 2
+        },
+        {
+          "id": "action",
+          "selector": ".hero__actions",
+          "padding": 12,
+          "scale": 1
+        },
+        {
+          "id": "quantity-icons",
+          "selector": ".pack-row",
+          "padding": 12,
+          "scale": 2
+        },
+        {
+          "id": "open-menu",
+          "selector": ".site-nav",
+          "padding": 16,
+          "scale": 1,
+          "space": "viewport"
+        }
+      ],
+      "expect": [
+        {
+          "selector": "body",
+          "property": "attribute:data-flavor",
+          "equals": "sun"
+        },
+        {
+          "selector": "#nav-toggle",
+          "property": "attribute:aria-expanded",
+          "equals": "true"
+        }
+      ]
+    },
+    {
+      "id": "reduced",
+      "state": "page",
+      "viewport": "900x1000@1",
+      "theme": "dark",
+      "input": "keyboard",
+      "motion": "reduced",
+      "context": "page",
+      "route": "/benchmarks/soda-campaign/index.html",
+      "steps": [],
+      "probes": [
+        {
+          "selector": "body",
+          "pseudo": ""
+        },
+        {
+          "selector": "#hero-title",
+          "pseudo": ""
+        },
+        {
+          "selector": ".button",
+          "pseudo": ""
+        },
+        {
+          "selector": ".flavor-button",
+          "pseudo": ""
+        },
+        {
+          "selector": ".signal-row",
+          "pseudo": ""
+        },
+        {
+          "selector": ".can-rig",
+          "pseudo": ""
+        },
+        {
+          "selector": "[data-can-object]",
+          "pseudo": ""
+        },
+        {
+          "selector": ".can-lid-visual",
+          "pseudo": ""
+        },
+        {
+          "selector": ".signal-poster",
+          "pseudo": ""
+        },
+        {
+          "selector": ".signal-poster",
+          "pseudo": "::before"
+        },
+        {
+          "selector": "[data-static-label]",
+          "pseudo": ""
+        },
+        {
+          "selector": ".pack-controls",
+          "pseudo": ""
+        },
+        {
+          "selector": ".pack-row",
+          "pseudo": ""
+        },
+        {
+          "selector": "[data-pack-submit]",
+          "pseudo": ""
+        },
+        {
+          "selector": ".site-nav",
+          "pseudo": ""
+        },
+        {
+          "selector": ".product-stage",
+          "pseudo": "::before"
+        },
+        {
+          "selector": ".product-stage",
+          "pseudo": "::after"
+        },
+        {
+          "selector": ".can-3d",
+          "pseudo": ""
+        },
+        {
+          "selector": ".masthead",
+          "pseudo": ""
+        },
+        {
+          "selector": ".flavor-button",
+          "pseudo": "::after"
+        },
+        {
+          "selector": "[data-poster-label]",
+          "pseudo": ""
+        },
+        {
+          "selector": ".static-can__top",
+          "pseudo": ""
+        },
+        {
+          "selector": ".hero__actions",
+          "pseudo": ""
+        },
+        {
+          "selector": ".ui-icon",
+          "pseudo": ""
+        },
+        {
+          "selector": ".button .ui-icon",
+          "pseudo": ""
+        },
+        {
+          "selector": ".stepper .ui-icon",
+          "pseudo": ""
+        }
+      ],
+      "details": [
+        {
+          "id": "product",
+          "selector": ".can-rig",
+          "padding": 20,
+          "scale": 1
+        },
+        {
+          "id": "join",
+          "selector": ".static-can__top",
+          "padding": 15,
+          "scale": 2
+        },
+        {
+          "id": "action",
+          "selector": ".hero__actions",
+          "padding": 12,
+          "scale": 1
+        },
+        {
+          "id": "quantity-icons",
+          "selector": ".pack-row",
+          "padding": 12,
+          "scale": 2
+        }
+      ],
+      "expect": [
+        {
+          "selector": "body",
+          "property": "attribute:data-flavor",
+          "equals": "sun"
+        }
+      ]
+    },
+    {
+      "id": "pack",
+      "state": "confirmation",
+      "viewport": "390x844@1",
+      "theme": "light",
+      "input": "touch",
+      "motion": "reduced",
+      "context": "confirmation",
+      "route": "/benchmarks/soda-campaign/index.html",
+      "steps": [
+        {
+          "action": "click",
+          "selector": "[data-pack-submit]"
+        }
+      ],
+      "probes": [
+        {
+          "selector": "body",
+          "pseudo": ""
+        },
+        {
+          "selector": "#hero-title",
+          "pseudo": ""
+        },
+        {
+          "selector": ".button",
+          "pseudo": ""
+        },
+        {
+          "selector": ".flavor-button",
+          "pseudo": ""
+        },
+        {
+          "selector": ".signal-row",
+          "pseudo": ""
+        },
+        {
+          "selector": ".can-rig",
+          "pseudo": ""
+        },
+        {
+          "selector": "[data-can-object]",
+          "pseudo": ""
+        },
+        {
+          "selector": ".can-lid-visual",
+          "pseudo": ""
+        },
+        {
+          "selector": ".signal-poster",
+          "pseudo": ""
+        },
+        {
+          "selector": ".signal-poster",
+          "pseudo": "::before"
+        },
+        {
+          "selector": "[data-static-label]",
+          "pseudo": ""
+        },
+        {
+          "selector": ".pack-controls",
+          "pseudo": ""
+        },
+        {
+          "selector": ".pack-row",
+          "pseudo": ""
+        },
+        {
+          "selector": "[data-pack-submit]",
+          "pseudo": ""
+        },
+        {
+          "selector": ".site-nav",
+          "pseudo": ""
+        },
+        {
+          "selector": ".product-stage",
+          "pseudo": "::before"
+        },
+        {
+          "selector": ".product-stage",
+          "pseudo": "::after"
+        },
+        {
+          "selector": ".can-3d",
+          "pseudo": ""
+        },
+        {
+          "selector": ".masthead",
+          "pseudo": ""
+        },
+        {
+          "selector": ".flavor-button",
+          "pseudo": "::after"
+        },
+        {
+          "selector": "[data-poster-label]",
+          "pseudo": ""
+        },
+        {
+          "selector": ".static-can__top",
+          "pseudo": ""
+        },
+        {
+          "selector": ".hero__actions",
+          "pseudo": ""
+        },
+        {
+          "selector": ".ui-icon",
+          "pseudo": ""
+        },
+        {
+          "selector": ".button .ui-icon",
+          "pseudo": ""
+        },
+        {
+          "selector": ".stepper .ui-icon",
+          "pseudo": ""
+        },
+        {
+          "selector": "#mix-confirmation",
+          "pseudo": ""
+        },
+        {
+          "selector": "#mix-confirmation",
+          "pseudo": "::backdrop"
+        },
+        {
+          "selector": "#mix-dialog-title",
+          "pseudo": ""
+        },
+        {
+          "selector": ".dialog-close",
+          "pseudo": ""
+        },
+        {
+          "selector": ".confirm-thumb",
+          "pseudo": ""
+        }
+      ],
+      "details": [
+        {
+          "id": "product",
+          "selector": ".can-rig",
+          "padding": 20,
+          "scale": 1
+        },
+        {
+          "id": "join",
+          "selector": ".static-can__top",
+          "padding": 15,
+          "scale": 2
+        },
+        {
+          "id": "action",
+          "selector": ".hero__actions",
+          "padding": 12,
+          "scale": 1
+        },
+        {
+          "id": "quantity-icons",
+          "selector": ".pack-row",
+          "padding": 12,
+          "scale": 2
+        },
+        {
+          "id": "confirmation",
+          "selector": "#mix-confirmation",
+          "padding": 12,
+          "scale": 1,
+          "space": "viewport"
+        }
+      ],
+      "expect": [
+        {
+          "selector": "body",
+          "property": "attribute:data-flavor",
+          "equals": "sun"
+        },
+        {
+          "selector": "[data-pack-status]",
+          "property": "text",
+          "includes": "Signal packed:"
+        },
+        {
+          "selector": "#mix-confirmation",
+          "property": "open",
+          "equals": true
+        },
+        {
+          "selector": "#mix-dialog-title",
+          "property": "focused",
+          "equals": true
+        }
+      ]
+    },
+    {
+      "id": "motion",
+      "state": "motion",
+      "viewport": "900x700@1",
+      "theme": "light",
+      "input": "pointer",
+      "motion": "normal",
+      "context": "motion",
+      "route": "/benchmarks/soda-campaign/index.html",
+      "steps": [],
+      "probes": [
+        {
+          "selector": "body",
+          "pseudo": ""
+        },
+        {
+          "selector": "#hero-title",
+          "pseudo": ""
+        },
+        {
+          "selector": ".button",
+          "pseudo": ""
+        },
+        {
+          "selector": ".flavor-button",
+          "pseudo": ""
+        },
+        {
+          "selector": ".signal-row",
+          "pseudo": ""
+        },
+        {
+          "selector": ".can-rig",
+          "pseudo": ""
+        },
+        {
+          "selector": "[data-can-object]",
+          "pseudo": ""
+        },
+        {
+          "selector": ".can-panel",
+          "pseudo": "::after"
+        },
+        {
+          "selector": ".can-lid-visual",
+          "pseudo": ""
+        },
+        {
+          "selector": ".signal-poster",
+          "pseudo": ""
+        },
+        {
+          "selector": ".signal-poster",
+          "pseudo": "::before"
+        },
+        {
+          "selector": "[data-static-label]",
+          "pseudo": ""
+        },
+        {
+          "selector": ".pack-controls",
+          "pseudo": ""
+        },
+        {
+          "selector": ".pack-row",
+          "pseudo": ""
+        },
+        {
+          "selector": "[data-pack-submit]",
+          "pseudo": ""
+        },
+        {
+          "selector": ".site-nav",
+          "pseudo": ""
+        },
+        {
+          "selector": ".product-stage",
+          "pseudo": "::before"
+        },
+        {
+          "selector": ".product-stage",
+          "pseudo": "::after"
+        },
+        {
+          "selector": ".can-3d",
+          "pseudo": ""
+        },
+        {
+          "selector": ".masthead",
+          "pseudo": ""
+        },
+        {
+          "selector": ".flavor-button",
+          "pseudo": "::after"
+        },
+        {
+          "selector": "[data-poster-label]",
+          "pseudo": ""
+        },
+        {
+          "selector": ".hero__actions",
+          "pseudo": ""
+        },
+        {
+          "selector": ".ui-icon",
+          "pseudo": ""
+        },
+        {
+          "selector": ".button .ui-icon",
+          "pseudo": ""
+        },
+        {
+          "selector": ".stepper .ui-icon",
+          "pseudo": ""
+        }
+      ],
+      "sequence": {
+        "fps": 12,
+        "durationMs": 6000,
+        "start": [
+          {
+            "action": "script",
+            "value": "document.documentElement.style.scrollBehavior='auto';window.scrollTo(0,document.querySelector('.hero-composition').offsetTop-30);window.__doppler.replayIntro()"
+          }
+        ],
+        "events": [
+          {
+            "atMs": 1600,
+            "steps": [
+              {
+                "action": "script",
+                "value": "window.__doppler.selectFlavor('pink')"
+              }
+            ]
+          },
+          {
+            "atMs": 3200,
+            "steps": [
+              {
+                "action": "script",
+                "value": "window.__doppler.selectFlavor('night')"
+              }
+            ]
+          },
+          {
+            "atMs": 4600,
+            "steps": [
+              {
+                "action": "script",
+                "value": "window.__doppler.selectFlavor('sun')"
+              }
+            ]
+          }
+        ]
+      },
+      "details": [
+        {
+          "id": "product",
+          "selector": ".can-rig",
+          "padding": 20,
+          "scale": 1
+        },
+        {
+          "id": "join",
+          "selector": ".can-lid-visual",
+          "padding": 15,
+          "scale": 2
+        },
+        {
+          "id": "action",
+          "selector": ".hero__actions",
+          "padding": 12,
+          "scale": 1
+        },
+        {
+          "id": "quantity-icons",
+          "selector": ".pack-row",
+          "padding": 12,
+          "scale": 2
+        }
+      ],
+      "expect": [
+        {
+          "selector": "body",
+          "property": "attribute:data-flavor",
+          "equals": "sun"
+        }
+      ]
+    },
+    {
+      "id": "narrow",
+      "state": "page",
+      "viewport": "320x844@1",
+      "theme": "light",
+      "input": "keyboard",
+      "motion": "normal",
+      "context": "pressure",
+      "route": "/benchmarks/soda-campaign/index.html",
+      "steps": [],
+      "probes": [
+        {
+          "selector": "body",
+          "pseudo": ""
+        },
+        {
+          "selector": "#hero-title",
+          "pseudo": ""
+        },
+        {
+          "selector": ".button",
+          "pseudo": ""
+        },
+        {
+          "selector": ".flavor-button",
+          "pseudo": ""
+        },
+        {
+          "selector": ".signal-row",
+          "pseudo": ""
+        },
+        {
+          "selector": ".can-rig",
+          "pseudo": ""
+        },
+        {
+          "selector": "[data-can-object]",
+          "pseudo": ""
+        },
+        {
+          "selector": ".can-panel",
+          "pseudo": "::after"
+        },
+        {
+          "selector": ".can-lid-visual",
+          "pseudo": ""
+        },
+        {
+          "selector": ".signal-poster",
+          "pseudo": ""
+        },
+        {
+          "selector": ".signal-poster",
+          "pseudo": "::before"
+        },
+        {
+          "selector": "[data-static-label]",
+          "pseudo": ""
+        },
+        {
+          "selector": ".pack-controls",
+          "pseudo": ""
+        },
+        {
+          "selector": ".pack-row",
+          "pseudo": ""
+        },
+        {
+          "selector": "[data-pack-submit]",
+          "pseudo": ""
+        },
+        {
+          "selector": ".site-nav",
+          "pseudo": ""
+        },
+        {
+          "selector": ".product-stage",
+          "pseudo": "::before"
+        },
+        {
+          "selector": ".product-stage",
+          "pseudo": "::after"
+        },
+        {
+          "selector": ".can-3d",
+          "pseudo": ""
+        },
+        {
+          "selector": ".masthead",
+          "pseudo": ""
+        },
+        {
+          "selector": ".flavor-button",
+          "pseudo": "::after"
+        },
+        {
+          "selector": "[data-poster-label]",
+          "pseudo": ""
+        },
+        {
+          "selector": ".hero__actions",
+          "pseudo": ""
+        },
+        {
+          "selector": ".ui-icon",
+          "pseudo": ""
+        },
+        {
+          "selector": ".button .ui-icon",
+          "pseudo": ""
+        },
+        {
+          "selector": ".stepper .ui-icon",
+          "pseudo": ""
+        }
+      ],
+      "details": [
+        {
+          "id": "product",
+          "selector": ".can-rig",
+          "padding": 20,
+          "scale": 1
+        },
+        {
+          "id": "join",
+          "selector": ".can-lid-visual",
+          "padding": 15,
+          "scale": 2
+        },
+        {
+          "id": "action",
+          "selector": ".hero__actions",
+          "padding": 12,
+          "scale": 1
+        },
+        {
+          "id": "quantity-icons",
+          "selector": ".pack-row",
+          "padding": 12,
+          "scale": 2
+        }
+      ],
+      "expect": [
+        {
+          "selector": "body",
+          "property": "attribute:data-flavor",
+          "equals": "sun"
+        }
+      ]
+    },
+    {
+      "id": "retina",
+      "state": "page",
+      "viewport": "900x1000@2",
+      "theme": "light",
+      "input": "keyboard",
+      "motion": "reduced",
+      "context": "page",
+      "route": "/benchmarks/soda-campaign/index.html",
+      "steps": [],
+      "probes": [
+        {
+          "selector": "body",
+          "pseudo": ""
+        },
+        {
+          "selector": "#hero-title",
+          "pseudo": ""
+        },
+        {
+          "selector": ".button",
+          "pseudo": ""
+        },
+        {
+          "selector": ".flavor-button",
+          "pseudo": ""
+        },
+        {
+          "selector": ".signal-row",
+          "pseudo": ""
+        },
+        {
+          "selector": ".can-rig",
+          "pseudo": ""
+        },
+        {
+          "selector": "[data-can-object]",
+          "pseudo": ""
+        },
+        {
+          "selector": ".can-lid-visual",
+          "pseudo": ""
+        },
+        {
+          "selector": ".signal-poster",
+          "pseudo": ""
+        },
+        {
+          "selector": ".signal-poster",
+          "pseudo": "::before"
+        },
+        {
+          "selector": "[data-static-label]",
+          "pseudo": ""
+        },
+        {
+          "selector": ".pack-controls",
+          "pseudo": ""
+        },
+        {
+          "selector": ".pack-row",
+          "pseudo": ""
+        },
+        {
+          "selector": "[data-pack-submit]",
+          "pseudo": ""
+        },
+        {
+          "selector": ".site-nav",
+          "pseudo": ""
+        },
+        {
+          "selector": ".product-stage",
+          "pseudo": "::before"
+        },
+        {
+          "selector": ".product-stage",
+          "pseudo": "::after"
+        },
+        {
+          "selector": ".can-3d",
+          "pseudo": ""
+        },
+        {
+          "selector": ".masthead",
+          "pseudo": ""
+        },
+        {
+          "selector": ".flavor-button",
+          "pseudo": "::after"
+        },
+        {
+          "selector": "[data-poster-label]",
+          "pseudo": ""
+        },
+        {
+          "selector": ".static-can__top",
+          "pseudo": ""
+        },
+        {
+          "selector": ".hero__actions",
+          "pseudo": ""
+        },
+        {
+          "selector": ".ui-icon",
+          "pseudo": ""
+        },
+        {
+          "selector": ".button .ui-icon",
+          "pseudo": ""
+        },
+        {
+          "selector": ".stepper .ui-icon",
+          "pseudo": ""
+        }
+      ],
+      "details": [
+        {
+          "id": "product",
+          "selector": ".can-rig",
+          "padding": 20,
+          "scale": 1
+        },
+        {
+          "id": "join",
+          "selector": ".static-can__top",
+          "padding": 15,
+          "scale": 2
+        },
+        {
+          "id": "action",
+          "selector": ".hero__actions",
+          "padding": 12,
+          "scale": 1
+        },
+        {
+          "id": "quantity-icons",
+          "selector": ".pack-row",
+          "padding": 12,
+          "scale": 2
+        }
+      ],
+      "expect": [
+        {
+          "selector": "body",
+          "property": "attribute:data-flavor",
+          "equals": "sun"
+        }
+      ]
+    },
+    {
+      "id": "focus",
+      "state": "focus",
+      "viewport": "900x1000@1",
+      "theme": "dark",
+      "input": "keyboard",
+      "motion": "reduced",
+      "context": "control",
+      "route": "/benchmarks/soda-campaign/index.html",
+      "steps": [
+        {
+          "action": "key",
+          "key": "Tab"
+        },
+        {
+          "action": "script",
+          "value": "document.querySelector('.hero__actions .button').focus()"
+        }
+      ],
+      "probes": [
+        {
+          "selector": "body",
+          "pseudo": ""
+        },
+        {
+          "selector": "#hero-title",
+          "pseudo": ""
+        },
+        {
+          "selector": ".button",
+          "pseudo": ""
+        },
+        {
+          "selector": ".flavor-button",
+          "pseudo": ""
+        },
+        {
+          "selector": ".signal-row",
+          "pseudo": ""
+        },
+        {
+          "selector": ".can-rig",
+          "pseudo": ""
+        },
+        {
+          "selector": "[data-can-object]",
+          "pseudo": ""
+        },
+        {
+          "selector": ".can-lid-visual",
+          "pseudo": ""
+        },
+        {
+          "selector": ".signal-poster",
+          "pseudo": ""
+        },
+        {
+          "selector": ".signal-poster",
+          "pseudo": "::before"
+        },
+        {
+          "selector": "[data-static-label]",
+          "pseudo": ""
+        },
+        {
+          "selector": ".pack-controls",
+          "pseudo": ""
+        },
+        {
+          "selector": ".pack-row",
+          "pseudo": ""
+        },
+        {
+          "selector": "[data-pack-submit]",
+          "pseudo": ""
+        },
+        {
+          "selector": ".site-nav",
+          "pseudo": ""
+        },
+        {
+          "selector": ".product-stage",
+          "pseudo": "::before"
+        },
+        {
+          "selector": ".product-stage",
+          "pseudo": "::after"
+        },
+        {
+          "selector": ".can-3d",
+          "pseudo": ""
+        },
+        {
+          "selector": ".masthead",
+          "pseudo": ""
+        },
+        {
+          "selector": ".flavor-button",
+          "pseudo": "::after"
+        },
+        {
+          "selector": "[data-poster-label]",
+          "pseudo": ""
+        },
+        {
+          "selector": ".static-can__top",
+          "pseudo": ""
+        },
+        {
+          "selector": ".hero__actions",
+          "pseudo": ""
+        },
+        {
+          "selector": ".ui-icon",
+          "pseudo": ""
+        },
+        {
+          "selector": ".button .ui-icon",
+          "pseudo": ""
+        },
+        {
+          "selector": ".stepper .ui-icon",
+          "pseudo": ""
+        }
+      ],
+      "details": [
+        {
+          "id": "product",
+          "selector": ".can-rig",
+          "padding": 20,
+          "scale": 1
+        },
+        {
+          "id": "join",
+          "selector": ".static-can__top",
+          "padding": 15,
+          "scale": 2
+        },
+        {
+          "id": "action",
+          "selector": ".hero__actions",
+          "padding": 12,
+          "scale": 1
+        },
+        {
+          "id": "quantity-icons",
+          "selector": ".pack-row",
+          "padding": 12,
+          "scale": 2
+        }
+      ],
+      "expect": [
+        {
+          "selector": "body",
+          "property": "attribute:data-flavor",
+          "equals": "sun"
+        },
+        {
+          "selector": ".hero__actions .button",
+          "property": "focused",
+          "equals": true
+        },
+        {
+          "selector": ".hero__actions .button",
+          "property": "css:outlineColor",
+          "equals": "rgb(37, 39, 32)"
+        },
+        {
+          "selector": ".hero__actions .button",
+          "property": "css:outlineWidth",
+          "equals": "3px"
+        }
+      ]
+    },
+    {
+      "id": "invalid",
+      "state": "validation",
+      "viewport": "390x844@1",
+      "theme": "light",
+      "input": "touch",
+      "motion": "reduced",
+      "context": "validation",
+      "route": "/benchmarks/soda-campaign/index.html",
+      "steps": [
+        {
+          "action": "click",
+          "selector": "[data-pack-row=\"sun\"] [data-pack-action=\"decrease\"]"
+        }
+      ],
+      "probes": [
+        {
+          "selector": "body",
+          "pseudo": ""
+        },
+        {
+          "selector": "#hero-title",
+          "pseudo": ""
+        },
+        {
+          "selector": ".button",
+          "pseudo": ""
+        },
+        {
+          "selector": ".flavor-button",
+          "pseudo": ""
+        },
+        {
+          "selector": ".signal-row",
+          "pseudo": ""
+        },
+        {
+          "selector": ".can-rig",
+          "pseudo": ""
+        },
+        {
+          "selector": "[data-can-object]",
+          "pseudo": ""
+        },
+        {
+          "selector": ".can-lid-visual",
+          "pseudo": ""
+        },
+        {
+          "selector": ".signal-poster",
+          "pseudo": ""
+        },
+        {
+          "selector": ".signal-poster",
+          "pseudo": "::before"
+        },
+        {
+          "selector": "[data-static-label]",
+          "pseudo": ""
+        },
+        {
+          "selector": ".pack-controls",
+          "pseudo": ""
+        },
+        {
+          "selector": ".pack-row",
+          "pseudo": ""
+        },
+        {
+          "selector": "[data-pack-submit]",
+          "pseudo": ""
+        },
+        {
+          "selector": ".site-nav",
+          "pseudo": ""
+        },
+        {
+          "selector": ".product-stage",
+          "pseudo": "::before"
+        },
+        {
+          "selector": ".product-stage",
+          "pseudo": "::after"
+        },
+        {
+          "selector": ".can-3d",
+          "pseudo": ""
+        },
+        {
+          "selector": ".masthead",
+          "pseudo": ""
+        },
+        {
+          "selector": ".flavor-button",
+          "pseudo": "::after"
+        },
+        {
+          "selector": "[data-poster-label]",
+          "pseudo": ""
+        },
+        {
+          "selector": ".static-can__top",
+          "pseudo": ""
+        },
+        {
+          "selector": ".hero__actions",
+          "pseudo": ""
+        },
+        {
+          "selector": ".ui-icon",
+          "pseudo": ""
+        },
+        {
+          "selector": ".button .ui-icon",
+          "pseudo": ""
+        },
+        {
+          "selector": ".stepper .ui-icon",
+          "pseudo": ""
+        }
+      ],
+      "details": [
+        {
+          "id": "product",
+          "selector": ".can-rig",
+          "padding": 20,
+          "scale": 1
+        },
+        {
+          "id": "join",
+          "selector": ".static-can__top",
+          "padding": 15,
+          "scale": 2
+        },
+        {
+          "id": "action",
+          "selector": ".hero__actions",
+          "padding": 12,
+          "scale": 1
+        },
+        {
+          "id": "quantity-icons",
+          "selector": ".pack-row",
+          "padding": 12,
+          "scale": 2
+        }
+      ],
+      "expect": [
+        {
+          "selector": "body",
+          "property": "attribute:data-flavor",
+          "equals": "sun"
+        },
+        {
+          "selector": "[data-pack-total]",
+          "property": "text",
+          "equals": "5"
+        },
+        {
+          "selector": "[data-pack-submit]",
+          "property": "disabled",
+          "equals": true
+        }
+      ]
+    },
+    {
+      "id": "menu-keyboard",
+      "state": "overlay",
+      "viewport": "900x1000@1",
+      "theme": "light",
+      "input": "keyboard",
+      "motion": "reduced",
+      "context": "overlay",
+      "route": "/benchmarks/soda-campaign/index.html",
+      "steps": [
+        {
+          "action": "script",
+          "value": "document.querySelector('#nav-toggle').focus()"
+        },
+        {
+          "action": "key",
+          "key": "Enter"
+        }
+      ],
+      "probes": [
+        {
+          "selector": "body",
+          "pseudo": ""
+        },
+        {
+          "selector": "#hero-title",
+          "pseudo": ""
+        },
+        {
+          "selector": ".button",
+          "pseudo": ""
+        },
+        {
+          "selector": ".flavor-button",
+          "pseudo": ""
+        },
+        {
+          "selector": ".signal-row",
+          "pseudo": ""
+        },
+        {
+          "selector": ".can-rig",
+          "pseudo": ""
+        },
+        {
+          "selector": "[data-can-object]",
+          "pseudo": ""
+        },
+        {
+          "selector": ".can-lid-visual",
+          "pseudo": ""
+        },
+        {
+          "selector": ".signal-poster",
+          "pseudo": ""
+        },
+        {
+          "selector": ".signal-poster",
+          "pseudo": "::before"
+        },
+        {
+          "selector": "[data-static-label]",
+          "pseudo": ""
+        },
+        {
+          "selector": ".pack-controls",
+          "pseudo": ""
+        },
+        {
+          "selector": ".pack-row",
+          "pseudo": ""
+        },
+        {
+          "selector": "[data-pack-submit]",
+          "pseudo": ""
+        },
+        {
+          "selector": ".site-nav",
+          "pseudo": ""
+        },
+        {
+          "selector": ".product-stage",
+          "pseudo": "::before"
+        },
+        {
+          "selector": ".product-stage",
+          "pseudo": "::after"
+        },
+        {
+          "selector": ".can-3d",
+          "pseudo": ""
+        },
+        {
+          "selector": ".masthead",
+          "pseudo": ""
+        },
+        {
+          "selector": ".flavor-button",
+          "pseudo": "::after"
+        },
+        {
+          "selector": "[data-poster-label]",
+          "pseudo": ""
+        },
+        {
+          "selector": ".static-can__top",
+          "pseudo": ""
+        },
+        {
+          "selector": ".hero__actions",
+          "pseudo": ""
+        },
+        {
+          "selector": ".ui-icon",
+          "pseudo": ""
+        },
+        {
+          "selector": ".button .ui-icon",
+          "pseudo": ""
+        },
+        {
+          "selector": ".stepper .ui-icon",
+          "pseudo": ""
+        }
+      ],
+      "details": [
+        {
+          "id": "product",
+          "selector": ".can-rig",
+          "padding": 20,
+          "scale": 1
+        },
+        {
+          "id": "join",
+          "selector": ".static-can__top",
+          "padding": 15,
+          "scale": 2
+        },
+        {
+          "id": "action",
+          "selector": ".hero__actions",
+          "padding": 12,
+          "scale": 1
+        },
+        {
+          "id": "quantity-icons",
+          "selector": ".pack-row",
+          "padding": 12,
+          "scale": 2
+        },
+        {
+          "id": "open-menu",
+          "selector": ".site-nav",
+          "padding": 16,
+          "scale": 1,
+          "space": "viewport"
+        }
+      ],
+      "expect": [
+        {
+          "selector": "body",
+          "property": "attribute:data-flavor",
+          "equals": "sun"
+        },
+        {
+          "selector": "#nav-toggle",
+          "property": "attribute:aria-expanded",
+          "equals": "true"
+        },
+        {
+          "selector": "#site-nav a",
+          "property": "focused",
+          "equals": true
+        },
+        {
+          "selector": "#site-nav",
+          "property": "css:width",
+          "equals": "320px"
+        }
+      ]
+    },
+    {
+      "id": "dialog-keyboard",
+      "state": "confirmation",
+      "viewport": "900x1000@1",
+      "theme": "light",
+      "input": "keyboard",
+      "motion": "normal",
+      "context": "modal",
+      "route": "/benchmarks/soda-campaign/index.html",
+      "steps": [
+        {
+          "action": "script",
+          "value": "document.querySelector('[data-pack-submit]').focus()"
+        },
+        {
+          "action": "key",
+          "key": "Enter"
+        }
+      ],
+      "probes": [
+        {
+          "selector": "body",
+          "pseudo": ""
+        },
+        {
+          "selector": "#hero-title",
+          "pseudo": ""
+        },
+        {
+          "selector": ".button",
+          "pseudo": ""
+        },
+        {
+          "selector": ".flavor-button",
+          "pseudo": ""
+        },
+        {
+          "selector": ".signal-row",
+          "pseudo": ""
+        },
+        {
+          "selector": ".can-rig",
+          "pseudo": ""
+        },
+        {
+          "selector": "[data-can-object]",
+          "pseudo": ""
+        },
+        {
+          "selector": ".can-lid-visual",
+          "pseudo": ""
+        },
+        {
+          "selector": ".signal-poster",
+          "pseudo": ""
+        },
+        {
+          "selector": ".signal-poster",
+          "pseudo": "::before"
+        },
+        {
+          "selector": "[data-static-label]",
+          "pseudo": ""
+        },
+        {
+          "selector": ".pack-controls",
+          "pseudo": ""
+        },
+        {
+          "selector": ".pack-row",
+          "pseudo": ""
+        },
+        {
+          "selector": "[data-pack-submit]",
+          "pseudo": ""
+        },
+        {
+          "selector": ".site-nav",
+          "pseudo": ""
+        },
+        {
+          "selector": ".product-stage",
+          "pseudo": "::before"
+        },
+        {
+          "selector": ".product-stage",
+          "pseudo": "::after"
+        },
+        {
+          "selector": ".can-3d",
+          "pseudo": ""
+        },
+        {
+          "selector": ".masthead",
+          "pseudo": ""
+        },
+        {
+          "selector": ".flavor-button",
+          "pseudo": "::after"
+        },
+        {
+          "selector": "[data-poster-label]",
+          "pseudo": ""
+        },
+        {
+          "selector": ".static-can__top",
+          "pseudo": ""
+        },
+        {
+          "selector": ".hero__actions",
+          "pseudo": ""
+        },
+        {
+          "selector": ".ui-icon",
+          "pseudo": ""
+        },
+        {
+          "selector": ".button .ui-icon",
+          "pseudo": ""
+        },
+        {
+          "selector": ".stepper .ui-icon",
+          "pseudo": ""
+        },
+        {
+          "selector": "#mix-confirmation",
+          "pseudo": ""
+        },
+        {
+          "selector": "#mix-confirmation",
+          "pseudo": "::backdrop"
+        },
+        {
+          "selector": "#mix-dialog-title",
+          "pseudo": ""
+        },
+        {
+          "selector": ".dialog-close",
+          "pseudo": ""
+        },
+        {
+          "selector": ".confirm-thumb",
+          "pseudo": ""
+        }
+      ],
+      "details": [
+        {
+          "id": "product",
+          "selector": ".can-rig",
+          "padding": 20,
+          "scale": 1
+        },
+        {
+          "id": "join",
+          "selector": ".static-can__top",
+          "padding": 15,
+          "scale": 2
+        },
+        {
+          "id": "action",
+          "selector": ".hero__actions",
+          "padding": 12,
+          "scale": 1
+        },
+        {
+          "id": "quantity-icons",
+          "selector": ".pack-row",
+          "padding": 12,
+          "scale": 2
+        },
+        {
+          "id": "confirmation",
+          "selector": "#mix-confirmation",
+          "padding": 12,
+          "scale": 1,
+          "space": "viewport"
+        }
+      ],
+      "expect": [
+        {
+          "selector": "body",
+          "property": "attribute:data-flavor",
+          "equals": "sun"
+        },
+        {
+          "selector": "[data-pack-status]",
+          "property": "text",
+          "includes": "Signal packed:"
+        },
+        {
+          "selector": "#mix-confirmation",
+          "property": "open",
+          "equals": true
+        },
+        {
+          "selector": "#mix-dialog-title",
+          "property": "focused",
+          "equals": true
+        }
+      ]
+    },
+    {
+      "id": "dialog-pressure",
+      "state": "confirmation",
+      "viewport": "320x568@1",
+      "theme": "light",
+      "input": "keyboard",
+      "motion": "reduced",
+      "context": "modal-text-pressure",
+      "route": "/benchmarks/soda-campaign/index.html",
+      "steps": [
+        {
+          "action": "script",
+          "value": "document.querySelector('[data-pack-submit]').focus()"
+        },
+        {
+          "action": "key",
+          "key": "Enter"
+        },
+        {
+          "action": "script",
+          "value": "(()=>{const nodes=[document.querySelector('#mix-confirmation'),...document.querySelectorAll('#mix-confirmation *')].map(n=>[n,parseFloat(getComputedStyle(n).fontSize)]);for(const[n,size]of nodes)n.style.fontSize=size*2+'px'})()"
+        }
+      ],
+      "probes": [
+        {
+          "selector": "body",
+          "pseudo": ""
+        },
+        {
+          "selector": "#hero-title",
+          "pseudo": ""
+        },
+        {
+          "selector": ".button",
+          "pseudo": ""
+        },
+        {
+          "selector": ".flavor-button",
+          "pseudo": ""
+        },
+        {
+          "selector": ".signal-row",
+          "pseudo": ""
+        },
+        {
+          "selector": ".can-rig",
+          "pseudo": ""
+        },
+        {
+          "selector": "[data-can-object]",
+          "pseudo": ""
+        },
+        {
+          "selector": ".can-lid-visual",
+          "pseudo": ""
+        },
+        {
+          "selector": ".signal-poster",
+          "pseudo": ""
+        },
+        {
+          "selector": ".signal-poster",
+          "pseudo": "::before"
+        },
+        {
+          "selector": "[data-static-label]",
+          "pseudo": ""
+        },
+        {
+          "selector": ".pack-controls",
+          "pseudo": ""
+        },
+        {
+          "selector": ".pack-row",
+          "pseudo": ""
+        },
+        {
+          "selector": "[data-pack-submit]",
+          "pseudo": ""
+        },
+        {
+          "selector": ".site-nav",
+          "pseudo": ""
+        },
+        {
+          "selector": ".product-stage",
+          "pseudo": "::before"
+        },
+        {
+          "selector": ".product-stage",
+          "pseudo": "::after"
+        },
+        {
+          "selector": ".can-3d",
+          "pseudo": ""
+        },
+        {
+          "selector": ".masthead",
+          "pseudo": ""
+        },
+        {
+          "selector": ".flavor-button",
+          "pseudo": "::after"
+        },
+        {
+          "selector": "[data-poster-label]",
+          "pseudo": ""
+        },
+        {
+          "selector": ".static-can__top",
+          "pseudo": ""
+        },
+        {
+          "selector": ".hero__actions",
+          "pseudo": ""
+        },
+        {
+          "selector": ".ui-icon",
+          "pseudo": ""
+        },
+        {
+          "selector": ".button .ui-icon",
+          "pseudo": ""
+        },
+        {
+          "selector": ".stepper .ui-icon",
+          "pseudo": ""
+        },
+        {
+          "selector": "#mix-confirmation",
+          "pseudo": ""
+        },
+        {
+          "selector": "#mix-confirmation",
+          "pseudo": "::backdrop"
+        },
+        {
+          "selector": "#mix-dialog-title",
+          "pseudo": ""
+        },
+        {
+          "selector": ".dialog-close",
+          "pseudo": ""
+        },
+        {
+          "selector": ".confirm-thumb",
+          "pseudo": ""
+        }
+      ],
+      "details": [
+        {
+          "id": "product",
+          "selector": ".can-rig",
+          "padding": 20,
+          "scale": 1
+        },
+        {
+          "id": "join",
+          "selector": ".static-can__top",
+          "padding": 15,
+          "scale": 2
+        },
+        {
+          "id": "action",
+          "selector": ".hero__actions",
+          "padding": 12,
+          "scale": 1
+        },
+        {
+          "id": "quantity-icons",
+          "selector": ".pack-row",
+          "padding": 12,
+          "scale": 2
+        },
+        {
+          "id": "confirmation",
+          "selector": "#mix-confirmation",
+          "padding": 12,
+          "scale": 1,
+          "space": "viewport"
+        }
+      ],
+      "expect": [
+        {
+          "selector": "body",
+          "property": "attribute:data-flavor",
+          "equals": "sun"
+        },
+        {
+          "selector": "[data-pack-status]",
+          "property": "text",
+          "includes": "Signal packed:"
+        },
+        {
+          "selector": "#mix-confirmation",
+          "property": "open",
+          "equals": true
+        },
+        {
+          "selector": "#mix-dialog-title",
+          "property": "focused",
+          "equals": true
+        }
+      ]
+    }
+  ]
+}

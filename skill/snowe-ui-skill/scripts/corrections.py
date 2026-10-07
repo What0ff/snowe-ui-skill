@@ -115,7 +115,7 @@ def confirmation_issues(entry):
     return [] if current == snapshot else ["Current definition or proof differs from the last recorded snapshot"]
 
 
-def validate_proof(entry, proof):
+def validate_proof(entry, proof, *, new=False):
     validate_proof_shape(proof)
     expected = {item["id"]: item for item in entry["criteria"]}
     if not set(entry["scope"]["owners"]) <= {item["path"] for item in proof["sources"]}:
@@ -133,6 +133,8 @@ def validate_proof(entry, proof):
         if expected[key]["kind"] == "visual":
             review = result.get("review")
             review_fields(review)
+            if new and not {"method", "verdict", "report"} <= review.keys():
+                raise ValueError("New visual verification requires method, explicit KEEP and a current checked report")
             if "verdict" in review and review["verdict"] != "KEEP": raise ValueError("Only KEEP can close visual proof")
             if "report" in review and review["report"] not in artifacts:
                 raise ValueError("The visual report must be a bound proof artifact")
@@ -150,6 +152,8 @@ def proof_current(root, proof, entry=None):
         except (OSError, ValueError) as error: issues.append(f"Unavailable: {item['path']}: {error}")
     for result in proof["results"]:
         review = result.get("review", {})
+        if review and not {"method", "verdict", "report"} <= review.keys():
+            issues.append("Historical inline visual receipt needs new explicit checked verification")
         if "report" not in review: continue
         try:
             checked = inspect_review(root, review["report"])
@@ -157,6 +161,8 @@ def proof_current(root, proof, entry=None):
             if checked.get("visual_verdict") != review["verdict"] or checked.get("method") != review["method"]:
                 issues.append("Visual receipt disagrees with its linked report")
             if review["state"] not in checked.get("states", []): issues.append("Visual report does not cover the receipt state")
+            if not any(row["state"] == review["state"] and row["viewport"] == review["viewport"] for row in checked.get("combinations", [])):
+                issues.append("Visual report does not cover the receipt viewport/state")
             if entry and not set(entry["scope"]["owners"]) <= set(checked.get("source_paths", [])):
                 issues.append("Visual report does not bind every correction owner")
         except (OSError, ValueError, TypeError, KeyError) as error:
@@ -279,7 +285,7 @@ def execute(command, *, workspace, project, payload=None):
             elif command == "verify":
                 object_fields(data, {"id", "proof"})
                 if entry["status"] not in {"implemented", "verified"}: raise ValueError("Implement before verification")
-                validate_proof(entry, data["proof"])
+                validate_proof(entry, data["proof"], new=True)
                 issues = proof_current(root, data["proof"], entry)
                 if issues: raise ValueError("; ".join(issues))
                 entry["proof"] = data["proof"]

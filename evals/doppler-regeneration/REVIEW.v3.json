@@ -1,0 +1,1349 @@
+{
+  "schema": "3.0",
+  "scope": "Doppler campaign regeneration",
+  "method": "self-review",
+  "reviewer": "Implementer; explicit visual judgment remains separate from checker integrity",
+  "contract": {
+    "path": "evals/doppler-regeneration/ATTENTION.v3.json",
+    "sha256": "72faf7f2b438efb35912f50a4de9ba928316e4e812607cf446b54a8f1e9854fe"
+  },
+  "capture": {
+    "path": "evals/doppler-regeneration/verified/receipt.json",
+    "sha256": "7a2db691fe4ba589f4f64b9baf0f7354ef1db05d7b0f062bb231e674352056e7"
+  },
+  "sources": [
+    {
+      "path": "benchmarks/soda-campaign/app.js",
+      "sha256": "e9fc92cec183eeb97fc87e396a35a1729e679c1230bccef9115cb956d11c4deb"
+    },
+    {
+      "path": "benchmarks/soda-campaign/assets/fonts/OFL-Manrope.txt",
+      "sha256": "f612090fb72b6dca3e807e66fa0d2b5def163cef86f1a3209b5c897cba5ee4b7"
+    },
+    {
+      "path": "benchmarks/soda-campaign/assets/fonts/OFL-Unbounded.txt",
+      "sha256": "31e5d4e83955e7103c34570dd49b0570ef490800bd65b42923c0dd02445263b3"
+    },
+    {
+      "path": "benchmarks/soda-campaign/assets/fonts/manrope-latin.woff2",
+      "sha256": "a30ddcd349703aff7464c34bef3fffdff405ee50c113440d7c8693c02d210972"
+    },
+    {
+      "path": "benchmarks/soda-campaign/assets/fonts/unbounded-latin.woff2",
+      "sha256": "22f9b928aa3928a896340422b54d690fbb5875c30eae4c106f029c61f2289fd6"
+    },
+    {
+      "path": "benchmarks/soda-campaign/assets/icons/LICENSE",
+      "sha256": "0cd15032a964eb7b46b1bb74f96b89ed411a33fcd6b877925f5ced02ec8a9c87"
+    },
+    {
+      "path": "benchmarks/soda-campaign/assets/icons/SOURCE.md",
+      "sha256": "7f1164a0e7d8ef720be7172412ebc9dc4364c14d588247f11efc0b46d74aa976"
+    },
+    {
+      "path": "benchmarks/soda-campaign/assets/icons/arrow.metadata.json",
+      "sha256": "186caf3b418084a302379d509d1d6bb0b812ab1a591d24f8581dfbd708207d60"
+    },
+    {
+      "path": "benchmarks/soda-campaign/assets/icons/arrow.svg",
+      "sha256": "a9dbbf0543e8674ccca2e47bec94e49b71c662c8949aa07fd866247a73ac8d6b"
+    },
+    {
+      "path": "benchmarks/soda-campaign/assets/icons/close.metadata.json",
+      "sha256": "028d3baab9b52a5e88e2c2ac03ce842278432cb56d53a72e6248c718f07e4fae"
+    },
+    {
+      "path": "benchmarks/soda-campaign/assets/icons/close.svg",
+      "sha256": "51a8531c7593aca8d38710027fb97bdd94c50e6a4d95610be0261b27707646a6"
+    },
+    {
+      "path": "benchmarks/soda-campaign/assets/icons/menu.metadata.json",
+      "sha256": "17b6da37e3624356964dde4620465013d49bc433a38694fb7e5cf807d51e8356"
+    },
+    {
+      "path": "benchmarks/soda-campaign/assets/icons/menu.svg",
+      "sha256": "29778bbb99eb95b7cf19d3855100ce9087a381ae83f0de28f11a08ebc55be943"
+    },
+    {
+      "path": "benchmarks/soda-campaign/assets/icons/minus.metadata.json",
+      "sha256": "8f125573a0217c2e3d988aedca804f09db157e46abd419e4fe16317505e8400a"
+    },
+    {
+      "path": "benchmarks/soda-campaign/assets/icons/minus.svg",
+      "sha256": "e2201ac99f2ebea364d1ac4c36c23a6b76775fa6cc21cb0edcf051427741a239"
+    },
+    {
+      "path": "benchmarks/soda-campaign/assets/icons/plus.metadata.json",
+      "sha256": "ea1275277fdd1a05fd332bfe73e8e7de9df829bcca3e02c70545cdc79c6aad2e"
+    },
+    {
+      "path": "benchmarks/soda-campaign/assets/icons/plus.svg",
+      "sha256": "29dfee7f8c839e33676eaf4eca16d6b4f7c2a1e80ebbc52d65f1a5b005cca010"
+    },
+    {
+      "path": "benchmarks/soda-campaign/assets/labels/night-signal.svg",
+      "sha256": "f4e7cb35a2686ff289aa7554a0f71722757e10a3f3f2ea22df4ad5d6b4303136"
+    },
+    {
+      "path": "benchmarks/soda-campaign/assets/labels/pink-noise.svg",
+      "sha256": "940ea2752ca94b3da33e43ed4126290bc6a59059a767879e01974a7844a50aef"
+    },
+    {
+      "path": "benchmarks/soda-campaign/assets/labels/sun-shift.svg",
+      "sha256": "646325eb1ee23ecd9bda6c2d5b510202ff7a0225d192edf7618d1389db0e767c"
+    },
+    {
+      "path": "benchmarks/soda-campaign/can.css",
+      "sha256": "03e0967dc99b0054f0f63aa35832331795754c43f920ed459693bf5a538dff77"
+    },
+    {
+      "path": "benchmarks/soda-campaign/index.html",
+      "sha256": "15ecb148423c9001e6baad8432a98a4b000fbee3c679a99141fe8b9ad27e9ca6"
+    },
+    {
+      "path": "benchmarks/soda-campaign/styles.css",
+      "sha256": "9842079ffb09edf33483ed5d8ea9fcfefa96ba0936c698ffa5960c05b69130af"
+    }
+  ],
+  "renders": [
+    {
+      "path": "evals/doppler-regeneration/verified/wide.png",
+      "sha256": "2b4890df4ef3d73b24feb4679dde977db0f16f7d8f6cf31c32becaa50525fcc9",
+      "id": "wide",
+      "state": "page",
+      "viewport": "1440x1000@1",
+      "theme": "light",
+      "input": "pointer",
+      "motion": "normal",
+      "context": "page"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/pressure.png",
+      "sha256": "93970c6941526f2f46ba4d9951231ba466f12f9448e25b49e3894352651a3533",
+      "id": "pressure",
+      "state": "page",
+      "viewport": "900x1000@1",
+      "theme": "light",
+      "input": "keyboard",
+      "motion": "normal",
+      "context": "page"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/mobile.png",
+      "sha256": "76335992deadde59ffc1f0d0ed5e0f676e0f7e1056b11716c0096e90dd6f388a",
+      "id": "mobile",
+      "state": "page",
+      "viewport": "390x844@1",
+      "theme": "light",
+      "input": "touch",
+      "motion": "normal",
+      "context": "page"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/pink.png",
+      "sha256": "fdd0c651d7a0b1a3f8aa0805426c29597e2359d54d103436d4ace400046c5382",
+      "id": "pink",
+      "state": "flavor",
+      "viewport": "1440x1000@1",
+      "theme": "light",
+      "input": "pointer",
+      "motion": "normal",
+      "context": "flavor"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/menu.png",
+      "sha256": "2ed09885a21c915d4bce5ebb5d694ff48a56941c40345cd0a9880a7e74cf6e49",
+      "id": "menu",
+      "state": "overlay",
+      "viewport": "390x844@1",
+      "theme": "dark",
+      "input": "touch",
+      "motion": "reduced",
+      "context": "overlay"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/reduced.png",
+      "sha256": "e05551e0894e189bee64f569445fb2bb1da88744f52af353cb70386d21401711",
+      "id": "reduced",
+      "state": "page",
+      "viewport": "900x1000@1",
+      "theme": "dark",
+      "input": "keyboard",
+      "motion": "reduced",
+      "context": "page"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/pack.png",
+      "sha256": "d7df6c1e0c95786abe41b3dc4b0233b8190c7428dee93b7b7106162c43f09fe3",
+      "id": "pack",
+      "state": "confirmation",
+      "viewport": "390x844@1",
+      "theme": "light",
+      "input": "touch",
+      "motion": "reduced",
+      "context": "confirmation"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/motion.png",
+      "sha256": "4b472dbfaf6c27978adf03828aee48a6f671082187a8cacf8c1c45731974ffc4",
+      "id": "motion",
+      "state": "motion",
+      "viewport": "900x700@1",
+      "theme": "light",
+      "input": "pointer",
+      "motion": "normal",
+      "context": "motion"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/narrow.png",
+      "sha256": "b006ede2b67731a2fb73993a3ea344a1323a90422bfc0967262f4da039ef4346",
+      "id": "narrow",
+      "state": "page",
+      "viewport": "320x844@1",
+      "theme": "light",
+      "input": "keyboard",
+      "motion": "normal",
+      "context": "pressure"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/retina.png",
+      "sha256": "5d4e7f37388f0d28c40c0689c5b3e7cc9280960d5b76da830a4816b0ff35144c",
+      "id": "retina",
+      "state": "page",
+      "viewport": "900x1000@2",
+      "theme": "light",
+      "input": "keyboard",
+      "motion": "reduced",
+      "context": "page"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/focus.png",
+      "sha256": "916c29ff439392e6d7dcc4fcd57b43f0fdb3d6364bd1cd83f3a389c88acbbd07",
+      "id": "focus",
+      "state": "focus",
+      "viewport": "900x1000@1",
+      "theme": "dark",
+      "input": "keyboard",
+      "motion": "reduced",
+      "context": "control"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/invalid.png",
+      "sha256": "7f2e562a2d1bcd61b5cb932bcf603568accbdd91e63ea1ef50ec2366733782d9",
+      "id": "invalid",
+      "state": "validation",
+      "viewport": "390x844@1",
+      "theme": "light",
+      "input": "touch",
+      "motion": "reduced",
+      "context": "validation"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/menu-keyboard.png",
+      "sha256": "34e9753c525ee570b1b045986542b74b0a94c812a925b47e6da7226f8662cd66",
+      "id": "menu-keyboard",
+      "state": "overlay",
+      "viewport": "900x1000@1",
+      "theme": "light",
+      "input": "keyboard",
+      "motion": "reduced",
+      "context": "overlay"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/dialog-keyboard.png",
+      "sha256": "01a40e1a49196dcdcb6a638e3b61be403be0c839c326c8fb9f5944d6f96c4c30",
+      "id": "dialog-keyboard",
+      "state": "confirmation",
+      "viewport": "900x1000@1",
+      "theme": "light",
+      "input": "keyboard",
+      "motion": "normal",
+      "context": "modal"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/dialog-pressure.png",
+      "sha256": "130ce08387ac3025e4038cbf05c0f2985591cc63f08a3f1e8f7d8113e14c861f",
+      "id": "dialog-pressure",
+      "state": "confirmation",
+      "viewport": "320x568@1",
+      "theme": "light",
+      "input": "keyboard",
+      "motion": "reduced",
+      "context": "modal-text-pressure"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/wide-viewport.png",
+      "sha256": "f980441479e11d3c2c37808e4eae11d5922b8c73e1e133a9d99f7e341d241980",
+      "state": "page",
+      "viewport": "1440x1000@1",
+      "theme": "light",
+      "input": "pointer",
+      "motion": "normal",
+      "context": "page",
+      "id": "wide:viewport"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/wide-detail-product.png",
+      "sha256": "53f67399fcfd37f276642818c9531b8300397289ba8a3054eecce4f600e7c625",
+      "state": "page",
+      "viewport": "1440x1000@1",
+      "theme": "light",
+      "input": "pointer",
+      "motion": "normal",
+      "context": "page",
+      "id": "wide:product"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/wide-detail-join.png",
+      "sha256": "bc3b22a01a383d7dbd167f727641f3d467d72a31a6cc280c33b2eee4e1390708",
+      "state": "page",
+      "viewport": "1440x1000@1",
+      "theme": "light",
+      "input": "pointer",
+      "motion": "normal",
+      "context": "page",
+      "id": "wide:join"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/wide-detail-action.png",
+      "sha256": "f2833460a33833d7a6fc52c092679f0c8014a19c5180f92da621df28a88b7532",
+      "state": "page",
+      "viewport": "1440x1000@1",
+      "theme": "light",
+      "input": "pointer",
+      "motion": "normal",
+      "context": "page",
+      "id": "wide:action"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/wide-detail-quantity-icons.png",
+      "sha256": "16459bbf893b0f614bddd0a71bb43a3415641a9efdbbf72fdce592fb4200ab45",
+      "state": "page",
+      "viewport": "1440x1000@1",
+      "theme": "light",
+      "input": "pointer",
+      "motion": "normal",
+      "context": "page",
+      "id": "wide:quantity-icons"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/pressure-viewport.png",
+      "sha256": "816d6baab1884597e496502f29f4d31a2c8ab615a650743a6c3fd46700e55a3e",
+      "state": "page",
+      "viewport": "900x1000@1",
+      "theme": "light",
+      "input": "keyboard",
+      "motion": "normal",
+      "context": "page",
+      "id": "pressure:viewport"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/pressure-detail-product.png",
+      "sha256": "e3b5ecd44a439b44e8edd79695096fc77c90f0e1350cef88d68171d49d788a4d",
+      "state": "page",
+      "viewport": "900x1000@1",
+      "theme": "light",
+      "input": "keyboard",
+      "motion": "normal",
+      "context": "page",
+      "id": "pressure:product"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/pressure-detail-join.png",
+      "sha256": "07ff8376fa7255acb32c71a3bdf1352999a953d4ea1f2e80706b60da65daf701",
+      "state": "page",
+      "viewport": "900x1000@1",
+      "theme": "light",
+      "input": "keyboard",
+      "motion": "normal",
+      "context": "page",
+      "id": "pressure:join"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/pressure-detail-action.png",
+      "sha256": "97c68bfce5e26d85b6eba1dc09a3969bdb281520269ae0481674e3ee476779d2",
+      "state": "page",
+      "viewport": "900x1000@1",
+      "theme": "light",
+      "input": "keyboard",
+      "motion": "normal",
+      "context": "page",
+      "id": "pressure:action"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/pressure-detail-quantity-icons.png",
+      "sha256": "b293887708c1fe96e2cce0375ba3ac139ad0be422de679823b63af99536e247e",
+      "state": "page",
+      "viewport": "900x1000@1",
+      "theme": "light",
+      "input": "keyboard",
+      "motion": "normal",
+      "context": "page",
+      "id": "pressure:quantity-icons"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/mobile-viewport.png",
+      "sha256": "9d5c551693e969ec5984a9874aa67d9d0e4d4cbea09da22fded8d604fff42b07",
+      "state": "page",
+      "viewport": "390x844@1",
+      "theme": "light",
+      "input": "touch",
+      "motion": "normal",
+      "context": "page",
+      "id": "mobile:viewport"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/mobile-detail-product.png",
+      "sha256": "3d91c9e4c811ff80c138f306f830ed1bdfc727bf782d77151a91b12bfa03bf4d",
+      "state": "page",
+      "viewport": "390x844@1",
+      "theme": "light",
+      "input": "touch",
+      "motion": "normal",
+      "context": "page",
+      "id": "mobile:product"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/mobile-detail-join.png",
+      "sha256": "2231331ee1b4112a055faf1decab169008acebbe76ff5d432f472d9b24afc77d",
+      "state": "page",
+      "viewport": "390x844@1",
+      "theme": "light",
+      "input": "touch",
+      "motion": "normal",
+      "context": "page",
+      "id": "mobile:join"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/mobile-detail-action.png",
+      "sha256": "715d2f38eef3e4a618aa2dc043dc06a85527b451ed2b3ab42270ba0390b5d933",
+      "state": "page",
+      "viewport": "390x844@1",
+      "theme": "light",
+      "input": "touch",
+      "motion": "normal",
+      "context": "page",
+      "id": "mobile:action"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/mobile-detail-quantity-icons.png",
+      "sha256": "71f043cc8e3e4944d64ab8fe5b8624cadc68ba02aaed87b5b43c99d3827491b4",
+      "state": "page",
+      "viewport": "390x844@1",
+      "theme": "light",
+      "input": "touch",
+      "motion": "normal",
+      "context": "page",
+      "id": "mobile:quantity-icons"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/pink-viewport.png",
+      "sha256": "ba683e6ddaa9eaad6aa81a715ecbd9452dde1a0b94c0d630288c9e2d92c43ce8",
+      "state": "flavor",
+      "viewport": "1440x1000@1",
+      "theme": "light",
+      "input": "pointer",
+      "motion": "normal",
+      "context": "flavor",
+      "id": "pink:viewport"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/pink-detail-product.png",
+      "sha256": "8deeee666b07c3e8f9a2ea387199f9a79eddfb45413ddf39db6d1d1b84440c4e",
+      "state": "flavor",
+      "viewport": "1440x1000@1",
+      "theme": "light",
+      "input": "pointer",
+      "motion": "normal",
+      "context": "flavor",
+      "id": "pink:product"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/pink-detail-join.png",
+      "sha256": "01a1004a5e1176f10b1e8221858635e7fb26ee48e9f896c30ca0569861afcd1c",
+      "state": "flavor",
+      "viewport": "1440x1000@1",
+      "theme": "light",
+      "input": "pointer",
+      "motion": "normal",
+      "context": "flavor",
+      "id": "pink:join"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/pink-detail-action.png",
+      "sha256": "955e038b87dcf46530018105a5f532b8172cb5502ee2c0336493e31793075642",
+      "state": "flavor",
+      "viewport": "1440x1000@1",
+      "theme": "light",
+      "input": "pointer",
+      "motion": "normal",
+      "context": "flavor",
+      "id": "pink:action"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/pink-detail-quantity-icons.png",
+      "sha256": "16459bbf893b0f614bddd0a71bb43a3415641a9efdbbf72fdce592fb4200ab45",
+      "state": "flavor",
+      "viewport": "1440x1000@1",
+      "theme": "light",
+      "input": "pointer",
+      "motion": "normal",
+      "context": "flavor",
+      "id": "pink:quantity-icons"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/menu-viewport.png",
+      "sha256": "164d50251f641d041a054fd44d35a79fa7f237c6f08d1dd758f5827c9391f695",
+      "state": "overlay",
+      "viewport": "390x844@1",
+      "theme": "dark",
+      "input": "touch",
+      "motion": "reduced",
+      "context": "overlay",
+      "id": "menu:viewport"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/menu-detail-product.png",
+      "sha256": "a5a3ff72ac6527a2e14126c9f8dfd9cbc1c0b567ba5994381c57dc564e14e665",
+      "state": "overlay",
+      "viewport": "390x844@1",
+      "theme": "dark",
+      "input": "touch",
+      "motion": "reduced",
+      "context": "overlay",
+      "id": "menu:product"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/menu-detail-join.png",
+      "sha256": "8657ffe91eda8aa1e700f5039afff8aedb55baa7cd3b5401dec995a522af5cf7",
+      "state": "overlay",
+      "viewport": "390x844@1",
+      "theme": "dark",
+      "input": "touch",
+      "motion": "reduced",
+      "context": "overlay",
+      "id": "menu:join"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/menu-detail-action.png",
+      "sha256": "7d28878bfdc7478b762e93e6f11ffb162bee1fe452a8195d6a4c8e41d22cedd2",
+      "state": "overlay",
+      "viewport": "390x844@1",
+      "theme": "dark",
+      "input": "touch",
+      "motion": "reduced",
+      "context": "overlay",
+      "id": "menu:action"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/menu-detail-quantity-icons.png",
+      "sha256": "71f043cc8e3e4944d64ab8fe5b8624cadc68ba02aaed87b5b43c99d3827491b4",
+      "state": "overlay",
+      "viewport": "390x844@1",
+      "theme": "dark",
+      "input": "touch",
+      "motion": "reduced",
+      "context": "overlay",
+      "id": "menu:quantity-icons"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/menu-detail-open-menu.png",
+      "sha256": "a155691de691031110132dcc5355abfd084eb193476472ebc5d44ef093f647b6",
+      "state": "overlay",
+      "viewport": "390x844@1",
+      "theme": "dark",
+      "input": "touch",
+      "motion": "reduced",
+      "context": "overlay",
+      "id": "menu:open-menu"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/reduced-viewport.png",
+      "sha256": "05b63f88559f3bb85df97118f2a542dcd199f90b7f011a20b7f6e4e190e42421",
+      "state": "page",
+      "viewport": "900x1000@1",
+      "theme": "dark",
+      "input": "keyboard",
+      "motion": "reduced",
+      "context": "page",
+      "id": "reduced:viewport"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/reduced-detail-product.png",
+      "sha256": "897f84c0bcc2fabf3702d2e0a7bdccb0ac4de54ac5624995f77f6fd94efde23a",
+      "state": "page",
+      "viewport": "900x1000@1",
+      "theme": "dark",
+      "input": "keyboard",
+      "motion": "reduced",
+      "context": "page",
+      "id": "reduced:product"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/reduced-detail-join.png",
+      "sha256": "46e98abba6f379a5e338c8810bb4fbf94df03fe816be781040a2697b8352ab0f",
+      "state": "page",
+      "viewport": "900x1000@1",
+      "theme": "dark",
+      "input": "keyboard",
+      "motion": "reduced",
+      "context": "page",
+      "id": "reduced:join"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/reduced-detail-action.png",
+      "sha256": "6420495cecab5d642b2c2542093720e44349fcafa57b81543240dca227e0a03c",
+      "state": "page",
+      "viewport": "900x1000@1",
+      "theme": "dark",
+      "input": "keyboard",
+      "motion": "reduced",
+      "context": "page",
+      "id": "reduced:action"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/reduced-detail-quantity-icons.png",
+      "sha256": "b293887708c1fe96e2cce0375ba3ac139ad0be422de679823b63af99536e247e",
+      "state": "page",
+      "viewport": "900x1000@1",
+      "theme": "dark",
+      "input": "keyboard",
+      "motion": "reduced",
+      "context": "page",
+      "id": "reduced:quantity-icons"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/pack-viewport.png",
+      "sha256": "054301ae5a78edf06939e4e7d1a033d787e923f7c9e2bdab54b1fc6746ff855c",
+      "state": "confirmation",
+      "viewport": "390x844@1",
+      "theme": "light",
+      "input": "touch",
+      "motion": "reduced",
+      "context": "confirmation",
+      "id": "pack:viewport"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/pack-detail-product.png",
+      "sha256": "a5a3ff72ac6527a2e14126c9f8dfd9cbc1c0b567ba5994381c57dc564e14e665",
+      "state": "confirmation",
+      "viewport": "390x844@1",
+      "theme": "light",
+      "input": "touch",
+      "motion": "reduced",
+      "context": "confirmation",
+      "id": "pack:product"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/pack-detail-join.png",
+      "sha256": "8657ffe91eda8aa1e700f5039afff8aedb55baa7cd3b5401dec995a522af5cf7",
+      "state": "confirmation",
+      "viewport": "390x844@1",
+      "theme": "light",
+      "input": "touch",
+      "motion": "reduced",
+      "context": "confirmation",
+      "id": "pack:join"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/pack-detail-action.png",
+      "sha256": "7d28878bfdc7478b762e93e6f11ffb162bee1fe452a8195d6a4c8e41d22cedd2",
+      "state": "confirmation",
+      "viewport": "390x844@1",
+      "theme": "light",
+      "input": "touch",
+      "motion": "reduced",
+      "context": "confirmation",
+      "id": "pack:action"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/pack-detail-quantity-icons.png",
+      "sha256": "71f043cc8e3e4944d64ab8fe5b8624cadc68ba02aaed87b5b43c99d3827491b4",
+      "state": "confirmation",
+      "viewport": "390x844@1",
+      "theme": "light",
+      "input": "touch",
+      "motion": "reduced",
+      "context": "confirmation",
+      "id": "pack:quantity-icons"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/pack-detail-confirmation.png",
+      "sha256": "be2ef288799a330b1719cee2e24667230379593b576700d8bd4393ee6f2caaee",
+      "state": "confirmation",
+      "viewport": "390x844@1",
+      "theme": "light",
+      "input": "touch",
+      "motion": "reduced",
+      "context": "confirmation",
+      "id": "pack:confirmation"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/motion-viewport.png",
+      "sha256": "fa80ebddf13363f5033c0bbb1e6afc4c7f543fa1bcd80af11a870446c66775f1",
+      "state": "motion",
+      "viewport": "900x700@1",
+      "theme": "light",
+      "input": "pointer",
+      "motion": "normal",
+      "context": "motion",
+      "id": "motion:viewport"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/motion-detail-product.png",
+      "sha256": "2b24b602a85e66e49a27e254047f02af5554611a8035f26fbcb9de1ff4fe7536",
+      "state": "motion",
+      "viewport": "900x700@1",
+      "theme": "light",
+      "input": "pointer",
+      "motion": "normal",
+      "context": "motion",
+      "id": "motion:product"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/motion-detail-join.png",
+      "sha256": "07ff8376fa7255acb32c71a3bdf1352999a953d4ea1f2e80706b60da65daf701",
+      "state": "motion",
+      "viewport": "900x700@1",
+      "theme": "light",
+      "input": "pointer",
+      "motion": "normal",
+      "context": "motion",
+      "id": "motion:join"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/motion-detail-action.png",
+      "sha256": "97c68bfce5e26d85b6eba1dc09a3969bdb281520269ae0481674e3ee476779d2",
+      "state": "motion",
+      "viewport": "900x700@1",
+      "theme": "light",
+      "input": "pointer",
+      "motion": "normal",
+      "context": "motion",
+      "id": "motion:action"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/motion-detail-quantity-icons.png",
+      "sha256": "b293887708c1fe96e2cce0375ba3ac139ad0be422de679823b63af99536e247e",
+      "state": "motion",
+      "viewport": "900x700@1",
+      "theme": "light",
+      "input": "pointer",
+      "motion": "normal",
+      "context": "motion",
+      "id": "motion:quantity-icons"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/narrow-viewport.png",
+      "sha256": "1808b03e37bfcf804d312fec9addf410100a35f3dcddd11df82fc2786ca415fb",
+      "state": "page",
+      "viewport": "320x844@1",
+      "theme": "light",
+      "input": "keyboard",
+      "motion": "normal",
+      "context": "pressure",
+      "id": "narrow:viewport"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/narrow-detail-product.png",
+      "sha256": "ce7e0195a247abb06dc8c9cb9481ebf3847a9c007ab90832793cfa71c083f0cf",
+      "state": "page",
+      "viewport": "320x844@1",
+      "theme": "light",
+      "input": "keyboard",
+      "motion": "normal",
+      "context": "pressure",
+      "id": "narrow:product"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/narrow-detail-join.png",
+      "sha256": "5bdf6d9fe1ace323b840764435e155fc767c3bd889ba5d0afa5b36aa171b5da2",
+      "state": "page",
+      "viewport": "320x844@1",
+      "theme": "light",
+      "input": "keyboard",
+      "motion": "normal",
+      "context": "pressure",
+      "id": "narrow:join"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/narrow-detail-action.png",
+      "sha256": "47722a4ed2f762c792e77e663ae197a95ee95e86e955e2e37c5c1e8f058f3ad1",
+      "state": "page",
+      "viewport": "320x844@1",
+      "theme": "light",
+      "input": "keyboard",
+      "motion": "normal",
+      "context": "pressure",
+      "id": "narrow:action"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/narrow-detail-quantity-icons.png",
+      "sha256": "b71a6b1cc033c2ff0683f7de332fc64bd16f35c65ffa18fd7e6920f676d7d88b",
+      "state": "page",
+      "viewport": "320x844@1",
+      "theme": "light",
+      "input": "keyboard",
+      "motion": "normal",
+      "context": "pressure",
+      "id": "narrow:quantity-icons"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/retina-viewport.png",
+      "sha256": "13a8290a26c03ab4609bfc14c1be533a8edda0f2ddd93facaa5025350d86e1af",
+      "state": "page",
+      "viewport": "900x1000@2",
+      "theme": "light",
+      "input": "keyboard",
+      "motion": "reduced",
+      "context": "page",
+      "id": "retina:viewport"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/retina-detail-product.png",
+      "sha256": "4dad0cb0ea851a8ca321665793615d5a8268052514a97dac5d523eb2bf42dd88",
+      "state": "page",
+      "viewport": "900x1000@2",
+      "theme": "light",
+      "input": "keyboard",
+      "motion": "reduced",
+      "context": "page",
+      "id": "retina:product"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/retina-detail-join.png",
+      "sha256": "3bff024d2b008a2b7499d2daf6cb5a167b45838576ff70ecdc885690c918b321",
+      "state": "page",
+      "viewport": "900x1000@2",
+      "theme": "light",
+      "input": "keyboard",
+      "motion": "reduced",
+      "context": "page",
+      "id": "retina:join"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/retina-detail-action.png",
+      "sha256": "0aab3dab404bdef9a26c1e0e359ce3a3af7489ea30fe3e92c57a41aa674b97b7",
+      "state": "page",
+      "viewport": "900x1000@2",
+      "theme": "light",
+      "input": "keyboard",
+      "motion": "reduced",
+      "context": "page",
+      "id": "retina:action"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/retina-detail-quantity-icons.png",
+      "sha256": "d4de640bbc53ca3afbe476799ffca45d38e1f1255521738a0b0b12e6ce35328b",
+      "state": "page",
+      "viewport": "900x1000@2",
+      "theme": "light",
+      "input": "keyboard",
+      "motion": "reduced",
+      "context": "page",
+      "id": "retina:quantity-icons"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/focus-viewport.png",
+      "sha256": "cf4d313866c91318d0dfde9bed2e3d084b6d0100bd202f135b2c2882544b6828",
+      "state": "focus",
+      "viewport": "900x1000@1",
+      "theme": "dark",
+      "input": "keyboard",
+      "motion": "reduced",
+      "context": "control",
+      "id": "focus:viewport"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/focus-detail-product.png",
+      "sha256": "897f84c0bcc2fabf3702d2e0a7bdccb0ac4de54ac5624995f77f6fd94efde23a",
+      "state": "focus",
+      "viewport": "900x1000@1",
+      "theme": "dark",
+      "input": "keyboard",
+      "motion": "reduced",
+      "context": "control",
+      "id": "focus:product"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/focus-detail-join.png",
+      "sha256": "46e98abba6f379a5e338c8810bb4fbf94df03fe816be781040a2697b8352ab0f",
+      "state": "focus",
+      "viewport": "900x1000@1",
+      "theme": "dark",
+      "input": "keyboard",
+      "motion": "reduced",
+      "context": "control",
+      "id": "focus:join"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/focus-detail-action.png",
+      "sha256": "24d56d24946726981d2c14ee5281433a879a6a347d51a9f68f8d1a53adbb0567",
+      "state": "focus",
+      "viewport": "900x1000@1",
+      "theme": "dark",
+      "input": "keyboard",
+      "motion": "reduced",
+      "context": "control",
+      "id": "focus:action"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/focus-detail-quantity-icons.png",
+      "sha256": "b293887708c1fe96e2cce0375ba3ac139ad0be422de679823b63af99536e247e",
+      "state": "focus",
+      "viewport": "900x1000@1",
+      "theme": "dark",
+      "input": "keyboard",
+      "motion": "reduced",
+      "context": "control",
+      "id": "focus:quantity-icons"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/invalid-viewport.png",
+      "sha256": "61d2f19fe43eedc9a598cc29420b4911099c176fac689a6beaf1164a75df3902",
+      "state": "validation",
+      "viewport": "390x844@1",
+      "theme": "light",
+      "input": "touch",
+      "motion": "reduced",
+      "context": "validation",
+      "id": "invalid:viewport"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/invalid-detail-product.png",
+      "sha256": "a5a3ff72ac6527a2e14126c9f8dfd9cbc1c0b567ba5994381c57dc564e14e665",
+      "state": "validation",
+      "viewport": "390x844@1",
+      "theme": "light",
+      "input": "touch",
+      "motion": "reduced",
+      "context": "validation",
+      "id": "invalid:product"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/invalid-detail-join.png",
+      "sha256": "8657ffe91eda8aa1e700f5039afff8aedb55baa7cd3b5401dec995a522af5cf7",
+      "state": "validation",
+      "viewport": "390x844@1",
+      "theme": "light",
+      "input": "touch",
+      "motion": "reduced",
+      "context": "validation",
+      "id": "invalid:join"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/invalid-detail-action.png",
+      "sha256": "7d28878bfdc7478b762e93e6f11ffb162bee1fe452a8195d6a4c8e41d22cedd2",
+      "state": "validation",
+      "viewport": "390x844@1",
+      "theme": "light",
+      "input": "touch",
+      "motion": "reduced",
+      "context": "validation",
+      "id": "invalid:action"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/invalid-detail-quantity-icons.png",
+      "sha256": "62f5e1ba3d5db1f91623ec3729062c1749bff62f710f0786329860bfc35c04ff",
+      "state": "validation",
+      "viewport": "390x844@1",
+      "theme": "light",
+      "input": "touch",
+      "motion": "reduced",
+      "context": "validation",
+      "id": "invalid:quantity-icons"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/menu-keyboard-viewport.png",
+      "sha256": "a65f2ba47f7caf691e5c63ca114882720353337acfbcb37ed72aab757a3ab829",
+      "state": "overlay",
+      "viewport": "900x1000@1",
+      "theme": "light",
+      "input": "keyboard",
+      "motion": "reduced",
+      "context": "overlay",
+      "id": "menu-keyboard:viewport"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/menu-keyboard-detail-product.png",
+      "sha256": "897f84c0bcc2fabf3702d2e0a7bdccb0ac4de54ac5624995f77f6fd94efde23a",
+      "state": "overlay",
+      "viewport": "900x1000@1",
+      "theme": "light",
+      "input": "keyboard",
+      "motion": "reduced",
+      "context": "overlay",
+      "id": "menu-keyboard:product"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/menu-keyboard-detail-join.png",
+      "sha256": "46e98abba6f379a5e338c8810bb4fbf94df03fe816be781040a2697b8352ab0f",
+      "state": "overlay",
+      "viewport": "900x1000@1",
+      "theme": "light",
+      "input": "keyboard",
+      "motion": "reduced",
+      "context": "overlay",
+      "id": "menu-keyboard:join"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/menu-keyboard-detail-action.png",
+      "sha256": "6420495cecab5d642b2c2542093720e44349fcafa57b81543240dca227e0a03c",
+      "state": "overlay",
+      "viewport": "900x1000@1",
+      "theme": "light",
+      "input": "keyboard",
+      "motion": "reduced",
+      "context": "overlay",
+      "id": "menu-keyboard:action"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/menu-keyboard-detail-quantity-icons.png",
+      "sha256": "b293887708c1fe96e2cce0375ba3ac139ad0be422de679823b63af99536e247e",
+      "state": "overlay",
+      "viewport": "900x1000@1",
+      "theme": "light",
+      "input": "keyboard",
+      "motion": "reduced",
+      "context": "overlay",
+      "id": "menu-keyboard:quantity-icons"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/menu-keyboard-detail-open-menu.png",
+      "sha256": "1d3ae75f7d7b61af1c4d97a125ac2a63cc4d139a3b12a27e788df8cbe4a246cf",
+      "state": "overlay",
+      "viewport": "900x1000@1",
+      "theme": "light",
+      "input": "keyboard",
+      "motion": "reduced",
+      "context": "overlay",
+      "id": "menu-keyboard:open-menu"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/dialog-keyboard-viewport.png",
+      "sha256": "38c4e1e57e83db2f3eda7ef34adf56e064fca20ade54f21afc7c7626e51d8528",
+      "state": "confirmation",
+      "viewport": "900x1000@1",
+      "theme": "light",
+      "input": "keyboard",
+      "motion": "normal",
+      "context": "modal",
+      "id": "dialog-keyboard:viewport"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/dialog-keyboard-detail-product.png",
+      "sha256": "dfb5187ba8ac70f37d515bc1bb38b3031383d50fa70b04e14702f1a5bb1a7759",
+      "state": "confirmation",
+      "viewport": "900x1000@1",
+      "theme": "light",
+      "input": "keyboard",
+      "motion": "normal",
+      "context": "modal",
+      "id": "dialog-keyboard:product"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/dialog-keyboard-detail-join.png",
+      "sha256": "701bc6a5a28db68d1d654bebf508ffcda261679354ec8cd0665458471188efe2",
+      "state": "confirmation",
+      "viewport": "900x1000@1",
+      "theme": "light",
+      "input": "keyboard",
+      "motion": "normal",
+      "context": "modal",
+      "id": "dialog-keyboard:join"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/dialog-keyboard-detail-action.png",
+      "sha256": "97c68bfce5e26d85b6eba1dc09a3969bdb281520269ae0481674e3ee476779d2",
+      "state": "confirmation",
+      "viewport": "900x1000@1",
+      "theme": "light",
+      "input": "keyboard",
+      "motion": "normal",
+      "context": "modal",
+      "id": "dialog-keyboard:action"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/dialog-keyboard-detail-quantity-icons.png",
+      "sha256": "f8b4aa53a887baa25a4fc0d22fb26b38600da237061f8235fae3ab9c79e384af",
+      "state": "confirmation",
+      "viewport": "900x1000@1",
+      "theme": "light",
+      "input": "keyboard",
+      "motion": "normal",
+      "context": "modal",
+      "id": "dialog-keyboard:quantity-icons"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/dialog-keyboard-detail-confirmation.png",
+      "sha256": "6d91f67eb561c3637dea8d0dde71accf22be023fe1d7222f939fb74cc8476cd3",
+      "state": "confirmation",
+      "viewport": "900x1000@1",
+      "theme": "light",
+      "input": "keyboard",
+      "motion": "normal",
+      "context": "modal",
+      "id": "dialog-keyboard:confirmation"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/dialog-pressure-viewport.png",
+      "sha256": "12a64c03a40fe36c0f384ffa7ea4f09819ac34d59a3310d2bb8e092b2fc950af",
+      "state": "confirmation",
+      "viewport": "320x568@1",
+      "theme": "light",
+      "input": "keyboard",
+      "motion": "reduced",
+      "context": "modal-text-pressure",
+      "id": "dialog-pressure:viewport"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/dialog-pressure-detail-product.png",
+      "sha256": "0136ab365bbf47b4ac31714ccada6a6686abeaa0578d9f483ab081b89e6fcc48",
+      "state": "confirmation",
+      "viewport": "320x568@1",
+      "theme": "light",
+      "input": "keyboard",
+      "motion": "reduced",
+      "context": "modal-text-pressure",
+      "id": "dialog-pressure:product"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/dialog-pressure-detail-join.png",
+      "sha256": "bd43635a88a9feec5e3815904c3a857a325ad96c16cf3122e6229f96945ebebb",
+      "state": "confirmation",
+      "viewport": "320x568@1",
+      "theme": "light",
+      "input": "keyboard",
+      "motion": "reduced",
+      "context": "modal-text-pressure",
+      "id": "dialog-pressure:join"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/dialog-pressure-detail-action.png",
+      "sha256": "7dfdfcc53534aba2b313d29b86068f908cdce5c06b73490953627a9ca91176ba",
+      "state": "confirmation",
+      "viewport": "320x568@1",
+      "theme": "light",
+      "input": "keyboard",
+      "motion": "reduced",
+      "context": "modal-text-pressure",
+      "id": "dialog-pressure:action"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/dialog-pressure-detail-quantity-icons.png",
+      "sha256": "31de616cb3242b9db85783913a78aca9b09ba9206d8074035219ac916c53d5e0",
+      "state": "confirmation",
+      "viewport": "320x568@1",
+      "theme": "light",
+      "input": "keyboard",
+      "motion": "reduced",
+      "context": "modal-text-pressure",
+      "id": "dialog-pressure:quantity-icons"
+    },
+    {
+      "path": "evals/doppler-regeneration/verified/dialog-pressure-detail-confirmation.png",
+      "sha256": "c3b440ef2573b32e0ff14875c8502a5d8533781fa514b12c81416886ecb7e128",
+      "state": "confirmation",
+      "viewport": "320x568@1",
+      "theme": "light",
+      "input": "keyboard",
+      "motion": "reduced",
+      "context": "modal-text-pressure",
+      "id": "dialog-pressure:confirmation"
+    }
+  ],
+  "visualAssessment": {
+    "verdict": "KEEP",
+    "finding": "Warm paper establishes reading space, the large wordmark and physical product form a deliberate opening, flavor paint stays coherent and the calmer builder preserves task clarity. Temporal and reduced states inspected separately.",
+    "assessments": [
+      {
+        "state": "confirmation",
+        "renders": [
+          "evals/doppler-regeneration/verified/pack.png",
+          "evals/doppler-regeneration/verified/dialog-keyboard.png",
+          "evals/doppler-regeneration/verified/dialog-pressure.png",
+          "evals/doppler-regeneration/verified/pack-viewport.png",
+          "evals/doppler-regeneration/verified/pack-detail-product.png",
+          "evals/doppler-regeneration/verified/pack-detail-join.png",
+          "evals/doppler-regeneration/verified/pack-detail-action.png",
+          "evals/doppler-regeneration/verified/pack-detail-quantity-icons.png",
+          "evals/doppler-regeneration/verified/pack-detail-confirmation.png",
+          "evals/doppler-regeneration/verified/dialog-keyboard-viewport.png",
+          "evals/doppler-regeneration/verified/dialog-keyboard-detail-product.png",
+          "evals/doppler-regeneration/verified/dialog-keyboard-detail-join.png",
+          "evals/doppler-regeneration/verified/dialog-keyboard-detail-action.png",
+          "evals/doppler-regeneration/verified/dialog-keyboard-detail-quantity-icons.png",
+          "evals/doppler-regeneration/verified/dialog-keyboard-detail-confirmation.png",
+          "evals/doppler-regeneration/verified/dialog-pressure-viewport.png",
+          "evals/doppler-regeneration/verified/dialog-pressure-detail-product.png",
+          "evals/doppler-regeneration/verified/dialog-pressure-detail-join.png",
+          "evals/doppler-regeneration/verified/dialog-pressure-detail-action.png",
+          "evals/doppler-regeneration/verified/dialog-pressure-detail-quantity-icons.png",
+          "evals/doppler-regeneration/verified/dialog-pressure-detail-confirmation.png"
+        ],
+        "observedAttention": [
+          "Confirmation and object/quantity rows",
+          "Six-can total and price",
+          "Continuation and truthful demo disclosure"
+        ],
+        "finding": "The native open dialog reads as one small composition: editorial result, actual objects and baseline-aligned quantities, quiet total and clear continuation. Backdrop separates the campaign; close glyph and text-pressure scrolling remain usable.",
+        "verdict": "KEEP"
+      },
+      {
+        "state": "flavor",
+        "renders": [
+          "evals/doppler-regeneration/verified/pink.png",
+          "evals/doppler-regeneration/verified/pink-viewport.png",
+          "evals/doppler-regeneration/verified/pink-detail-product.png",
+          "evals/doppler-regeneration/verified/pink-detail-join.png",
+          "evals/doppler-regeneration/verified/pink-detail-action.png",
+          "evals/doppler-regeneration/verified/pink-detail-quantity-icons.png"
+        ],
+        "observedAttention": [
+          "Selected product/name/blend",
+          "Synchronized named selectors",
+          "Mix path"
+        ],
+        "finding": "Whole composition, native viewport and bound owner/details inspected; type/product hierarchy, role coherence and the recorded state remain clear.",
+        "verdict": "KEEP"
+      },
+      {
+        "state": "focus",
+        "renders": [
+          "evals/doppler-regeneration/verified/focus.png",
+          "evals/doppler-regeneration/verified/focus-viewport.png",
+          "evals/doppler-regeneration/verified/focus-detail-product.png",
+          "evals/doppler-regeneration/verified/focus-detail-join.png",
+          "evals/doppler-regeneration/verified/focus-detail-action.png",
+          "evals/doppler-regeneration/verified/focus-detail-quantity-icons.png"
+        ],
+        "observedAttention": [
+          "Visible action and external focus ring",
+          "Label and glyph alignment",
+          "Adjacent product context"
+        ],
+        "finding": "Ink focus paint is visible against external paper; native control and glyph alignment remain coherent.",
+        "verdict": "KEEP"
+      },
+      {
+        "state": "motion",
+        "renders": [
+          "evals/doppler-regeneration/verified/motion.png",
+          "evals/doppler-regeneration/verified/motion-viewport.png",
+          "evals/doppler-regeneration/verified/motion-detail-product.png",
+          "evals/doppler-regeneration/verified/motion-detail-join.png",
+          "evals/doppler-regeneration/verified/motion-detail-action.png",
+          "evals/doppler-regeneration/verified/motion-detail-quantity-icons.png"
+        ],
+        "observedAttention": [
+          "Coherent object and attached parts",
+          "Flavor continuity",
+          "Settled and reduced equivalents"
+        ],
+        "finding": "Whole composition, native viewport and bound owner/details inspected; type/product hierarchy, role coherence and the recorded state remain clear.",
+        "verdict": "KEEP"
+      },
+      {
+        "state": "overlay",
+        "renders": [
+          "evals/doppler-regeneration/verified/menu.png",
+          "evals/doppler-regeneration/verified/menu-keyboard.png",
+          "evals/doppler-regeneration/verified/menu-viewport.png",
+          "evals/doppler-regeneration/verified/menu-detail-product.png",
+          "evals/doppler-regeneration/verified/menu-detail-join.png",
+          "evals/doppler-regeneration/verified/menu-detail-action.png",
+          "evals/doppler-regeneration/verified/menu-detail-quantity-icons.png",
+          "evals/doppler-regeneration/verified/menu-detail-open-menu.png",
+          "evals/doppler-regeneration/verified/menu-keyboard-viewport.png",
+          "evals/doppler-regeneration/verified/menu-keyboard-detail-product.png",
+          "evals/doppler-regeneration/verified/menu-keyboard-detail-join.png",
+          "evals/doppler-regeneration/verified/menu-keyboard-detail-action.png",
+          "evals/doppler-regeneration/verified/menu-keyboard-detail-quantity-icons.png",
+          "evals/doppler-regeneration/verified/menu-keyboard-detail-open-menu.png"
+        ],
+        "observedAttention": [
+          "Open destinations",
+          "Menu trigger and focus",
+          "Campaign underlay"
+        ],
+        "finding": "Compact warm navigation is anchored to the real trigger; consistent rows, thin separators, type and inner focus form a resolved layer rather than a large default box.",
+        "verdict": "KEEP"
+      },
+      {
+        "state": "page",
+        "renders": [
+          "evals/doppler-regeneration/verified/wide.png",
+          "evals/doppler-regeneration/verified/pressure.png",
+          "evals/doppler-regeneration/verified/mobile.png",
+          "evals/doppler-regeneration/verified/reduced.png",
+          "evals/doppler-regeneration/verified/narrow.png",
+          "evals/doppler-regeneration/verified/retina.png",
+          "evals/doppler-regeneration/verified/wide-viewport.png",
+          "evals/doppler-regeneration/verified/wide-detail-product.png",
+          "evals/doppler-regeneration/verified/wide-detail-join.png",
+          "evals/doppler-regeneration/verified/wide-detail-action.png",
+          "evals/doppler-regeneration/verified/wide-detail-quantity-icons.png",
+          "evals/doppler-regeneration/verified/pressure-viewport.png",
+          "evals/doppler-regeneration/verified/pressure-detail-product.png",
+          "evals/doppler-regeneration/verified/pressure-detail-join.png",
+          "evals/doppler-regeneration/verified/pressure-detail-action.png",
+          "evals/doppler-regeneration/verified/pressure-detail-quantity-icons.png",
+          "evals/doppler-regeneration/verified/mobile-viewport.png",
+          "evals/doppler-regeneration/verified/mobile-detail-product.png",
+          "evals/doppler-regeneration/verified/mobile-detail-join.png",
+          "evals/doppler-regeneration/verified/mobile-detail-action.png",
+          "evals/doppler-regeneration/verified/mobile-detail-quantity-icons.png",
+          "evals/doppler-regeneration/verified/reduced-viewport.png",
+          "evals/doppler-regeneration/verified/reduced-detail-product.png",
+          "evals/doppler-regeneration/verified/reduced-detail-join.png",
+          "evals/doppler-regeneration/verified/reduced-detail-action.png",
+          "evals/doppler-regeneration/verified/reduced-detail-quantity-icons.png",
+          "evals/doppler-regeneration/verified/narrow-viewport.png",
+          "evals/doppler-regeneration/verified/narrow-detail-product.png",
+          "evals/doppler-regeneration/verified/narrow-detail-join.png",
+          "evals/doppler-regeneration/verified/narrow-detail-action.png",
+          "evals/doppler-regeneration/verified/narrow-detail-quantity-icons.png",
+          "evals/doppler-regeneration/verified/retina-viewport.png",
+          "evals/doppler-regeneration/verified/retina-detail-product.png",
+          "evals/doppler-regeneration/verified/retina-detail-join.png",
+          "evals/doppler-regeneration/verified/retina-detail-action.png",
+          "evals/doppler-regeneration/verified/retina-detail-quantity-icons.png"
+        ],
+        "observedAttention": [
+          "Product and proposition",
+          "Selected flavor and named alternatives",
+          "Editable six-pack path"
+        ],
+        "finding": "Whole composition, native viewport and bound owner/details inspected; type/product hierarchy, role coherence and the recorded state remain clear.",
+        "verdict": "KEEP"
+      },
+      {
+        "state": "validation",
+        "renders": [
+          "evals/doppler-regeneration/verified/invalid.png",
+          "evals/doppler-regeneration/verified/invalid-viewport.png",
+          "evals/doppler-regeneration/verified/invalid-detail-product.png",
+          "evals/doppler-regeneration/verified/invalid-detail-join.png",
+          "evals/doppler-regeneration/verified/invalid-detail-action.png",
+          "evals/doppler-regeneration/verified/invalid-detail-quantity-icons.png"
+        ],
+        "observedAttention": [
+          "Five-of-six total and remaining space",
+          "Quantity controls",
+          "Disabled submit"
+        ],
+        "finding": "Whole composition, native viewport and bound owner/details inspected; type/product hierarchy, role coherence and the recorded state remain clear.",
+        "verdict": "KEEP"
+      }
+    ],
+    "findings": []
+  },
+  "userAcceptance": "UNCONFIRMED",
+  "date": "2026-10-08",
+  "notes": [
+    "Implementer visual judgment; user acceptance remains unconfirmed.",
+    "15 declared combinations, native viewport and whole-page proof, 65 details and 72 timed frames.",
+    "The artifact, failed replay, occluded/mismatched lid and low-contrast focus repairs remain in history.",
+    "Static headless observation is not an independent aesthetic/recognition or complete accessibility study."
+  ]
+}

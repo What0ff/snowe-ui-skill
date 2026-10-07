@@ -1,0 +1,33 @@
+{
+  "baseline": "92eeb724fcfa889cafe8cb47c219b7e80a8e2635",
+  "surface": "evidence integrity only",
+  "findings": [
+    {
+      "probe": "remove-mobile",
+      "previous": "PASS",
+      "current": "REVIEW_REQUIRED"
+    },
+    {
+      "probe": "relabel-viewport",
+      "previous": "PASS",
+      "current": "REVIEW_REQUIRED"
+    },
+    {
+      "probe": "omit-changed-css",
+      "previous": "PASS",
+      "current": "REVIEW_REQUIRED"
+    },
+    {
+      "probe": "implicit-visual-keep",
+      "version": "previous",
+      "status": "PASS"
+    },
+    {
+      "probe": "implicit-visual-keep",
+      "version": "current",
+      "status": "REFUSED"
+    }
+  ],
+  "visualQuality": "NOT_MEASURED",
+  "userAcceptance": "UNCONFIRMED"
+}

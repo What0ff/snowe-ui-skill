@@ -1,0 +1,1840 @@
+{
+  "schema_version": "1.0",
+  "project_identity": "Doppler regeneration",
+  "records": [
+    {
+      "id": "product-joint",
+      "source": "Explicit user report of a detached white lid artifact",
+      "requirement": "Repair the real material joint and prevent structural PASS from concealing missing or incompatible paint.",
+      "scope": {
+        "owners": [
+          "benchmarks/soda-campaign/index.html",
+          "benchmarks/soda-campaign/styles.css",
+          "benchmarks/soda-campaign/can.css",
+          "benchmarks/soda-campaign/app.js"
+        ],
+        "routes": [
+          "/benchmarks/soda-campaign/index.html"
+        ],
+        "states": [
+          "page",
+          "motion"
+        ]
+      },
+      "criteria": [
+        {
+          "id": "native-joint",
+          "kind": "visual",
+          "requirement": "Inspect attached material contact at native widths/DPR and diagnostic detail."
+        },
+        {
+          "id": "moving-joint",
+          "kind": "visual",
+          "requirement": "Inspect representative rotation phases and settled continuity."
+        }
+      ],
+      "history": [
+        {
+          "at": "2026-10-07T21:58:38.209256+00:00",
+          "status": "requested",
+          "note": "Correction recorded",
+          "snapshot": {
+            "id": "product-joint",
+            "source": "Explicit user report of a detached white lid artifact",
+            "requirement": "Repair the real material joint and prevent structural PASS from concealing missing or incompatible paint.",
+            "scope": {
+              "owners": [
+                "benchmarks/soda-campaign/index.html",
+                "benchmarks/soda-campaign/styles.css",
+                "benchmarks/soda-campaign/can.css",
+                "benchmarks/soda-campaign/app.js"
+              ],
+              "routes": [
+                "/benchmarks/soda-campaign/index.html"
+              ],
+              "states": [
+                "page",
+                "motion"
+              ]
+            },
+            "criteria": [
+              {
+                "id": "native-joint",
+                "kind": "visual",
+                "requirement": "Inspect attached material contact at native widths/DPR and diagnostic detail."
+              },
+              {
+                "id": "moving-joint",
+                "kind": "visual",
+                "requirement": "Inspect representative rotation phases and settled continuity."
+              }
+            ],
+            "status": "requested"
+          }
+        },
+        {
+          "at": "2026-10-07T21:58:38.219256+00:00",
+          "status": "implemented",
+          "note": "Owner geometry and contextual finishing repaired; current viewport/detail/temporal evidence inspected.",
+          "snapshot": {
+            "id": "product-joint",
+            "source": "Explicit user report of a detached white lid artifact",
+            "requirement": "Repair the real material joint and prevent structural PASS from concealing missing or incompatible paint.",
+            "scope": {
+              "owners": [
+                "benchmarks/soda-campaign/index.html",
+                "benchmarks/soda-campaign/styles.css",
+                "benchmarks/soda-campaign/can.css",
+                "benchmarks/soda-campaign/app.js"
+              ],
+              "routes": [
+                "/benchmarks/soda-campaign/index.html"
+              ],
+              "states": [
+                "page",
+                "motion"
+              ]
+            },
+            "criteria": [
+              {
+                "id": "native-joint",
+                "kind": "visual",
+                "requirement": "Inspect attached material contact at native widths/DPR and diagnostic detail."
+              },
+              {
+                "id": "moving-joint",
+                "kind": "visual",
+                "requirement": "Inspect representative rotation phases and settled continuity."
+              }
+            ],
+            "status": "implemented"
+          }
+        },
+        {
+          "at": "2026-10-07T21:58:38.637844+00:00",
+          "status": "verified",
+          "note": "Bound criterion results and current evidence verified",
+          "snapshot": {
+            "id": "product-joint",
+            "source": "Explicit user report of a detached white lid artifact",
+            "requirement": "Repair the real material joint and prevent structural PASS from concealing missing or incompatible paint.",
+            "scope": {
+              "owners": [
+                "benchmarks/soda-campaign/index.html",
+                "benchmarks/soda-campaign/styles.css",
+                "benchmarks/soda-campaign/can.css",
+                "benchmarks/soda-campaign/app.js"
+              ],
+              "routes": [
+                "/benchmarks/soda-campaign/index.html"
+              ],
+              "states": [
+                "page",
+                "motion"
+              ]
+            },
+            "criteria": [
+              {
+                "id": "native-joint",
+                "kind": "visual",
+                "requirement": "Inspect attached material contact at native widths/DPR and diagnostic detail."
+              },
+              {
+                "id": "moving-joint",
+                "kind": "visual",
+                "requirement": "Inspect representative rotation phases and settled continuity."
+              }
+            ],
+            "status": "verified",
+            "proof": {
+              "sources": [
+                {
+                  "path": "benchmarks/soda-campaign/app.js",
+                  "sha256": "5ce055b932f19f096d2173c480a5522b10dee1de585a2ebef5df30917b8e61a8"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/fonts/OFL-Manrope.txt",
+                  "sha256": "f612090fb72b6dca3e807e66fa0d2b5def163cef86f1a3209b5c897cba5ee4b7"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/fonts/OFL-Unbounded.txt",
+                  "sha256": "31e5d4e83955e7103c34570dd49b0570ef490800bd65b42923c0dd02445263b3"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/fonts/manrope-latin.woff2",
+                  "sha256": "a30ddcd349703aff7464c34bef3fffdff405ee50c113440d7c8693c02d210972"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/fonts/unbounded-latin.woff2",
+                  "sha256": "22f9b928aa3928a896340422b54d690fbb5875c30eae4c106f029c61f2289fd6"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/icons/LICENSE",
+                  "sha256": "0cd15032a964eb7b46b1bb74f96b89ed411a33fcd6b877925f5ced02ec8a9c87"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/icons/SOURCE.md",
+                  "sha256": "e31fa63cd10b043e5d45e59e95722e88dd634c22cf2658ca65272da867dc4800"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/icons/arrow.metadata.json",
+                  "sha256": "abee637d1fd533f6e34cb8812fb7d4de6d911a923245c71999c792930796514a"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/icons/arrow.svg",
+                  "sha256": "a9dbbf0543e8674ccca2e47bec94e49b71c662c8949aa07fd866247a73ac8d6b"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/icons/menu.metadata.json",
+                  "sha256": "7943e3be7031ec69d457dd12205da112faf815493eca9570c7af0c9ab56e1671"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/icons/menu.svg",
+                  "sha256": "29778bbb99eb95b7cf19d3855100ce9087a381ae83f0de28f11a08ebc55be943"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/icons/minus.metadata.json",
+                  "sha256": "60ad682387426e9122855708c29a08d7f0f325baf0e798a8dd913cd33ed45a5b"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/icons/minus.svg",
+                  "sha256": "e2201ac99f2ebea364d1ac4c36c23a6b76775fa6cc21cb0edcf051427741a239"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/icons/plus.metadata.json",
+                  "sha256": "3396bdc10355969834c6b8839c2c2b5ac0f53b66c25840dcd506675ddd57804d"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/icons/plus.svg",
+                  "sha256": "29dfee7f8c839e33676eaf4eca16d6b4f7c2a1e80ebbc52d65f1a5b005cca010"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/labels/night-signal.svg",
+                  "sha256": "f4e7cb35a2686ff289aa7554a0f71722757e10a3f3f2ea22df4ad5d6b4303136"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/labels/pink-noise.svg",
+                  "sha256": "940ea2752ca94b3da33e43ed4126290bc6a59059a767879e01974a7844a50aef"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/labels/sun-shift.svg",
+                  "sha256": "646325eb1ee23ecd9bda6c2d5b510202ff7a0225d192edf7618d1389db0e767c"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/can.css",
+                  "sha256": "03e0967dc99b0054f0f63aa35832331795754c43f920ed459693bf5a538dff77"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/index.html",
+                  "sha256": "99f584be25f04503be99c4e05def74a665e31afa6361dabdeb4fd668b7916609"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/styles.css",
+                  "sha256": "c9e8873d25b81d2fce189a1a08a7fc04d416836fab0eaa6a1c856519d0223c71"
+                }
+              ],
+              "artifacts": [
+                {
+                  "path": "evals/doppler-regeneration/REVIEW.json",
+                  "sha256": "bbda4ffb36d2f32bf4617dd453fdd683ec753c5b4039762ba89398240c430888"
+                },
+                {
+                  "path": "evals/doppler-regeneration/final/wide-detail-join.png",
+                  "sha256": "bc3b22a01a383d7dbd167f727641f3d467d72a31a6cc280c33b2eee4e1390708"
+                },
+                {
+                  "path": "evals/doppler-regeneration/final/focus-detail-action.png",
+                  "sha256": "24d56d24946726981d2c14ee5281433a879a6a347d51a9f68f8d1a53adbb0567"
+                },
+                {
+                  "path": "evals/doppler-regeneration/final/motion.png",
+                  "sha256": "4b472dbfaf6c27978adf03828aee48a6f671082187a8cacf8c1c45731974ffc4"
+                }
+              ],
+              "results": [
+                {
+                  "criterion": "native-joint",
+                  "status": "PASS",
+                  "artifacts": [
+                    "evals/doppler-regeneration/REVIEW.json"
+                  ],
+                  "review": {
+                    "reviewer": "Implementer",
+                    "method": "self-review",
+                    "verdict": "KEEP",
+                    "finding": "The wordmark establishes identity; proposition, product and nearby mix action form deliberate peers. Warm paper keeps secondary information quiet. Native type and control details remain coherent at pressure widths and DPR 1/2.",
+                    "state": "page",
+                    "viewport": "1440x1000@1",
+                    "report": "evals/doppler-regeneration/REVIEW.json"
+                  }
+                },
+                {
+                  "criterion": "moving-joint",
+                  "status": "PASS",
+                  "artifacts": [
+                    "evals/doppler-regeneration/REVIEW.json"
+                  ],
+                  "review": {
+                    "reviewer": "Implementer",
+                    "method": "self-review",
+                    "verdict": "KEEP",
+                    "finding": "The sequence establishes type/object, connects flavor changes and settles. Inspected intermediate poses retain a connected rim and label cylinder; reduced mode keeps complete product truth.",
+                    "state": "motion",
+                    "viewport": "900x700@1",
+                    "report": "evals/doppler-regeneration/REVIEW.json"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "at": "2026-10-07T22:58:44.573810+00:00",
+          "status": "implemented",
+          "note": "Scope/evidence refreshed after the shared secondary-surface change.",
+          "snapshot": {
+            "id": "product-joint",
+            "source": "Explicit user report of a detached white lid artifact",
+            "requirement": "Repair the real material joint and prevent structural PASS from concealing missing or incompatible paint.",
+            "scope": {
+              "owners": [
+                "benchmarks/soda-campaign/index.html",
+                "benchmarks/soda-campaign/styles.css",
+                "benchmarks/soda-campaign/can.css",
+                "benchmarks/soda-campaign/app.js"
+              ],
+              "routes": [
+                "/benchmarks/soda-campaign/index.html"
+              ],
+              "states": [
+                "page",
+                "motion"
+              ]
+            },
+            "criteria": [
+              {
+                "id": "native-joint",
+                "kind": "visual",
+                "requirement": "Inspect attached material contact at native widths/DPR and diagnostic detail."
+              },
+              {
+                "id": "moving-joint",
+                "kind": "visual",
+                "requirement": "Inspect representative rotation phases and settled continuity."
+              }
+            ],
+            "status": "implemented"
+          }
+        },
+        {
+          "at": "2026-10-07T22:58:44.590393+00:00",
+          "status": "implemented",
+          "note": "Actual owner, native open composition/details and affected shared consumers finished and inspected.",
+          "snapshot": {
+            "id": "product-joint",
+            "source": "Explicit user report of a detached white lid artifact",
+            "requirement": "Repair the real material joint and prevent structural PASS from concealing missing or incompatible paint.",
+            "scope": {
+              "owners": [
+                "benchmarks/soda-campaign/index.html",
+                "benchmarks/soda-campaign/styles.css",
+                "benchmarks/soda-campaign/can.css",
+                "benchmarks/soda-campaign/app.js"
+              ],
+              "routes": [
+                "/benchmarks/soda-campaign/index.html"
+              ],
+              "states": [
+                "page",
+                "motion"
+              ]
+            },
+            "criteria": [
+              {
+                "id": "native-joint",
+                "kind": "visual",
+                "requirement": "Inspect attached material contact at native widths/DPR and diagnostic detail."
+              },
+              {
+                "id": "moving-joint",
+                "kind": "visual",
+                "requirement": "Inspect representative rotation phases and settled continuity."
+              }
+            ],
+            "status": "implemented"
+          }
+        },
+        {
+          "at": "2026-10-07T22:58:45.111154+00:00",
+          "status": "verified",
+          "note": "Bound criterion results and current evidence verified",
+          "snapshot": {
+            "id": "product-joint",
+            "source": "Explicit user report of a detached white lid artifact",
+            "requirement": "Repair the real material joint and prevent structural PASS from concealing missing or incompatible paint.",
+            "scope": {
+              "owners": [
+                "benchmarks/soda-campaign/index.html",
+                "benchmarks/soda-campaign/styles.css",
+                "benchmarks/soda-campaign/can.css",
+                "benchmarks/soda-campaign/app.js"
+              ],
+              "routes": [
+                "/benchmarks/soda-campaign/index.html"
+              ],
+              "states": [
+                "page",
+                "motion"
+              ]
+            },
+            "criteria": [
+              {
+                "id": "native-joint",
+                "kind": "visual",
+                "requirement": "Inspect attached material contact at native widths/DPR and diagnostic detail."
+              },
+              {
+                "id": "moving-joint",
+                "kind": "visual",
+                "requirement": "Inspect representative rotation phases and settled continuity."
+              }
+            ],
+            "status": "verified",
+            "proof": {
+              "sources": [
+                {
+                  "path": "benchmarks/soda-campaign/app.js",
+                  "sha256": "e9fc92cec183eeb97fc87e396a35a1729e679c1230bccef9115cb956d11c4deb"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/fonts/OFL-Manrope.txt",
+                  "sha256": "f612090fb72b6dca3e807e66fa0d2b5def163cef86f1a3209b5c897cba5ee4b7"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/fonts/OFL-Unbounded.txt",
+                  "sha256": "31e5d4e83955e7103c34570dd49b0570ef490800bd65b42923c0dd02445263b3"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/fonts/manrope-latin.woff2",
+                  "sha256": "a30ddcd349703aff7464c34bef3fffdff405ee50c113440d7c8693c02d210972"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/fonts/unbounded-latin.woff2",
+                  "sha256": "22f9b928aa3928a896340422b54d690fbb5875c30eae4c106f029c61f2289fd6"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/icons/LICENSE",
+                  "sha256": "0cd15032a964eb7b46b1bb74f96b89ed411a33fcd6b877925f5ced02ec8a9c87"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/icons/SOURCE.md",
+                  "sha256": "7f1164a0e7d8ef720be7172412ebc9dc4364c14d588247f11efc0b46d74aa976"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/icons/arrow.metadata.json",
+                  "sha256": "186caf3b418084a302379d509d1d6bb0b812ab1a591d24f8581dfbd708207d60"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/icons/arrow.svg",
+                  "sha256": "a9dbbf0543e8674ccca2e47bec94e49b71c662c8949aa07fd866247a73ac8d6b"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/icons/close.metadata.json",
+                  "sha256": "028d3baab9b52a5e88e2c2ac03ce842278432cb56d53a72e6248c718f07e4fae"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/icons/close.svg",
+                  "sha256": "51a8531c7593aca8d38710027fb97bdd94c50e6a4d95610be0261b27707646a6"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/icons/menu.metadata.json",
+                  "sha256": "17b6da37e3624356964dde4620465013d49bc433a38694fb7e5cf807d51e8356"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/icons/menu.svg",
+                  "sha256": "29778bbb99eb95b7cf19d3855100ce9087a381ae83f0de28f11a08ebc55be943"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/icons/minus.metadata.json",
+                  "sha256": "8f125573a0217c2e3d988aedca804f09db157e46abd419e4fe16317505e8400a"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/icons/minus.svg",
+                  "sha256": "e2201ac99f2ebea364d1ac4c36c23a6b76775fa6cc21cb0edcf051427741a239"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/icons/plus.metadata.json",
+                  "sha256": "ea1275277fdd1a05fd332bfe73e8e7de9df829bcca3e02c70545cdc79c6aad2e"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/icons/plus.svg",
+                  "sha256": "29dfee7f8c839e33676eaf4eca16d6b4f7c2a1e80ebbc52d65f1a5b005cca010"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/labels/night-signal.svg",
+                  "sha256": "f4e7cb35a2686ff289aa7554a0f71722757e10a3f3f2ea22df4ad5d6b4303136"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/labels/pink-noise.svg",
+                  "sha256": "940ea2752ca94b3da33e43ed4126290bc6a59059a767879e01974a7844a50aef"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/labels/sun-shift.svg",
+                  "sha256": "646325eb1ee23ecd9bda6c2d5b510202ff7a0225d192edf7618d1389db0e767c"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/can.css",
+                  "sha256": "03e0967dc99b0054f0f63aa35832331795754c43f920ed459693bf5a538dff77"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/index.html",
+                  "sha256": "15ecb148423c9001e6baad8432a98a4b000fbee3c679a99141fe8b9ad27e9ca6"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/styles.css",
+                  "sha256": "9842079ffb09edf33483ed5d8ea9fcfefa96ba0936c698ffa5960c05b69130af"
+                }
+              ],
+              "artifacts": [
+                {
+                  "path": "evals/doppler-regeneration/REVIEW.v3.json",
+                  "sha256": "75ad570af4ac6d73d846ed11cb324458a1b4e37e824d1f06290a14b2117c038c"
+                }
+              ],
+              "results": [
+                {
+                  "criterion": "native-joint",
+                  "status": "PASS",
+                  "artifacts": [
+                    "evals/doppler-regeneration/REVIEW.v3.json"
+                  ],
+                  "review": {
+                    "reviewer": "Implementer",
+                    "method": "self-review",
+                    "verdict": "KEEP",
+                    "finding": "Whole composition, native viewport and bound owner/details inspected; type/product hierarchy, role coherence and the recorded state remain clear.",
+                    "state": "page",
+                    "viewport": "1440x1000@1",
+                    "report": "evals/doppler-regeneration/REVIEW.v3.json"
+                  }
+                },
+                {
+                  "criterion": "moving-joint",
+                  "status": "PASS",
+                  "artifacts": [
+                    "evals/doppler-regeneration/REVIEW.v3.json"
+                  ],
+                  "review": {
+                    "reviewer": "Implementer",
+                    "method": "self-review",
+                    "verdict": "KEEP",
+                    "finding": "Whole composition, native viewport and bound owner/details inspected; type/product hierarchy, role coherence and the recorded state remain clear.",
+                    "state": "motion",
+                    "viewport": "900x700@1",
+                    "report": "evals/doppler-regeneration/REVIEW.v3.json"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "status": "verified",
+      "proof": {
+        "sources": [
+          {
+            "path": "benchmarks/soda-campaign/app.js",
+            "sha256": "e9fc92cec183eeb97fc87e396a35a1729e679c1230bccef9115cb956d11c4deb"
+          },
+          {
+            "path": "benchmarks/soda-campaign/assets/fonts/OFL-Manrope.txt",
+            "sha256": "f612090fb72b6dca3e807e66fa0d2b5def163cef86f1a3209b5c897cba5ee4b7"
+          },
+          {
+            "path": "benchmarks/soda-campaign/assets/fonts/OFL-Unbounded.txt",
+            "sha256": "31e5d4e83955e7103c34570dd49b0570ef490800bd65b42923c0dd02445263b3"
+          },
+          {
+            "path": "benchmarks/soda-campaign/assets/fonts/manrope-latin.woff2",
+            "sha256": "a30ddcd349703aff7464c34bef3fffdff405ee50c113440d7c8693c02d210972"
+          },
+          {
+            "path": "benchmarks/soda-campaign/assets/fonts/unbounded-latin.woff2",
+            "sha256": "22f9b928aa3928a896340422b54d690fbb5875c30eae4c106f029c61f2289fd6"
+          },
+          {
+            "path": "benchmarks/soda-campaign/assets/icons/LICENSE",
+            "sha256": "0cd15032a964eb7b46b1bb74f96b89ed411a33fcd6b877925f5ced02ec8a9c87"
+          },
+          {
+            "path": "benchmarks/soda-campaign/assets/icons/SOURCE.md",
+            "sha256": "7f1164a0e7d8ef720be7172412ebc9dc4364c14d588247f11efc0b46d74aa976"
+          },
+          {
+            "path": "benchmarks/soda-campaign/assets/icons/arrow.metadata.json",
+            "sha256": "186caf3b418084a302379d509d1d6bb0b812ab1a591d24f8581dfbd708207d60"
+          },
+          {
+            "path": "benchmarks/soda-campaign/assets/icons/arrow.svg",
+            "sha256": "a9dbbf0543e8674ccca2e47bec94e49b71c662c8949aa07fd866247a73ac8d6b"
+          },
+          {
+            "path": "benchmarks/soda-campaign/assets/icons/close.metadata.json",
+            "sha256": "028d3baab9b52a5e88e2c2ac03ce842278432cb56d53a72e6248c718f07e4fae"
+          },
+          {
+            "path": "benchmarks/soda-campaign/assets/icons/close.svg",
+            "sha256": "51a8531c7593aca8d38710027fb97bdd94c50e6a4d95610be0261b27707646a6"
+          },
+          {
+            "path": "benchmarks/soda-campaign/assets/icons/menu.metadata.json",
+            "sha256": "17b6da37e3624356964dde4620465013d49bc433a38694fb7e5cf807d51e8356"
+          },
+          {
+            "path": "benchmarks/soda-campaign/assets/icons/menu.svg",
+            "sha256": "29778bbb99eb95b7cf19d3855100ce9087a381ae83f0de28f11a08ebc55be943"
+          },
+          {
+            "path": "benchmarks/soda-campaign/assets/icons/minus.metadata.json",
+            "sha256": "8f125573a0217c2e3d988aedca804f09db157e46abd419e4fe16317505e8400a"
+          },
+          {
+            "path": "benchmarks/soda-campaign/assets/icons/minus.svg",
+            "sha256": "e2201ac99f2ebea364d1ac4c36c23a6b76775fa6cc21cb0edcf051427741a239"
+          },
+          {
+            "path": "benchmarks/soda-campaign/assets/icons/plus.metadata.json",
+            "sha256": "ea1275277fdd1a05fd332bfe73e8e7de9df829bcca3e02c70545cdc79c6aad2e"
+          },
+          {
+            "path": "benchmarks/soda-campaign/assets/icons/plus.svg",
+            "sha256": "29dfee7f8c839e33676eaf4eca16d6b4f7c2a1e80ebbc52d65f1a5b005cca010"
+          },
+          {
+            "path": "benchmarks/soda-campaign/assets/labels/night-signal.svg",
+            "sha256": "f4e7cb35a2686ff289aa7554a0f71722757e10a3f3f2ea22df4ad5d6b4303136"
+          },
+          {
+            "path": "benchmarks/soda-campaign/assets/labels/pink-noise.svg",
+            "sha256": "940ea2752ca94b3da33e43ed4126290bc6a59059a767879e01974a7844a50aef"
+          },
+          {
+            "path": "benchmarks/soda-campaign/assets/labels/sun-shift.svg",
+            "sha256": "646325eb1ee23ecd9bda6c2d5b510202ff7a0225d192edf7618d1389db0e767c"
+          },
+          {
+            "path": "benchmarks/soda-campaign/can.css",
+            "sha256": "03e0967dc99b0054f0f63aa35832331795754c43f920ed459693bf5a538dff77"
+          },
+          {
+            "path": "benchmarks/soda-campaign/index.html",
+            "sha256": "15ecb148423c9001e6baad8432a98a4b000fbee3c679a99141fe8b9ad27e9ca6"
+          },
+          {
+            "path": "benchmarks/soda-campaign/styles.css",
+            "sha256": "9842079ffb09edf33483ed5d8ea9fcfefa96ba0936c698ffa5960c05b69130af"
+          }
+        ],
+        "artifacts": [
+          {
+            "path": "evals/doppler-regeneration/REVIEW.v3.json",
+            "sha256": "75ad570af4ac6d73d846ed11cb324458a1b4e37e824d1f06290a14b2117c038c"
+          }
+        ],
+        "results": [
+          {
+            "criterion": "native-joint",
+            "status": "PASS",
+            "artifacts": [
+              "evals/doppler-regeneration/REVIEW.v3.json"
+            ],
+            "review": {
+              "reviewer": "Implementer",
+              "method": "self-review",
+              "verdict": "KEEP",
+              "finding": "Whole composition, native viewport and bound owner/details inspected; type/product hierarchy, role coherence and the recorded state remain clear.",
+              "state": "page",
+              "viewport": "1440x1000@1",
+              "report": "evals/doppler-regeneration/REVIEW.v3.json"
+            }
+          },
+          {
+            "criterion": "moving-joint",
+            "status": "PASS",
+            "artifacts": [
+              "evals/doppler-regeneration/REVIEW.v3.json"
+            ],
+            "review": {
+              "reviewer": "Implementer",
+              "method": "self-review",
+              "verdict": "KEEP",
+              "finding": "Whole composition, native viewport and bound owner/details inspected; type/product hierarchy, role coherence and the recorded state remain clear.",
+              "state": "motion",
+              "viewport": "900x700@1",
+              "report": "evals/doppler-regeneration/REVIEW.v3.json"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "custom-control-icons",
+      "source": "Explicit user request for finished contextual custom icons",
+      "requirement": "Prefer feasible custom exploration and accept glyphs only in their actual slots, labels, family and states.",
+      "scope": {
+        "owners": [
+          "benchmarks/soda-campaign/styles.css",
+          "benchmarks/soda-campaign/assets/icons/arrow.svg",
+          "benchmarks/soda-campaign/assets/icons/plus.svg",
+          "benchmarks/soda-campaign/assets/icons/minus.svg",
+          "benchmarks/soda-campaign/assets/icons/menu.svg",
+          "benchmarks/soda-campaign/assets/icons/close.svg"
+        ],
+        "routes": [
+          "/benchmarks/soda-campaign/index.html"
+        ],
+        "states": [
+          "page",
+          "focus",
+          "confirmation"
+        ]
+      },
+      "criteria": [
+        {
+          "id": "native-slots",
+          "kind": "visual",
+          "requirement": "Inspect the native 16/18px custom family in actual controls and repeated contexts."
+        },
+        {
+          "id": "focused-slots",
+          "kind": "visual",
+          "requirement": "Inspect icon/label relation and visible focus without changing the hit target."
+        },
+        {
+          "id": "close-slot",
+          "kind": "visual",
+          "requirement": "Inspect the custom close glyph inside the actual modal header and native hit region."
+        }
+      ],
+      "history": [
+        {
+          "at": "2026-10-07T21:58:38.654835+00:00",
+          "status": "requested",
+          "note": "Correction recorded",
+          "snapshot": {
+            "id": "custom-control-icons",
+            "source": "Explicit user request for finished contextual custom icons",
+            "requirement": "Prefer feasible custom exploration and accept glyphs only in their actual slots, labels, family and states.",
+            "scope": {
+              "owners": [
+                "benchmarks/soda-campaign/styles.css",
+                "benchmarks/soda-campaign/assets/icons/arrow.svg",
+                "benchmarks/soda-campaign/assets/icons/plus.svg",
+                "benchmarks/soda-campaign/assets/icons/minus.svg",
+                "benchmarks/soda-campaign/assets/icons/menu.svg"
+              ],
+              "routes": [
+                "/benchmarks/soda-campaign/index.html"
+              ],
+              "states": [
+                "page",
+                "focus"
+              ]
+            },
+            "criteria": [
+              {
+                "id": "native-slots",
+                "kind": "visual",
+                "requirement": "Inspect the native 16/18px custom family in actual controls and repeated contexts."
+              },
+              {
+                "id": "focused-slots",
+                "kind": "visual",
+                "requirement": "Inspect icon/label relation and visible focus without changing the hit target."
+              }
+            ],
+            "status": "requested"
+          }
+        },
+        {
+          "at": "2026-10-07T21:58:38.666834+00:00",
+          "status": "implemented",
+          "note": "Owner geometry and contextual finishing repaired; current viewport/detail/temporal evidence inspected.",
+          "snapshot": {
+            "id": "custom-control-icons",
+            "source": "Explicit user request for finished contextual custom icons",
+            "requirement": "Prefer feasible custom exploration and accept glyphs only in their actual slots, labels, family and states.",
+            "scope": {
+              "owners": [
+                "benchmarks/soda-campaign/styles.css",
+                "benchmarks/soda-campaign/assets/icons/arrow.svg",
+                "benchmarks/soda-campaign/assets/icons/plus.svg",
+                "benchmarks/soda-campaign/assets/icons/minus.svg",
+                "benchmarks/soda-campaign/assets/icons/menu.svg"
+              ],
+              "routes": [
+                "/benchmarks/soda-campaign/index.html"
+              ],
+              "states": [
+                "page",
+                "focus"
+              ]
+            },
+            "criteria": [
+              {
+                "id": "native-slots",
+                "kind": "visual",
+                "requirement": "Inspect the native 16/18px custom family in actual controls and repeated contexts."
+              },
+              {
+                "id": "focused-slots",
+                "kind": "visual",
+                "requirement": "Inspect icon/label relation and visible focus without changing the hit target."
+              }
+            ],
+            "status": "implemented"
+          }
+        },
+        {
+          "at": "2026-10-07T21:58:39.074683+00:00",
+          "status": "verified",
+          "note": "Bound criterion results and current evidence verified",
+          "snapshot": {
+            "id": "custom-control-icons",
+            "source": "Explicit user request for finished contextual custom icons",
+            "requirement": "Prefer feasible custom exploration and accept glyphs only in their actual slots, labels, family and states.",
+            "scope": {
+              "owners": [
+                "benchmarks/soda-campaign/styles.css",
+                "benchmarks/soda-campaign/assets/icons/arrow.svg",
+                "benchmarks/soda-campaign/assets/icons/plus.svg",
+                "benchmarks/soda-campaign/assets/icons/minus.svg",
+                "benchmarks/soda-campaign/assets/icons/menu.svg"
+              ],
+              "routes": [
+                "/benchmarks/soda-campaign/index.html"
+              ],
+              "states": [
+                "page",
+                "focus"
+              ]
+            },
+            "criteria": [
+              {
+                "id": "native-slots",
+                "kind": "visual",
+                "requirement": "Inspect the native 16/18px custom family in actual controls and repeated contexts."
+              },
+              {
+                "id": "focused-slots",
+                "kind": "visual",
+                "requirement": "Inspect icon/label relation and visible focus without changing the hit target."
+              }
+            ],
+            "status": "verified",
+            "proof": {
+              "sources": [
+                {
+                  "path": "benchmarks/soda-campaign/app.js",
+                  "sha256": "5ce055b932f19f096d2173c480a5522b10dee1de585a2ebef5df30917b8e61a8"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/fonts/OFL-Manrope.txt",
+                  "sha256": "f612090fb72b6dca3e807e66fa0d2b5def163cef86f1a3209b5c897cba5ee4b7"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/fonts/OFL-Unbounded.txt",
+                  "sha256": "31e5d4e83955e7103c34570dd49b0570ef490800bd65b42923c0dd02445263b3"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/fonts/manrope-latin.woff2",
+                  "sha256": "a30ddcd349703aff7464c34bef3fffdff405ee50c113440d7c8693c02d210972"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/fonts/unbounded-latin.woff2",
+                  "sha256": "22f9b928aa3928a896340422b54d690fbb5875c30eae4c106f029c61f2289fd6"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/icons/LICENSE",
+                  "sha256": "0cd15032a964eb7b46b1bb74f96b89ed411a33fcd6b877925f5ced02ec8a9c87"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/icons/SOURCE.md",
+                  "sha256": "e31fa63cd10b043e5d45e59e95722e88dd634c22cf2658ca65272da867dc4800"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/icons/arrow.metadata.json",
+                  "sha256": "abee637d1fd533f6e34cb8812fb7d4de6d911a923245c71999c792930796514a"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/icons/arrow.svg",
+                  "sha256": "a9dbbf0543e8674ccca2e47bec94e49b71c662c8949aa07fd866247a73ac8d6b"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/icons/menu.metadata.json",
+                  "sha256": "7943e3be7031ec69d457dd12205da112faf815493eca9570c7af0c9ab56e1671"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/icons/menu.svg",
+                  "sha256": "29778bbb99eb95b7cf19d3855100ce9087a381ae83f0de28f11a08ebc55be943"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/icons/minus.metadata.json",
+                  "sha256": "60ad682387426e9122855708c29a08d7f0f325baf0e798a8dd913cd33ed45a5b"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/icons/minus.svg",
+                  "sha256": "e2201ac99f2ebea364d1ac4c36c23a6b76775fa6cc21cb0edcf051427741a239"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/icons/plus.metadata.json",
+                  "sha256": "3396bdc10355969834c6b8839c2c2b5ac0f53b66c25840dcd506675ddd57804d"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/icons/plus.svg",
+                  "sha256": "29dfee7f8c839e33676eaf4eca16d6b4f7c2a1e80ebbc52d65f1a5b005cca010"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/labels/night-signal.svg",
+                  "sha256": "f4e7cb35a2686ff289aa7554a0f71722757e10a3f3f2ea22df4ad5d6b4303136"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/labels/pink-noise.svg",
+                  "sha256": "940ea2752ca94b3da33e43ed4126290bc6a59059a767879e01974a7844a50aef"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/labels/sun-shift.svg",
+                  "sha256": "646325eb1ee23ecd9bda6c2d5b510202ff7a0225d192edf7618d1389db0e767c"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/can.css",
+                  "sha256": "03e0967dc99b0054f0f63aa35832331795754c43f920ed459693bf5a538dff77"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/index.html",
+                  "sha256": "99f584be25f04503be99c4e05def74a665e31afa6361dabdeb4fd668b7916609"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/styles.css",
+                  "sha256": "c9e8873d25b81d2fce189a1a08a7fc04d416836fab0eaa6a1c856519d0223c71"
+                }
+              ],
+              "artifacts": [
+                {
+                  "path": "evals/doppler-regeneration/REVIEW.json",
+                  "sha256": "bbda4ffb36d2f32bf4617dd453fdd683ec753c5b4039762ba89398240c430888"
+                },
+                {
+                  "path": "evals/doppler-regeneration/final/wide-detail-join.png",
+                  "sha256": "bc3b22a01a383d7dbd167f727641f3d467d72a31a6cc280c33b2eee4e1390708"
+                },
+                {
+                  "path": "evals/doppler-regeneration/final/focus-detail-action.png",
+                  "sha256": "24d56d24946726981d2c14ee5281433a879a6a347d51a9f68f8d1a53adbb0567"
+                },
+                {
+                  "path": "evals/doppler-regeneration/final/motion.png",
+                  "sha256": "4b472dbfaf6c27978adf03828aee48a6f671082187a8cacf8c1c45731974ffc4"
+                }
+              ],
+              "results": [
+                {
+                  "criterion": "native-slots",
+                  "status": "PASS",
+                  "artifacts": [
+                    "evals/doppler-regeneration/REVIEW.json"
+                  ],
+                  "review": {
+                    "reviewer": "Implementer",
+                    "method": "self-review",
+                    "verdict": "KEEP",
+                    "finding": "The wordmark establishes identity; proposition, product and nearby mix action form deliberate peers. Warm paper keeps secondary information quiet. Native type and control details remain coherent at pressure widths and DPR 1/2.",
+                    "state": "page",
+                    "viewport": "1440x1000@1",
+                    "report": "evals/doppler-regeneration/REVIEW.json"
+                  }
+                },
+                {
+                  "criterion": "focused-slots",
+                  "status": "PASS",
+                  "artifacts": [
+                    "evals/doppler-regeneration/REVIEW.json"
+                  ],
+                  "review": {
+                    "reviewer": "Implementer",
+                    "method": "self-review",
+                    "verdict": "KEEP",
+                    "finding": "An ink outer ring contrasts with paper outside the filled action. Its gap and edges remain visible; the custom arrow is centered within the unchanged target.",
+                    "state": "focus",
+                    "viewport": "900x1000@1",
+                    "report": "evals/doppler-regeneration/REVIEW.json"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "at": "2026-10-07T22:58:45.129058+00:00",
+          "status": "requested",
+          "note": "Scope/evidence refreshed after the shared secondary-surface change.",
+          "snapshot": {
+            "id": "custom-control-icons",
+            "source": "Explicit user request for finished contextual custom icons",
+            "requirement": "Prefer feasible custom exploration and accept glyphs only in their actual slots, labels, family and states.",
+            "scope": {
+              "owners": [
+                "benchmarks/soda-campaign/styles.css",
+                "benchmarks/soda-campaign/assets/icons/arrow.svg",
+                "benchmarks/soda-campaign/assets/icons/plus.svg",
+                "benchmarks/soda-campaign/assets/icons/minus.svg",
+                "benchmarks/soda-campaign/assets/icons/menu.svg",
+                "benchmarks/soda-campaign/assets/icons/close.svg"
+              ],
+              "routes": [
+                "/benchmarks/soda-campaign/index.html"
+              ],
+              "states": [
+                "page",
+                "focus",
+                "confirmation"
+              ]
+            },
+            "criteria": [
+              {
+                "id": "native-slots",
+                "kind": "visual",
+                "requirement": "Inspect the native 16/18px custom family in actual controls and repeated contexts."
+              },
+              {
+                "id": "focused-slots",
+                "kind": "visual",
+                "requirement": "Inspect icon/label relation and visible focus without changing the hit target."
+              },
+              {
+                "id": "close-slot",
+                "kind": "visual",
+                "requirement": "Inspect the custom close glyph inside the actual modal header and native hit region."
+              }
+            ],
+            "status": "requested"
+          }
+        },
+        {
+          "at": "2026-10-07T22:58:45.146105+00:00",
+          "status": "implemented",
+          "note": "Actual owner, native open composition/details and affected shared consumers finished and inspected.",
+          "snapshot": {
+            "id": "custom-control-icons",
+            "source": "Explicit user request for finished contextual custom icons",
+            "requirement": "Prefer feasible custom exploration and accept glyphs only in their actual slots, labels, family and states.",
+            "scope": {
+              "owners": [
+                "benchmarks/soda-campaign/styles.css",
+                "benchmarks/soda-campaign/assets/icons/arrow.svg",
+                "benchmarks/soda-campaign/assets/icons/plus.svg",
+                "benchmarks/soda-campaign/assets/icons/minus.svg",
+                "benchmarks/soda-campaign/assets/icons/menu.svg",
+                "benchmarks/soda-campaign/assets/icons/close.svg"
+              ],
+              "routes": [
+                "/benchmarks/soda-campaign/index.html"
+              ],
+              "states": [
+                "page",
+                "focus",
+                "confirmation"
+              ]
+            },
+            "criteria": [
+              {
+                "id": "native-slots",
+                "kind": "visual",
+                "requirement": "Inspect the native 16/18px custom family in actual controls and repeated contexts."
+              },
+              {
+                "id": "focused-slots",
+                "kind": "visual",
+                "requirement": "Inspect icon/label relation and visible focus without changing the hit target."
+              },
+              {
+                "id": "close-slot",
+                "kind": "visual",
+                "requirement": "Inspect the custom close glyph inside the actual modal header and native hit region."
+              }
+            ],
+            "status": "implemented"
+          }
+        },
+        {
+          "at": "2026-10-07T22:58:45.855038+00:00",
+          "status": "verified",
+          "note": "Bound criterion results and current evidence verified",
+          "snapshot": {
+            "id": "custom-control-icons",
+            "source": "Explicit user request for finished contextual custom icons",
+            "requirement": "Prefer feasible custom exploration and accept glyphs only in their actual slots, labels, family and states.",
+            "scope": {
+              "owners": [
+                "benchmarks/soda-campaign/styles.css",
+                "benchmarks/soda-campaign/assets/icons/arrow.svg",
+                "benchmarks/soda-campaign/assets/icons/plus.svg",
+                "benchmarks/soda-campaign/assets/icons/minus.svg",
+                "benchmarks/soda-campaign/assets/icons/menu.svg",
+                "benchmarks/soda-campaign/assets/icons/close.svg"
+              ],
+              "routes": [
+                "/benchmarks/soda-campaign/index.html"
+              ],
+              "states": [
+                "page",
+                "focus",
+                "confirmation"
+              ]
+            },
+            "criteria": [
+              {
+                "id": "native-slots",
+                "kind": "visual",
+                "requirement": "Inspect the native 16/18px custom family in actual controls and repeated contexts."
+              },
+              {
+                "id": "focused-slots",
+                "kind": "visual",
+                "requirement": "Inspect icon/label relation and visible focus without changing the hit target."
+              },
+              {
+                "id": "close-slot",
+                "kind": "visual",
+                "requirement": "Inspect the custom close glyph inside the actual modal header and native hit region."
+              }
+            ],
+            "status": "verified",
+            "proof": {
+              "sources": [
+                {
+                  "path": "benchmarks/soda-campaign/app.js",
+                  "sha256": "e9fc92cec183eeb97fc87e396a35a1729e679c1230bccef9115cb956d11c4deb"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/fonts/OFL-Manrope.txt",
+                  "sha256": "f612090fb72b6dca3e807e66fa0d2b5def163cef86f1a3209b5c897cba5ee4b7"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/fonts/OFL-Unbounded.txt",
+                  "sha256": "31e5d4e83955e7103c34570dd49b0570ef490800bd65b42923c0dd02445263b3"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/fonts/manrope-latin.woff2",
+                  "sha256": "a30ddcd349703aff7464c34bef3fffdff405ee50c113440d7c8693c02d210972"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/fonts/unbounded-latin.woff2",
+                  "sha256": "22f9b928aa3928a896340422b54d690fbb5875c30eae4c106f029c61f2289fd6"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/icons/LICENSE",
+                  "sha256": "0cd15032a964eb7b46b1bb74f96b89ed411a33fcd6b877925f5ced02ec8a9c87"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/icons/SOURCE.md",
+                  "sha256": "7f1164a0e7d8ef720be7172412ebc9dc4364c14d588247f11efc0b46d74aa976"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/icons/arrow.metadata.json",
+                  "sha256": "186caf3b418084a302379d509d1d6bb0b812ab1a591d24f8581dfbd708207d60"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/icons/arrow.svg",
+                  "sha256": "a9dbbf0543e8674ccca2e47bec94e49b71c662c8949aa07fd866247a73ac8d6b"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/icons/close.metadata.json",
+                  "sha256": "028d3baab9b52a5e88e2c2ac03ce842278432cb56d53a72e6248c718f07e4fae"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/icons/close.svg",
+                  "sha256": "51a8531c7593aca8d38710027fb97bdd94c50e6a4d95610be0261b27707646a6"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/icons/menu.metadata.json",
+                  "sha256": "17b6da37e3624356964dde4620465013d49bc433a38694fb7e5cf807d51e8356"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/icons/menu.svg",
+                  "sha256": "29778bbb99eb95b7cf19d3855100ce9087a381ae83f0de28f11a08ebc55be943"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/icons/minus.metadata.json",
+                  "sha256": "8f125573a0217c2e3d988aedca804f09db157e46abd419e4fe16317505e8400a"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/icons/minus.svg",
+                  "sha256": "e2201ac99f2ebea364d1ac4c36c23a6b76775fa6cc21cb0edcf051427741a239"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/icons/plus.metadata.json",
+                  "sha256": "ea1275277fdd1a05fd332bfe73e8e7de9df829bcca3e02c70545cdc79c6aad2e"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/icons/plus.svg",
+                  "sha256": "29dfee7f8c839e33676eaf4eca16d6b4f7c2a1e80ebbc52d65f1a5b005cca010"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/labels/night-signal.svg",
+                  "sha256": "f4e7cb35a2686ff289aa7554a0f71722757e10a3f3f2ea22df4ad5d6b4303136"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/labels/pink-noise.svg",
+                  "sha256": "940ea2752ca94b3da33e43ed4126290bc6a59059a767879e01974a7844a50aef"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/labels/sun-shift.svg",
+                  "sha256": "646325eb1ee23ecd9bda6c2d5b510202ff7a0225d192edf7618d1389db0e767c"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/can.css",
+                  "sha256": "03e0967dc99b0054f0f63aa35832331795754c43f920ed459693bf5a538dff77"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/index.html",
+                  "sha256": "15ecb148423c9001e6baad8432a98a4b000fbee3c679a99141fe8b9ad27e9ca6"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/styles.css",
+                  "sha256": "9842079ffb09edf33483ed5d8ea9fcfefa96ba0936c698ffa5960c05b69130af"
+                }
+              ],
+              "artifacts": [
+                {
+                  "path": "evals/doppler-regeneration/REVIEW.v3.json",
+                  "sha256": "75ad570af4ac6d73d846ed11cb324458a1b4e37e824d1f06290a14b2117c038c"
+                }
+              ],
+              "results": [
+                {
+                  "criterion": "native-slots",
+                  "status": "PASS",
+                  "artifacts": [
+                    "evals/doppler-regeneration/REVIEW.v3.json"
+                  ],
+                  "review": {
+                    "reviewer": "Implementer",
+                    "method": "self-review",
+                    "verdict": "KEEP",
+                    "finding": "Whole composition, native viewport and bound owner/details inspected; type/product hierarchy, role coherence and the recorded state remain clear.",
+                    "state": "page",
+                    "viewport": "1440x1000@1",
+                    "report": "evals/doppler-regeneration/REVIEW.v3.json"
+                  }
+                },
+                {
+                  "criterion": "focused-slots",
+                  "status": "PASS",
+                  "artifacts": [
+                    "evals/doppler-regeneration/REVIEW.v3.json"
+                  ],
+                  "review": {
+                    "reviewer": "Implementer",
+                    "method": "self-review",
+                    "verdict": "KEEP",
+                    "finding": "Ink focus paint is visible against external paper; native control and glyph alignment remain coherent.",
+                    "state": "focus",
+                    "viewport": "900x1000@1",
+                    "report": "evals/doppler-regeneration/REVIEW.v3.json"
+                  }
+                },
+                {
+                  "criterion": "close-slot",
+                  "status": "PASS",
+                  "artifacts": [
+                    "evals/doppler-regeneration/REVIEW.v3.json"
+                  ],
+                  "review": {
+                    "reviewer": "Implementer",
+                    "method": "self-review",
+                    "verdict": "KEEP",
+                    "finding": "The native open dialog reads as one small composition: editorial result, actual objects and baseline-aligned quantities, quiet total and clear continuation. Backdrop separates the campaign; close glyph and text-pressure scrolling remain usable.",
+                    "state": "confirmation",
+                    "viewport": "900x1000@1",
+                    "report": "evals/doppler-regeneration/REVIEW.v3.json"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "status": "verified",
+      "proof": {
+        "sources": [
+          {
+            "path": "benchmarks/soda-campaign/app.js",
+            "sha256": "e9fc92cec183eeb97fc87e396a35a1729e679c1230bccef9115cb956d11c4deb"
+          },
+          {
+            "path": "benchmarks/soda-campaign/assets/fonts/OFL-Manrope.txt",
+            "sha256": "f612090fb72b6dca3e807e66fa0d2b5def163cef86f1a3209b5c897cba5ee4b7"
+          },
+          {
+            "path": "benchmarks/soda-campaign/assets/fonts/OFL-Unbounded.txt",
+            "sha256": "31e5d4e83955e7103c34570dd49b0570ef490800bd65b42923c0dd02445263b3"
+          },
+          {
+            "path": "benchmarks/soda-campaign/assets/fonts/manrope-latin.woff2",
+            "sha256": "a30ddcd349703aff7464c34bef3fffdff405ee50c113440d7c8693c02d210972"
+          },
+          {
+            "path": "benchmarks/soda-campaign/assets/fonts/unbounded-latin.woff2",
+            "sha256": "22f9b928aa3928a896340422b54d690fbb5875c30eae4c106f029c61f2289fd6"
+          },
+          {
+            "path": "benchmarks/soda-campaign/assets/icons/LICENSE",
+            "sha256": "0cd15032a964eb7b46b1bb74f96b89ed411a33fcd6b877925f5ced02ec8a9c87"
+          },
+          {
+            "path": "benchmarks/soda-campaign/assets/icons/SOURCE.md",
+            "sha256": "7f1164a0e7d8ef720be7172412ebc9dc4364c14d588247f11efc0b46d74aa976"
+          },
+          {
+            "path": "benchmarks/soda-campaign/assets/icons/arrow.metadata.json",
+            "sha256": "186caf3b418084a302379d509d1d6bb0b812ab1a591d24f8581dfbd708207d60"
+          },
+          {
+            "path": "benchmarks/soda-campaign/assets/icons/arrow.svg",
+            "sha256": "a9dbbf0543e8674ccca2e47bec94e49b71c662c8949aa07fd866247a73ac8d6b"
+          },
+          {
+            "path": "benchmarks/soda-campaign/assets/icons/close.metadata.json",
+            "sha256": "028d3baab9b52a5e88e2c2ac03ce842278432cb56d53a72e6248c718f07e4fae"
+          },
+          {
+            "path": "benchmarks/soda-campaign/assets/icons/close.svg",
+            "sha256": "51a8531c7593aca8d38710027fb97bdd94c50e6a4d95610be0261b27707646a6"
+          },
+          {
+            "path": "benchmarks/soda-campaign/assets/icons/menu.metadata.json",
+            "sha256": "17b6da37e3624356964dde4620465013d49bc433a38694fb7e5cf807d51e8356"
+          },
+          {
+            "path": "benchmarks/soda-campaign/assets/icons/menu.svg",
+            "sha256": "29778bbb99eb95b7cf19d3855100ce9087a381ae83f0de28f11a08ebc55be943"
+          },
+          {
+            "path": "benchmarks/soda-campaign/assets/icons/minus.metadata.json",
+            "sha256": "8f125573a0217c2e3d988aedca804f09db157e46abd419e4fe16317505e8400a"
+          },
+          {
+            "path": "benchmarks/soda-campaign/assets/icons/minus.svg",
+            "sha256": "e2201ac99f2ebea364d1ac4c36c23a6b76775fa6cc21cb0edcf051427741a239"
+          },
+          {
+            "path": "benchmarks/soda-campaign/assets/icons/plus.metadata.json",
+            "sha256": "ea1275277fdd1a05fd332bfe73e8e7de9df829bcca3e02c70545cdc79c6aad2e"
+          },
+          {
+            "path": "benchmarks/soda-campaign/assets/icons/plus.svg",
+            "sha256": "29dfee7f8c839e33676eaf4eca16d6b4f7c2a1e80ebbc52d65f1a5b005cca010"
+          },
+          {
+            "path": "benchmarks/soda-campaign/assets/labels/night-signal.svg",
+            "sha256": "f4e7cb35a2686ff289aa7554a0f71722757e10a3f3f2ea22df4ad5d6b4303136"
+          },
+          {
+            "path": "benchmarks/soda-campaign/assets/labels/pink-noise.svg",
+            "sha256": "940ea2752ca94b3da33e43ed4126290bc6a59059a767879e01974a7844a50aef"
+          },
+          {
+            "path": "benchmarks/soda-campaign/assets/labels/sun-shift.svg",
+            "sha256": "646325eb1ee23ecd9bda6c2d5b510202ff7a0225d192edf7618d1389db0e767c"
+          },
+          {
+            "path": "benchmarks/soda-campaign/can.css",
+            "sha256": "03e0967dc99b0054f0f63aa35832331795754c43f920ed459693bf5a538dff77"
+          },
+          {
+            "path": "benchmarks/soda-campaign/index.html",
+            "sha256": "15ecb148423c9001e6baad8432a98a4b000fbee3c679a99141fe8b9ad27e9ca6"
+          },
+          {
+            "path": "benchmarks/soda-campaign/styles.css",
+            "sha256": "9842079ffb09edf33483ed5d8ea9fcfefa96ba0936c698ffa5960c05b69130af"
+          }
+        ],
+        "artifacts": [
+          {
+            "path": "evals/doppler-regeneration/REVIEW.v3.json",
+            "sha256": "75ad570af4ac6d73d846ed11cb324458a1b4e37e824d1f06290a14b2117c038c"
+          }
+        ],
+        "results": [
+          {
+            "criterion": "native-slots",
+            "status": "PASS",
+            "artifacts": [
+              "evals/doppler-regeneration/REVIEW.v3.json"
+            ],
+            "review": {
+              "reviewer": "Implementer",
+              "method": "self-review",
+              "verdict": "KEEP",
+              "finding": "Whole composition, native viewport and bound owner/details inspected; type/product hierarchy, role coherence and the recorded state remain clear.",
+              "state": "page",
+              "viewport": "1440x1000@1",
+              "report": "evals/doppler-regeneration/REVIEW.v3.json"
+            }
+          },
+          {
+            "criterion": "focused-slots",
+            "status": "PASS",
+            "artifacts": [
+              "evals/doppler-regeneration/REVIEW.v3.json"
+            ],
+            "review": {
+              "reviewer": "Implementer",
+              "method": "self-review",
+              "verdict": "KEEP",
+              "finding": "Ink focus paint is visible against external paper; native control and glyph alignment remain coherent.",
+              "state": "focus",
+              "viewport": "900x1000@1",
+              "report": "evals/doppler-regeneration/REVIEW.v3.json"
+            }
+          },
+          {
+            "criterion": "close-slot",
+            "status": "PASS",
+            "artifacts": [
+              "evals/doppler-regeneration/REVIEW.v3.json"
+            ],
+            "review": {
+              "reviewer": "Implementer",
+              "method": "self-review",
+              "verdict": "KEEP",
+              "finding": "The native open dialog reads as one small composition: editorial result, actual objects and baseline-aligned quantities, quiet total and clear continuation. Backdrop separates the campaign; close glyph and text-pressure scrolling remain usable.",
+              "state": "confirmation",
+              "viewport": "900x1000@1",
+              "report": "evals/doppler-regeneration/REVIEW.v3.json"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "secondary-surfaces",
+      "source": "Explicit user request for high visual quality of all menus, modals and other secondary surfaces",
+      "requirement": "Treat open secondary surfaces as authored compositions in the page system, not raw generic wrappers.",
+      "scope": {
+        "owners": [
+          "benchmarks/soda-campaign/index.html",
+          "benchmarks/soda-campaign/styles.css",
+          "benchmarks/soda-campaign/app.js"
+        ],
+        "routes": [
+          "/benchmarks/soda-campaign/index.html"
+        ],
+        "states": [
+          "overlay",
+          "confirmation"
+        ]
+      },
+      "criteria": [
+        {
+          "id": "menu-finish",
+          "kind": "visual",
+          "requirement": "Inspect open menu anchoring, type, row rhythm, material and native details."
+        },
+        {
+          "id": "modal-finish",
+          "kind": "visual",
+          "requirement": "Inspect the complete modal hierarchy/material plus close/action/rows and pressure reflow."
+        }
+      ],
+      "history": [
+        {
+          "at": "2026-10-07T22:58:45.872176+00:00",
+          "status": "requested",
+          "note": "Correction recorded",
+          "snapshot": {
+            "id": "secondary-surfaces",
+            "source": "Explicit user request for high visual quality of all menus, modals and other secondary surfaces",
+            "requirement": "Treat open secondary surfaces as authored compositions in the page system, not raw generic wrappers.",
+            "scope": {
+              "owners": [
+                "benchmarks/soda-campaign/index.html",
+                "benchmarks/soda-campaign/styles.css",
+                "benchmarks/soda-campaign/app.js"
+              ],
+              "routes": [
+                "/benchmarks/soda-campaign/index.html"
+              ],
+              "states": [
+                "overlay",
+                "confirmation"
+              ]
+            },
+            "criteria": [
+              {
+                "id": "menu-finish",
+                "kind": "visual",
+                "requirement": "Inspect open menu anchoring, type, row rhythm, material and native details."
+              },
+              {
+                "id": "modal-finish",
+                "kind": "visual",
+                "requirement": "Inspect the complete modal hierarchy/material plus close/action/rows and pressure reflow."
+              }
+            ],
+            "status": "requested"
+          }
+        },
+        {
+          "at": "2026-10-07T22:58:45.890205+00:00",
+          "status": "implemented",
+          "note": "Actual owner, native open composition/details and affected shared consumers finished and inspected.",
+          "snapshot": {
+            "id": "secondary-surfaces",
+            "source": "Explicit user request for high visual quality of all menus, modals and other secondary surfaces",
+            "requirement": "Treat open secondary surfaces as authored compositions in the page system, not raw generic wrappers.",
+            "scope": {
+              "owners": [
+                "benchmarks/soda-campaign/index.html",
+                "benchmarks/soda-campaign/styles.css",
+                "benchmarks/soda-campaign/app.js"
+              ],
+              "routes": [
+                "/benchmarks/soda-campaign/index.html"
+              ],
+              "states": [
+                "overlay",
+                "confirmation"
+              ]
+            },
+            "criteria": [
+              {
+                "id": "menu-finish",
+                "kind": "visual",
+                "requirement": "Inspect open menu anchoring, type, row rhythm, material and native details."
+              },
+              {
+                "id": "modal-finish",
+                "kind": "visual",
+                "requirement": "Inspect the complete modal hierarchy/material plus close/action/rows and pressure reflow."
+              }
+            ],
+            "status": "implemented"
+          }
+        },
+        {
+          "at": "2026-10-07T22:58:46.345896+00:00",
+          "status": "verified",
+          "note": "Bound criterion results and current evidence verified",
+          "snapshot": {
+            "id": "secondary-surfaces",
+            "source": "Explicit user request for high visual quality of all menus, modals and other secondary surfaces",
+            "requirement": "Treat open secondary surfaces as authored compositions in the page system, not raw generic wrappers.",
+            "scope": {
+              "owners": [
+                "benchmarks/soda-campaign/index.html",
+                "benchmarks/soda-campaign/styles.css",
+                "benchmarks/soda-campaign/app.js"
+              ],
+              "routes": [
+                "/benchmarks/soda-campaign/index.html"
+              ],
+              "states": [
+                "overlay",
+                "confirmation"
+              ]
+            },
+            "criteria": [
+              {
+                "id": "menu-finish",
+                "kind": "visual",
+                "requirement": "Inspect open menu anchoring, type, row rhythm, material and native details."
+              },
+              {
+                "id": "modal-finish",
+                "kind": "visual",
+                "requirement": "Inspect the complete modal hierarchy/material plus close/action/rows and pressure reflow."
+              }
+            ],
+            "status": "verified",
+            "proof": {
+              "sources": [
+                {
+                  "path": "benchmarks/soda-campaign/app.js",
+                  "sha256": "e9fc92cec183eeb97fc87e396a35a1729e679c1230bccef9115cb956d11c4deb"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/fonts/OFL-Manrope.txt",
+                  "sha256": "f612090fb72b6dca3e807e66fa0d2b5def163cef86f1a3209b5c897cba5ee4b7"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/fonts/OFL-Unbounded.txt",
+                  "sha256": "31e5d4e83955e7103c34570dd49b0570ef490800bd65b42923c0dd02445263b3"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/fonts/manrope-latin.woff2",
+                  "sha256": "a30ddcd349703aff7464c34bef3fffdff405ee50c113440d7c8693c02d210972"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/fonts/unbounded-latin.woff2",
+                  "sha256": "22f9b928aa3928a896340422b54d690fbb5875c30eae4c106f029c61f2289fd6"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/icons/LICENSE",
+                  "sha256": "0cd15032a964eb7b46b1bb74f96b89ed411a33fcd6b877925f5ced02ec8a9c87"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/icons/SOURCE.md",
+                  "sha256": "7f1164a0e7d8ef720be7172412ebc9dc4364c14d588247f11efc0b46d74aa976"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/icons/arrow.metadata.json",
+                  "sha256": "186caf3b418084a302379d509d1d6bb0b812ab1a591d24f8581dfbd708207d60"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/icons/arrow.svg",
+                  "sha256": "a9dbbf0543e8674ccca2e47bec94e49b71c662c8949aa07fd866247a73ac8d6b"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/icons/close.metadata.json",
+                  "sha256": "028d3baab9b52a5e88e2c2ac03ce842278432cb56d53a72e6248c718f07e4fae"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/icons/close.svg",
+                  "sha256": "51a8531c7593aca8d38710027fb97bdd94c50e6a4d95610be0261b27707646a6"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/icons/menu.metadata.json",
+                  "sha256": "17b6da37e3624356964dde4620465013d49bc433a38694fb7e5cf807d51e8356"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/icons/menu.svg",
+                  "sha256": "29778bbb99eb95b7cf19d3855100ce9087a381ae83f0de28f11a08ebc55be943"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/icons/minus.metadata.json",
+                  "sha256": "8f125573a0217c2e3d988aedca804f09db157e46abd419e4fe16317505e8400a"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/icons/minus.svg",
+                  "sha256": "e2201ac99f2ebea364d1ac4c36c23a6b76775fa6cc21cb0edcf051427741a239"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/icons/plus.metadata.json",
+                  "sha256": "ea1275277fdd1a05fd332bfe73e8e7de9df829bcca3e02c70545cdc79c6aad2e"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/icons/plus.svg",
+                  "sha256": "29dfee7f8c839e33676eaf4eca16d6b4f7c2a1e80ebbc52d65f1a5b005cca010"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/labels/night-signal.svg",
+                  "sha256": "f4e7cb35a2686ff289aa7554a0f71722757e10a3f3f2ea22df4ad5d6b4303136"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/labels/pink-noise.svg",
+                  "sha256": "940ea2752ca94b3da33e43ed4126290bc6a59059a767879e01974a7844a50aef"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/assets/labels/sun-shift.svg",
+                  "sha256": "646325eb1ee23ecd9bda6c2d5b510202ff7a0225d192edf7618d1389db0e767c"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/can.css",
+                  "sha256": "03e0967dc99b0054f0f63aa35832331795754c43f920ed459693bf5a538dff77"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/index.html",
+                  "sha256": "15ecb148423c9001e6baad8432a98a4b000fbee3c679a99141fe8b9ad27e9ca6"
+                },
+                {
+                  "path": "benchmarks/soda-campaign/styles.css",
+                  "sha256": "9842079ffb09edf33483ed5d8ea9fcfefa96ba0936c698ffa5960c05b69130af"
+                }
+              ],
+              "artifacts": [
+                {
+                  "path": "evals/doppler-regeneration/REVIEW.v3.json",
+                  "sha256": "75ad570af4ac6d73d846ed11cb324458a1b4e37e824d1f06290a14b2117c038c"
+                }
+              ],
+              "results": [
+                {
+                  "criterion": "menu-finish",
+                  "status": "PASS",
+                  "artifacts": [
+                    "evals/doppler-regeneration/REVIEW.v3.json"
+                  ],
+                  "review": {
+                    "reviewer": "Implementer",
+                    "method": "self-review",
+                    "verdict": "KEEP",
+                    "finding": "Compact warm navigation is anchored to the real trigger; consistent rows, thin separators, type and inner focus form a resolved layer rather than a large default box.",
+                    "state": "overlay",
+                    "viewport": "900x1000@1",
+                    "report": "evals/doppler-regeneration/REVIEW.v3.json"
+                  }
+                },
+                {
+                  "criterion": "modal-finish",
+                  "status": "PASS",
+                  "artifacts": [
+                    "evals/doppler-regeneration/REVIEW.v3.json"
+                  ],
+                  "review": {
+                    "reviewer": "Implementer",
+                    "method": "self-review",
+                    "verdict": "KEEP",
+                    "finding": "The native open dialog reads as one small composition: editorial result, actual objects and baseline-aligned quantities, quiet total and clear continuation. Backdrop separates the campaign; close glyph and text-pressure scrolling remain usable.",
+                    "state": "confirmation",
+                    "viewport": "900x1000@1",
+                    "report": "evals/doppler-regeneration/REVIEW.v3.json"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "status": "verified",
+      "proof": {
+        "sources": [
+          {
+            "path": "benchmarks/soda-campaign/app.js",
+            "sha256": "e9fc92cec183eeb97fc87e396a35a1729e679c1230bccef9115cb956d11c4deb"
+          },
+          {
+            "path": "benchmarks/soda-campaign/assets/fonts/OFL-Manrope.txt",
+            "sha256": "f612090fb72b6dca3e807e66fa0d2b5def163cef86f1a3209b5c897cba5ee4b7"
+          },
+          {
+            "path": "benchmarks/soda-campaign/assets/fonts/OFL-Unbounded.txt",
+            "sha256": "31e5d4e83955e7103c34570dd49b0570ef490800bd65b42923c0dd02445263b3"
+          },
+          {
+            "path": "benchmarks/soda-campaign/assets/fonts/manrope-latin.woff2",
+            "sha256": "a30ddcd349703aff7464c34bef3fffdff405ee50c113440d7c8693c02d210972"
+          },
+          {
+            "path": "benchmarks/soda-campaign/assets/fonts/unbounded-latin.woff2",
+            "sha256": "22f9b928aa3928a896340422b54d690fbb5875c30eae4c106f029c61f2289fd6"
+          },
+          {
+            "path": "benchmarks/soda-campaign/assets/icons/LICENSE",
+            "sha256": "0cd15032a964eb7b46b1bb74f96b89ed411a33fcd6b877925f5ced02ec8a9c87"
+          },
+          {
+            "path": "benchmarks/soda-campaign/assets/icons/SOURCE.md",
+            "sha256": "7f1164a0e7d8ef720be7172412ebc9dc4364c14d588247f11efc0b46d74aa976"
+          },
+          {
+            "path": "benchmarks/soda-campaign/assets/icons/arrow.metadata.json",
+            "sha256": "186caf3b418084a302379d509d1d6bb0b812ab1a591d24f8581dfbd708207d60"
+          },
+          {
+            "path": "benchmarks/soda-campaign/assets/icons/arrow.svg",
+            "sha256": "a9dbbf0543e8674ccca2e47bec94e49b71c662c8949aa07fd866247a73ac8d6b"
+          },
+          {
+            "path": "benchmarks/soda-campaign/assets/icons/close.metadata.json",
+            "sha256": "028d3baab9b52a5e88e2c2ac03ce842278432cb56d53a72e6248c718f07e4fae"
+          },
+          {
+            "path": "benchmarks/soda-campaign/assets/icons/close.svg",
+            "sha256": "51a8531c7593aca8d38710027fb97bdd94c50e6a4d95610be0261b27707646a6"
+          },
+          {
+            "path": "benchmarks/soda-campaign/assets/icons/menu.metadata.json",
+            "sha256": "17b6da37e3624356964dde4620465013d49bc433a38694fb7e5cf807d51e8356"
+          },
+          {
+            "path": "benchmarks/soda-campaign/assets/icons/menu.svg",
+            "sha256": "29778bbb99eb95b7cf19d3855100ce9087a381ae83f0de28f11a08ebc55be943"
+          },
+          {
+            "path": "benchmarks/soda-campaign/assets/icons/minus.metadata.json",
+            "sha256": "8f125573a0217c2e3d988aedca804f09db157e46abd419e4fe16317505e8400a"
+          },
+          {
+            "path": "benchmarks/soda-campaign/assets/icons/minus.svg",
+            "sha256": "e2201ac99f2ebea364d1ac4c36c23a6b76775fa6cc21cb0edcf051427741a239"
+          },
+          {
+            "path": "benchmarks/soda-campaign/assets/icons/plus.metadata.json",
+            "sha256": "ea1275277fdd1a05fd332bfe73e8e7de9df829bcca3e02c70545cdc79c6aad2e"
+          },
+          {
+            "path": "benchmarks/soda-campaign/assets/icons/plus.svg",
+            "sha256": "29dfee7f8c839e33676eaf4eca16d6b4f7c2a1e80ebbc52d65f1a5b005cca010"
+          },
+          {
+            "path": "benchmarks/soda-campaign/assets/labels/night-signal.svg",
+            "sha256": "f4e7cb35a2686ff289aa7554a0f71722757e10a3f3f2ea22df4ad5d6b4303136"
+          },
+          {
+            "path": "benchmarks/soda-campaign/assets/labels/pink-noise.svg",
+            "sha256": "940ea2752ca94b3da33e43ed4126290bc6a59059a767879e01974a7844a50aef"
+          },
+          {
+            "path": "benchmarks/soda-campaign/assets/labels/sun-shift.svg",
+            "sha256": "646325eb1ee23ecd9bda6c2d5b510202ff7a0225d192edf7618d1389db0e767c"
+          },
+          {
+            "path": "benchmarks/soda-campaign/can.css",
+            "sha256": "03e0967dc99b0054f0f63aa35832331795754c43f920ed459693bf5a538dff77"
+          },
+          {
+            "path": "benchmarks/soda-campaign/index.html",
+            "sha256": "15ecb148423c9001e6baad8432a98a4b000fbee3c679a99141fe8b9ad27e9ca6"
+          },
+          {
+            "path": "benchmarks/soda-campaign/styles.css",
+            "sha256": "9842079ffb09edf33483ed5d8ea9fcfefa96ba0936c698ffa5960c05b69130af"
+          }
+        ],
+        "artifacts": [
+          {
+            "path": "evals/doppler-regeneration/REVIEW.v3.json",
+            "sha256": "75ad570af4ac6d73d846ed11cb324458a1b4e37e824d1f06290a14b2117c038c"
+          }
+        ],
+        "results": [
+          {
+            "criterion": "menu-finish",
+            "status": "PASS",
+            "artifacts": [
+              "evals/doppler-regeneration/REVIEW.v3.json"
+            ],
+            "review": {
+              "reviewer": "Implementer",
+              "method": "self-review",
+              "verdict": "KEEP",
+              "finding": "Compact warm navigation is anchored to the real trigger; consistent rows, thin separators, type and inner focus form a resolved layer rather than a large default box.",
+              "state": "overlay",
+              "viewport": "900x1000@1",
+              "report": "evals/doppler-regeneration/REVIEW.v3.json"
+            }
+          },
+          {
+            "criterion": "modal-finish",
+            "status": "PASS",
+            "artifacts": [
+              "evals/doppler-regeneration/REVIEW.v3.json"
+            ],
+            "review": {
+              "reviewer": "Implementer",
+              "method": "self-review",
+              "verdict": "KEEP",
+              "finding": "The native open dialog reads as one small composition: editorial result, actual objects and baseline-aligned quantities, quiet total and clear continuation. Backdrop separates the campaign; close glyph and text-pressure scrolling remain usable.",
+              "state": "confirmation",
+              "viewport": "900x1000@1",
+              "report": "evals/doppler-regeneration/REVIEW.v3.json"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

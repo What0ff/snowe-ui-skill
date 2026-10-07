@@ -666,12 +666,18 @@ async function interactSoda(client) {
   })`);
   check(result.total === "6" && !result.disabled && result.pink === "3", "Doppler: pack composition did not return to six cans");
   check(result.status.includes("Signal packed") && result.status.includes("no order or payment"), "Doppler: honest conversion confirmation failed");
-  await sleep(260);
+  const confirmation = await evaluate(client, `({open:document.querySelector('#mix-confirmation').open,counts:[...document.querySelectorAll('[data-confirm-count]')].map(n=>n.textContent),focus:document.activeElement.id})`);
+  check(confirmation.open && confirmation.counts.join('|') === '1 can|3 cans|2 cans' && confirmation.focus === 'mix-dialog-title', 'Doppler: confirmation surface lost composition or initial focus');
+  await key(client, 'Escape');
+  const confirmationClosed = await waitForExpression(client, `!document.querySelector('#mix-confirmation').open && !document.body.classList.contains('has-open-modal') && document.activeElement === document.querySelector('[data-pack-submit]')`);
+  check(confirmationClosed, 'Doppler: confirmation Escape/scroll unlock/focus return failed: '+JSON.stringify(await evaluate(client, `({open:document.querySelector('#mix-confirmation').open,locked:document.body.classList.contains('has-open-modal'),active:document.activeElement.outerHTML})`)));
+  await waitForExpression(client, `document.getAnimations().every(a=>a.playState !== 'running' && a.playState !== 'pending') && document.querySelectorAll('.bubble').length === 0`, 2_000);
   result = await evaluate(client, `({
     active: document.getAnimations().filter((animation) => animation.playState === "running" || animation.playState === "pending").length,
+    names: document.getAnimations().filter(a=>a.playState === 'running' || a.playState === 'pending').map(a=>({name:a.animationName||a.transitionProperty,target:a.effect?.target?.className,time:a.currentTime,timing:a.effect?.getComputedTiming()})),
     bubbles: document.querySelectorAll(".bubble").length,
   })`);
-  check(result.active === 0 && result.bubbles === 0, `Doppler: transient motion did not stop (animations ${result.active}, bubbles ${result.bubbles})`);
+  check(result.active === 0 && result.bubbles === 0, `Doppler: transient motion did not stop (animations ${result.active}, bubbles ${result.bubbles}): ${JSON.stringify(result.names)}`);
 }
 
 async function auditSodaReduced(client) {
@@ -1055,9 +1061,11 @@ async function runSmoke(client, origin) {
               widthDelta: Math.abs(can.offsetWidth - rim.offsetWidth),
               leftDelta: Math.abs(can.offsetLeft - rim.offsetLeft),
               attached: rim.offsetTop <= 1 && rim.offsetTop + rim.offsetHeight > 0,
+              rigid: rim.parentElement === document.querySelector('[data-can-object]'),
+              plane: (() => {const m=new DOMMatrixReadOnly(getComputedStyle(rim).transform);return Math.abs(m.m42 + can.offsetHeight/2)<1 && Math.abs(m.m22)<.001 && Math.abs(Math.abs(m.m23)-1)<.001})(),
             };
           })()`);
-          check(lid.topLayers === 1 && lid.widthDelta < 2 && lid.leftDelta < 2 && lid.attached, `Doppler: product lid layer is duplicated, detached, or misaligned at ${viewport.width}px`);
+          check(lid.topLayers === 1 && lid.widthDelta < 2 && lid.leftDelta < 2 && lid.rigid && lid.plane, `Doppler: product lid layer is duplicated, detached, or misaligned at ${viewport.width}px`);
         }
         if (viewport.width === 390) await exerciseMobileNavigation(client, scenario);
       }

@@ -84,3 +84,9 @@ Its minimal workflow permissions are `contents: read`, `pages: write`, and `id-t
 - GitHub Pages or Actions unavailability affects only the public Doppler mirror; the checked-in benchmark remains directly runnable as a static site.
 
 Before adding a dependency, intentionally revise the standard-library/no-build contracts, add manifest/lock strategy where relevant, update CI/setup docs, and test copied-skill portability.
+
+## Optional copied browser adapter
+
+`skill/snowe-ui-skill/scripts/observe.mjs` requires Node 22 and system Chromium/Chrome/Edge only when invoked. It uses built-ins, downloads no browser/package, has no benchmark imports and adds no Python dependency. Its loopback static server refuses unbound/external resources and its temporary profile is removed. Native scrollbar paint is hidden for stable whole/detail geometry; real app-server/backend, native scrollbar and closed-shadow/media checks remain host responsibilities. `scripts/doppler-detail-probe.mjs` uses a separately copied product/target and Python report validation in CI.
+
+Doppler now adds five original control SVGs with byte-bound source/license metadata and separates the cylinder primitive into `can.css`. The top plane shares its rigid object rather than remaining a flat overlay. Its compact anchored menu and native pack-confirmation dialog use local CSS/JavaScript only. GIF encoding uses an available host image encoder only; it adds no product/test package. SVG image-internal font identity is not established by document font inspection.

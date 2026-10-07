@@ -471,9 +471,8 @@ def _validate_metadata(metadata: dict[str, Any], errors: list[str], metadata_pat
         normalized = [float(size) for size in sizes]
         if len(set(normalized)) != len(normalized):
             errors.append("target_sizes must not contain duplicate values.")
-        missing_sizes = [size for size in (16, 20, 24) if float(size) not in normalized]
-        if missing_sizes:
-            errors.append("Interface icon metadata must include 16, 20, and 24; missing: " + ", ".join(map(str, missing_sizes)))
+        # Actual host slots are authoritative. A fictitious 20px declaration
+        # cannot prove an implemented 18px control; icon_review checks exact coverage.
         if grid is not None and isinstance(language, dict):
             declared_width = _positive(language.get("stroke_width"))
             if declared_width is not None and str(language.get("mode", "")).strip().casefold() in {"stroke", "mixed"}:

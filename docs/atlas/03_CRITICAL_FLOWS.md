@@ -123,7 +123,7 @@ Explicit legacy migration validates separate source/canonical/legacy/backup path
 
 ## Visual disposition and correction closure
 
-1. Author the state question, intended attention, visible cues and competing elements before evaluating the candidate; the contract is separate from measured output.
-2. Record actual render review and bind source/render bytes. `visual_review.py` checks format, coverage, explicit verdict, causal findings and freshness without changing the report.
-3. Preserve an old schema-1 report and explicitly reassess before writing schema 2; legacy SELF_REVIEWED alone returns REVIEW_REQUIRED.
-4. If a correction receipt links `review.report`, bind that JSON in proof artifacts and state its method/verdict. The journal reader follows the report, requires current KEEP, verifies source-owner/state coverage and invalidates later stale/blocked evidence. Legacy inline receipt behavior is preserved.
+1. Author the state question, intended attention, visible cues and competing elements before evaluating the candidate.
+2. Scope affected owners/dependencies and explicit browser combinations plus whole/detail targets. `observe.mjs` replays local states, measures and captures immutable evidence; missing probes, dependency drift or unsettled output fail observation.
+3. Write schema 3 with a separately bound schema-2 attention contract and visual-system revision. `visual_review.py` checks source closure, actual environment, complete combinations, every detail assessment, relationships and current bytes. Preserve historical schema-1/2 records; they cannot supply new PASS.
+4. New visual correction receipts require method, explicit KEEP and a bound report. The journal follows nested evidence and checks source-owner/state/viewport coverage. Historical inline receipts need renewed verification. The accepted ledger remains untouched.

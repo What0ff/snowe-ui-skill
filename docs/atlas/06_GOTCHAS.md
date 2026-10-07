@@ -78,3 +78,9 @@
 ## Current validation gaps
 
 The repository has unit/regression, deterministic contract, exact standalone-install, compile, cross-platform CI browser smoke, screenshots, manual rendered QA, an operational icon comparison, and a bounded observed-host scope series. The host series is small, single-configuration, noncausal, and cannot observe exact token totals or runtime self-identity; it is not a reproducible population comparison. The repository still has no lint/format, static typing, coverage, package/plugin publication verification, automated visual diff, full accessibility engine, local deployment verification, production backend tests, or icon recognition/usability study. Aesthetic and optical quality remain human/rendered judgment.
+
+## New visual-evidence boundaries
+
+- Schema-1/2 reviews are historical inputs, not new PASS evidence. Preserve them even when bound source/runner changes make them stale. New plans explicitly cover combinations and owner/detail crops; thumbnails cannot settle small material or glyph artifacts.
+- The optional observer serves complete declared static scopes and hides native scrollbar paint. Do not replace real interaction, backend, closed-shadow/media or independent visual evidence with PNG/hash checks.
+- Custom SVG structural PASS and original provenance do not establish optical finish. Targets must match actual slots; the icon manifest enforces exact context coverage. Inspect native owners, label gaps, small counters and diagnostic joins.

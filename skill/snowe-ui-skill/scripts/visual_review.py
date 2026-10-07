@@ -11,6 +11,8 @@ import json
 
 from checked_evidence import file_digest, object_fields, read_json, text
 from decision_packet import _normalize_lexical_aliases, _reject_reparse_chain
+from observation import inspect_capture
+from visual_system import inspect_system
 
 VERDICTS = {"KEEP", "REVISE", "REJECT", "UNKNOWN"}
 METHODS = {"self-review", "peer-review", "user-review"}
@@ -35,7 +37,8 @@ def strings(value, field, allow_empty=False):
 
 
 def binding(value, render=False):
-    object_fields(value, {"path", "sha256"} | ({"state", "viewport"} if render else set()))
+    object_fields(value, {"path", "sha256"} | ({"state", "viewport"} if render else set()),
+                  {"id", "theme", "input", "motion", "context"} if render else set())
     relative_path(value["path"])
     if not isinstance(value["sha256"], str) or not re.fullmatch(r"[a-f0-9]{64}", value["sha256"]):
         raise ValueError("Expected SHA-256 evidence binding")
@@ -51,7 +54,7 @@ def verdict(value):
 
 
 def inspect_review(workspace, report_path):
-    """Read-only check; a PASS accepts the recorded judgment, not the pixels."""
+    """Read-only check; PASS closes a current recorded judgment, never grades pixels."""
     root = _normalize_lexical_aliases(Path(os.path.abspath(workspace)), "Review workspace")
     _reject_reparse_chain(root, "Review workspace")
     report_path = relative_path(str(report_path))
@@ -61,8 +64,10 @@ def inspect_review(workspace, report_path):
         return {"status": "REVIEW_REQUIRED", "integrity": "UNCONFIRMED", "visual_verdict": "UNKNOWN",
                 "user_acceptance": "UNCONFIRMED", "issues": ["Legacy report has no checked explicit verdict; review it again without rewriting its history"], "boundary": BOUNDARY}
     object_fields(report, {"schema", "scope", "method", "reviewer", "contract", "sources", "renders", "visualAssessment", "userAcceptance"},
-                  {"date", "evidence", "inspectedCaptures", "notes"})
-    if report["schema"] != "2.0": raise ValueError("Unsupported visual review schema")
+                  {"date", "evidence", "inspectedCaptures", "notes", "capture"})
+    if report["schema"] not in {"2.0", "3.0"}: raise ValueError("Unsupported visual review schema")
+    modern = report["schema"] == "3.0"
+    if modern: binding(report.get("capture"))
     for field in ("scope", "reviewer"): text(report[field], field)
     if not isinstance(report["method"], str) or report["method"] not in METHODS: raise ValueError("Unknown review method")
     if not isinstance(report["userAcceptance"], str) or report["userAcceptance"] not in USER_DISPOSITIONS: raise ValueError("Unknown user disposition")
@@ -70,13 +75,14 @@ def inspect_review(workspace, report_path):
     for field in ("sources", "renders"):
         if not isinstance(report[field], list) or not report[field]: raise ValueError(f"Review needs {field}")
         for item in report[field]: binding(item, field == "renders")
-    bindings = [report["contract"], *report["sources"], *report["renders"]]
+    bindings = [report["contract"], *report["sources"], *report["renders"], *([report["capture"]] if modern else [])]
     if len({item["path"] for item in bindings}) != len(bindings): raise ValueError("Duplicate evidence path")
     assessment = report["visualAssessment"]
     object_fields(assessment, {"finding", "assessments", "findings"}, {"verdict"})
     text(assessment["finding"], "visual finding")
     overall = verdict(assessment["verdict"]) if "verdict" in assessment else "UNKNOWN"
     issues = []
+    if not modern: issues.append("Historical schema-2 review lacks checked browser combinations/dependency closure; preserve it and create schema 3 for new proof")
     if "verdict" not in assessment: issues.append("Missing explicit visual verdict")
     renders = {item["path"]: item for item in report["renders"]}
     if not isinstance(assessment["assessments"], list) or not assessment["assessments"]:
@@ -126,8 +132,8 @@ def inspect_review(workspace, report_path):
     expected_states = set()
     if not freshness:
         contract = read_json(root / report["contract"]["path"])
-        object_fields(contract, {"schema", "scope", "states"})
-        if contract["schema"] != "1.0" or contract["scope"] != report["scope"]:
+        object_fields(contract, {"schema", "scope", "states"}, {"plan", "system"})
+        if contract["schema"] != ("2.0" if modern else "1.0") or contract["scope"] != report["scope"]:
             raise ValueError("Review and attention contract disagree on scope/version")
         if not isinstance(contract["states"], list) or not contract["states"]: raise ValueError("Attention contract needs states")
         for item in contract["states"]:
@@ -139,15 +145,32 @@ def inspect_review(workspace, report_path):
             expected_states.add(item["id"])
         if {item["state"] for item in renders.values()} != expected_states:
             issues.append("Rendered states do not cover the declared attention contract")
+        if modern:
+            try:
+                plan, receipt = inspect_capture(root, report["capture"], contract.get("plan"))
+                if plan["scope"] != report["scope"]: raise ValueError("Capture/review scope mismatch")
+                if {case["state"] for case in plan["cases"]} != expected_states: raise ValueError("Plan and attention states disagree")
+                if report["sources"] != receipt["sources"]: raise ValueError("Review sources omit or alter captured dependency inventory")
+                expected_renders = [{**row["render"], **{key: row[key] for key in ("id", "state", "viewport", "theme", "input", "motion", "context")}} for row in receipt["observations"]]
+                expected_renders.extend({**row["viewportRender"], **{key:row[key] for key in ("state", "viewport", "theme", "input", "motion", "context")}, "id":row["id"]+":viewport"} for row in receipt["observations"])
+                expected_renders.extend({**detail["render"], **{key:row[key] for key in ("state", "viewport", "theme", "input", "motion", "context")}, "id":row["id"]+":"+detail["id"]} for row in receipt["observations"] for detail in row["details"])
+                if sorted(report["renders"], key=lambda r:r["path"]) != sorted(expected_renders, key=lambda r:r["path"]):
+                    raise ValueError("Review renders differ from required captured browser combinations")
+                system = inspect_system(root, contract.get("system"), plan, receipt)
+                issues.extend(system["issues"])
+                if system["direction"] == "proposed": issues.append("Visual direction is still proposed")
+            except (OSError, ValueError, KeyError, TypeError) as error:
+                freshness.append(f"Browser/system proof unavailable: {error}")
     if overall == "KEEP" and (negative or blocking): issues.append("KEEP contradicts unresolved visual findings")
     if overall == "KEEP" and unknown: issues.append("KEEP contradicts an unknown state assessment")
     if report["userAcceptance"] == "REJECTED": blocking.append("user-rejection")
     status = "PASS"
     if freshness or issues or overall == "UNKNOWN" or unknown: status = "REVIEW_REQUIRED"
     if not freshness and (blocking or negative or overall in {"REVISE", "REJECT"}): status = "BLOCKED"
-    return {"status": status, "integrity": "STALE" if freshness else "PASS", "visual_verdict": overall,
+    return {"status": status, "integrity": "STALE" if freshness else "PASS" if modern else "HISTORICAL", "visual_verdict": overall,
             "method": report["method"], "user_acceptance": report["userAcceptance"], "blocking_findings": blocking,
             "issues": [*freshness, *issues], "states": sorted(expected_states),
+            "combinations": [{key: row.get(key) for key in ("state", "viewport", "theme", "input", "motion", "context")} for row in report["renders"]],
             "source_paths": [item["path"] for item in report["sources"]], "boundary": BOUNDARY}
 
 

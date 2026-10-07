@@ -9,7 +9,7 @@
     </style>
     <pattern id="signal" width="90" height="90" patternUnits="userSpaceOnUse">
       <path d="M0 88H90" stroke="#160b2d" stroke-opacity=".17" stroke-width="4"/>
-      <circle cx="8" cy="8" r="4" fill="#160b2d" fill-opacity=".22"/>
+      <circle cx="8" cy="8" r="4" fill="#160b2d" fill-opacity=".08"/>
     </pattern>
   </defs>
   <rect width="2760" height="1600" fill="#9a84ff"/>

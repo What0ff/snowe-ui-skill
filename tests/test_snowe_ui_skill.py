@@ -655,21 +655,22 @@ class AssetQualityTests(unittest.TestCase):
             self.assertTrue(result["valid"], result["errors"])
             self.assertIn("optical balance", " ".join(result["warnings"]))
 
-    def test_interface_icon_requires_16_20_and_24_targets(self):
+    def test_interface_icon_uses_actual_host_targets_and_checks_smallest_geometry(self):
         with tempfile.TemporaryDirectory() as temporary_directory:
             root = Path(temporary_directory)
             svg = root / "icon.svg"
             metadata = root / "icon.json"
-            svg.write_text(
-                '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M2 2h20v20H2z"/></svg>',
-                encoding="utf-8",
-            )
+            svg.write_text(self.VALID_SVG, encoding="utf-8")
             value = self.metadata()
-            value["target_sizes"] = [24]
+            value["target_sizes"] = [18]
+            self.write_metadata(root, value)
+            result = validate_svg_asset(svg, metadata)
+            self.assertTrue(result["valid"], result["errors"])
+            value["target_sizes"] = [1]
             self.write_metadata(root, value)
             result = validate_svg_asset(svg, metadata)
             self.assertFalse(result["valid"])
-            self.assertIn("16, 20, and 24", " ".join(result["errors"]))
+            self.assertIn("collapses", " ".join(result["errors"]))
 
     def test_svg_rejects_external_raster_and_embedded_text(self):
         with tempfile.TemporaryDirectory() as temporary_directory:

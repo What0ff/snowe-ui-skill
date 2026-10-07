@@ -22,6 +22,8 @@ This review compares Goodturn with three forward-tests. Similarity is accepted o
 
 Doppler adds a fifth tested class rather than revising the four stable benchmarks. Its higher asset and motion intensity is justified by a different product truth; it is not a new default.
 
+The 2026-10-08 Doppler regeneration uses a warm printed cover, a single physical product stage, a flavor catalog, a dark sensory beat and a quieter pack builder. Five custom control glyphs, an anchored paper menu and a native pack-confirmation dialog carry the same type/material language into local interactions. Finite word/product establishment and flavor continuity remain expressive; reduced mode preserves the complete path. This is an implementer-reviewed whole-direction revision, not independent acceptance or a controlled beauty experiment. See `evals/doppler-regeneration/README.md` for retained revisions, rejected detail repairs and evidence limits.
+
 | Decision pressure | Doppler soda campaign | Larkhaven municipal service | Relay North warehouse | Morrow literary publication |
 | --- | --- | --- | --- | --- |
 | What must be made tangible | Cold aluminum package, carbonation pressure, cylindrical label continuity, and three flavor states | Eligibility, evidence requirements, time/fee consequences, and recovery | Live exception state, affected object, ownership, history, and audited action | Authored issue voice, contribution relationships, and sustained reading |

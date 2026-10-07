@@ -21,11 +21,11 @@ def object_fields(value, required, optional=()):
         raise ValueError(f"Expected fields {sorted(required)} with optional {sorted(optional)}")
 
 
-def read_json(path):
+def read_json(path, *, max_bytes=1_000_000):
     path = Path(path)
     _reject_reparse_chain(path, "JSON input")
-    if not path.is_file() or path.stat().st_size > 1_000_000:
-        raise ValueError("JSON input must be a regular file of at most 1 MB")
+    if not path.is_file() or path.stat().st_size > max_bytes:
+        raise ValueError(f"JSON input must be a regular file of at most {max_bytes} bytes")
     try:
         value = json.loads(path.read_text(encoding="utf-8"), parse_constant=lambda _: (_ for _ in ()).throw(ValueError("Nonfinite JSON")))
     except (RecursionError, UnicodeError) as error:

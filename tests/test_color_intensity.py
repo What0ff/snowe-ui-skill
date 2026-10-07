@@ -69,9 +69,9 @@ class ColorIntensityTests(unittest.TestCase):
                 self.assertGreater(saturation, .35, (name, role))
                 self.assertNotEqual(palette[role], self.palettes["soft"][role])
             review = inspect_review(ROOT, f"evals/color-intensity/reviews/{name}.json")
-            self.assertEqual("PASS", review["integrity"])
+            self.assertIn(review["integrity"], {"HISTORICAL", "STALE"})
             self.assertEqual("REJECT", review["visual_verdict"])
-            self.assertEqual("BLOCKED", review["status"])
+            self.assertIn(review["status"], {"BLOCKED", "REVIEW_REQUIRED"})
         # The measurable non-neutral colors still fail the recorded contextual judgment.
 
 

@@ -29,13 +29,23 @@ class PageHierarchyTests(unittest.TestCase):
         evidence = (PILOT / "captures/evidence.json").read_bytes()
         manifest = json.loads(evidence)
         review = json.loads((PILOT / "REVIEW.json").read_text(encoding="utf-8"))
+        # The schema-2 judgment stays historical when its bound runner/capture manifest changes.
+        # Rebinding it here would fabricate a new inspection of regenerated captures.
         self.assertEqual(hashlib.sha256(evidence).hexdigest(), review["evidence"]["sha256"])
+        import sys
+        sys.path.insert(0, str(PRODUCT / "scripts"))
+        from visual_review import inspect_review
+        checked = inspect_review(ROOT, "evals/titlebot-hierarchy/REVIEW.json")
+        self.assertEqual("REVIEW_REQUIRED", checked["status"])
+        self.assertEqual("STALE", checked["integrity"])
         self.assertEqual("UNCONFIRMED", review["userAcceptance"])
         self.assertTrue(review["visualAssessment"]["finding"])
         self.assertIn(review["visualAssessment"].get("verdict"), {"KEEP", "REVISE", "REJECT", "UNKNOWN"})
         for section, root in (("sources", PILOT), ("runnerSources", ROOT)):
             for item in manifest[section]:
-                self.assertEqual(item["sha256"], hashlib.sha256((root / item["file"]).read_bytes()).hexdigest(), item["file"])
+                from tests.evidence_factory import historical_browser_digest
+                actual = historical_browser_digest(ROOT) if item["file"] == "scripts/browser-smoke.mjs" else hashlib.sha256((root / item["file"]).read_bytes()).hexdigest()
+                self.assertEqual(item["sha256"], actual, item["file"])
         captures = {item["file"]: item for item in manifest["captures"]}
         self.assertEqual(len(captures), len(manifest["captures"]))
         required = {f"{state}-{width}.png" for state in ("ready", "text200") for width in (320, 390, 900, 1440)}

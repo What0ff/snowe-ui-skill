@@ -76,6 +76,8 @@ Multiple sources may coexist only with an explicit role boundary and compatible 
 
 ## Develop Custom Candidates Where They Add Value
 
+For open product-specific roles, especially when the user prefers custom work, treat a well-crafted custom drawing as the preferred exploration rather than stopping at Lucide or another approximate match. Read [icon-craft.md](icon-craft.md) for slot-first construction, optical finishing and native owner/detail acceptance. The preference changes what to explore and refine; it does not lower the quality bar or authorize replacing an accepted conventional action with an obscure metaphor.
+
 Custom work is justified when at least one is true:
 
 - the product has a specific object, mechanism, category, or brand behavior no existing symbol expresses clearly;
@@ -207,6 +209,8 @@ Use short-context checks, not a popularity vote:
 Mark custom work `REJECT` when recognition, ambiguity, balance, detail survival, state clarity, or family coherence is worse than the best existing or text alternative. Record the loser; do not keep it because it is ownable or took effort.
 
 ## Accept the Context, Not the Drawing Sheet
+
+Bind whole-context and diagnostic detail captures through [visual-system-and-observation.md](visual-system-and-observation.md) for reusable acceptance. A selected custom asset remains an unverified draft until its actual slot, neighboring label, backing and required compact states are inspected. Apply the detail/artifact sweep in quality gates; a malformed join, unintended sliver or doubled stroke is a visual finding even when all XML and bounding-box checks pass.
 
 For a new or materially revised custom symbol, close each applicable claim separately in the existing finding record:
 

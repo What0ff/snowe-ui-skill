@@ -113,7 +113,9 @@
     panelRecords.length = 0;
     if (reducedMotion) return;
 
-    const rect = interactiveCan.getBoundingClientRect();
+    // Cylinder geometry uses local CSS dimensions, never a rotated screen-space AABB.
+    const localStyle = getComputedStyle(interactiveCan);
+    const rect = { width: parseFloat(localStyle.width), height: parseFloat(localStyle.height) };
     if (!rect.width || !rect.height) return;
     const count = panelCountForViewport();
     const radius = (rect.width / 2) - 0.5;
@@ -283,6 +285,31 @@
   interactiveCan.addEventListener("pointerup", (event) => finishDrag(event, true));
   interactiveCan.addEventListener("pointercancel", (event) => finishDrag(event, false));
 
+  // Motion stays with the product; copy and controls retain a stable reference frame.
+  productStage.addEventListener("pointermove", (event) => {
+    if (reducedMotion || dragging || event.pointerType !== "mouse") return;
+    const bounds = productStage.getBoundingClientRect();
+    const x = clamp((event.clientX - bounds.left) / bounds.width - 0.5, -0.5, 0.5);
+    const y = clamp((event.clientY - bounds.top) / bounds.height - 0.5, -0.5, 0.5);
+    productStage.style.setProperty("--lean", `${-12 + x * 7}deg`);
+    productStage.style.setProperty("--lift", `${-y * 8}px`);
+    productStage.style.setProperty("--orbit-x", `${x * 14}px`);
+    productStage.style.setProperty("--orbit-y", `${y * 14}px`);
+  });
+  productStage.addEventListener("pointerleave", () => {
+    for (const name of ["--lean", "--lift", "--orbit-x", "--orbit-y"]) productStage.style.removeProperty(name);
+  });
+  const revealed = new WeakSet();
+  const revealObserver = new IntersectionObserver((entries) => {
+    for (const entry of entries) {
+      if (!entry.isIntersecting || revealed.has(entry.target) || reducedMotion || window.scrollY < 50) continue;
+      revealed.add(entry.target);
+      entry.target.classList.add("motion-revealing");
+      entry.target.addEventListener("animationend", () => entry.target.classList.remove("motion-revealing"), { once: true });
+    }
+  }, { threshold: 0.15 });
+  document.querySelectorAll(".signals__intro, .sensation__header, .mix__heading").forEach((node) => revealObserver.observe(node));
+
   interactiveCan.addEventListener("keydown", (event) => {
     if (reducedMotion) return;
     let target = null;
@@ -299,7 +326,16 @@
   const siteNav = document.querySelector("#site-nav");
   const navLinks = [...siteNav.querySelectorAll("a")];
 
+  function placeNavigation() {
+      const header = navToggle.closest('.site-header');
+      const width = Math.min(320, header.clientWidth);
+      const left = clamp(navToggle.offsetLeft + navToggle.offsetWidth / 2 - width / 2, 0, header.clientWidth - width);
+      siteNav.style.setProperty('--menu-width', `${width}px`);
+      siteNav.style.setProperty('--menu-left', `${left}px`);
+  }
+
   function setNavigation(open, restoreFocus = false) {
+    if (open) placeNavigation();
     siteNav.dataset.open = String(open);
     navToggle.setAttribute("aria-expanded", String(open));
     navToggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
@@ -325,6 +361,17 @@
   const packGuidance = document.querySelector("[data-pack-guidance]");
   const packSlots = [...document.querySelectorAll("[data-pack-slots] li")];
   const packCounts = { sun: 2, pink: 2, night: 2 };
+  const confirmation = document.querySelector('#mix-confirmation');
+  let previousBodyPadding = '';
+
+  document.querySelectorAll('[data-close-confirmation]').forEach(button => {
+    button.addEventListener('click', () => confirmation.close());
+  });
+  confirmation.addEventListener('close', () => {
+    body.classList.remove('has-open-modal');
+    body.style.paddingRight = previousBodyPadding;
+    packSubmit.focus({preventScroll:true});
+  });
 
   function renderPack() {
     const total = flavorOrder.reduce((sum, flavor) => sum + packCounts[flavor], 0);
@@ -368,6 +415,18 @@
     }
     const parts = flavorOrder.filter((flavor) => packCounts[flavor] > 0).map((flavor) => `${packCounts[flavor]} ${flavors[flavor].name}`);
     packStatus.textContent = `Signal packed: ${parts.join(", ")}. Fictional demo only—no order or payment was sent.`;
+    for (const flavor of flavorOrder) {
+      const row = confirmation.querySelector(`[data-confirm-row="${flavor}"]`);
+      row.hidden = packCounts[flavor] === 0;
+      row.querySelector('[data-confirm-count]').textContent = `${packCounts[flavor]} ${packCounts[flavor] === 1 ? 'can' : 'cans'}`;
+    }
+    cancelIntro();
+    previousBodyPadding = body.style.paddingRight;
+    const gutter = window.innerWidth - document.documentElement.clientWidth;
+    body.style.paddingRight = `${(parseFloat(getComputedStyle(body).paddingRight) || 0) + gutter}px`;
+    body.classList.add('has-open-modal');
+    confirmation.showModal();
+    document.querySelector('#mix-dialog-title').focus({preventScroll:true});
   });
 
   function applyMotionPreference() {
@@ -395,7 +454,10 @@
   window.addEventListener("resize", () => {
     window.clearTimeout(resizeTimer);
     resizeTimer = window.setTimeout(() => {
-      if (window.innerWidth > 980 && navToggle.getAttribute("aria-expanded") === "true") setNavigation(false, false);
+      if (navToggle.getAttribute("aria-expanded") === "true") {
+        if (window.innerWidth > 980) setNavigation(false, false);
+        else placeNavigation();
+      }
       buildCan();
     }, 140);
   });

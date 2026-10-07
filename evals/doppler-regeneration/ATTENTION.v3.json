@@ -1,0 +1,133 @@
+{
+  "schema": "2.0",
+  "scope": "Doppler campaign regeneration",
+  "plan": {
+    "path": "evals/doppler-regeneration/PLAN.v3.json",
+    "sha256": "397be6c1deadebe0d199a8f19814396c4a43f399583422722e8b55cabf1dd245"
+  },
+  "system": {
+    "path": "evals/doppler-regeneration/SYSTEM.v3.json",
+    "sha256": "a7a77d28c9725893b30bd688b771dc4c66b02a9e4b90fe978552a8936646c23b"
+  },
+  "states": [
+    {
+      "id": "confirmation",
+      "question": "What is in my six, what is the total, and what happens next?",
+      "priority": [
+        "Confirmation and object/quantity rows",
+        "Six-can total and price",
+        "Continuation and truthful demo disclosure"
+      ],
+      "cues": [
+        "A single product stage, grouped type and bounded flavor paint"
+      ],
+      "competing": [
+        "Oversized identity",
+        "Product effects",
+        "Repeated actions"
+      ]
+    },
+    {
+      "id": "flavor",
+      "question": "Which flavor is selected and what does it taste like?",
+      "priority": [
+        "Selected product/name/blend",
+        "Synchronized named selectors",
+        "Mix path"
+      ],
+      "cues": [
+        "A single product stage, grouped type and bounded flavor paint"
+      ],
+      "competing": [
+        "Oversized identity",
+        "Product effects",
+        "Repeated actions"
+      ]
+    },
+    {
+      "id": "focus",
+      "question": "Which action has keyboard focus?",
+      "priority": [
+        "Visible action and external focus ring",
+        "Label and glyph alignment",
+        "Adjacent product context"
+      ],
+      "cues": [
+        "A single product stage, grouped type and bounded flavor paint"
+      ],
+      "competing": [
+        "Oversized identity",
+        "Product effects",
+        "Repeated actions"
+      ]
+    },
+    {
+      "id": "motion",
+      "question": "Does movement establish and preserve the same physical product?",
+      "priority": [
+        "Coherent object and attached parts",
+        "Flavor continuity",
+        "Settled and reduced equivalents"
+      ],
+      "cues": [
+        "A single product stage, grouped type and bounded flavor paint"
+      ],
+      "competing": [
+        "Oversized identity",
+        "Product effects",
+        "Repeated actions"
+      ]
+    },
+    {
+      "id": "overlay",
+      "question": "Where can I go, and how do I close navigation?",
+      "priority": [
+        "Open destinations",
+        "Menu trigger and focus",
+        "Campaign underlay"
+      ],
+      "cues": [
+        "A single product stage, grouped type and bounded flavor paint"
+      ],
+      "competing": [
+        "Oversized identity",
+        "Product effects",
+        "Repeated actions"
+      ]
+    },
+    {
+      "id": "page",
+      "question": "What is Doppler, which flavor is shown, and how do I compose a six?",
+      "priority": [
+        "Product and proposition",
+        "Selected flavor and named alternatives",
+        "Editable six-pack path"
+      ],
+      "cues": [
+        "A single product stage, grouped type and bounded flavor paint"
+      ],
+      "competing": [
+        "Oversized identity",
+        "Product effects",
+        "Repeated actions"
+      ]
+    },
+    {
+      "id": "validation",
+      "question": "What is missing before I can submit?",
+      "priority": [
+        "Five-of-six total and remaining space",
+        "Quantity controls",
+        "Disabled submit"
+      ],
+      "cues": [
+        "A single product stage, grouped type and bounded flavor paint"
+      ],
+      "competing": [
+        "Oversized identity",
+        "Product effects",
+        "Repeated actions"
+      ]
+    }
+  ]
+}

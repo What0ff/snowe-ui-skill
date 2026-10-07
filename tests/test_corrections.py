@@ -31,12 +31,14 @@ class CorrectionTests(unittest.TestCase):
         self.call("update", {"id": "type-role", "status": "implemented", "note": "Corrected owner"})
         (self.root / "src").mkdir(exist_ok=True)
         (self.root / "src/page.css").write_text("body{font-weight:400}")
-        (self.root / "review.png").write_bytes(b"authored test bytes, not an actual visual claim")
-        def binding(name):
-            return {"path": name, "sha256": hashlib.sha256((self.root / name).read_bytes()).hexdigest()}
-        return {"sources": [binding("src/page.css")], "artifacts": [binding("review.png")],
-            "results": [{"criterion": "render", "status": "PASS", "artifacts": ["review.png"],
-                "review": {"reviewer": "Authored test", "finding": "Contract fixture only", "viewport": "390x844", "state": "default"}}]}
+        return self.current_proof()
+
+    def current_proof(self, owner="src/page.css"):
+        from tests.evidence_factory import make_review, binding
+        report = make_review(self.root, owner=owner, state="default", viewport="390x844@1", image="review.png")
+        return {"sources": report["sources"], "artifacts": [binding(self.root, "review.png"), binding(self.root, "review.json")],
+            "results": [{"criterion": "render", "status": "PASS", "artifacts": ["review.png", "review.json"],
+                "review": {"reviewer": "Authored test", "finding": "Contract fixture only", "viewport": "390x844@1", "state": "default", "method": "self-review", "verdict": "KEEP", "report": "review.json"}}]}
 
     def test_empty_check_creates_no_state(self):
         self.assertEqual("PASS", self.call("check")["status"])
@@ -65,23 +67,33 @@ class CorrectionTests(unittest.TestCase):
         with self.assertRaises(ValueError): self.call("verify", {"id": "type-role", "proof": proof})
         self.assertEqual("BLOCKED", self.call("check")["status"])
 
+    def test_new_visual_proof_requires_method_explicit_keep_and_checked_report(self):
+        proof = self.prepare()
+        for field in ("method", "verdict", "report"):
+            candidate = deepcopy(proof)
+            del candidate["results"][0]["review"][field]
+            with self.subTest(field=field), self.assertRaises(ValueError):
+                self.call("verify", {"id": "type-role", "proof": candidate})
+        self.assertEqual("BLOCKED", self.call("check")["status"])
+
+    def test_historical_inline_proof_is_readable_without_grandfathering_pass(self):
+        proof = self.prepare()
+        self.call("verify", {"id": "type-role", "proof": proof})
+        path = self.root / "design-intelligence/example/CORRECTIONS.json"
+        journal = json.loads(path.read_bytes())
+        entry = journal["records"][0]
+        for record in [entry, entry["history"][-1]["snapshot"]]:
+            for field in ("method", "verdict", "report"): record["proof"]["results"][0]["review"].pop(field)
+        path.write_text(json.dumps(journal), encoding="utf-8")
+        before = path.read_bytes()
+        self.assertEqual("REVIEW_REQUIRED", self.call("check")["status"])
+        self.assertEqual(before, path.read_bytes())
+
     def test_linked_visual_report_and_its_contract_stay_current(self):
         proof = self.prepare()
-        contract = {"schema": "1.0", "scope": "Page typography", "states": [{"id": "default", "question": "Read page",
-            "priority": ["Main content"], "cues": ["Accepted type role"], "competing": []}]}
-        (self.root / "attention.json").write_text(json.dumps(contract), encoding="utf-8")
-        def bound(name): return {"path": name, "sha256": hashlib.sha256((self.root / name).read_bytes()).hexdigest()}
-        report = {"schema": "2.0", "scope": "Page typography", "method": "self-review", "reviewer": "Authored test",
-            "contract": bound("attention.json"), "sources": proof["sources"],
-            "renders": [{**bound("review.png"), "state": "default", "viewport": "390x844@1"}],
-            "visualAssessment": {"verdict": "KEEP", "finding": "Authored record", "assessments": [{"state": "default", "renders": ["review.png"], "observedAttention": ["Main content"], "finding": "Authored state", "verdict": "KEEP"}], "findings": []},
-            "userAcceptance": "UNCONFIRMED"}
-        (self.root / "visual.json").write_text(json.dumps(report), encoding="utf-8")
-        proof["artifacts"].append(bound("visual.json"))
-        proof["results"][0]["review"].update(method="self-review", verdict="KEEP", report="visual.json")
         self.call("verify", {"id": "type-role", "proof": proof})
         self.assertEqual("PASS", self.call("check")["status"])
-        (self.root / "attention.json").write_text(json.dumps(contract)+" ", encoding="utf-8")
+        (self.root / "attention.json").write_bytes((self.root / "attention.json").read_bytes()+b" ")
         self.assertEqual("REVIEW_REQUIRED", self.call("check")["status"])
 
     def test_user_rejection_reopens_verified_work_without_source_changes(self):
@@ -144,7 +156,7 @@ class CorrectionTests(unittest.TestCase):
         self.assertTrue(self.call("list")["review_required"])
         with self.assertRaises(ValueError): self.call("verify", {"id": "type-role", "proof": proof})
         (self.root / "src/moved.css").write_bytes((self.root / "src/page.css").read_bytes())
-        proof["sources"][0]["path"] = "src/moved.css"
+        proof = self.current_proof("src/moved.css")
         self.call("verify", {"id": "type-role", "proof": proof})
         self.assertEqual("PASS", self.call("check")["status"])
 

@@ -1,5 +1,7 @@
 # Doppler Soda — Rendered QA
 
+Historical QA for the previous campaign follows. The 2026-10-08 regeneration, corrected can geometry, contextual icons and secondary surfaces are documented in [REGENERATION.md](REGENERATION.md); current source-bound evidence and limitations are in [the regeneration evaluation](../../../evals/doppler-regeneration/README.md). This earlier PASS is not current-source approval.
+
 Status: passed on 2026-08-11 after correction and rerender.
 
 The final implementation was served from the repository root over loopback and inspected in a real Chromium browser at 1440 × 1000, 900 × 1000, and 390 × 844. The dependency-free Chrome/CDP smoke repeated wide, intermediate, narrow, interactive, keyboard, navigation, conversion, and emulated reduced-motion checks. Screenshots were regenerated only after the material findings below were corrected.

@@ -1,0 +1,12 @@
+{
+  "status": "PASS",
+  "project_identity": "Doppler regeneration",
+  "applicable": [
+    "product-joint",
+    "custom-control-icons",
+    "secondary-surfaces"
+  ],
+  "blocked": [],
+  "stale": [],
+  "boundary": "Recorded proof integrity; not independent visual certification"
+}

@@ -1,0 +1,2488 @@
+{
+  "schema": "1.0",
+  "revision": 2,
+  "scope": "Doppler campaign regeneration",
+  "depth": "Focused",
+  "direction": {
+    "status": "selected",
+    "thesis": "A printed cover opening, one physical product stage, and a quiet editable mix; flavor color stays with its object.",
+    "axes": {
+      "composition": "Large wordmark establishes identity; asymmetric type/product peers; rhythm changes at catalog, sensation and builder.",
+      "typography": "Unbounded owns the wordmark, Manrope owns task copy/controls, Georgia italic is an intentional editorial inflection.",
+      "color": "Warm paper and dark ink stay stable; high-chroma flavor selection is bounded to the product and its selection.",
+      "surfaces": "Rules group routine information; the colored stage carries product desire; dark sensation is a deliberate narrative beat.",
+      "shape": "Flat controls, curved product and wave geometry; no blanket rounding.",
+      "imagery": "Code-native cylinder and exact SVG packaging retain state continuity without generated photography.",
+      "motion": "Finite word/type/object establishment; product manipulation, flavor continuity, local stage response and restrained scroll movement. Static equivalent remains complete.",
+      "responsive": "Stack the complete proposition and action before a compact product scene; retain named flavor selection and editable quantities."
+    },
+    "revisit": [
+      "User rejects the direction",
+      "Product material still reads as a flat mockup",
+      "Motion competes with reading or delays operation",
+      "Pressure width loses label/action hierarchy"
+    ]
+  },
+  "tokens": [
+    {
+      "id": "paper",
+      "owner": "benchmarks/soda-campaign/styles.css",
+      "property": "--paper",
+      "value": "#f6f3e9"
+    },
+    {
+      "id": "ink",
+      "owner": "benchmarks/soda-campaign/styles.css",
+      "property": "--ink",
+      "value": "#252720"
+    },
+    {
+      "id": "display",
+      "owner": "benchmarks/soda-campaign/styles.css",
+      "property": "--display",
+      "value": "Unbounded"
+    },
+    {
+      "id": "text",
+      "owner": "benchmarks/soda-campaign/styles.css",
+      "property": "--text",
+      "value": "Manrope"
+    },
+    {
+      "id": "flavor",
+      "owner": "benchmarks/soda-campaign/styles.css",
+      "property": "--flavor",
+      "value": "Selected flavor role"
+    }
+  ],
+  "components": [
+    {
+      "id": "cover",
+      "role": "Campaign identity",
+      "owner": "benchmarks/soda-campaign/styles.css",
+      "selector": ".masthead",
+      "tokens": [
+        "display",
+        "ink"
+      ],
+      "states": [
+        "confirmation",
+        "flavor",
+        "focus",
+        "motion",
+        "overlay",
+        "page",
+        "validation"
+      ],
+      "consumers": [
+        {
+          "case": "wide",
+          "selector": ".masthead"
+        },
+        {
+          "case": "pressure",
+          "selector": ".masthead"
+        },
+        {
+          "case": "mobile",
+          "selector": ".masthead"
+        },
+        {
+          "case": "pink",
+          "selector": ".masthead"
+        },
+        {
+          "case": "menu",
+          "selector": ".masthead"
+        },
+        {
+          "case": "reduced",
+          "selector": ".masthead"
+        },
+        {
+          "case": "pack",
+          "selector": ".masthead"
+        },
+        {
+          "case": "motion",
+          "selector": ".masthead"
+        },
+        {
+          "case": "narrow",
+          "selector": ".masthead"
+        },
+        {
+          "case": "retina",
+          "selector": ".masthead"
+        },
+        {
+          "case": "focus",
+          "selector": ".masthead"
+        },
+        {
+          "case": "invalid",
+          "selector": ".masthead"
+        }
+      ],
+      "layers": [
+        {
+          "kind": "element",
+          "selector": ".masthead",
+          "pseudo": "",
+          "sources": [
+            "benchmarks/soda-campaign/styles.css"
+          ],
+          "cases": [
+            "wide",
+            "pressure",
+            "mobile",
+            "pink",
+            "menu",
+            "reduced",
+            "pack",
+            "motion",
+            "narrow",
+            "retina",
+            "focus",
+            "invalid"
+          ]
+        },
+        {
+          "kind": "font",
+          "selector": ".masthead",
+          "pseudo": "",
+          "sources": [
+            "benchmarks/soda-campaign/assets/fonts/unbounded-latin.woff2"
+          ],
+          "cases": [
+            "wide",
+            "pressure",
+            "mobile",
+            "pink",
+            "menu",
+            "reduced",
+            "pack",
+            "motion",
+            "narrow",
+            "retina",
+            "focus",
+            "invalid"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "headline",
+      "role": "Proposition and editorial inflection",
+      "owner": "benchmarks/soda-campaign/styles.css",
+      "selector": "#hero-title",
+      "tokens": [
+        "text",
+        "ink"
+      ],
+      "states": [
+        "confirmation",
+        "flavor",
+        "focus",
+        "motion",
+        "overlay",
+        "page",
+        "validation"
+      ],
+      "consumers": [
+        {
+          "case": "wide",
+          "selector": "#hero-title"
+        },
+        {
+          "case": "pressure",
+          "selector": "#hero-title"
+        },
+        {
+          "case": "mobile",
+          "selector": "#hero-title"
+        },
+        {
+          "case": "pink",
+          "selector": "#hero-title"
+        },
+        {
+          "case": "menu",
+          "selector": "#hero-title"
+        },
+        {
+          "case": "reduced",
+          "selector": "#hero-title"
+        },
+        {
+          "case": "pack",
+          "selector": "#hero-title"
+        },
+        {
+          "case": "motion",
+          "selector": "#hero-title"
+        },
+        {
+          "case": "narrow",
+          "selector": "#hero-title"
+        },
+        {
+          "case": "retina",
+          "selector": "#hero-title"
+        },
+        {
+          "case": "focus",
+          "selector": "#hero-title"
+        },
+        {
+          "case": "invalid",
+          "selector": "#hero-title"
+        }
+      ],
+      "layers": [
+        {
+          "kind": "element",
+          "selector": "#hero-title",
+          "pseudo": "",
+          "sources": [
+            "benchmarks/soda-campaign/styles.css"
+          ],
+          "cases": [
+            "wide",
+            "pressure",
+            "mobile",
+            "pink",
+            "menu",
+            "reduced",
+            "pack",
+            "motion",
+            "narrow",
+            "retina",
+            "focus",
+            "invalid"
+          ]
+        },
+        {
+          "kind": "font",
+          "selector": "#hero-title",
+          "pseudo": "",
+          "sources": [
+            "benchmarks/soda-campaign/assets/fonts/manrope-latin.woff2"
+          ],
+          "cases": [
+            "wide",
+            "pressure",
+            "mobile",
+            "pink",
+            "menu",
+            "reduced",
+            "pack",
+            "motion",
+            "narrow",
+            "retina",
+            "focus",
+            "invalid"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "actions",
+      "role": "Primary pack action and repeated submit",
+      "owner": "benchmarks/soda-campaign/styles.css",
+      "selector": ".button",
+      "tokens": [
+        "ink",
+        "text"
+      ],
+      "states": [
+        "confirmation",
+        "flavor",
+        "focus",
+        "motion",
+        "overlay",
+        "page",
+        "validation"
+      ],
+      "consumers": [
+        {
+          "case": "wide",
+          "selector": ".button"
+        },
+        {
+          "case": "pressure",
+          "selector": ".button"
+        },
+        {
+          "case": "mobile",
+          "selector": ".button"
+        },
+        {
+          "case": "pink",
+          "selector": ".button"
+        },
+        {
+          "case": "menu",
+          "selector": ".button"
+        },
+        {
+          "case": "reduced",
+          "selector": ".button"
+        },
+        {
+          "case": "pack",
+          "selector": ".button"
+        },
+        {
+          "case": "motion",
+          "selector": ".button"
+        },
+        {
+          "case": "narrow",
+          "selector": ".button"
+        },
+        {
+          "case": "retina",
+          "selector": ".button"
+        },
+        {
+          "case": "focus",
+          "selector": ".button"
+        },
+        {
+          "case": "invalid",
+          "selector": ".button"
+        }
+      ],
+      "layers": [
+        {
+          "kind": "element",
+          "selector": ".button",
+          "pseudo": "",
+          "sources": [
+            "benchmarks/soda-campaign/styles.css"
+          ],
+          "cases": [
+            "wide",
+            "pressure",
+            "mobile",
+            "pink",
+            "menu",
+            "reduced",
+            "pack",
+            "motion",
+            "narrow",
+            "retina",
+            "focus",
+            "invalid"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "quick-flavors",
+      "role": "Selection near the product",
+      "owner": "benchmarks/soda-campaign/styles.css",
+      "selector": ".flavor-button",
+      "tokens": [
+        "flavor",
+        "text"
+      ],
+      "states": [
+        "confirmation",
+        "flavor",
+        "focus",
+        "motion",
+        "overlay",
+        "page",
+        "validation"
+      ],
+      "consumers": [
+        {
+          "case": "wide",
+          "selector": ".flavor-button"
+        },
+        {
+          "case": "pressure",
+          "selector": ".flavor-button"
+        },
+        {
+          "case": "mobile",
+          "selector": ".flavor-button"
+        },
+        {
+          "case": "pink",
+          "selector": ".flavor-button"
+        },
+        {
+          "case": "menu",
+          "selector": ".flavor-button"
+        },
+        {
+          "case": "reduced",
+          "selector": ".flavor-button"
+        },
+        {
+          "case": "pack",
+          "selector": ".flavor-button"
+        },
+        {
+          "case": "motion",
+          "selector": ".flavor-button"
+        },
+        {
+          "case": "narrow",
+          "selector": ".flavor-button"
+        },
+        {
+          "case": "retina",
+          "selector": ".flavor-button"
+        },
+        {
+          "case": "focus",
+          "selector": ".flavor-button"
+        },
+        {
+          "case": "invalid",
+          "selector": ".flavor-button"
+        }
+      ],
+      "layers": [
+        {
+          "kind": "element",
+          "selector": ".flavor-button",
+          "pseudo": "",
+          "sources": [
+            "benchmarks/soda-campaign/styles.css"
+          ],
+          "cases": [
+            "wide",
+            "pressure",
+            "mobile",
+            "pink",
+            "menu",
+            "reduced",
+            "pack",
+            "motion",
+            "narrow",
+            "retina",
+            "focus",
+            "invalid"
+          ]
+        },
+        {
+          "kind": "pseudo",
+          "selector": ".flavor-button",
+          "pseudo": "::after",
+          "sources": [
+            "benchmarks/soda-campaign/styles.css"
+          ],
+          "cases": [
+            "wide",
+            "pressure",
+            "mobile",
+            "pink",
+            "menu",
+            "reduced",
+            "pack",
+            "motion",
+            "narrow",
+            "retina",
+            "focus",
+            "invalid"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "catalog-flavors",
+      "role": "Repeated selection in explanatory context",
+      "owner": "benchmarks/soda-campaign/styles.css",
+      "selector": ".signal-row",
+      "tokens": [
+        "text",
+        "flavor"
+      ],
+      "states": [
+        "confirmation",
+        "flavor",
+        "focus",
+        "motion",
+        "overlay",
+        "page",
+        "validation"
+      ],
+      "consumers": [
+        {
+          "case": "wide",
+          "selector": ".signal-row"
+        },
+        {
+          "case": "pressure",
+          "selector": ".signal-row"
+        },
+        {
+          "case": "mobile",
+          "selector": ".signal-row"
+        },
+        {
+          "case": "pink",
+          "selector": ".signal-row"
+        },
+        {
+          "case": "menu",
+          "selector": ".signal-row"
+        },
+        {
+          "case": "reduced",
+          "selector": ".signal-row"
+        },
+        {
+          "case": "pack",
+          "selector": ".signal-row"
+        },
+        {
+          "case": "motion",
+          "selector": ".signal-row"
+        },
+        {
+          "case": "narrow",
+          "selector": ".signal-row"
+        },
+        {
+          "case": "retina",
+          "selector": ".signal-row"
+        },
+        {
+          "case": "focus",
+          "selector": ".signal-row"
+        },
+        {
+          "case": "invalid",
+          "selector": ".signal-row"
+        }
+      ],
+      "layers": [
+        {
+          "kind": "element",
+          "selector": ".signal-row",
+          "pseudo": "",
+          "sources": [
+            "benchmarks/soda-campaign/styles.css"
+          ],
+          "cases": [
+            "wide",
+            "pressure",
+            "mobile",
+            "pink",
+            "menu",
+            "reduced",
+            "pack",
+            "motion",
+            "narrow",
+            "retina",
+            "focus",
+            "invalid"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "product",
+      "role": "Persistent physical object and static equivalent",
+      "owner": "benchmarks/soda-campaign/can.css",
+      "selector": ".can-rig",
+      "tokens": [
+        "flavor"
+      ],
+      "states": [
+        "confirmation",
+        "flavor",
+        "focus",
+        "motion",
+        "overlay",
+        "page",
+        "validation"
+      ],
+      "consumers": [
+        {
+          "case": "wide",
+          "selector": ".can-rig"
+        },
+        {
+          "case": "pressure",
+          "selector": ".can-rig"
+        },
+        {
+          "case": "mobile",
+          "selector": ".can-rig"
+        },
+        {
+          "case": "pink",
+          "selector": ".can-rig"
+        },
+        {
+          "case": "menu",
+          "selector": ".can-rig"
+        },
+        {
+          "case": "reduced",
+          "selector": ".can-rig"
+        },
+        {
+          "case": "pack",
+          "selector": ".can-rig"
+        },
+        {
+          "case": "motion",
+          "selector": ".can-rig"
+        },
+        {
+          "case": "narrow",
+          "selector": ".can-rig"
+        },
+        {
+          "case": "retina",
+          "selector": ".can-rig"
+        },
+        {
+          "case": "focus",
+          "selector": ".can-rig"
+        },
+        {
+          "case": "invalid",
+          "selector": ".can-rig"
+        }
+      ],
+      "layers": [
+        {
+          "kind": "element",
+          "selector": ".can-rig",
+          "pseudo": "",
+          "sources": [
+            "benchmarks/soda-campaign/can.css"
+          ],
+          "cases": [
+            "wide",
+            "pressure",
+            "mobile",
+            "pink",
+            "menu",
+            "reduced",
+            "pack",
+            "motion",
+            "narrow",
+            "retina",
+            "focus",
+            "invalid"
+          ]
+        },
+        {
+          "kind": "element",
+          "selector": ".can-lid-visual",
+          "pseudo": "",
+          "sources": [
+            "benchmarks/soda-campaign/can.css"
+          ],
+          "cases": [
+            "wide",
+            "pressure",
+            "mobile",
+            "pink",
+            "menu",
+            "reduced",
+            "pack",
+            "motion",
+            "narrow",
+            "retina",
+            "focus",
+            "invalid"
+          ]
+        },
+        {
+          "kind": "pseudo",
+          "selector": ".can-panel",
+          "pseudo": "::after",
+          "sources": [
+            "benchmarks/soda-campaign/can.css"
+          ],
+          "cases": [
+            "wide",
+            "pressure",
+            "mobile",
+            "pink",
+            "motion",
+            "narrow"
+          ]
+        },
+        {
+          "kind": "svg",
+          "selector": "[data-static-label]",
+          "pseudo": "",
+          "sources": [
+            "benchmarks/soda-campaign/assets/labels/sun-shift.svg",
+            "benchmarks/soda-campaign/assets/labels/pink-noise.svg",
+            "benchmarks/soda-campaign/assets/labels/night-signal.svg"
+          ],
+          "cases": [
+            "wide",
+            "pressure",
+            "mobile",
+            "pink",
+            "menu",
+            "reduced",
+            "pack",
+            "motion",
+            "narrow",
+            "retina",
+            "focus",
+            "invalid"
+          ]
+        },
+        {
+          "kind": "pseudo",
+          "selector": ".product-stage",
+          "pseudo": "::before",
+          "sources": [
+            "benchmarks/soda-campaign/styles.css"
+          ],
+          "cases": [
+            "wide",
+            "pressure",
+            "mobile",
+            "pink",
+            "menu",
+            "reduced",
+            "pack",
+            "motion",
+            "narrow",
+            "retina",
+            "focus",
+            "invalid"
+          ]
+        },
+        {
+          "kind": "pseudo",
+          "selector": ".product-stage",
+          "pseudo": "::after",
+          "sources": [
+            "benchmarks/soda-campaign/styles.css"
+          ],
+          "cases": [
+            "wide",
+            "pressure",
+            "mobile",
+            "pink",
+            "menu",
+            "reduced",
+            "pack",
+            "motion",
+            "narrow",
+            "retina",
+            "focus",
+            "invalid"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "poster",
+      "role": "Selected flavor in the full catalog",
+      "owner": "benchmarks/soda-campaign/styles.css",
+      "selector": ".signal-poster",
+      "tokens": [
+        "flavor",
+        "text"
+      ],
+      "states": [
+        "confirmation",
+        "flavor",
+        "focus",
+        "motion",
+        "overlay",
+        "page",
+        "validation"
+      ],
+      "consumers": [
+        {
+          "case": "wide",
+          "selector": ".signal-poster"
+        },
+        {
+          "case": "pressure",
+          "selector": ".signal-poster"
+        },
+        {
+          "case": "mobile",
+          "selector": ".signal-poster"
+        },
+        {
+          "case": "pink",
+          "selector": ".signal-poster"
+        },
+        {
+          "case": "menu",
+          "selector": ".signal-poster"
+        },
+        {
+          "case": "reduced",
+          "selector": ".signal-poster"
+        },
+        {
+          "case": "pack",
+          "selector": ".signal-poster"
+        },
+        {
+          "case": "motion",
+          "selector": ".signal-poster"
+        },
+        {
+          "case": "narrow",
+          "selector": ".signal-poster"
+        },
+        {
+          "case": "retina",
+          "selector": ".signal-poster"
+        },
+        {
+          "case": "focus",
+          "selector": ".signal-poster"
+        },
+        {
+          "case": "invalid",
+          "selector": ".signal-poster"
+        }
+      ],
+      "layers": [
+        {
+          "kind": "element",
+          "selector": ".signal-poster",
+          "pseudo": "",
+          "sources": [
+            "benchmarks/soda-campaign/styles.css"
+          ],
+          "cases": [
+            "wide",
+            "pressure",
+            "mobile",
+            "pink",
+            "menu",
+            "reduced",
+            "pack",
+            "motion",
+            "narrow",
+            "retina",
+            "focus",
+            "invalid"
+          ]
+        },
+        {
+          "kind": "pseudo",
+          "selector": ".signal-poster",
+          "pseudo": "::before",
+          "sources": [
+            "benchmarks/soda-campaign/styles.css"
+          ],
+          "cases": [
+            "wide",
+            "pressure",
+            "mobile",
+            "pink",
+            "menu",
+            "reduced",
+            "pack",
+            "motion",
+            "narrow",
+            "retina",
+            "focus",
+            "invalid"
+          ]
+        },
+        {
+          "kind": "svg",
+          "selector": "[data-poster-label]",
+          "pseudo": "",
+          "sources": [
+            "benchmarks/soda-campaign/assets/labels/sun-shift.svg",
+            "benchmarks/soda-campaign/assets/labels/pink-noise.svg",
+            "benchmarks/soda-campaign/assets/labels/night-signal.svg"
+          ],
+          "cases": [
+            "wide",
+            "pressure",
+            "mobile",
+            "pink",
+            "menu",
+            "reduced",
+            "pack",
+            "motion",
+            "narrow",
+            "retina",
+            "focus",
+            "invalid"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "builder",
+      "role": "Quantity editing and confirmation",
+      "owner": "benchmarks/soda-campaign/styles.css",
+      "selector": ".pack-controls",
+      "tokens": [
+        "text",
+        "paper",
+        "ink"
+      ],
+      "states": [
+        "confirmation",
+        "flavor",
+        "focus",
+        "motion",
+        "overlay",
+        "page",
+        "validation"
+      ],
+      "consumers": [
+        {
+          "case": "wide",
+          "selector": ".pack-controls"
+        },
+        {
+          "case": "pressure",
+          "selector": ".pack-controls"
+        },
+        {
+          "case": "mobile",
+          "selector": ".pack-controls"
+        },
+        {
+          "case": "pink",
+          "selector": ".pack-controls"
+        },
+        {
+          "case": "menu",
+          "selector": ".pack-controls"
+        },
+        {
+          "case": "reduced",
+          "selector": ".pack-controls"
+        },
+        {
+          "case": "pack",
+          "selector": ".pack-controls"
+        },
+        {
+          "case": "motion",
+          "selector": ".pack-controls"
+        },
+        {
+          "case": "narrow",
+          "selector": ".pack-controls"
+        },
+        {
+          "case": "retina",
+          "selector": ".pack-controls"
+        },
+        {
+          "case": "focus",
+          "selector": ".pack-controls"
+        },
+        {
+          "case": "invalid",
+          "selector": ".pack-controls"
+        }
+      ],
+      "layers": [
+        {
+          "kind": "element",
+          "selector": ".pack-controls",
+          "pseudo": "",
+          "sources": [
+            "benchmarks/soda-campaign/styles.css"
+          ],
+          "cases": [
+            "wide",
+            "pressure",
+            "mobile",
+            "pink",
+            "menu",
+            "reduced",
+            "pack",
+            "motion",
+            "narrow",
+            "retina",
+            "focus",
+            "invalid"
+          ]
+        },
+        {
+          "kind": "element",
+          "selector": ".pack-row",
+          "pseudo": "",
+          "sources": [
+            "benchmarks/soda-campaign/styles.css"
+          ],
+          "cases": [
+            "wide",
+            "pressure",
+            "mobile",
+            "pink",
+            "menu",
+            "reduced",
+            "pack",
+            "motion",
+            "narrow",
+            "retina",
+            "focus",
+            "invalid"
+          ]
+        },
+        {
+          "kind": "element",
+          "selector": "[data-pack-submit]",
+          "pseudo": "",
+          "sources": [
+            "benchmarks/soda-campaign/styles.css"
+          ],
+          "cases": [
+            "wide",
+            "pressure",
+            "mobile",
+            "pink",
+            "menu",
+            "reduced",
+            "pack",
+            "motion",
+            "narrow",
+            "retina",
+            "focus",
+            "invalid"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "navigation",
+      "role": "Responsive overlay and wide section navigation",
+      "owner": "benchmarks/soda-campaign/styles.css",
+      "selector": ".site-nav",
+      "tokens": [
+        "paper",
+        "text"
+      ],
+      "states": [
+        "confirmation",
+        "flavor",
+        "focus",
+        "motion",
+        "overlay",
+        "page",
+        "validation"
+      ],
+      "consumers": [
+        {
+          "case": "wide",
+          "selector": ".site-nav"
+        },
+        {
+          "case": "pressure",
+          "selector": ".site-nav"
+        },
+        {
+          "case": "mobile",
+          "selector": ".site-nav"
+        },
+        {
+          "case": "pink",
+          "selector": ".site-nav"
+        },
+        {
+          "case": "menu",
+          "selector": ".site-nav"
+        },
+        {
+          "case": "reduced",
+          "selector": ".site-nav"
+        },
+        {
+          "case": "pack",
+          "selector": ".site-nav"
+        },
+        {
+          "case": "motion",
+          "selector": ".site-nav"
+        },
+        {
+          "case": "narrow",
+          "selector": ".site-nav"
+        },
+        {
+          "case": "retina",
+          "selector": ".site-nav"
+        },
+        {
+          "case": "focus",
+          "selector": ".site-nav"
+        },
+        {
+          "case": "invalid",
+          "selector": ".site-nav"
+        }
+      ],
+      "layers": [
+        {
+          "kind": "element",
+          "selector": ".site-nav",
+          "pseudo": "",
+          "sources": [
+            "benchmarks/soda-campaign/styles.css"
+          ],
+          "cases": [
+            "wide",
+            "pressure",
+            "mobile",
+            "pink",
+            "menu",
+            "reduced",
+            "pack",
+            "motion",
+            "narrow",
+            "retina",
+            "focus",
+            "invalid"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "glyphs",
+      "role": "Custom familiar control glyphs inside their real hosts",
+      "owner": "benchmarks/soda-campaign/styles.css",
+      "selector": ".ui-icon",
+      "tokens": [
+        "ink"
+      ],
+      "states": [
+        "confirmation",
+        "flavor",
+        "focus",
+        "motion",
+        "overlay",
+        "page",
+        "validation"
+      ],
+      "consumers": [
+        {
+          "case": "wide",
+          "selector": ".ui-icon"
+        },
+        {
+          "case": "pressure",
+          "selector": ".ui-icon"
+        },
+        {
+          "case": "mobile",
+          "selector": ".ui-icon"
+        },
+        {
+          "case": "pink",
+          "selector": ".ui-icon"
+        },
+        {
+          "case": "menu",
+          "selector": ".ui-icon"
+        },
+        {
+          "case": "reduced",
+          "selector": ".ui-icon"
+        },
+        {
+          "case": "pack",
+          "selector": ".ui-icon"
+        },
+        {
+          "case": "motion",
+          "selector": ".ui-icon"
+        },
+        {
+          "case": "narrow",
+          "selector": ".ui-icon"
+        },
+        {
+          "case": "retina",
+          "selector": ".ui-icon"
+        },
+        {
+          "case": "focus",
+          "selector": ".ui-icon"
+        },
+        {
+          "case": "invalid",
+          "selector": ".ui-icon"
+        }
+      ],
+      "layers": [
+        {
+          "kind": "svg",
+          "selector": ".ui-icon",
+          "pseudo": "",
+          "sources": [
+            "benchmarks/soda-campaign/assets/icons/arrow.svg",
+            "benchmarks/soda-campaign/assets/icons/plus.svg",
+            "benchmarks/soda-campaign/assets/icons/minus.svg",
+            "benchmarks/soda-campaign/assets/icons/menu.svg"
+          ],
+          "cases": [
+            "wide",
+            "pressure",
+            "mobile",
+            "pink",
+            "menu",
+            "reduced",
+            "pack",
+            "motion",
+            "narrow",
+            "retina",
+            "focus",
+            "invalid"
+          ]
+        }
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "id": "task-type",
+      "members": [
+        "actions",
+        "quick-flavors",
+        "catalog-flavors",
+        "builder",
+        "navigation"
+      ],
+      "intent": "Every repeated task/control label retains the Manrope role; editorial exceptions are bounded to display copy.",
+      "checks": [
+        {
+          "id": "type-wide-0",
+          "case": "wide",
+          "selector": ".button",
+          "pseudo": "",
+          "property": "fontFamily",
+          "equals": "Manrope, Arial, sans-serif"
+        },
+        {
+          "id": "type-wide-1",
+          "case": "wide",
+          "selector": ".flavor-button",
+          "pseudo": "",
+          "property": "fontFamily",
+          "equals": "Manrope, Arial, sans-serif"
+        },
+        {
+          "id": "type-wide-2",
+          "case": "wide",
+          "selector": ".signal-row",
+          "pseudo": "",
+          "property": "fontFamily",
+          "equals": "Manrope, Arial, sans-serif"
+        },
+        {
+          "id": "type-wide-3",
+          "case": "wide",
+          "selector": ".pack-row",
+          "pseudo": "",
+          "property": "fontFamily",
+          "equals": "Manrope, Arial, sans-serif"
+        },
+        {
+          "id": "type-wide-4",
+          "case": "wide",
+          "selector": ".site-nav",
+          "pseudo": "",
+          "property": "fontFamily",
+          "equals": "Manrope, Arial, sans-serif"
+        },
+        {
+          "id": "type-pressure-0",
+          "case": "pressure",
+          "selector": ".button",
+          "pseudo": "",
+          "property": "fontFamily",
+          "equals": "Manrope, Arial, sans-serif"
+        },
+        {
+          "id": "type-pressure-1",
+          "case": "pressure",
+          "selector": ".flavor-button",
+          "pseudo": "",
+          "property": "fontFamily",
+          "equals": "Manrope, Arial, sans-serif"
+        },
+        {
+          "id": "type-pressure-2",
+          "case": "pressure",
+          "selector": ".signal-row",
+          "pseudo": "",
+          "property": "fontFamily",
+          "equals": "Manrope, Arial, sans-serif"
+        },
+        {
+          "id": "type-pressure-3",
+          "case": "pressure",
+          "selector": ".pack-row",
+          "pseudo": "",
+          "property": "fontFamily",
+          "equals": "Manrope, Arial, sans-serif"
+        },
+        {
+          "id": "type-pressure-4",
+          "case": "pressure",
+          "selector": ".site-nav",
+          "pseudo": "",
+          "property": "fontFamily",
+          "equals": "Manrope, Arial, sans-serif"
+        },
+        {
+          "id": "type-mobile-0",
+          "case": "mobile",
+          "selector": ".button",
+          "pseudo": "",
+          "property": "fontFamily",
+          "equals": "Manrope, Arial, sans-serif"
+        },
+        {
+          "id": "type-mobile-1",
+          "case": "mobile",
+          "selector": ".flavor-button",
+          "pseudo": "",
+          "property": "fontFamily",
+          "equals": "Manrope, Arial, sans-serif"
+        },
+        {
+          "id": "type-mobile-2",
+          "case": "mobile",
+          "selector": ".signal-row",
+          "pseudo": "",
+          "property": "fontFamily",
+          "equals": "Manrope, Arial, sans-serif"
+        },
+        {
+          "id": "type-mobile-3",
+          "case": "mobile",
+          "selector": ".pack-row",
+          "pseudo": "",
+          "property": "fontFamily",
+          "equals": "Manrope, Arial, sans-serif"
+        },
+        {
+          "id": "type-mobile-4",
+          "case": "mobile",
+          "selector": ".site-nav",
+          "pseudo": "",
+          "property": "fontFamily",
+          "equals": "Manrope, Arial, sans-serif"
+        },
+        {
+          "id": "type-pink-0",
+          "case": "pink",
+          "selector": ".button",
+          "pseudo": "",
+          "property": "fontFamily",
+          "equals": "Manrope, Arial, sans-serif"
+        },
+        {
+          "id": "type-pink-1",
+          "case": "pink",
+          "selector": ".flavor-button",
+          "pseudo": "",
+          "property": "fontFamily",
+          "equals": "Manrope, Arial, sans-serif"
+        },
+        {
+          "id": "type-pink-2",
+          "case": "pink",
+          "selector": ".signal-row",
+          "pseudo": "",
+          "property": "fontFamily",
+          "equals": "Manrope, Arial, sans-serif"
+        },
+        {
+          "id": "type-pink-3",
+          "case": "pink",
+          "selector": ".pack-row",
+          "pseudo": "",
+          "property": "fontFamily",
+          "equals": "Manrope, Arial, sans-serif"
+        },
+        {
+          "id": "type-pink-4",
+          "case": "pink",
+          "selector": ".site-nav",
+          "pseudo": "",
+          "property": "fontFamily",
+          "equals": "Manrope, Arial, sans-serif"
+        },
+        {
+          "id": "type-menu-0",
+          "case": "menu",
+          "selector": ".button",
+          "pseudo": "",
+          "property": "fontFamily",
+          "equals": "Manrope, Arial, sans-serif"
+        },
+        {
+          "id": "type-menu-1",
+          "case": "menu",
+          "selector": ".flavor-button",
+          "pseudo": "",
+          "property": "fontFamily",
+          "equals": "Manrope, Arial, sans-serif"
+        },
+        {
+          "id": "type-menu-2",
+          "case": "menu",
+          "selector": ".signal-row",
+          "pseudo": "",
+          "property": "fontFamily",
+          "equals": "Manrope, Arial, sans-serif"
+        },
+        {
+          "id": "type-menu-3",
+          "case": "menu",
+          "selector": ".pack-row",
+          "pseudo": "",
+          "property": "fontFamily",
+          "equals": "Manrope, Arial, sans-serif"
+        },
+        {
+          "id": "type-menu-4",
+          "case": "menu",
+          "selector": ".site-nav",
+          "pseudo": "",
+          "property": "fontFamily",
+          "equals": "Manrope, Arial, sans-serif"
+        },
+        {
+          "id": "type-reduced-0",
+          "case": "reduced",
+          "selector": ".button",
+          "pseudo": "",
+          "property": "fontFamily",
+          "equals": "Manrope, Arial, sans-serif"
+        },
+        {
+          "id": "type-reduced-1",
+          "case": "reduced",
+          "selector": ".flavor-button",
+          "pseudo": "",
+          "property": "fontFamily",
+          "equals": "Manrope, Arial, sans-serif"
+        },
+        {
+          "id": "type-reduced-2",
+          "case": "reduced",
+          "selector": ".signal-row",
+          "pseudo": "",
+          "property": "fontFamily",
+          "equals": "Manrope, Arial, sans-serif"
+        },
+        {
+          "id": "type-reduced-3",
+          "case": "reduced",
+          "selector": ".pack-row",
+          "pseudo": "",
+          "property": "fontFamily",
+          "equals": "Manrope, Arial, sans-serif"
+        },
+        {
+          "id": "type-reduced-4",
+          "case": "reduced",
+          "selector": ".site-nav",
+          "pseudo": "",
+          "property": "fontFamily",
+          "equals": "Manrope, Arial, sans-serif"
+        },
+        {
+          "id": "type-pack-0",
+          "case": "pack",
+          "selector": ".button",
+          "pseudo": "",
+          "property": "fontFamily",
+          "equals": "Manrope, Arial, sans-serif"
+        },
+        {
+          "id": "type-pack-1",
+          "case": "pack",
+          "selector": ".flavor-button",
+          "pseudo": "",
+          "property": "fontFamily",
+          "equals": "Manrope, Arial, sans-serif"
+        },
+        {
+          "id": "type-pack-2",
+          "case": "pack",
+          "selector": ".signal-row",
+          "pseudo": "",
+          "property": "fontFamily",
+          "equals": "Manrope, Arial, sans-serif"
+        },
+        {
+          "id": "type-pack-3",
+          "case": "pack",
+          "selector": ".pack-row",
+          "pseudo": "",
+          "property": "fontFamily",
+          "equals": "Manrope, Arial, sans-serif"
+        },
+        {
+          "id": "type-pack-4",
+          "case": "pack",
+          "selector": ".site-nav",
+          "pseudo": "",
+          "property": "fontFamily",
+          "equals": "Manrope, Arial, sans-serif"
+        },
+        {
+          "id": "type-motion-0",
+          "case": "motion",
+          "selector": ".button",
+          "pseudo": "",
+          "property": "fontFamily",
+          "equals": "Manrope, Arial, sans-serif"
+        },
+        {
+          "id": "type-motion-1",
+          "case": "motion",
+          "selector": ".flavor-button",
+          "pseudo": "",
+          "property": "fontFamily",
+          "equals": "Manrope, Arial, sans-serif"
+        },
+        {
+          "id": "type-motion-2",
+          "case": "motion",
+          "selector": ".signal-row",
+          "pseudo": "",
+          "property": "fontFamily",
+          "equals": "Manrope, Arial, sans-serif"
+        },
+        {
+          "id": "type-motion-3",
+          "case": "motion",
+          "selector": ".pack-row",
+          "pseudo": "",
+          "property": "fontFamily",
+          "equals": "Manrope, Arial, sans-serif"
+        },
+        {
+          "id": "type-motion-4",
+          "case": "motion",
+          "selector": ".site-nav",
+          "pseudo": "",
+          "property": "fontFamily",
+          "equals": "Manrope, Arial, sans-serif"
+        },
+        {
+          "id": "type-narrow-0",
+          "case": "narrow",
+          "selector": ".button",
+          "pseudo": "",
+          "property": "fontFamily",
+          "equals": "Manrope, Arial, sans-serif"
+        },
+        {
+          "id": "type-narrow-1",
+          "case": "narrow",
+          "selector": ".flavor-button",
+          "pseudo": "",
+          "property": "fontFamily",
+          "equals": "Manrope, Arial, sans-serif"
+        },
+        {
+          "id": "type-narrow-2",
+          "case": "narrow",
+          "selector": ".signal-row",
+          "pseudo": "",
+          "property": "fontFamily",
+          "equals": "Manrope, Arial, sans-serif"
+        },
+        {
+          "id": "type-narrow-3",
+          "case": "narrow",
+          "selector": ".pack-row",
+          "pseudo": "",
+          "property": "fontFamily",
+          "equals": "Manrope, Arial, sans-serif"
+        },
+        {
+          "id": "type-narrow-4",
+          "case": "narrow",
+          "selector": ".site-nav",
+          "pseudo": "",
+          "property": "fontFamily",
+          "equals": "Manrope, Arial, sans-serif"
+        },
+        {
+          "id": "type-retina-0",
+          "case": "retina",
+          "selector": ".button",
+          "pseudo": "",
+          "property": "fontFamily",
+          "equals": "Manrope, Arial, sans-serif"
+        },
+        {
+          "id": "type-retina-1",
+          "case": "retina",
+          "selector": ".flavor-button",
+          "pseudo": "",
+          "property": "fontFamily",
+          "equals": "Manrope, Arial, sans-serif"
+        },
+        {
+          "id": "type-retina-2",
+          "case": "retina",
+          "selector": ".signal-row",
+          "pseudo": "",
+          "property": "fontFamily",
+          "equals": "Manrope, Arial, sans-serif"
+        },
+        {
+          "id": "type-retina-3",
+          "case": "retina",
+          "selector": ".pack-row",
+          "pseudo": "",
+          "property": "fontFamily",
+          "equals": "Manrope, Arial, sans-serif"
+        },
+        {
+          "id": "type-retina-4",
+          "case": "retina",
+          "selector": ".site-nav",
+          "pseudo": "",
+          "property": "fontFamily",
+          "equals": "Manrope, Arial, sans-serif"
+        },
+        {
+          "id": "type-focus-0",
+          "case": "focus",
+          "selector": ".button",
+          "pseudo": "",
+          "property": "fontFamily",
+          "equals": "Manrope, Arial, sans-serif"
+        },
+        {
+          "id": "type-focus-1",
+          "case": "focus",
+          "selector": ".flavor-button",
+          "pseudo": "",
+          "property": "fontFamily",
+          "equals": "Manrope, Arial, sans-serif"
+        },
+        {
+          "id": "type-focus-2",
+          "case": "focus",
+          "selector": ".signal-row",
+          "pseudo": "",
+          "property": "fontFamily",
+          "equals": "Manrope, Arial, sans-serif"
+        },
+        {
+          "id": "type-focus-3",
+          "case": "focus",
+          "selector": ".pack-row",
+          "pseudo": "",
+          "property": "fontFamily",
+          "equals": "Manrope, Arial, sans-serif"
+        },
+        {
+          "id": "type-focus-4",
+          "case": "focus",
+          "selector": ".site-nav",
+          "pseudo": "",
+          "property": "fontFamily",
+          "equals": "Manrope, Arial, sans-serif"
+        },
+        {
+          "id": "type-invalid-0",
+          "case": "invalid",
+          "selector": ".button",
+          "pseudo": "",
+          "property": "fontFamily",
+          "equals": "Manrope, Arial, sans-serif"
+        },
+        {
+          "id": "type-invalid-1",
+          "case": "invalid",
+          "selector": ".flavor-button",
+          "pseudo": "",
+          "property": "fontFamily",
+          "equals": "Manrope, Arial, sans-serif"
+        },
+        {
+          "id": "type-invalid-2",
+          "case": "invalid",
+          "selector": ".signal-row",
+          "pseudo": "",
+          "property": "fontFamily",
+          "equals": "Manrope, Arial, sans-serif"
+        },
+        {
+          "id": "type-invalid-3",
+          "case": "invalid",
+          "selector": ".pack-row",
+          "pseudo": "",
+          "property": "fontFamily",
+          "equals": "Manrope, Arial, sans-serif"
+        },
+        {
+          "id": "type-invalid-4",
+          "case": "invalid",
+          "selector": ".site-nav",
+          "pseudo": "",
+          "property": "fontFamily",
+          "equals": "Manrope, Arial, sans-serif"
+        }
+      ]
+    },
+    {
+      "id": "action-shape",
+      "members": [
+        "actions",
+        "builder"
+      ],
+      "intent": "Routine task controls retain the flat edge language across the full page.",
+      "checks": [
+        {
+          "id": "edge-wide",
+          "case": "wide",
+          "selector": ".button",
+          "pseudo": "",
+          "property": "borderRadius",
+          "equals": "0px"
+        },
+        {
+          "id": "edge-pressure",
+          "case": "pressure",
+          "selector": ".button",
+          "pseudo": "",
+          "property": "borderRadius",
+          "equals": "0px"
+        },
+        {
+          "id": "edge-mobile",
+          "case": "mobile",
+          "selector": ".button",
+          "pseudo": "",
+          "property": "borderRadius",
+          "equals": "0px"
+        },
+        {
+          "id": "edge-pink",
+          "case": "pink",
+          "selector": ".button",
+          "pseudo": "",
+          "property": "borderRadius",
+          "equals": "0px"
+        },
+        {
+          "id": "edge-menu",
+          "case": "menu",
+          "selector": ".button",
+          "pseudo": "",
+          "property": "borderRadius",
+          "equals": "0px"
+        },
+        {
+          "id": "edge-reduced",
+          "case": "reduced",
+          "selector": ".button",
+          "pseudo": "",
+          "property": "borderRadius",
+          "equals": "0px"
+        },
+        {
+          "id": "edge-pack",
+          "case": "pack",
+          "selector": ".button",
+          "pseudo": "",
+          "property": "borderRadius",
+          "equals": "0px"
+        },
+        {
+          "id": "edge-motion",
+          "case": "motion",
+          "selector": ".button",
+          "pseudo": "",
+          "property": "borderRadius",
+          "equals": "0px"
+        },
+        {
+          "id": "edge-narrow",
+          "case": "narrow",
+          "selector": ".button",
+          "pseudo": "",
+          "property": "borderRadius",
+          "equals": "0px"
+        },
+        {
+          "id": "edge-retina",
+          "case": "retina",
+          "selector": ".button",
+          "pseudo": "",
+          "property": "borderRadius",
+          "equals": "0px"
+        },
+        {
+          "id": "edge-focus",
+          "case": "focus",
+          "selector": ".button",
+          "pseudo": "",
+          "property": "borderRadius",
+          "equals": "0px"
+        },
+        {
+          "id": "edge-invalid",
+          "case": "invalid",
+          "selector": ".button",
+          "pseudo": "",
+          "property": "borderRadius",
+          "equals": "0px"
+        }
+      ]
+    },
+    {
+      "id": "glyph-slots",
+      "members": [
+        "glyphs",
+        "actions",
+        "builder"
+      ],
+      "intent": "The custom family fits the real owner; quantity glyphs are 16px, CTA glyphs 18px, with no flex shrink or text-font substitution.",
+      "checks": [
+        {
+          "id": "icon-wide-0",
+          "case": "wide",
+          "selector": ".button .ui-icon",
+          "pseudo": "",
+          "property": "width",
+          "equals": "18px"
+        },
+        {
+          "id": "icon-wide-1",
+          "case": "wide",
+          "selector": ".stepper .ui-icon",
+          "pseudo": "",
+          "property": "width",
+          "equals": "16px"
+        },
+        {
+          "id": "icon-pressure-0",
+          "case": "pressure",
+          "selector": ".button .ui-icon",
+          "pseudo": "",
+          "property": "width",
+          "equals": "18px"
+        },
+        {
+          "id": "icon-pressure-1",
+          "case": "pressure",
+          "selector": ".stepper .ui-icon",
+          "pseudo": "",
+          "property": "width",
+          "equals": "16px"
+        },
+        {
+          "id": "icon-mobile-0",
+          "case": "mobile",
+          "selector": ".button .ui-icon",
+          "pseudo": "",
+          "property": "width",
+          "equals": "18px"
+        },
+        {
+          "id": "icon-mobile-1",
+          "case": "mobile",
+          "selector": ".stepper .ui-icon",
+          "pseudo": "",
+          "property": "width",
+          "equals": "16px"
+        },
+        {
+          "id": "icon-pink-0",
+          "case": "pink",
+          "selector": ".button .ui-icon",
+          "pseudo": "",
+          "property": "width",
+          "equals": "18px"
+        },
+        {
+          "id": "icon-pink-1",
+          "case": "pink",
+          "selector": ".stepper .ui-icon",
+          "pseudo": "",
+          "property": "width",
+          "equals": "16px"
+        },
+        {
+          "id": "icon-menu-0",
+          "case": "menu",
+          "selector": ".button .ui-icon",
+          "pseudo": "",
+          "property": "width",
+          "equals": "18px"
+        },
+        {
+          "id": "icon-menu-1",
+          "case": "menu",
+          "selector": ".stepper .ui-icon",
+          "pseudo": "",
+          "property": "width",
+          "equals": "16px"
+        },
+        {
+          "id": "icon-reduced-0",
+          "case": "reduced",
+          "selector": ".button .ui-icon",
+          "pseudo": "",
+          "property": "width",
+          "equals": "18px"
+        },
+        {
+          "id": "icon-reduced-1",
+          "case": "reduced",
+          "selector": ".stepper .ui-icon",
+          "pseudo": "",
+          "property": "width",
+          "equals": "16px"
+        },
+        {
+          "id": "icon-pack-0",
+          "case": "pack",
+          "selector": ".button .ui-icon",
+          "pseudo": "",
+          "property": "width",
+          "equals": "18px"
+        },
+        {
+          "id": "icon-pack-1",
+          "case": "pack",
+          "selector": ".stepper .ui-icon",
+          "pseudo": "",
+          "property": "width",
+          "equals": "16px"
+        },
+        {
+          "id": "icon-motion-0",
+          "case": "motion",
+          "selector": ".button .ui-icon",
+          "pseudo": "",
+          "property": "width",
+          "equals": "18px"
+        },
+        {
+          "id": "icon-motion-1",
+          "case": "motion",
+          "selector": ".stepper .ui-icon",
+          "pseudo": "",
+          "property": "width",
+          "equals": "16px"
+        },
+        {
+          "id": "icon-narrow-0",
+          "case": "narrow",
+          "selector": ".button .ui-icon",
+          "pseudo": "",
+          "property": "width",
+          "equals": "18px"
+        },
+        {
+          "id": "icon-narrow-1",
+          "case": "narrow",
+          "selector": ".stepper .ui-icon",
+          "pseudo": "",
+          "property": "width",
+          "equals": "16px"
+        },
+        {
+          "id": "icon-retina-0",
+          "case": "retina",
+          "selector": ".button .ui-icon",
+          "pseudo": "",
+          "property": "width",
+          "equals": "18px"
+        },
+        {
+          "id": "icon-retina-1",
+          "case": "retina",
+          "selector": ".stepper .ui-icon",
+          "pseudo": "",
+          "property": "width",
+          "equals": "16px"
+        },
+        {
+          "id": "icon-focus-0",
+          "case": "focus",
+          "selector": ".button .ui-icon",
+          "pseudo": "",
+          "property": "width",
+          "equals": "18px"
+        },
+        {
+          "id": "icon-focus-1",
+          "case": "focus",
+          "selector": ".stepper .ui-icon",
+          "pseudo": "",
+          "property": "width",
+          "equals": "16px"
+        },
+        {
+          "id": "icon-invalid-0",
+          "case": "invalid",
+          "selector": ".button .ui-icon",
+          "pseudo": "",
+          "property": "width",
+          "equals": "18px"
+        },
+        {
+          "id": "icon-invalid-1",
+          "case": "invalid",
+          "selector": ".stepper .ui-icon",
+          "pseudo": "",
+          "property": "width",
+          "equals": "16px"
+        }
+      ]
+    },
+    {
+      "id": "viewport-fit",
+      "members": [
+        "cover",
+        "headline",
+        "builder"
+      ],
+      "intent": "Required content fits the declared horizontal CSS viewport without clipping away primary content.",
+      "checks": [
+        {
+          "id": "fit-wide",
+          "case": "wide",
+          "selector": "body",
+          "pseudo": "",
+          "property": "scrollWidth",
+          "equals": 1440
+        },
+        {
+          "id": "fit-pressure",
+          "case": "pressure",
+          "selector": "body",
+          "pseudo": "",
+          "property": "scrollWidth",
+          "equals": 900
+        },
+        {
+          "id": "fit-mobile",
+          "case": "mobile",
+          "selector": "body",
+          "pseudo": "",
+          "property": "scrollWidth",
+          "equals": 390
+        },
+        {
+          "id": "fit-pink",
+          "case": "pink",
+          "selector": "body",
+          "pseudo": "",
+          "property": "scrollWidth",
+          "equals": 1440
+        },
+        {
+          "id": "fit-menu",
+          "case": "menu",
+          "selector": "body",
+          "pseudo": "",
+          "property": "scrollWidth",
+          "equals": 390
+        },
+        {
+          "id": "fit-reduced",
+          "case": "reduced",
+          "selector": "body",
+          "pseudo": "",
+          "property": "scrollWidth",
+          "equals": 900
+        },
+        {
+          "id": "fit-pack",
+          "case": "pack",
+          "selector": "body",
+          "pseudo": "",
+          "property": "scrollWidth",
+          "equals": 390
+        },
+        {
+          "id": "fit-motion",
+          "case": "motion",
+          "selector": "body",
+          "pseudo": "",
+          "property": "scrollWidth",
+          "equals": 900
+        },
+        {
+          "id": "fit-narrow",
+          "case": "narrow",
+          "selector": "body",
+          "pseudo": "",
+          "property": "scrollWidth",
+          "equals": 320
+        },
+        {
+          "id": "fit-retina",
+          "case": "retina",
+          "selector": "body",
+          "pseudo": "",
+          "property": "scrollWidth",
+          "equals": 900
+        },
+        {
+          "id": "fit-focus",
+          "case": "focus",
+          "selector": "body",
+          "pseudo": "",
+          "property": "scrollWidth",
+          "equals": 900
+        },
+        {
+          "id": "fit-invalid",
+          "case": "invalid",
+          "selector": "body",
+          "pseudo": "",
+          "property": "scrollWidth",
+          "equals": 390
+        }
+      ]
+    },
+    {
+      "id": "paper-ink-roles",
+      "members": [
+        "cover",
+        "headline",
+        "actions",
+        "glyphs",
+        "builder"
+      ],
+      "intent": "The stable reading substrate retains its accepted paper/ink roles across flavor, overlay and form states.",
+      "checks": [
+        {
+          "id": "paint-wide-0",
+          "case": "wide",
+          "selector": "body",
+          "pseudo": "",
+          "property": "color",
+          "equals": "rgb(37, 39, 32)"
+        },
+        {
+          "id": "paint-wide-1",
+          "case": "wide",
+          "selector": "body",
+          "pseudo": "",
+          "property": "backgroundColor",
+          "equals": "rgb(246, 243, 233)"
+        },
+        {
+          "id": "paint-pressure-0",
+          "case": "pressure",
+          "selector": "body",
+          "pseudo": "",
+          "property": "color",
+          "equals": "rgb(37, 39, 32)"
+        },
+        {
+          "id": "paint-pressure-1",
+          "case": "pressure",
+          "selector": "body",
+          "pseudo": "",
+          "property": "backgroundColor",
+          "equals": "rgb(246, 243, 233)"
+        },
+        {
+          "id": "paint-mobile-0",
+          "case": "mobile",
+          "selector": "body",
+          "pseudo": "",
+          "property": "color",
+          "equals": "rgb(37, 39, 32)"
+        },
+        {
+          "id": "paint-mobile-1",
+          "case": "mobile",
+          "selector": "body",
+          "pseudo": "",
+          "property": "backgroundColor",
+          "equals": "rgb(246, 243, 233)"
+        },
+        {
+          "id": "paint-pink-0",
+          "case": "pink",
+          "selector": "body",
+          "pseudo": "",
+          "property": "color",
+          "equals": "rgb(37, 39, 32)"
+        },
+        {
+          "id": "paint-pink-1",
+          "case": "pink",
+          "selector": "body",
+          "pseudo": "",
+          "property": "backgroundColor",
+          "equals": "rgb(246, 243, 233)"
+        },
+        {
+          "id": "paint-menu-0",
+          "case": "menu",
+          "selector": "body",
+          "pseudo": "",
+          "property": "color",
+          "equals": "rgb(37, 39, 32)"
+        },
+        {
+          "id": "paint-menu-1",
+          "case": "menu",
+          "selector": "body",
+          "pseudo": "",
+          "property": "backgroundColor",
+          "equals": "rgb(246, 243, 233)"
+        },
+        {
+          "id": "paint-reduced-0",
+          "case": "reduced",
+          "selector": "body",
+          "pseudo": "",
+          "property": "color",
+          "equals": "rgb(37, 39, 32)"
+        },
+        {
+          "id": "paint-reduced-1",
+          "case": "reduced",
+          "selector": "body",
+          "pseudo": "",
+          "property": "backgroundColor",
+          "equals": "rgb(246, 243, 233)"
+        },
+        {
+          "id": "paint-pack-0",
+          "case": "pack",
+          "selector": "body",
+          "pseudo": "",
+          "property": "color",
+          "equals": "rgb(37, 39, 32)"
+        },
+        {
+          "id": "paint-pack-1",
+          "case": "pack",
+          "selector": "body",
+          "pseudo": "",
+          "property": "backgroundColor",
+          "equals": "rgb(246, 243, 233)"
+        },
+        {
+          "id": "paint-motion-0",
+          "case": "motion",
+          "selector": "body",
+          "pseudo": "",
+          "property": "color",
+          "equals": "rgb(37, 39, 32)"
+        },
+        {
+          "id": "paint-motion-1",
+          "case": "motion",
+          "selector": "body",
+          "pseudo": "",
+          "property": "backgroundColor",
+          "equals": "rgb(246, 243, 233)"
+        },
+        {
+          "id": "paint-narrow-0",
+          "case": "narrow",
+          "selector": "body",
+          "pseudo": "",
+          "property": "color",
+          "equals": "rgb(37, 39, 32)"
+        },
+        {
+          "id": "paint-narrow-1",
+          "case": "narrow",
+          "selector": "body",
+          "pseudo": "",
+          "property": "backgroundColor",
+          "equals": "rgb(246, 243, 233)"
+        },
+        {
+          "id": "paint-retina-0",
+          "case": "retina",
+          "selector": "body",
+          "pseudo": "",
+          "property": "color",
+          "equals": "rgb(37, 39, 32)"
+        },
+        {
+          "id": "paint-retina-1",
+          "case": "retina",
+          "selector": "body",
+          "pseudo": "",
+          "property": "backgroundColor",
+          "equals": "rgb(246, 243, 233)"
+        },
+        {
+          "id": "paint-focus-0",
+          "case": "focus",
+          "selector": "body",
+          "pseudo": "",
+          "property": "color",
+          "equals": "rgb(37, 39, 32)"
+        },
+        {
+          "id": "paint-focus-1",
+          "case": "focus",
+          "selector": "body",
+          "pseudo": "",
+          "property": "backgroundColor",
+          "equals": "rgb(246, 243, 233)"
+        },
+        {
+          "id": "paint-invalid-0",
+          "case": "invalid",
+          "selector": "body",
+          "pseudo": "",
+          "property": "color",
+          "equals": "rgb(37, 39, 32)"
+        },
+        {
+          "id": "paint-invalid-1",
+          "case": "invalid",
+          "selector": "body",
+          "pseudo": "",
+          "property": "backgroundColor",
+          "equals": "rgb(246, 243, 233)"
+        }
+      ]
+    }
+  ],
+  "exceptions": [],
+  "hypotheses": [
+    {
+      "id": "contain-fizz",
+      "observation": "Unbounded bubbles crossed mobile proposition and CTA in an early render.",
+      "cause": "The decorative particle owner allowed overflow beyond the product scene.",
+      "change": "Clip particles at the scene while preserving can overflow and interactive targets.",
+      "prediction": "The motion remains expressive beside the can without washing across reading copy.",
+      "outcome": "supported",
+      "evidence": [
+        {
+          "path": "evals/doppler-regeneration/final/wide.png",
+          "sha256": "fc3ee694a4fcbb6d926bec6333e8ad9d475d8fe6b928ad1070ab3ad72ff5553d"
+        }
+      ],
+      "applicability": "Decorative particles attached to a product scene",
+      "counterexamples": [
+        "An explicitly authored full-screen atmospheric sequence can intentionally cross those boundaries, with separately proven readability."
+      ],
+      "reason": "Inspect temporal samples and static/reduced equivalents; no claim about measured gaze."
+    },
+    {
+      "id": "rigid-plane-alone",
+      "observation": "The first rigid lid disappeared or still left a visible gap.",
+      "cause": "Projection and diameter were not yet coherent with the body.",
+      "change": "Move the lid into the rigid object.",
+      "prediction": "The join should become physically coherent.",
+      "outcome": "rejected",
+      "evidence": [
+        {
+          "path": "evals/doppler-regeneration/review-history/occluded-lid.png",
+          "sha256": "dcee3736da009926f241ff79dc18861cb6ab1630b2cd892fcbd3379e3f1a4109"
+        },
+        {
+          "path": "evals/doppler-regeneration/review-history/mismatched-radius.png",
+          "sha256": "57fdda9f9a1dde449804982072d0652f84595ffbafd8d926f2517fae34c0280b"
+        }
+      ],
+      "applicability": "Attached parts in transformed product scenes",
+      "counterexamples": [
+        "A flat illustration can intentionally use independently authored layers."
+      ],
+      "reason": "Correct parentage alone did not prove visible contact; camera and local dimensions also needed repair."
+    },
+    {
+      "id": "local-object-geometry",
+      "observation": "The lid and label cylinder had different apparent diameters.",
+      "cause": "A rotated screen-space AABB was used to construct the cylinder.",
+      "change": "Use local resolved CSS dimensions and a coherent tilt for all parts.",
+      "prediction": "The metal rim and body remain connected across native sizes and rotation.",
+      "outcome": "supported",
+      "evidence": [
+        {
+          "path": "evals/doppler-regeneration/final/wide-detail-join.png",
+          "sha256": "bc3b22a01a383d7dbd167f727641f3d467d72a31a6cc280c33b2eee4e1390708"
+        },
+        {
+          "path": "evals/doppler-regeneration/final/mobile-detail-join.png",
+          "sha256": "2231331ee1b4112a055faf1decab169008acebbe76ff5d432f472d9b24afc77d"
+        }
+      ],
+      "applicability": "Constructed objects under ancestor transforms",
+      "counterexamples": [
+        "Screen-space bounds remain correct for projected hit testing and placement."
+      ],
+      "reason": "Current local-radius and metal-paint probes plus inspected native details/temporal samples support this bounded repair."
+    },
+    {
+      "id": "state-labels-are-not-proof",
+      "observation": "An early Pink capture still displayed Sun Shift.",
+      "cause": "A smooth scroll had not reached the click target before dispatch.",
+      "change": "Use immediate hit-tested replay and independent observable postconditions.",
+      "prediction": "Failed state replay cannot mint current evidence.",
+      "outcome": "supported",
+      "evidence": [
+        {
+          "path": "evals/doppler-regeneration/review-history/failed-flavor-replay.png",
+          "sha256": "fc3ee694a4fcbb6d926bec6333e8ad9d475d8fe6b928ad1070ab3ad72ff5553d"
+        },
+        {
+          "path": "evals/doppler-regeneration/final/pink-viewport.png",
+          "sha256": "ba683e6ddaa9eaad6aa81a715ecbd9452dde1a0b94c0d630288c9e2d92c43ce8"
+        }
+      ],
+      "applicability": "Browser evidence of selected, open, focused and confirmation states",
+      "counterexamples": [
+        "Testing scroll choreography itself requires a controlled temporal sequence rather than removing its motion."
+      ],
+      "reason": "The current receipt records actual selected state; the checker compares it with the independently bound plan."
+    },
+    {
+      "id": "external-focus-paint",
+      "observation": "The focused filled action had an invisible paper-colored outer ring.",
+      "cause": "currentColor inherited on-button text instead of contrasting with the outside substrate.",
+      "change": "Use the scoped ink focus role and inspect its native viewport/detail.",
+      "prediction": "Keyboard focus becomes clear on the external paper.",
+      "outcome": "supported",
+      "evidence": [
+        {
+          "path": "evals/doppler-regeneration/review-history/low-contrast-focus.png",
+          "sha256": "6420495cecab5d642b2c2542093720e44349fcafa57b81543240dca227e0a03c"
+        },
+        {
+          "path": "evals/doppler-regeneration/final/focus-detail-action.png",
+          "sha256": "24d56d24946726981d2c14ee5281433a879a6a347d51a9f68f8d1a53adbb0567"
+        }
+      ],
+      "applicability": "Filled controls on a light outside surface",
+      "counterexamples": [
+        "An external dark surface can need a light ring."
+      ],
+      "reason": "Visible focus was checked separately from document.activeElement and button text contrast."
+    }
+  ],
+  "previous": {
+    "path": "evals/doppler-regeneration/SYSTEM.v1.json",
+    "sha256": "f3fe0a438f5e8c840137e58e92dc860d367aa113580c32946b8f7fbe0bc6ec5a"
+  }
+}

@@ -31,9 +31,12 @@ snowe-ui-skill/
 │   └── soda-campaign/
 │       ├── assets/
 │       │   ├── fonts/
+│       │   ├── icons/
 │       │   └── labels/
 │       ├── design-intelligence/
 │       └── screenshots/
+├── design-intelligence/
+│   └── doppler-regeneration/
 ├── docs/  # public repository documentation and atlas
 │   └── atlas/
 ├── evals/  # deterministic behavior contracts and bounded operational proofs
@@ -47,6 +50,11 @@ snowe-ui-skill/
 │   ├── density/
 │   │   └── captures/
 │   ├── designer-behavior/
+│   ├── doppler-regeneration/
+│   │   ├── before-complete/
+│   │   ├── final/
+│   │   ├── review-history/
+│   │   └── verified/
 │   ├── icon-decisions/
 │   │   └── assets/
 │   ├── titlebot-hierarchy/
@@ -68,7 +76,8 @@ snowe-ui-skill/
 │       ├── data/  # bundled retrieval evidence and analog catalogs
 │       │   └── stacks/
 │       ├── references/  # progressive-disclosure UI guidance
-│       └── scripts/  # standard-library retrieval, decision support, SVG validation, and icon comparison
+│       │   └── figures/
+│       └── scripts/  # standard-library decision support/validators and optional portable Node observation
 └── tests/  # unittest product and benchmark regression coverage
 ```
 
@@ -90,6 +99,8 @@ snowe-ui-skill/
 | `skill/snowe-ui-skill/scripts/search.py` | Local evidence-search and decision-packet CLI |
 | `skill/snowe-ui-skill/scripts/decision_packet.py` | Portfolio/open-inquiry generation and identity-bound persistence API |
 | `skill/snowe-ui-skill/scripts/corrections.py` | Scoped correction journal, evidence freshness and completion check CLI |
+| `skill/snowe-ui-skill/scripts/visual_review.py` | Checked schema-3 visual disposition, browser/system evidence and historical compatibility |
+| `skill/snowe-ui-skill/scripts/observe.mjs` | Optional portable capability/replay/measure/whole-detail-sequence/compare browser CLI |
 | `skill/snowe-ui-skill/scripts/asset_quality.py` | Strict self-contained SVG structure/provenance validator |
 | `skill/snowe-ui-skill/scripts/icon_review.py` | Deterministic icon decision/context comparison builder |
 | `skill/snowe-ui-skill/scripts/contrast.py` | Exact opaque-color contrast checker |
@@ -97,12 +108,14 @@ snowe-ui-skill/
 | `benchmarks/bicycle-commerce/index.html` | Rendered bicycle-commerce forward-test |
 | `scripts/install_skill.py` | Exact standalone skill install/update helper |
 | `scripts/browser-smoke.mjs` | Cross-platform Chrome/CDP rendered regression |
+| `scripts/doppler-detail-probe.mjs` | Copied-product browser proof and injected material/icon/visibility defects |
 | `scripts/check_contributor_context.py` | Public/private contributor-context boundary check |
 | `tests/test_snowe_ui_skill.py` | Skill/runtime unittest regression suite |
 | `tests/test_bicycle_benchmark.py` | Benchmark artifact and UX-contract suite |
 | `tests/test_installation.py` | Standalone install/update and recovery regression suite |
 | `tests/test_scope_contract.py` | Process-depth proportionality and escalation regression suite |
 | `tests/test_icon_workflow.py` | Icon lifecycle, context proof, and SVG safety regression suite |
+| `tests/test_observation.py` | Browser combinations, postconditions, dependency closure, detail and relationship regression |
 | `tests/test_runtime_hardening.py` | Persistence identity/race and runtime failure regression suite |
 | `.github/workflows/ci.yml` | Cross-platform runtime, browser, and context validation workflow |
 | `scripts/atlas/generate_atlas.py` | Structural atlas write/check command |
@@ -113,23 +126,24 @@ The generated map itself is excluded from the counts.
 
 | Extension | Files |
 | --- | --- |
-| `.png` | 121 |
-| `.md` | 66 |
+| `.png` | 452 |
+| `.md` | 73 |
+| `.json` | 61 |
 | `.jpg` | 52 |
-| `.json` | 39 |
+| `.py` | 34 |
 | `.csv` | 32 |
-| `.py` | 28 |
+| `.svg` | 17 |
 | `.html` | 13 |
-| `.svg` | 12 |
+| `.css` | 8 |
 | `.woff2` | 8 |
-| `.css` | 7 |
 | `.js` | 7 |
 | `.txt` | 7 |
-| `.mjs` | 4 |
+| `.mjs` | 6 |
+| `[no extension]` | 5 |
 | `.webp` | 4 |
-| `[no extension]` | 4 |
 | `.yml` | 2 |
 | `.gif` | 1 |
+| `.sha256` | 1 |
 | `.yaml` | 1 |
 
 ## Where to look
@@ -152,6 +166,10 @@ The generated map itself is excluded from the counts.
 | Change or inspect the isolated Title Bot hierarchy pilot | `evals/titlebot-hierarchy/` |
 | Change required-content visibility or declared action identity checks | `scripts/ui-proof.mjs` |
 | Change checked visual verdicts and state/source evidence | `skill/snowe-ui-skill/scripts/visual_review.py` |
+| Change portable browser replay, measurements or capture | `skill/snowe-ui-skill/scripts/observe.mjs` |
+| Change observation plans, receipts or evidence closure | `skill/snowe-ui-skill/scripts/observation.py` |
+| Change scoped visual-system ownership, relationships or memory | `skill/snowe-ui-skill/scripts/visual_system.py` |
+| Inspect regenerated Doppler and small-artifact controls | `evals/doppler-regeneration/` |
 | Inspect technically valid but weak visual examples | `evals/visual-judgment/` |
 | Inspect full-page color roles and contextual rejection | `evals/color-intensity/` |
 | Change or inspect the rendered bicycle benchmark | `benchmarks/bicycle-commerce/` |

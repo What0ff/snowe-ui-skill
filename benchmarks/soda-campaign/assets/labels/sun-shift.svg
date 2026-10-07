@@ -8,8 +8,8 @@
       .utility{font-family:Arial,sans-serif;font-weight:700;letter-spacing:5px}
     </style>
     <pattern id="signal" width="90" height="90" patternUnits="userSpaceOnUse">
-      <path d="M0 88H90" stroke="#15120a" stroke-opacity=".16" stroke-width="4"/>
-      <circle cx="8" cy="8" r="4" fill="#15120a" fill-opacity=".22"/>
+      <path d="M0 88H90" stroke="#15120a" stroke-opacity=".055" stroke-width="4"/>
+      <circle cx="8" cy="8" r="4" fill="#15120a" fill-opacity=".08"/>
     </pattern>
   </defs>
   <rect width="2760" height="1600" fill="#f6df34"/>

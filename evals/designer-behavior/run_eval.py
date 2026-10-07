@@ -355,6 +355,8 @@ Load only the references whose decision is active. Do not preload the library, a
 - Read [motion-and-interaction.md](references/motion-and-interaction.md) only when motion carries information or character, or when an existing transition is failing. Static work does not need a motion exploration.
 - Read [research-and-evidence.md](references/research-and-evidence.md) when current external evidence can change a high-leverage decision; skip saturated or already verified questions.
 - Read [quality-gates.md](references/quality-gates.md) for implementation validation, accessibility/content/responsive stress, states, performance, or rendered critique. Do not use it as a substitute for product framing.
+- Read [visual-system-and-observation.md](references/visual-system-and-observation.md) for affected shared owners/layers, versioned visual contracts or portable checked browser evidence. Keep its scope proportional to the live decision.
+- Read [visual-reasoning.md](references/visual-reasoning.md) for open visual relationships, impression-to-decision translation, image comparisons or a repair whose perceptual cause is uncertain.
 - Read [designer-evaluation.md](references/designer-evaluation.md) for benchmark design, comparative evaluation, or systemic behavior review—not every routine delivery.
 - Read [cli-reference.md](references/cli-reference.md) only when invoking local retrieval, packets, persistence, stack guidance, contrast, or SVG validation.
 Read only the references needed for the current decision. Do not make every project execute every specialist workflow."""
