@@ -12,7 +12,7 @@ Write the desired relationship before measuring implementation: equivalent contr
 
 Use a new revision file rather than overwriting the accepted one. Keep the existing `DECISIONS.md` byte-preserved. A new contract may supersede a decision in an appended separate history, with its reason and revisit trigger; it never rewrites what was previously accepted.
 
-`visual_system.py` validates schema `1.0`:
+`visual_system.py` retains schema `1.0` and supports opt-in schema `1.1`:
 
 - `revision` (positive integer), `previous` (path/SHA-256 for revision > 1), `scope`, `depth` (Direct/Focused/Portfolio).
 - `direction`: `status` (proposed/selected/user-specified), `thesis`, `axes` and `revisit` conditions. Axes are composition, typography, color, surfaces, shape, imagery, motion and responsive. Portfolio addresses all; bounded work records only affected axes. A justified no-image/no-motion decision is a real axis decision.
@@ -21,6 +21,8 @@ Use a new revision file rather than overwriting the accepted one. Keep the exist
 - `relations`: `{id, members, intent, checks}`. Each check has `id, case, selector, pseudo, property` and either `equals` or `sameAs:{selector,pseudo}`. All matching siblings are checked. Use measured CSS properties, bounds or text only for a justified explicit contract, never as a beauty formula.
 - `exceptions`: `{check, reason, revisit}` names a real check. Exceptions preserve a justified scoped distinction, including user-specified design. They do not waive missing browser evidence or negative visual findings.
 - `hypotheses`: `{id, observation, cause, change, prediction, outcome, evidence, applicability, counterexamples, reason}`. Outcomes: untested/supported/rejected/inconclusive. A supported result needs current path/digest evidence. Retain why an unsuccessful repair was rejected and when the lesson does not transfer. Prose remains a reasoned judgment, not automatically proven causality.
+
+Schema `1.1` additionally permits `property:"bounds.<axis>"` for x, y, width, height, right, bottom, centerX and centerY. Each geometry check requires `tolerance:{cssPixels:<finite nonnegative number>,reason:<context-specific justification>}` and either a finite numeric `equals` or one `sameAs:{selector,pseudo:""}` reference owner. Every actual match must satisfy that axis; reference selectors must match exactly one element. Example: compare `.toolbar button` `bounds.centerY` with `.toolbar input`, excluding the field caption. Use native element probes with empty pseudo; pseudo paint has only owner-element bounds. Missing/ambiguous/invalid geometry cannot be waived by an exception. A scoped exception can preserve a proved intentional difference, never missing evidence. Tolerance is declared for the target, not a universal aesthetic threshold. Text baseline and optical mass still require rendered review; box centers cannot certify either. Older contracts keep their exact-property semantics and must explicitly opt in to geometry checks.
 
 Direction selection, checked implementation, recorded visual verdict and user acceptance are separate. `selected` does not mean verified or user-approved. A supplied design can be `user-specified` while fidelity remains unverified. Silence is UNCONFIRMED.
 

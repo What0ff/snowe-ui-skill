@@ -1,0 +1,116 @@
+{
+  "schema": "1.1",
+  "revision": 1,
+  "scope": "Identity and mixed control relationships",
+  "depth": "Focused",
+  "direction": {
+    "status": "selected",
+    "thesis": "Separate identity, drawing and control geometry",
+    "axes": {
+      "composition": "Actual controls share the operational row; captions/help have their own rows"
+    },
+    "revisit": [
+      "Changed toolbar or identity usage"
+    ]
+  },
+  "tokens": [],
+  "components": [
+    {
+      "id": "toolbar",
+      "role": "Mixed field and peer actions",
+      "owner": "index.html",
+      "selector": ".good",
+      "tokens": [],
+      "states": [
+        "default"
+      ],
+      "consumers": [
+        {
+          "case": "wide",
+          "selector": ".good"
+        },
+        {
+          "case": "narrow",
+          "selector": ".good"
+        },
+        {
+          "case": "retina",
+          "selector": ".good"
+        }
+      ],
+      "layers": [
+        {
+          "kind": "element",
+          "selector": ".good",
+          "pseudo": "",
+          "sources": [
+            "index.html"
+          ],
+          "cases": [
+            "wide",
+            "narrow",
+            "retina"
+          ]
+        }
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "id": "operational-axis",
+      "members": [
+        "toolbar"
+      ],
+      "intent": "Align visible controls independently of captions and help",
+      "checks": [
+        {
+          "id": "axis-wide",
+          "case": "wide",
+          "selector": ".good button",
+          "pseudo": "",
+          "property": "bounds.bottom",
+          "sameAs": {
+            "selector": ".good input",
+            "pseudo": ""
+          },
+          "tolerance": {
+            "cssPixels": 0.25,
+            "reason": "Declared bottom axis; permit fractional layout rounding, retain unequal control heights"
+          }
+        },
+        {
+          "id": "axis-narrow",
+          "case": "narrow",
+          "selector": ".good .primary",
+          "pseudo": "",
+          "property": "bounds.bottom",
+          "sameAs": {
+            "selector": ".good .filter",
+            "pseudo": ""
+          },
+          "tolerance": {
+            "cssPixels": 0.25,
+            "reason": "Declared bottom axis; permit fractional layout rounding, retain unequal control heights"
+          }
+        },
+        {
+          "id": "axis-retina",
+          "case": "retina",
+          "selector": ".good button",
+          "pseudo": "",
+          "property": "bounds.bottom",
+          "sameAs": {
+            "selector": ".good input",
+            "pseudo": ""
+          },
+          "tolerance": {
+            "cssPixels": 0.25,
+            "reason": "Declared bottom axis; permit fractional layout rounding, retain unequal control heights"
+          }
+        }
+      ]
+    }
+  ],
+  "exceptions": [],
+  "hypotheses": []
+}

@@ -57,6 +57,11 @@ snowe-ui-skill/
 │   │   └── verified/
 │   ├── icon-decisions/
 │   │   └── assets/
+│   ├── identity-alignment/
+│   │   ├── assets/
+│   │   ├── captures-v3/
+│   │   ├── host-captures/
+│   │   └── upstream/
 │   ├── titlebot-hierarchy/
 │   │   ├── assets/
 │   │   │   └── fonts/
@@ -126,19 +131,19 @@ The generated map itself is excluded from the counts.
 
 | Extension | Files |
 | --- | --- |
-| `.png` | 452 |
-| `.md` | 73 |
-| `.json` | 61 |
+| `.png` | 478 |
+| `.md` | 76 |
+| `.json` | 69 |
 | `.jpg` | 52 |
-| `.py` | 34 |
+| `.py` | 37 |
 | `.csv` | 32 |
-| `.svg` | 17 |
-| `.html` | 13 |
+| `.svg` | 22 |
+| `.html` | 15 |
 | `.css` | 8 |
 | `.woff2` | 8 |
 | `.js` | 7 |
+| `.mjs` | 7 |
 | `.txt` | 7 |
-| `.mjs` | 6 |
 | `[no extension]` | 5 |
 | `.webp` | 4 |
 | `.yml` | 2 |

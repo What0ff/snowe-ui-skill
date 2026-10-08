@@ -1,0 +1,46 @@
+{
+  "name": "span-before",
+  "asset_type": "interface-icon",
+  "role": "Distance between mounting boundaries",
+  "grid": 24,
+  "live_area": {
+    "min_x": 0,
+    "min_y": 0,
+    "max_x": 24,
+    "max_y": 24
+  },
+  "drawing_language": {
+    "mode": "stroke",
+    "stroke_width": 1.5,
+    "linecap": "round",
+    "linejoin": "round",
+    "corner_language": "Open measurement termini",
+    "detail_budget": "Two boundaries and one dimension relationship"
+  },
+  "target_sizes": [
+    16,
+    20,
+    24
+  ],
+  "source": "Original repository evaluation drawing",
+  "license": "Repository MIT; see SOURCES.md",
+  "accessibility_owner": "Owning labeled link/button; image decorative",
+  "provenance": {
+    "kind": "original",
+    "creator": "Snowe evaluation author",
+    "source_ref": "SOURCES.md#original-interface-glyphs",
+    "reviewed": "2026-10-08",
+    "sha256": "bc31d89de3a34635192427da096a71ae53bfabba7a2a7bf1d6fad21e63fe96e2"
+  },
+  "evidence": {
+    "source": {
+      "kind": "local",
+      "path": "../SOURCES.md",
+      "sha256": "4e05606d230863c68242fff8adbce8c4e5f1e8ec06f73c94909cc7e55fb6e8f2"
+    },
+    "license": {
+      "path": "../SOURCES.md",
+      "sha256": "4e05606d230863c68242fff8adbce8c4e5f1e8ec06f73c94909cc7e55fb6e8f2"
+    }
+  }
+}

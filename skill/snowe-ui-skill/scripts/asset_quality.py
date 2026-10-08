@@ -305,6 +305,8 @@ def _evidence_file(
     value: Any,
     field: str,
     errors: list[str],
+    *,
+    max_bytes: int | None = None,
 ) -> tuple[Path | None, str | None]:
     if not isinstance(value, dict):
         errors.append(f"{field} must be an object with a metadata-relative path and SHA-256 digest.")
@@ -352,6 +354,9 @@ def _evidence_file(
         information = resolved.stat()
         if not stat.S_ISREG(information.st_mode):
             errors.append(f"{field}.path must resolve to a regular file: {resolved}")
+            return None, None
+        if max_bytes is not None and information.st_size > max_bytes:
+            errors.append(f"{field}.path exceeds the {max_bytes}-byte evidence budget.")
             return None, None
         content = resolved.read_bytes()
     except (FileNotFoundError, OSError, RuntimeError, ValueError) as error:
@@ -417,7 +422,8 @@ def _validate_evidence(
 
 def _validate_metadata(metadata: dict[str, Any], errors: list[str], metadata_path: Path | None = None) -> tuple[tuple[float, float] | None, Bounds | None, dict[str, Any] | None]:
     missing = sorted(REQUIRED_METADATA - set(metadata))
-    extra = sorted(set(metadata) - REQUIRED_METADATA)
+    brand_mark = metadata.get("asset_type") == "brand-mark"
+    extra = sorted(set(metadata) - REQUIRED_METADATA - ({"brand"} if brand_mark else set()))
     if missing:
         errors.append("Metadata is missing required fields: " + ", ".join(missing))
     if extra:
@@ -425,8 +431,8 @@ def _validate_metadata(metadata: dict[str, Any], errors: list[str], metadata_pat
     for field in sorted(TEXT_METADATA & set(metadata)):
         if not _meaningful(metadata[field]):
             errors.append(f"Metadata field {field!r} must be a specific non-placeholder string.")
-    if metadata.get("asset_type") != "interface-icon":
-        errors.append("asset_type must be exactly 'interface-icon'; free-form role wording cannot bypass icon checks.")
+    if metadata.get("asset_type") not in ("interface-icon", "brand-mark"):
+        errors.append("asset_type must be exactly 'interface-icon' or 'brand-mark'; free-form role wording cannot bypass icon checks.")
 
     grid = _grid(metadata.get("grid"))
     if grid is None:
@@ -483,6 +489,21 @@ def _validate_metadata(metadata: dict[str, Any], errors: list[str], metadata_pat
                     )
     provenance = _validate_provenance(metadata.get("provenance"), errors)
     _validate_evidence(metadata, metadata_path, provenance, errors)
+    if brand_mark:
+        brand = metadata.get("brand")
+        if not isinstance(brand, dict) or set(brand) != {"schema", "identity", "variant", "artwork", "usage"}:
+            errors.append("brand-mark requires brand schema, identity, variant, artwork and usage bindings.")
+        else:
+            if brand["schema"] != "1.0": errors.append("brand.schema must be '1.0'.")
+            for field in ("identity", "variant"):
+                if not _meaningful(brand[field]): errors.append(f"brand.{field} must identify the supplied brand and variant.")
+            if metadata_path is not None:
+                for field in ("artwork", "usage"):
+                    _evidence_file(metadata_path, brand[field], f"brand.{field}", errors, max_bytes=MAX_SVG_BYTES)
+            if isinstance(brand["artwork"], dict) and isinstance(provenance, dict) and brand["artwork"].get("sha256") != provenance.get("sha256"):
+                errors.append("brand.artwork must bind the unmodified delivered SVG bytes; recoloring or redrawing is a different asset.")
+        if not isinstance(provenance, dict) or provenance.get("kind") != "external":
+            errors.append("brand-mark requires external provenance; original drawings cannot claim an imported identity.")
     return grid, live_area, provenance
 
 
@@ -611,7 +632,44 @@ def _arc_extrema(
     return points
 
 
-def _path_bounds(value: str | None) -> tuple[Bounds | None, str | None]:
+def _bezier_extrema(points: list[tuple[float, float]]) -> list[tuple[float, float]]:
+    """Bound an imported quadratic/cubic curve by its actual axis extrema.
+
+    The interface-icon contract retains its conservative control-hull bounds.
+    Imported source geometry must not be redrawn to fit that approximation.
+    """
+    if any(not math.isfinite(value) or abs(value) > MAX_SAFE_ARC_MAGNITUDE for point in points for value in point):
+        raise ArithmeticError("curve values exceed the deterministic safety envelope")
+    times = {0.0, 1.0}
+    for axis in (0, 1):
+        values = [point[axis] for point in points]
+        if len(points) == 3:
+            p0, p1, p2 = values
+            denominator = p0 - 2 * p1 + p2
+            roots = [(p0 - p1) / denominator] if denominator else []
+        else:
+            p0, p1, p2, p3 = values
+            a, b, c = -p0 + 3 * p1 - 3 * p2 + p3, 2 * (p0 - 2 * p1 + p2), p1 - p0
+            scale = max(abs(a), abs(b), abs(c))
+            if scale: a, b, c = a / scale, b / scale, c / scale
+            if a == 0:
+                roots = [-c / b] if b else []
+            else:
+                discriminant = b * b - 4 * a * c
+                if discriminant < 0:
+                    roots = []
+                else:
+                    q = -0.5 * (b + math.copysign(math.sqrt(discriminant), b))
+                    roots = [q / a, c / q] if q else [-b / (2 * a)]
+        times.update(t for t in roots if 0 < t < 1)
+    result = []
+    for t in times:
+        weights = [(1-t)**2, 2*(1-t)*t, t*t] if len(points) == 3 else [(1-t)**3, 3*(1-t)**2*t, 3*(1-t)*t*t, t**3]
+        result.append(tuple(sum(weight * point[axis] for weight, point in zip(weights, points)) for axis in (0, 1)))
+    return result
+
+
+def _path_bounds(value: str | None, *, exact_curves: bool = False) -> tuple[Bounds | None, str | None]:
     if value is None or not value.strip():
         return None, "path d must be non-empty"
     tokens, error = _path_tokens(value)
@@ -631,6 +689,9 @@ def _path_bounds(value: str | None) -> tuple[Bounds | None, str | None]:
         nonlocal bounds
         xs, ys = [point[0] for point in points], [point[1] for point in points]
         bounds = _union(bounds, (min(xs), min(ys), max(xs), max(ys)))
+
+    def include_curve(points: list[tuple[float, float]]) -> None:
+        include(_bezier_extrema(points) if exact_curves else points)
 
     while index < len(tokens):
         if tokens[index].isalpha():
@@ -670,7 +731,7 @@ def _path_bounds(value: str | None) -> tuple[Bounds | None, str | None]:
             current = (old[0], (old[1] + values[0]) if relative else values[0]); include([old, current]); has_segment |= current != old
         elif lower == "c":
             points = [old, point(values[0], values[1]), point(values[2], values[3]), point(values[4], values[5])]
-            current = points[-1]; cubic_control = points[-2]; include(points); has_segment |= len(set(points)) > 1
+            current = points[-1]; cubic_control = points[-2]; include_curve(points); has_segment |= len(set(points)) > 1
         elif lower == "s":
             reflected = (
                 (2 * old[0] - cubic_control[0], 2 * old[1] - cubic_control[1])
@@ -678,10 +739,10 @@ def _path_bounds(value: str | None) -> tuple[Bounds | None, str | None]:
                 else old
             )
             points = [old, reflected, point(values[0], values[1]), point(values[2], values[3])]
-            current = points[-1]; cubic_control = points[-2]; include(points); has_segment |= len(set(points)) > 1
+            current = points[-1]; cubic_control = points[-2]; include_curve(points); has_segment |= len(set(points)) > 1
         elif lower == "q":
             points = [old, point(values[0], values[1]), point(values[2], values[3])]
-            current = points[-1]; quadratic_control = points[-2]; include(points); has_segment |= len(set(points)) > 1
+            current = points[-1]; quadratic_control = points[-2]; include_curve(points); has_segment |= len(set(points)) > 1
         elif lower == "t":
             reflected = (
                 (2 * old[0] - quadratic_control[0], 2 * old[1] - quadratic_control[1])
@@ -689,7 +750,7 @@ def _path_bounds(value: str | None) -> tuple[Bounds | None, str | None]:
                 else old
             )
             current = point(values[0], values[1]); quadratic_control = reflected
-            include([old, reflected, current]); has_segment |= len({old, reflected, current}) > 1
+            include_curve([old, reflected, current]); has_segment |= len({old, reflected, current}) > 1
         elif lower == "a":
             rx, ry, rotation, large, sweep, x, y = values
             if rx < 0 or ry < 0 or large not in {0.0, 1.0} or sweep not in {0.0, 1.0}:
@@ -726,9 +787,12 @@ def _points(value: str | None) -> tuple[list[tuple[float, float]], str | None]:
     return list(zip(numbers[::2], numbers[1::2])), None
 
 
-def _geometry_bounds(element: ET.Element, name: str) -> tuple[Bounds | None, str | None]:
+def _geometry_bounds(element: ET.Element, name: str, *, exact_curves: bool = False) -> tuple[Bounds | None, str | None]:
     if name == "path":
-        return _path_bounds(element.attrib.get("d"))
+        try:
+            return _path_bounds(element.attrib.get("d"), exact_curves=exact_curves)
+        except ArithmeticError:
+            return None, "curve geometry cannot be bounded safely"
     if name in {"circle", "ellipse"}:
         cx, cy = _svg_number(element.attrib.get("cx"), 0), _svg_number(element.attrib.get("cy"), 0)
         rx = _svg_number(element.attrib.get("r" if name == "circle" else "rx"))
@@ -872,11 +936,18 @@ def validate_svg_asset(svg_path: str | Path, metadata_path: str | Path | None = 
         errors.append("preserveAspectRatio must use the default xMidYMid meet behavior when declared.")
 
     language = metadata.get("drawing_language") if isinstance(metadata.get("drawing_language"), dict) else {}
+    brand_mark = metadata.get("asset_type") == "brand-mark"
+    def allowed_paint(value: str) -> bool:
+        return value in SAFE_PAINT or (brand_mark and (value in {"black", "white"} or re.fullmatch(r"#[0-9a-f]{3}(?:[0-9a-f]{3})?", value) is not None))
     mode = str(language.get("mode", "")).strip().casefold()
     declared_width = _finite(language.get("stroke_width"))
     declared_cap = str(language.get("linecap", "")).strip().casefold()
     declared_join = str(language.get("linejoin", "")).strip().casefold()
     viewport = (view_box[0], view_box[1], view_box[0] + view_box[2], view_box[1] + view_box[3]) if view_box else None
+    # Source decimal rounding scales with its coordinate system. At a 24px
+    # slot this imported-only envelope is below 0.000003 CSS px, not a visual
+    # clipping exemption. Keep the existing interface contract unchanged.
+    containment_tolerance = min(view_box[2:]) * 1e-7 if brand_mark and view_box else 1e-7
     drawable_count, saw_fill, saw_stroke = 0, False, False
     art_bounds: Bounds | None = None
     node_count = 0
@@ -955,13 +1026,14 @@ def validate_svg_asset(svg_path: str | Path, metadata_path: str | Path | None = 
                 errors.append(f"CSS/SVG references are not allowed; found {match.group(2).strip()!r} in {attribute}.")
             if local == "style":
                 errors.append("Inline style attributes are not allowed.")
-            if local in PAINT_ATTRIBUTES and (text.casefold() == "inherit" or text.casefold() not in SAFE_PAINT):
-                errors.append(f"Monochrome icons require explicit currentColor/none/transparent paint; found {attribute}={value!r}.")
+            if local in PAINT_ATTRIBUTES and not allowed_paint(text.casefold()):
+                contract = "Brand marks permit only self-contained opaque hex/black/white or currentColor paint" if brand_mark else "Monochrome icons require explicit currentColor/none/transparent paint"
+                errors.append(f"{contract}; found {attribute}={value!r}.")
         if name in {"title", "desc"} and list(element):
             errors.append(f"<{name}> must contain plain text only.")
 
         if name in GEOMETRY_ELEMENTS:
-            bounds, geometry_error = _geometry_bounds(element, name)
+            bounds, geometry_error = _geometry_bounds(element, name, exact_curves=brand_mark)
             if geometry_error or bounds is None:
                 errors.append(f"<{name}> has empty or malformed geometry: {geometry_error}.")
             else:
@@ -971,9 +1043,9 @@ def validate_svg_asset(svg_path: str | Path, metadata_path: str | Path | None = 
                     errors.append(f"<{name}> is hidden and cannot count as artwork.")
                 if not fill_visible and not stroke_visible:
                     errors.append(f"<{name}> has no visible fill or stroke.")
-                if fill_visible and style["fill"] != "currentcolor":
+                if fill_visible and (not allowed_paint(style["fill"]) or (not brand_mark and style["fill"] != "currentcolor")):
                     errors.append(f"<{name}> resolves to a visible fill other than currentColor.")
-                if stroke_visible and style["stroke"] != "currentcolor":
+                if stroke_visible and (not allowed_paint(style["stroke"]) or (not brand_mark and style["stroke"] != "currentcolor")):
                     errors.append(f"<{name}> resolves to a visible stroke other than currentColor.")
                 if mode == "stroke" and (fill_visible or not stroke_visible):
                     errors.append(f"<{name}> contradicts drawing_language.mode 'stroke'.")
@@ -992,9 +1064,9 @@ def validate_svg_asset(svg_path: str | Path, metadata_path: str | Path | None = 
                 if not style["hidden"] and (fill_visible or stroke_visible):
                     if viewport and not _intersects(viewport, bounds):
                         errors.append(f"<{name}> lies entirely outside the viewBox.")
-                    elif viewport and not _contains(viewport, bounds):
+                    elif viewport and not _contains(viewport, bounds, containment_tolerance):
                         errors.append(f"<{name}> extends outside the viewBox and can clip.")
-                    elif live_area and not _contains(live_area, bounds):
+                    elif live_area and not _contains(live_area, bounds, containment_tolerance):
                         errors.append(f"<{name}> contradicts metadata live_area.")
                     else:
                         drawable_count += 1
@@ -1019,7 +1091,11 @@ def validate_svg_asset(svg_path: str | Path, metadata_path: str | Path | None = 
                     "Painted artwork collapses below 0.5 CSS pixels in one dimension at the smallest target size."
                 )
     checks.append("strict namespace, element, declaration, attribute, and reference scan completed")
-    warnings.append("Structural PASS cannot approve recognition, silhouette, optical balance, metaphor, or family/UI fit. Compare existing, custom, and no-icon candidates in the real component at every declared size and applicable state.")
+    if brand_mark:
+        checks.append("imported brand artwork and usage records are byte-bound; source truth is not certified")
+        warnings.append("Official source, usage permission and variant suitability remain unverified by this offline validator. Inspect current primary-source evidence and the actual host; do not generate a custom substitute. Unsupported official SVG constructs need a suitable official variant or host-supported asset proof, never a silent redraw.")
+    else:
+        warnings.append("Structural PASS cannot approve recognition, silhouette, optical balance, metaphor, or family/UI fit. Compare existing, custom, and no-icon candidates in the real component at every declared size and applicable state.")
     return {"path": str(svg_file), "metadata": str(meta_file) if meta_file else None, "valid": not errors, "errors": list(dict.fromkeys(errors)), "warnings": warnings, "checks": checks}
 
 

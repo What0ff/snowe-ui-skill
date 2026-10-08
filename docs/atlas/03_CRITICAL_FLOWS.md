@@ -64,7 +64,7 @@ The CLI excludes domain/packet mode. `core.search_stack` loads one configured st
 
 ## 6. Low-level validators
 
-- `asset_quality.py <svg> --metadata <json>` rejects redirected input paths, returns structured read/decode failures, binds the exact SVG bytes to declared original/external provenance, parses a strict self-contained monochrome/current-color subset under explicit byte/depth/node budgets, checks metadata/drawing language, grid/live-area/viewBox, bounded finite geometry, painted visibility, clipping bounds, unique target sizes, and small-target viability, and rejects active/embedded/external content, malformed or extreme path/arc data, unsafe namespaces/links/styles/transforms/paint. It returns an optical-QA warning even on structural pass.
+- `asset_quality.py <svg> --metadata <json>` rejects redirected input paths, returns structured read/decode failures, binds the exact SVG bytes to declared original/external provenance, parses the default strict self-contained monochrome/current-color subset (or explicitly bound imported brand artwork) under explicit byte/depth/node budgets, checks metadata/drawing language, grid/live-area/viewBox, bounded finite geometry, painted visibility, clipping bounds, unique target sizes, and small-target viability, and rejects active/embedded/external content, malformed or extreme path/arc data, unsafe namespaces/links/styles/transforms/paint. It returns an optical-QA warning even on structural pass.
 - `icon_review.py <manifest> --output <html>` validates typed representative contexts, exact source digests/routes/selectors/labels, wide/mobile host viewports, applicable host states, existing/custom/no-icon alternatives, complete non-selected candidate coverage, SVG metadata/source/license consistency, selection/verdict coherence, safe local paths, and output/input non-aliasing, then emits a deterministic LF-normalized self-contained comparison sheet on every platform. The sheet and validator do not choose or visually approve the winner; inspect the claimed winner and closest rejection in the real host.
 - `contrast.py <foreground> <background> [--minimum N]` parses exact opaque CSS colors, computes relative luminance/ratio, and returns `PASS` or `FAIL`.
 
@@ -114,6 +114,13 @@ GitHub Actions runs four independent surfaces:
 CI does not perform aesthetic certification, manual browser review, lint/format/type/coverage, packaging, deployment, or release publication.
 
 The independent `.github/workflows/pages.yml` path-filtered workflow uploads `benchmarks/soda-campaign/` as the GitHub Pages artifact root and deploys it through the `github-pages` environment. It runs only for Doppler/workflow changes or manual dispatch, does not replace or alter the three normal CI surfaces, and adds no benchmark build step.
+
+## Identity and mixed-control acceptance
+
+1. Establish the symbol's actual role before source/metaphor choice. Verify supplied third-party artwork and usage separately from custom product-symbol exploration; unavailable source proof remains UNKNOWN with useful visible wording preserved.
+2. Imported SVGs explicitly select `brand-mark`; unchanged artwork/usage bindings, supplied opaque paint and exact bounded curve extrema supplement the default validator without weakening ordinary icon checks. Schema-1.2 comparison contexts bind the exact identity and refuse custom substitutes.
+3. For mixed rows, identify real visible control owners independently of captions/help/errors, choose the intended axis and inspect actual rendering. Schema-1.1 geometry checks measure that declared relation with a justified tolerance; wrapped rows can use a different reference. A blocking shift needs an owner repair and confirming render.
+4. Run `node scripts/identity-alignment-proof.mjs`: copied-product observation, actual weak/corrected geometry, native glyph sizes, supplied image loading, brand-distortion/icon-shrink mutations and local action states. Human optical judgment and source authority remain distinct.
 
 ## Checked corrections and installation migration
 

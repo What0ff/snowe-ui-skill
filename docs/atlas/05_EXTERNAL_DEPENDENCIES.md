@@ -13,6 +13,8 @@ There is no `pyproject.toml`, `requirements.txt`, package-manager lockfile, pack
 
 ## Agent host and design tools
 
+Third-party identity research uses current owner asset/usage sources through the agent host; it adds no network client to Python. The repository-only identity/alignment proof retains exact public Telegram and Bluesky asset bytes plus reviewed source/usage summaries. Unsupported supplied SVG constructs are exercised as browser image assets rather than made acceptable by editing the mark. The copied browser proof uses the existing Node/system-Chromium/Python toolchain with no new package dependency.
+
 The installable directory targets Codex and compatible hosts that discover `SKILL.md` and follow linked references. The host may provide current web research, image generation, browser inspection, or repository tools. Snowe decides when those capabilities add value, but the copied skill does not implement, authenticate, or require a particular external service.
 
 The Python CLI is local. It contains no HTTP client, socket, telemetry, secret, auth flow, external model call, or installer. URLs in evidence rows are returned but not fetched or verified.

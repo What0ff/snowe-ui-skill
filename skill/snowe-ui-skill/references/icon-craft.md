@@ -2,6 +2,8 @@
 
 Use for new custom interface glyphs, a family extension, or a reported raw/crooked/contextually weak result. Custom drawings are the preferred exploration for open product-specific roles and when the user prefers them. Improve a promising construction before defaulting to a near-match from a library. Keep familiar meaning and accepted assets unless their decision is open; custom is an authorship choice, not an exemption from recognition or accessibility.
 
+Resolve the [symbol role](iconography-system.md#resolve-identity-before-inventing-a-metaphor) first. A third-party brand mark uses verified supplied artwork; this drawing loop applies to the product's own open symbols. Establish the action/object/state and nearest meaning it must not imply before choosing a silhouette. Keep a compact semantic brief tied to the real slot, not an invented capability or a list of visual adjectives.
+
 ## Start with the actual slot
 
 Inspect the owning button/row/tab before drawing. Record glyph CSS size, target/hit region, label and gap, line-height/baseline, padding, state indicator, clipping, neighboring glyphs, theme and DPR. Separate the glyph box from the button box and its painted backing. A 24 px construction does not belong in an 18 px slot merely because it scales without overflow.
@@ -27,6 +29,8 @@ Move the visible mass, not the hit target, for optical correction. Compare the p
 The [portable observation contract](visual-system-and-observation.md) supports whole-page and bound owner/detail captures. Declare native slot, DPR, theme and input in the plan. Include the actual SVG file/metadata, CSS owner, shared tokens, font/label and any pseudo-element backing in dependency scope. Relevant states include normal/pressed/selected/disabled/focus and forced colors when supported; test actual used states, not every theoretical permutation.
 
 ## Retain the closest losing attempt
+
+Run the loop against the current render: identify the most consequential semantic or native-size defect, locate geometry versus host cause, predict one useful change, rerender identical context, then check whether the cue improved and whether another claim regressed. Repair misleading meaning before detail. A promising custom construction deserves an actual repair when feasible; switching to a stock near-match without testing the identified repair does not develop custom quality. Stop when the applicable positive bar is met or the improved candidate still loses to a stronger existing/text result. No fixed number of drafts or enlarged specimens proves progress.
 
 Record `observed weakness → cause → geometry/host change → predicted effect → same-context rerender → consequence`. For example: two nearly touching strokes merge at 16 px → remove an unnecessary inner segment rather than thinning the entire family → the dominant silhouette should remain clear and match neighboring weight. The counterexample is a larger technical diagram where that inner segment communicates real structure.
 

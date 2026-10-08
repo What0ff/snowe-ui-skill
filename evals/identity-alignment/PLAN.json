@@ -1,0 +1,294 @@
+{
+  "schema": "1.0",
+  "scope": "Identity and mixed control relationships",
+  "sourceRoots": [
+    "index.html",
+    "assets",
+    "upstream",
+    "SOURCES.md"
+  ],
+  "cases": [
+    {
+      "id": "wide",
+      "state": "default",
+      "viewport": "900x900@1",
+      "theme": "light",
+      "input": "pointer",
+      "motion": "reduced",
+      "context": "page",
+      "route": "/index.html",
+      "steps": [],
+      "expect": [
+        {
+          "selector": ".good .filter",
+          "property": "attribute:aria-pressed",
+          "equals": "false"
+        }
+      ],
+      "probes": [
+        {
+          "selector": "main",
+          "pseudo": ""
+        },
+        {
+          "selector": ".good",
+          "pseudo": ""
+        },
+        {
+          "selector": ".bad",
+          "pseudo": ""
+        },
+        {
+          "selector": ".good input",
+          "pseudo": ""
+        },
+        {
+          "selector": ".good button",
+          "pseudo": ""
+        },
+        {
+          "selector": ".good .filter",
+          "pseudo": ""
+        },
+        {
+          "selector": ".good .primary",
+          "pseudo": ""
+        },
+        {
+          "selector": ".bad input",
+          "pseudo": ""
+        },
+        {
+          "selector": ".bad button",
+          "pseudo": ""
+        },
+        {
+          "selector": ".brand img",
+          "pseudo": ""
+        },
+        {
+          "selector": ".samples img",
+          "pseudo": ""
+        },
+        {
+          "selector": "#custom",
+          "pseudo": ""
+        }
+      ],
+      "details": [
+        {
+          "id": "good-toolbar",
+          "selector": ".good",
+          "padding": 10,
+          "scale": 1
+        },
+        {
+          "id": "bad-toolbar",
+          "selector": ".bad",
+          "padding": 10,
+          "scale": 1
+        },
+        {
+          "id": "icons-native",
+          "selector": "#custom",
+          "padding": 0,
+          "scale": 1
+        },
+        {
+          "id": "icons-detail",
+          "selector": "#custom",
+          "padding": 0,
+          "scale": 2
+        }
+      ]
+    },
+    {
+      "id": "narrow",
+      "state": "default",
+      "viewport": "390x844@1",
+      "theme": "light",
+      "input": "pointer",
+      "motion": "reduced",
+      "context": "page",
+      "route": "/index.html",
+      "steps": [],
+      "expect": [
+        {
+          "selector": ".good .filter",
+          "property": "attribute:aria-pressed",
+          "equals": "false"
+        }
+      ],
+      "probes": [
+        {
+          "selector": "main",
+          "pseudo": ""
+        },
+        {
+          "selector": ".good",
+          "pseudo": ""
+        },
+        {
+          "selector": ".bad",
+          "pseudo": ""
+        },
+        {
+          "selector": ".good input",
+          "pseudo": ""
+        },
+        {
+          "selector": ".good button",
+          "pseudo": ""
+        },
+        {
+          "selector": ".good .filter",
+          "pseudo": ""
+        },
+        {
+          "selector": ".good .primary",
+          "pseudo": ""
+        },
+        {
+          "selector": ".bad input",
+          "pseudo": ""
+        },
+        {
+          "selector": ".bad button",
+          "pseudo": ""
+        },
+        {
+          "selector": ".brand img",
+          "pseudo": ""
+        },
+        {
+          "selector": ".samples img",
+          "pseudo": ""
+        },
+        {
+          "selector": "#custom",
+          "pseudo": ""
+        }
+      ],
+      "details": [
+        {
+          "id": "good-toolbar",
+          "selector": ".good",
+          "padding": 10,
+          "scale": 1
+        },
+        {
+          "id": "bad-toolbar",
+          "selector": ".bad",
+          "padding": 10,
+          "scale": 1
+        },
+        {
+          "id": "icons-native",
+          "selector": "#custom",
+          "padding": 0,
+          "scale": 1
+        },
+        {
+          "id": "icons-detail",
+          "selector": "#custom",
+          "padding": 0,
+          "scale": 2
+        }
+      ]
+    },
+    {
+      "id": "retina",
+      "state": "default",
+      "viewport": "900x900@2",
+      "theme": "light",
+      "input": "pointer",
+      "motion": "reduced",
+      "context": "page",
+      "route": "/index.html",
+      "steps": [],
+      "expect": [
+        {
+          "selector": ".good .filter",
+          "property": "attribute:aria-pressed",
+          "equals": "false"
+        }
+      ],
+      "probes": [
+        {
+          "selector": "main",
+          "pseudo": ""
+        },
+        {
+          "selector": ".good",
+          "pseudo": ""
+        },
+        {
+          "selector": ".bad",
+          "pseudo": ""
+        },
+        {
+          "selector": ".good input",
+          "pseudo": ""
+        },
+        {
+          "selector": ".good button",
+          "pseudo": ""
+        },
+        {
+          "selector": ".good .filter",
+          "pseudo": ""
+        },
+        {
+          "selector": ".good .primary",
+          "pseudo": ""
+        },
+        {
+          "selector": ".bad input",
+          "pseudo": ""
+        },
+        {
+          "selector": ".bad button",
+          "pseudo": ""
+        },
+        {
+          "selector": ".brand img",
+          "pseudo": ""
+        },
+        {
+          "selector": ".samples img",
+          "pseudo": ""
+        },
+        {
+          "selector": "#custom",
+          "pseudo": ""
+        }
+      ],
+      "details": [
+        {
+          "id": "good-toolbar",
+          "selector": ".good",
+          "padding": 10,
+          "scale": 1
+        },
+        {
+          "id": "bad-toolbar",
+          "selector": ".bad",
+          "padding": 10,
+          "scale": 1
+        },
+        {
+          "id": "icons-native",
+          "selector": "#custom",
+          "padding": 0,
+          "scale": 1
+        },
+        {
+          "id": "icons-detail",
+          "selector": "#custom",
+          "padding": 0,
+          "scale": 2
+        }
+      ]
+    }
+  ]
+}

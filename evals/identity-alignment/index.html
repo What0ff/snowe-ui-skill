@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="ru"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Identity, glyph and control relationship proof</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f3f4f1;color:#202621;font:15px/1.45 system-ui,sans-serif}main{max-width:960px;margin:auto;padding:32px}h1{font-size:28px;margin:0 0 8px;line-height:1.2}h2{font-size:19px;margin:0 0 20px}p{margin:0 0 20px;color:#59635b}.section{padding:24px;background:white;margin:24px 0;border:1px solid #d5dbd5;border-radius:12px}.toolbar{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px 12px}label{font-size:13px;color:#404b43}input,button,.brand{font:inherit;color:inherit}input{min-width:0;width:100%;height:40px;padding:0 12px;border:1px solid #87978a;border-radius:7px;background:white}button,.brand{display:inline-flex;gap:10px;align-items:center;justify-content:center;min-width:0;padding:0 14px;border:1px solid #87978a;border-radius:7px;background:white;height:40px;text-decoration:none;cursor:pointer}.filter{height:36px}.primary{background:#283e30;color:white;border-color:#283e30}.field label{display:block;margin-bottom:8px}.bad{align-items:center}.good .field{display:contents}.good label{grid-row:1;grid-column:1}.good input{grid-row:2;grid-column:1}.good button{grid-row:2;align-self:end}.good .filter{grid-column:2}.good .primary{grid-column:3}.help{font-size:12px;color:#626e65;margin-top:8px}.good .help{grid-row:3;grid-column:1;margin:0}button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #395bdd;outline-offset:3px}.brands{display:flex;flex-wrap:wrap;gap:20px}.brand{height:auto;min-height:56px;padding:14px 20px;gap:16px}.brand img{display:block;width:24px;height:24px;object-fit:contain;flex:none}.symbols{display:grid;grid-template-columns:1fr 1fr;gap:24px}.samples{display:flex;align-items:center;gap:18px;min-height:40px}.samples img{display:block;flex:none}.caption{font-size:13px;margin:10px 0 0}.eyebrow{font-size:12px;margin:0 0 8px;color:#526158}.status{font-size:13px;min-height:20px;margin-top:12px}button[aria-pressed=true]{box-shadow:inset 0 0 0 1px #283e30}
+@media(max-width:640px){main{padding:20px}h1{font-size:24px}.section{padding:18px}.toolbar{grid-template-columns:1fr 1fr}.bad .field{grid-column:1/-1}.good label{grid-column:1/-1}.good input{grid-column:1/-1}.good button{grid-row:3}.good .filter{grid-column:1}.good .primary{grid-column:2}.good .help{grid-row:4;grid-column:1/-1}.symbols{grid-template-columns:1fr}.brand{padding:14px 18px}.toolbar button{font-size:13px;padding:0 10px}}
+.brand--bluesky{padding:24px;gap:24px}
+</style>
+<main>
+<p class="eyebrow">Репозиторный пример · не интерфейс PublishMe</p>
+<h1>Источник, рисунок и расположение</h1>
+<p>Три независимых решения проверяются в настоящих слотах. Примеры созданы для проверки контракта и визуального разбора.</p>
+<section class="section"><h2>Поле и действия: исходная связь</h2>
+<div class="toolbar bad"><div class="field"><label for="before-search">Найти материал по названию</label><input id="before-search" placeholder="Название или фрагмент текста"></div><button class="filter">Все каналы</button><button class="primary">Создать материал</button></div>
+<p class="caption">Подпись увеличивает коробку поля. Соседние действия выравниваются относительно всей коробки.</p></section>
+<section class="section"><h2>Поле и действия: исправленная связь</h2>
+<div class="toolbar good"><div class="field"><label for="search">Найти материал по названию</label><input id="search" aria-describedby="search-help" placeholder="Название или фрагмент текста"><span class="help" id="search-help">Можно искать по нескольким словам; длинная подсказка занимает собственную строку.</span></div><button class="filter" aria-pressed="false">Все каналы</button><button class="primary">Создать материал</button></div>
+<div class="status" aria-live="polite">Показаны все материалы</div></section>
+<section class="section" id="identity"><h2>Сторонние идентичности</h2><div class="brands">
+<a class="brand" href="https://t.me/telegram"><img src="assets/telegram.svg" alt="">Telegram</a>
+<a class="brand brand--bluesky" href="https://bsky.app/profile/bsky.app"><img src="assets/bluesky-black.svg" alt="">Bluesky</a>
+</div><p class="caption">Оригинальные файлы владельцев брендов. Telegram проверяется через изображение в браузере; его SVG выходит за строгий поднабор валидатора.</p></section>
+<section class="section" id="custom"><h2>Собственный знак: расстояние между креплениями</h2><div class="symbols">
+<div><strong>Исходная конструкция</strong><div class="samples">
+<img src="assets/span-before.svg" width="16" height="16" alt=""><img src="assets/span-before.svg" width="20" height="20" alt=""><img src="assets/span-before.svg" width="24" height="24" alt="">
+</div><p class="caption">16 / 20 / 24 px · тесные детали внутри измеряемого пролёта</p></div>
+<div><strong>Уточнённая конструкция</strong><div class="samples">
+<img src="assets/span.svg" width="16" height="16" alt=""><img src="assets/span.svg" width="20" height="20" alt=""><img src="assets/span.svg" width="24" height="24" alt="">
+</div><p class="caption">16 / 20 / 24 px · две границы и читаемая размерная связь</p></div>
+</div><button class="measure" style="margin-top:20px"><img src="assets/span.svg" width="20" height="20" alt="">Расстояние между креплениями</button></section>
+</main><script>
+const status=document.querySelector('.status');
+document.querySelector('.good .filter').addEventListener('click',e=>{const on=e.currentTarget.getAttribute('aria-pressed')!=='true';e.currentTarget.setAttribute('aria-pressed',String(on));status.textContent=on?'Фильтр каналов выбран':'Показаны все материалы'});
+document.querySelector('.good .primary').addEventListener('click',()=>{status.textContent='Новый черновик создан'});
+document.querySelector('#search').addEventListener('input',e=>{status.textContent=e.target.value?'Поиск: '+e.target.value:'Показаны все материалы'});
+</script></html>

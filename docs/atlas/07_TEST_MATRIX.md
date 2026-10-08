@@ -204,6 +204,7 @@ Normal CI does not run manual aesthetic review, lint/format/type/coverage, packa
 | Scope calibration/delivery | Scope-contract tests, behavior runner, bounded host traces where available, and rendered proof at the calibrated surface. |
 | Asset/contrast validators | Focused unit tests plus every affected real asset/pair and rendered optical/contextual review. |
 | Icon lifecycle/comparison | Icon-workflow and asset tests, deterministic comparison regeneration, targeted icon browser scenario, actual host selectors, and human visual inspection. |
+| Imported identities / mixed-control geometry | `tests.test_role_and_alignment`, existing icon/observation suites, `node scripts/identity-alignment-proof.mjs`, and native-size source/context review. |
 | Behavior scenarios/runner | Runner output review; no expected layout/style encoding. |
 | Goodturn | Bicycle suite, JS check, browser smoke, affected states/screenshots/manual QA. |
 | Doppler | Soda suite, JS check, five-benchmark smoke, affected normal/reduced/transition captures, GIF, QA, and cross-comparison. |
@@ -212,6 +213,10 @@ Normal CI does not run manual aesthetic review, lint/format/type/coverage, packa
 | Installer/public install docs | Installation/runtime-hardening tests for exact fresh/repeated copies, lock contention, safe transient recovery, source/staging revalidation, rollback, redirected/path overlap, public CLI, and stale legacy-command removal. |
 | Pages workflow/live URL | Soda suite, folder-as-root asset/hash/interaction audit, workflow syntax/run result, Pages settings read-back, and public URL browser verification. |
 | Repository structure or context boundary | Contributor-context check, atlas `--write` then `--check`, fresh-clone simulation, complete status/diff/ignore inspection. |
+
+## Identity and control relationship proof
+
+Identity/alignment evidence uses `evals/identity-alignment/build_contracts.py` to regenerate declarations, `tests/test_role_and_alignment.py` for role/profile/curve/axis compatibility and failure cases, and `scripts/identity-alignment-proof.mjs` for copied-product browser proof at 900/390 and DPR2. CI includes that command in the existing browser job. `--capture captures-<revision>` creates fresh persistent evidence for inspection; normal runs use temporary copies. The checked fixture includes actual imported assets, an intentionally weak row and compact original before/after glyphs, with implementer review in `REVIEW.md`. Authored fixtures and deterministic rejection do not establish model improvement; bounded paired host runs must retain their limitations. On this Windows host the existing directory-symlink ownership test is unavailable without platform symlink support; junction and other path tests still run.
 
 ## Missing command surfaces
 

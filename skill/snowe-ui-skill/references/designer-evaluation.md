@@ -44,6 +44,8 @@ For correction-memory and icon-backing changes, pair a new context where the sam
 
 Use held-out tasks after developing a lesson; do not tune the scenario until it produces the desired verdict. Separate a bounded review from implementation and repeated generation evidence. An independent reviewer may inspect actual artifacts when delegation is authorized; a self-review must be labelled as such. Neither a second agent nor a numeric score can replace rendered or behavioral evidence.
 
+For identity/custom/alignment changes, separate source choice, drawing finish and host geometry. Pair third-party marks with an original product identity, a learned action, a domain-specific symbol and a truthful text-only fallback. Pair a caption-expanded field wrapper that shifts adjacent actions with different-height controls on a shared axis, long/wrapped text and a deliberately staggered accepted target. Compare actual native-size results, source verification, defect detection/repair, false prohibitions and unnecessary work. Keep new services, layouts and metaphors held out from rule development. Repeated baseline/updated host runs need the same task facts, tools and model conditions, with the intended repair withheld from the evaluating task; report run variance and reviewer method. Deterministic profile rejection or an authored corrected fixture does not prove better model generation or generalization.
+
 Use:
 
 ```text

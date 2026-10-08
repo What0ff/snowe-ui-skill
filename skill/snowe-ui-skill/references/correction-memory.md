@@ -46,6 +46,8 @@ Examples of scope boundaries:
 
 - A rejected colored backing behind passive feature icons does not prohibit round icon buttons, avatar masks, selected filters, or a specifically approved brand treatment.
 - An icon blurred by fractional scaling suggests checking rendered size, stroke and transforms elsewhere; it does not establish that all small SVGs or all external icon families are poor.
+- A caption-expanded field wrapper that displaces peer actions suggests checking actual control axes in other mixed rows; it does not require equal heights or forbid an explicitly staggered composition.
+- A generated approximation used for a third-party identity calls for verified supplied artwork in that role; it does not forbid original symbols or identity work for the user's own product.
 - Optional services appearing before selection calls for checking the displayed composition against actual selection state. It does not authorize changing price, entitlements, or backend access.
 
 Validate a proposed lesson on a new relevant task and on a counterexample where it should not apply. Compare observable omissions, repeated defects, preserved requirements, corrections and unnecessary work. Self-assessment, added instructions, and deterministic prose checks do not prove better future behavior. Keep reusable lessons conditional until repeated evidence justifies broader scope.

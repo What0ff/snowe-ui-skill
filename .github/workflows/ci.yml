@@ -101,3 +101,6 @@ jobs:
 
       - name: Check copied observation product and injected Doppler detail defects
         run: node scripts/doppler-detail-probe.mjs
+
+      - name: Check imported identities and mixed-control geometry in copied product
+        run: node scripts/identity-alignment-proof.mjs

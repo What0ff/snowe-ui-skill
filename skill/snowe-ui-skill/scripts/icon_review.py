@@ -26,7 +26,7 @@ from typing import Any
 from asset_quality import AssetValidationError, validate_svg_asset
 
 
-SCHEMA_VERSION = "1.1"
+SCHEMA_VERSION = "1.2"
 KINDS = {"existing", "custom", "none"}
 COMPONENTS = {"icon-button", "labeled-button", "service-item"}
 STATES = {"default", "hover", "focus", "selected", "disabled", "dark", "high-contrast"}
@@ -336,8 +336,8 @@ def load_review_manifest(path: str | Path) -> dict[str, Any]:
         raise ManifestError(tree_error)
     if not isinstance(manifest, dict):
         raise ManifestError("manifest root must be an object")
-    if manifest.get("schema_version") not in {"1.0", SCHEMA_VERSION}:
-        raise ManifestError("schema_version must be '1.0' or '1.1'")
+    if manifest.get("schema_version") not in ("1.0", "1.1", SCHEMA_VERSION):
+        raise ManifestError("schema_version must be '1.0', '1.1', or '1.2'")
     _text(manifest.get("title"), "title")
     contexts = manifest.get("contexts")
     if not isinstance(contexts, list) or not contexts:
@@ -355,6 +355,16 @@ def load_review_manifest(path: str | Path) -> dict[str, Any]:
         context_ids.add(context_id)
         for field in ("role", "label", "decision_evidence"):
             _text(context.get(field), f"{prefix}.{field}")
+        if manifest["schema_version"] == "1.2":
+            if context.get("symbol_role") not in ("brand-mark", "interface-icon"):
+                raise ManifestError(f"{prefix}.symbol_role must explicitly be brand-mark or interface-icon")
+        elif "symbol_role" in context or "brand_identity" in context:
+            raise ManifestError(f"{prefix} typed symbol roles require schema 1.2")
+        brand_context = context.get("symbol_role") == "brand-mark"
+        if brand_context:
+            _text(context.get("brand_identity"), f"{prefix}.brand_identity")
+        elif "brand_identity" in context:
+            raise ManifestError(f"{prefix}.brand_identity requires a brand-mark role")
         if manifest["schema_version"] == "1.0":
             context.setdefault("lang", "en")
             context.setdefault("dir", "ltr")
@@ -412,8 +422,11 @@ def load_review_manifest(path: str | Path) -> dict[str, Any]:
             raise ManifestError(f"{prefix}.host_proof is only allowed for repository-derived context evidence")
 
         candidates = context.get("candidates")
-        if not isinstance(candidates, list) or len(candidates) < 2:
-            raise ManifestError(f"{prefix}.candidates must contain at least two real alternatives")
+        minimum = 1 if brand_context else 2
+        if not isinstance(candidates, list) or len(candidates) < minimum:
+            raise ManifestError(f"{prefix}.candidates must contain at least {minimum} real alternatives")
+        if brand_context and any(isinstance(candidate, dict) and candidate.get("kind") == "custom" for candidate in candidates):
+            raise ManifestError(f"{prefix} brand marks cannot offer custom substitutes")
         candidate_ids: set[str] = set()
         kinds: set[str] = set()
         candidate_digests: set[str] = set()
@@ -495,6 +508,11 @@ def load_review_manifest(path: str | Path) -> dict[str, Any]:
                 provenance_kind = metadata_value.get("provenance", {}).get("kind")
                 if kind == "custom" and provenance_kind != "original":
                     raise ManifestError(f"{candidate_prefix} custom candidates require original provenance")
+                if brand_context:
+                    if metadata_value.get("asset_type") != "brand-mark" or metadata_value.get("brand", {}).get("identity") != context["brand_identity"]:
+                        raise ManifestError(f"{candidate_prefix} must bind the exact declared brand identity and imported artwork")
+                elif manifest["schema_version"] == "1.2" and metadata_value.get("asset_type") == "brand-mark":
+                    raise ManifestError(f"{candidate_prefix} brand artwork requires a brand-mark context")
                 for field in ("source", "license"):
                     if candidate.get(field) != metadata_value.get(field):
                         raise ManifestError(
@@ -537,7 +555,7 @@ def load_review_manifest(path: str | Path) -> dict[str, Any]:
                         f"{prefix}.candidate {candidate['id']}.visible_label must exactly match "
                         f"host_proof.expected_visible_label"
                     )
-        if len(kinds) < 2:
+        if not brand_context and len(kinds) < 2:
             raise ManifestError(f"{prefix} must compare materially different candidate kinds")
     manifest["_path"] = str(manifest_path)
     return manifest

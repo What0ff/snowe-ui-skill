@@ -1,0 +1,103 @@
+{
+  "schema_version": "1.2",
+  "title": "Identity and custom drawing role proof",
+  "contexts": [
+    {
+      "id": "bluesky-black",
+      "symbol_role": "brand-mark",
+      "brand_identity": "Bluesky",
+      "role": "Link to an external profile",
+      "lang": "ru",
+      "dir": "ltr",
+      "component": "labeled-button",
+      "label": "Bluesky",
+      "sizes": [
+        24
+      ],
+      "states": [
+        "default"
+      ],
+      "selected": "bluesky-black",
+      "verdict": "KEEP",
+      "decision_evidence": "Implementer self-review; see REVIEW.md; no recognition-study claim",
+      "context_evidence": {
+        "basis": "representative",
+        "source": "index.html",
+        "selector": ".brand",
+        "viewport": "900x900@1 and 390x844@1"
+      },
+      "candidates": [
+        {
+          "id": "bluesky-black",
+          "name": "bluesky-black",
+          "kind": "existing",
+          "asset": "assets/bluesky-black.svg",
+          "metadata": "assets/bluesky-black.metadata.json",
+          "asset_sha256": "d48ee49fb90177762b2b3ce0ffc4ee282e09c127898903d302d882cddc9d57f8",
+          "source": "Official Bluesky black butterfly download",
+          "license": "Owner trademark policy; see SOURCES.md",
+          "rationale": "Retain supplied identity"
+        }
+      ]
+    },
+    {
+      "id": "span",
+      "symbol_role": "interface-icon",
+      "role": "Identify the span measurement control",
+      "lang": "ru",
+      "dir": "ltr",
+      "component": "labeled-button",
+      "label": "Расстояние между креплениями",
+      "sizes": [
+        16,
+        20,
+        24
+      ],
+      "states": [
+        "default"
+      ],
+      "selected": "span",
+      "verdict": "KEEP",
+      "decision_evidence": "Implementer self-review; see REVIEW.md; no recognition-study claim",
+      "context_evidence": {
+        "basis": "representative",
+        "source": "index.html",
+        "selector": ".measure",
+        "viewport": "900x900@1 and 390x844@1"
+      },
+      "candidates": [
+        {
+          "id": "span",
+          "name": "span",
+          "kind": "custom",
+          "asset": "assets/span.svg",
+          "metadata": "assets/span.metadata.json",
+          "asset_sha256": "4842b9c63c582975850c2bf54065e9944f2305d0d295397be86178796e80a2de",
+          "source": "Original repository evaluation drawing",
+          "license": "Repository MIT; see SOURCES.md",
+          "rationale": "Two boundary cues survive at native size"
+        },
+        {
+          "id": "span-before",
+          "name": "span-before",
+          "kind": "custom",
+          "asset": "assets/span-before.svg",
+          "metadata": "assets/span-before.metadata.json",
+          "asset_sha256": "bc31d89de3a34635192427da096a71ae53bfabba7a2a7bf1d6fad21e63fe96e2",
+          "source": "Original repository evaluation drawing",
+          "license": "Repository MIT; see SOURCES.md",
+          "rationale": "REVISE: inner ticks crowd the dimension cue"
+        },
+        {
+          "id": "span-text",
+          "name": "Visible wording",
+          "kind": "none",
+          "visible_label": "Расстояние между креплениями",
+          "source": "No artwork",
+          "license": "No artwork",
+          "rationale": "Truthful alternative; optional pictogram supports repeated scanning"
+        }
+      ]
+    }
+  ]
+}

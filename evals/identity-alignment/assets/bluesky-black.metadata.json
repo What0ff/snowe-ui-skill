@@ -1,0 +1,56 @@
+{
+  "name": "bluesky-black",
+  "asset_type": "brand-mark",
+  "role": "External Bluesky identity",
+  "grid": "568 x 501",
+  "live_area": {
+    "min_x": 0,
+    "min_y": 0,
+    "max_x": 568,
+    "max_y": 501
+  },
+  "drawing_language": {
+    "mode": "fill",
+    "stroke_width": 0,
+    "linecap": "not applicable",
+    "linejoin": "not applicable",
+    "corner_language": "Unchanged supplied butterfly",
+    "detail_budget": "Supplied silhouette"
+  },
+  "target_sizes": [
+    24
+  ],
+  "source": "Official Bluesky black butterfly download",
+  "license": "Owner trademark policy; see SOURCES.md",
+  "accessibility_owner": "Owning labeled link/button; image decorative",
+  "provenance": {
+    "kind": "external",
+    "creator": "Bluesky Social PBC",
+    "source_ref": "https://bsky.social/about/brand-assets/butterfly/bluesky_media_kit_logo_transparent_4.svg",
+    "reviewed": "2026-10-08",
+    "sha256": "d48ee49fb90177762b2b3ce0ffc4ee282e09c127898903d302d882cddc9d57f8"
+  },
+  "evidence": {
+    "source": {
+      "kind": "external",
+      "verification": "unverified"
+    },
+    "license": {
+      "path": "../SOURCES.md",
+      "sha256": "4e05606d230863c68242fff8adbce8c4e5f1e8ec06f73c94909cc7e55fb6e8f2"
+    }
+  },
+  "brand": {
+    "schema": "1.0",
+    "identity": "Bluesky",
+    "variant": "Official black butterfly",
+    "artwork": {
+      "path": "../upstream/bluesky-black.svg",
+      "sha256": "d48ee49fb90177762b2b3ce0ffc4ee282e09c127898903d302d882cddc9d57f8"
+    },
+    "usage": {
+      "path": "../SOURCES.md",
+      "sha256": "4e05606d230863c68242fff8adbce8c4e5f1e8ec06f73c94909cc7e55fb6e8f2"
+    }
+  }
+}

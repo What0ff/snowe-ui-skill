@@ -45,6 +45,16 @@ Before searching:
 
 An established source is evidence and usually the baseline, not an automatic winner or a closed allowlist. Preserve it for routine actions when it already fits; explore further only where coverage, meaning, platform, or art direction makes the difference material.
 
+## Resolve Identity Before Inventing a Metaphor
+
+Establish what the symbol identifies from the actual label, destination, action and product facts. A third-party identity is a source-fidelity decision; a product-specific mechanism is a metaphor/drawing decision. Do not infer either from a service name alone or a keyword list. Keep uncertainty explicit.
+
+For a third-party brand mark, inspect approved repository assets first, then the brand owner's current asset kit or a distribution whose exact artwork and usage terms can be checked against primary sources. Use the appropriate supplied symbol/wordmark and approved color or monochrome variant. Preserve its geometry, aspect ratio, clear space and required treatment; normalize the surrounding slot without stretching, tracing, simplifying, tinting or adding effects to the mark. A generic arrow, ring, initials or hand-drawn approximation does not become the real brand icon beside its name. Custom preferences apply to the product's own symbols, not replacement identities for external services.
+
+Record the exact asset, source/variant, usage evidence and what was actually verified. A URL, library name or byte digest alone cannot prove officialness or permitted use. When a required asset cannot be verified, retain useful visible wording and leave that source/fidelity claim UNKNOWN; do not invent an official-looking replacement. Developing an original identity for the user's own product is a separate legitimate custom task. An accepted conventional action also need not reopen source exploration.
+
+Known brand artwork does not need a custom challenger. If a variant is genuinely open, compare only suitable official variants in their real hosts. Inspect recognition, contrast, native size, clear space, focus/selected/disabled treatment and any inherited CSS that can recolor or distort the asset. Distinguish the mark's identity from the owning control's state; brand colors need not inherit the monochrome action family.
+
 ## Choose Meaning Before Source
 
 For each unresolved concept, create a small semantic set:
@@ -169,7 +179,9 @@ python <skill-directory>/scripts/asset_quality.py path/to/icon.svg --metadata pa
 
 Metadata requires the icon role, grid/live area, drawing language, target sizes, source/license, accessibility owner, and structured local evidence bindings. Local source and license records must resolve from metadata-relative paths to safe regular files whose exact bytes match their digests; external source URLs remain explicitly unverified. A passing validator proves only the declared structural contract. It cannot certify beauty, recognition, optical balance, or family coherence.
 
-The validator accepts a strict self-contained interface-icon subset. It rejects nested viewports, executable or linked content, embedded text/raster content, URI/local-fragment dependencies, transforms/masks/filters/clipping, unknown attributes, malformed or clipped geometry, collapsed root dimensions, non-`currentColor` paint, asset-level muted opacity, unsupported miter joins, and metadata/provenance contradictions. The exact schema and boundary are in [cli-reference.md](cli-reference.md).
+The default `interface-icon` profile accepts a strict self-contained subset. It rejects nested viewports, executable or linked content, embedded text/raster content, URI/local-fragment dependencies, transforms/masks/filters/clipping, unknown attributes, malformed or clipped geometry, collapsed root dimensions, non-`currentColor` paint, asset-level muted opacity, unsupported miter joins, and metadata/provenance contradictions. The exact schema and boundary are in [cli-reference.md](cli-reference.md).
+
+Use the explicit `brand-mark` profile for unchanged imported brand SVGs in the supported subset. It binds a retained upstream artwork copy and usage record, permits opaque supplied colors, and preserves active-content/reference/geometry checks. It does not grant a trademark license or certify source truth. An unsupported official SVG, gradient, mask or raster asset needs a suitable official variant or the host's supported asset inspection path; never rewrite the mark just to obtain validator PASS.
 
 ## Operational Candidate Comparison
 
