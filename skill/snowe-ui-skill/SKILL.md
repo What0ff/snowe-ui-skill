@@ -17,6 +17,8 @@ Existing code is a baseline, not proof that its visual direction is accepted. If
 
 Type, icon, shape and alignment choices need stable roles. Do not default to pills, icon backings, extra font families, decorative cards or arbitrary centering. Preserve justified controls, identity and readable flow. Establish the symbol's role before choosing its source: third-party brand identities use verified official or approved artwork, familiar actions preserve learned meaning, and open product-specific roles actively explore feasible custom candidates. Never redraw a third-party mark to satisfy a custom preference. Judge custom work at its real size in context.
 
+Visible numbering also needs a role: do not automatically prefix landing-page sections, benefits or services with `01/02`. Establish actual order, reference/navigation value or a verified identity benefit before using ordinals; preserve meaningful steps and supplied designs. Use the [page copy audit](references/page-hierarchy.md#audit-user-facing-text) for the affected decision.
+
 Use [correction-memory.md](references/correction-memory.md) for feedback and continuation. Record material explicit corrections with scope and evidence; run the applicable journal check before resuming and before completion. Do not create a global preference profile or open a decision packet for a local fix. Keep detailed working records internal; short tasks do not require a user-facing process report.
 
 ## Calibrate Consequence and Change Surface

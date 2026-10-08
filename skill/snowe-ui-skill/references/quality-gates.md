@@ -60,6 +60,8 @@ When a treatment's value is unresolved, render a credible challenger on identica
 
 Check product specificity without demanding novelty: temporarily disregard the logo/name and ask which content relationships, composition, type, imagery, or behavior still follow this brief. A familiar layout can pass on task fit. A claimed distinctive identity needs visible support beyond interchangeable adjectives, badges, and effects. Do not force a signature motif onto a utility interface.
 
+For visible section/card numbering, verify the [ordinal's content role](page-hierarchy.md#audit-user-facing-text) in the actual page, including CSS-generated counters. `01/02` can imply sequence, priority or progress among unordered peers and compete with the real headings. Revise unsupported automatic numbering at its shared owner; do not replace it mechanically with letters, Roman numerals or icons. When its value is genuinely open, inspect the same content without the disputed indices, preserving useful grouping and links. Keep verified process order, chapter/reference navigation and supplied identity treatments; no number count or blanket no-numbers rule proves quality. A reported material recurrence blocks affected visual KEEP until the current result is repaired and inspected.
+
 ## Acceptance Rules
 
 ### Explicit Visual Disposition
