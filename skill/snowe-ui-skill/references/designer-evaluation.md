@@ -115,6 +115,10 @@ When increasing custom-icon exploration, include an approximate library match fo
 
 ## Paired Revision Evaluation
 
+For changes to creative search, freeze held-out briefs before editing the skill. Include an open distinctive direction with settled page/action contracts and a quiet repeated-use workspace as a counterexample. Use immutable complete skill copies, isolated fresh host contexts, identical prompts/content/tools and repeated runs with balanced condition order. Preserve unsuccessful runs and raw usage/timing when exposed. Do not prescribe a candidate count, metaphor, palette or expected winner. Use an opt-in host harness when available; evaluation does not become a normal-delivery requirement.
+
+Compare visible organizing differences and finished artifacts before exposing their rationale or condition labels. Record invention, fit, coherence, responsive/content resilience, technical/behavioral failures and unnecessary process separately. Do not infer a gain from longer traces, more candidates or better rejection wording. A model review must name its method and limitations; a small repeated pilot remains bounded evidence, not a population-level improvement or user acceptance.
+
 When changing Snowe, run the same scenario evidence through the previous and proposed behavior without leaking the desired improvement. Compare causal traces and final artifacts. Look for:
 
 - newly opened solution space;

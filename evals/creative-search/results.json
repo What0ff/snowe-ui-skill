@@ -1,0 +1,827 @@
+{
+  "schema": "1.0",
+  "date": "2026-10-09",
+  "method": "Frozen-copy repeated Codex CLI generation, fresh masked model reviews, parent retained state reproduction. No human preference or generalization measurement.",
+  "configured_host": {
+    "cli": "0.162.0",
+    "model": "gpt-6.1-sol",
+    "reasoning": "xhigh",
+    "service_tier": "default",
+    "identity": "Configuration observed; backend identity not independently attested"
+  },
+  "baseline_revision": "a67af5264c2606a68d068734245e0c6fb02b9b08",
+  "briefs_sha256": "70f0e30cb854be09dc527083c0b389cb25c3af9731562a40fa606cc70b4e0373",
+  "snapshot_sha256": {
+    "baseline": "1f83d73c4c421176035153461e9fa483d319ee61f9760d621b687bb59db51f7e",
+    "candidate": "443349809181131fcc0a0c47849aaf873bd7c922b54d9c848076b0ecf88e04c4"
+  },
+  "raw_evidence": "Optional ignored local work/creative-search-pilot; not required contributor context.",
+  "runs": [
+    {
+      "schema": "1.0",
+      "case": "berth-operations",
+      "repeat": 1,
+      "snapshot_sha256": "1f83d73c4c421176035153461e9fa483d319ee61f9760d621b687bb59db51f7e",
+      "briefs_sha256": "70f0e30cb854be09dc527083c0b389cb25c3af9731562a40fa606cc70b4e0373",
+      "prompt_sha256": "449c70cd8e084a47092f3b1e427feb3d32d4ba77e33e631dabbd28e02ee466a6",
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 645.078,
+      "usage": {
+        "input_tokens": 2398126,
+        "cached_input_tokens": 2274048,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 28664,
+        "reasoning_output_tokens": 9388
+      },
+      "skill_modified_by_subject": false,
+      "site_files": [
+        {
+          "path": "app.js",
+          "sha256": "83af98303d4763a1a1e40d58646e30824eb57796027ec5877d3ab101e24797b2"
+        },
+        {
+          "path": "index.html",
+          "sha256": "68e8af2ea0258efba1fc9019166e44fdeb1ef10dff78334987af8e72cb388b36"
+        },
+        {
+          "path": "styles.css",
+          "sha256": "0d00356b2c26b05a7e6ee5953448f667e76d2ba9d318eceaabdcf04c6201fbb9"
+        }
+      ],
+      "evidence_boundary": "Observed CLI generation; no automatic visual verdict or user acceptance. Model configuration is inherited, not independently attested.",
+      "status": "GENERATED",
+      "id": "b-berth-1",
+      "arm": "baseline",
+      "run_sha256": "07a32d1146a88f9ba13d2970e6b02a3985f44dc513f591e71044cff358971895",
+      "trace_sha256": "c78af94f2bb50104f46ec327e27091867be5c2d29832aa4ca34de8a20c42444e",
+      "capture_receipt_sha256": "422cdfaee05164f08e0f9ad735506359c70d52c5af14afc433fd6c2119e635d4"
+    },
+    {
+      "schema": "1.0",
+      "case": "berth-operations",
+      "repeat": 2,
+      "snapshot_sha256": "1f83d73c4c421176035153461e9fa483d319ee61f9760d621b687bb59db51f7e",
+      "briefs_sha256": "70f0e30cb854be09dc527083c0b389cb25c3af9731562a40fa606cc70b4e0373",
+      "prompt_sha256": "449c70cd8e084a47092f3b1e427feb3d32d4ba77e33e631dabbd28e02ee466a6",
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 782.828,
+      "usage": {
+        "input_tokens": 2523651,
+        "cached_input_tokens": 2398720,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 31322,
+        "reasoning_output_tokens": 12155
+      },
+      "skill_modified_by_subject": false,
+      "site_files": [
+        {
+          "path": "app.js",
+          "sha256": "158a33d4de3ca8fc20dda1d871ad5b7111c4c7bb60e2d0addf9572f7e66f19fa"
+        },
+        {
+          "path": "index.html",
+          "sha256": "603e87aef25c8fb792cd8154130c44d03929c48a0793f3196fa1aaebd48d31dd"
+        },
+        {
+          "path": "styles.css",
+          "sha256": "ea96a42ccd2513ea85c67a06a1b6cb9e6869d0542c1396da171782f2623ed0cb"
+        }
+      ],
+      "evidence_boundary": "Observed CLI generation; no automatic visual verdict or user acceptance. Model configuration is inherited, not independently attested.",
+      "status": "GENERATED",
+      "id": "b-berth-2",
+      "arm": "baseline",
+      "run_sha256": "340c8e0949ef3bddc17ff62d8e566e8b7c963300b03c02d65f32b88e36ad5cf8",
+      "trace_sha256": "a615c0dd9da1f54863b3c0193acbba7bb5b5999ef2282b13be54271326ea404c",
+      "capture_receipt_sha256": "597b609f8924a0513c296b796fa4ce87686c8befd9d509f132dd42b401401046"
+    },
+    {
+      "schema": "1.0",
+      "case": "radio-workshop",
+      "repeat": 1,
+      "snapshot_sha256": "1f83d73c4c421176035153461e9fa483d319ee61f9760d621b687bb59db51f7e",
+      "briefs_sha256": "70f0e30cb854be09dc527083c0b389cb25c3af9731562a40fa606cc70b4e0373",
+      "prompt_sha256": "94ddc2c617a564d8ab55851f6f31a15553d983edb94415db6b1659a18360785c",
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 775.218,
+      "usage": {
+        "input_tokens": 1969204,
+        "cached_input_tokens": 1851520,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 30219,
+        "reasoning_output_tokens": 8634
+      },
+      "skill_modified_by_subject": false,
+      "site_files": [
+        {
+          "path": "app.js",
+          "sha256": "086484e1f42268401ce612ca18ab6d23c716fed3a24b8f0b7da2ddea92a820bd"
+        },
+        {
+          "path": "index.html",
+          "sha256": "dd4634ed7718163648dc3adc99a071a578f5973bbe1b86e0adeca25687fd2719"
+        },
+        {
+          "path": "styles.css",
+          "sha256": "6c2e6fe7864a080551850db9e509c87e6c9e91fb474d73b402750bc927031d6e"
+        }
+      ],
+      "evidence_boundary": "Observed CLI generation; no automatic visual verdict or user acceptance. Model configuration is inherited, not independently attested.",
+      "status": "GENERATED",
+      "id": "b-radio-1",
+      "arm": "baseline",
+      "run_sha256": "fe6e895a204083455250d1425c9b71d92b8c2847319111dc42da7d5defb7a581",
+      "trace_sha256": "9819177d72cab1328c0fce5ff61e0dc6b6bffe1961f3940c9bb43c624aea1741",
+      "capture_receipt_sha256": "13ca6e5d1a69ffeb71501e166efb50cf45fc0c77fc4c8e64c67ea0f5eb555b96"
+    },
+    {
+      "schema": "1.0",
+      "case": "radio-workshop",
+      "repeat": 2,
+      "snapshot_sha256": "1f83d73c4c421176035153461e9fa483d319ee61f9760d621b687bb59db51f7e",
+      "briefs_sha256": "70f0e30cb854be09dc527083c0b389cb25c3af9731562a40fa606cc70b4e0373",
+      "prompt_sha256": "94ddc2c617a564d8ab55851f6f31a15553d983edb94415db6b1659a18360785c",
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 717.657,
+      "usage": {
+        "input_tokens": 2175002,
+        "cached_input_tokens": 2028544,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 29224,
+        "reasoning_output_tokens": 7241
+      },
+      "skill_modified_by_subject": false,
+      "site_files": [
+        {
+          "path": "app.js",
+          "sha256": "b7e7d17cb380745f1ede89715394f9b3f6925653e7ff2935a44a353baab18d25"
+        },
+        {
+          "path": "index.html",
+          "sha256": "9560a18354cf3bde8dd0a3ca50d1ec9c4b77dbb451d1549a8e71cd9fce913549"
+        },
+        {
+          "path": "styles.css",
+          "sha256": "e2fe4423594caa7e83fa51334c1dfc50a119e2c25622ebcd2322d38d165dad59"
+        }
+      ],
+      "evidence_boundary": "Observed CLI generation; no automatic visual verdict or user acceptance. Model configuration is inherited, not independently attested.",
+      "status": "GENERATED",
+      "id": "b-radio-2",
+      "arm": "baseline",
+      "run_sha256": "2b1f537a2f30cf1e1e9bdd06e5de79c39c08db0488365f8fa9e2904d3c68a168",
+      "trace_sha256": "8facb58c0b7e708bad398d795a615f267a7d2ac17dde8d519ac331eefe1708a6",
+      "capture_receipt_sha256": "9546657bce1fb9a76e51007a30351d81a89e8d1610103778782891692b286ecb"
+    },
+    {
+      "schema": "1.0",
+      "case": "textile-exhibition",
+      "repeat": 1,
+      "snapshot_sha256": "1f83d73c4c421176035153461e9fa483d319ee61f9760d621b687bb59db51f7e",
+      "briefs_sha256": "70f0e30cb854be09dc527083c0b389cb25c3af9731562a40fa606cc70b4e0373",
+      "prompt_sha256": "dbbfad34a440abbd2e3f7481d9dfba604c731c0444ae4a0f8da54db3bfe64a1f",
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 913.015,
+      "usage": {
+        "input_tokens": 2650985,
+        "cached_input_tokens": 2510592,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 34503,
+        "reasoning_output_tokens": 9515
+      },
+      "skill_modified_by_subject": false,
+      "site_files": [
+        {
+          "path": "app.js",
+          "sha256": "79ab8f433de6bb33c9eb668f9f85bd8e76f04829bb7efd436055ca3e1fba441a"
+        },
+        {
+          "path": "index.html",
+          "sha256": "b4258e655cadf72a48b795671c9c226345c6860387fe00dcd16f73d1de701296"
+        },
+        {
+          "path": "style.css",
+          "sha256": "55d72ae89ca0947f1a36d460aae483c20bcd50814260f52bf849d522859b432d"
+        },
+        {
+          "path": "textile.svg",
+          "sha256": "88d6b827da462f3f8435c023035786bf5b876757ef7a9c257fe0e43fb751b483"
+        }
+      ],
+      "evidence_boundary": "Observed CLI generation; no automatic visual verdict or user acceptance. Model configuration is inherited, not independently attested.",
+      "status": "GENERATED",
+      "id": "b-textile-1",
+      "arm": "baseline",
+      "run_sha256": "d5098b441cfabcc600b68e81d0d6abeee348c62a483935413267d4cf109625bb",
+      "trace_sha256": "d112634c7f4d15597c399a313a611a8e548f17ffb6d33d8f5b604acf05115f5c",
+      "capture_receipt_sha256": "9e2037e843bd32e1475827e7cb6fa9ad085ce662a630cdd9c9cd16f8532721e4"
+    },
+    {
+      "schema": "1.0",
+      "case": "textile-exhibition",
+      "repeat": 2,
+      "snapshot_sha256": "1f83d73c4c421176035153461e9fa483d319ee61f9760d621b687bb59db51f7e",
+      "briefs_sha256": "70f0e30cb854be09dc527083c0b389cb25c3af9731562a40fa606cc70b4e0373",
+      "prompt_sha256": "dbbfad34a440abbd2e3f7481d9dfba604c731c0444ae4a0f8da54db3bfe64a1f",
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 851.438,
+      "usage": {
+        "input_tokens": 2825545,
+        "cached_input_tokens": 2674432,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 33071,
+        "reasoning_output_tokens": 10409
+      },
+      "skill_modified_by_subject": false,
+      "site_files": [
+        {
+          "path": "app.js",
+          "sha256": "2d7367084e0e623ede4df18c158af9ea85a2685b1707e94ade404531dfbfcc5d"
+        },
+        {
+          "path": "index.html",
+          "sha256": "d02ac3ad56a2f48e4e31a58ef1e722b2d3c3a012420e8dfba49e25e4c75ffc92"
+        },
+        {
+          "path": "patchwork.svg",
+          "sha256": "b78505c821776749405d35a589a1228f8f4e549ab924b0d47d4f0eb728c95acf"
+        },
+        {
+          "path": "styles.css",
+          "sha256": "56ebf6b56400fc7338a0b34b7ee92b18ad9c60c174105ac3db85ea584eaca2e4"
+        }
+      ],
+      "evidence_boundary": "Observed CLI generation; no automatic visual verdict or user acceptance. Model configuration is inherited, not independently attested.",
+      "status": "GENERATED",
+      "id": "b-textile-2",
+      "arm": "baseline",
+      "run_sha256": "aeecc4c4b1a266b05e0d6ccec2cea1bab09683e33f0b3ea7bd67268279685ee0",
+      "trace_sha256": "6001907979e71fdf6983dc4777385152a94109aad3a836f7e65201b943cd2729",
+      "capture_receipt_sha256": "51f319eefd4f2af921d222b5ac93f035a29d70c34854ee2ee7d23824e9a4114c"
+    },
+    {
+      "schema": "1.0",
+      "case": "berth-operations",
+      "repeat": 1,
+      "snapshot_sha256": "443349809181131fcc0a0c47849aaf873bd7c922b54d9c848076b0ecf88e04c4",
+      "briefs_sha256": "70f0e30cb854be09dc527083c0b389cb25c3af9731562a40fa606cc70b4e0373",
+      "prompt_sha256": "449c70cd8e084a47092f3b1e427feb3d32d4ba77e33e631dabbd28e02ee466a6",
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 691.265,
+      "usage": {
+        "input_tokens": 2289054,
+        "cached_input_tokens": 2165120,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 29363,
+        "reasoning_output_tokens": 9670
+      },
+      "skill_modified_by_subject": false,
+      "site_files": [
+        {
+          "path": "app.js",
+          "sha256": "4e716e395dff9dcf0cb953231e4731daa5794ab4bc08ab2c4631126c0e7bab71"
+        },
+        {
+          "path": "index.html",
+          "sha256": "16aebad0db41e6b2d8137521b531e1f3f15258f67a6b84ad90f462be17388c7e"
+        },
+        {
+          "path": "styles.css",
+          "sha256": "3e3ac9e0c29f95d0e409b837103632631b432be5b249f4637a9ebaacccac17a7"
+        }
+      ],
+      "evidence_boundary": "Observed CLI generation; no automatic visual verdict or user acceptance. Model configuration is inherited, not independently attested.",
+      "status": "GENERATED",
+      "id": "c-berth-1",
+      "arm": "candidate",
+      "run_sha256": "4e93195d556cef7562877a02f08bc987f0b22407d32af7ce99b5197f175555f4",
+      "trace_sha256": "ecd1236924a710970c9180036e33a16a414cda0df369924e5bff2f78b552abe7",
+      "capture_receipt_sha256": "56168ea87712028eb8ec36d232923ce45b6f1c2a43d008c18c5c88130a96ca3d"
+    },
+    {
+      "schema": "1.0",
+      "case": "berth-operations",
+      "repeat": 2,
+      "snapshot_sha256": "443349809181131fcc0a0c47849aaf873bd7c922b54d9c848076b0ecf88e04c4",
+      "briefs_sha256": "70f0e30cb854be09dc527083c0b389cb25c3af9731562a40fa606cc70b4e0373",
+      "prompt_sha256": "449c70cd8e084a47092f3b1e427feb3d32d4ba77e33e631dabbd28e02ee466a6",
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 592.594,
+      "usage": {
+        "input_tokens": 1753019,
+        "cached_input_tokens": 1633408,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 25417,
+        "reasoning_output_tokens": 7188
+      },
+      "skill_modified_by_subject": false,
+      "site_files": [
+        {
+          "path": "app.js",
+          "sha256": "ab5fab06fb32fd63af70c60238b0ae740d71c463fc91db9811c28bfec7219fc0"
+        },
+        {
+          "path": "index.html",
+          "sha256": "1650af3b749afa6992ed4f85cba80fb1c2b9a7ef4d12475ac43ae35870798979"
+        },
+        {
+          "path": "styles.css",
+          "sha256": "bbdc6f612a36ecdf4a6f75d26651b807e0365f266835c046b885d536383f6e32"
+        }
+      ],
+      "evidence_boundary": "Observed CLI generation; no automatic visual verdict or user acceptance. Model configuration is inherited, not independently attested.",
+      "status": "GENERATED",
+      "id": "c-berth-2",
+      "arm": "candidate",
+      "run_sha256": "8536ec31bc5791cab05a1fbd5c5da1365a4861deb37dda5f1a86c682b7b8bd10",
+      "trace_sha256": "f721c848f7ae39781320f72f95d8a554444a9e2fd06ad86ba638fe44e59c63f1",
+      "capture_receipt_sha256": "afe8a9aac8877da3c9e32f12c6981ed725bfce7d0bb7ce33711b37f1dd40d5dc"
+    },
+    {
+      "schema": "1.0",
+      "case": "radio-workshop",
+      "repeat": 1,
+      "snapshot_sha256": "443349809181131fcc0a0c47849aaf873bd7c922b54d9c848076b0ecf88e04c4",
+      "briefs_sha256": "70f0e30cb854be09dc527083c0b389cb25c3af9731562a40fa606cc70b4e0373",
+      "prompt_sha256": "94ddc2c617a564d8ab55851f6f31a15553d983edb94415db6b1659a18360785c",
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 832.328,
+      "usage": {
+        "input_tokens": 3066129,
+        "cached_input_tokens": 2881408,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 34161,
+        "reasoning_output_tokens": 10394
+      },
+      "skill_modified_by_subject": false,
+      "site_files": [
+        {
+          "path": "app.js",
+          "sha256": "d761f9db52c5562193c0b02aacb03ece9b22ff2fb58658627691f67f919cb251"
+        },
+        {
+          "path": "index.html",
+          "sha256": "359c010ecfa5566016cca32cbd14ff8f71ac4db1bdacad69c977c6e5a4769efd"
+        },
+        {
+          "path": "radio.svg",
+          "sha256": "798d5ab117dd8e5bf17974de359b612d4c4ababbc86d114d930ba5b037a840f0"
+        },
+        {
+          "path": "styles.css",
+          "sha256": "3aecbfdfcee23da30e4b09726f8bd5e62e4b9234f16d207803f0123a0fa45f6a"
+        }
+      ],
+      "evidence_boundary": "Observed CLI generation; no automatic visual verdict or user acceptance. Model configuration is inherited, not independently attested.",
+      "status": "GENERATED",
+      "id": "c-radio-1",
+      "arm": "candidate",
+      "run_sha256": "8ae4704c0f8ebd7abaf0f34f3e0f32021805175d0adb1cf22b9c6d5b72620a56",
+      "trace_sha256": "95991f60db71332716ee4e81d98f3a959edc574cd13de9700cc0cb0e6d105ef9",
+      "capture_receipt_sha256": "dcdc601a0086c837701955dab3268f4619e62bcd1e53a0951411a762450e8edd"
+    },
+    {
+      "schema": "1.0",
+      "case": "radio-workshop",
+      "repeat": 2,
+      "snapshot_sha256": "443349809181131fcc0a0c47849aaf873bd7c922b54d9c848076b0ecf88e04c4",
+      "briefs_sha256": "70f0e30cb854be09dc527083c0b389cb25c3af9731562a40fa606cc70b4e0373",
+      "prompt_sha256": "94ddc2c617a564d8ab55851f6f31a15553d983edb94415db6b1659a18360785c",
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 694.906,
+      "usage": {
+        "input_tokens": 2561610,
+        "cached_input_tokens": 2413568,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 30202,
+        "reasoning_output_tokens": 7396
+      },
+      "skill_modified_by_subject": false,
+      "site_files": [
+        {
+          "path": "app.js",
+          "sha256": "617f5408b3e6c68b25fc2cf2742f9e761b9e4f057165b13c9d2e074b6bd2e9c1"
+        },
+        {
+          "path": "index.html",
+          "sha256": "ddc1910508da2b718821e12b3fe8606cb7b06b8f3ba267f1d54dde2649966c01"
+        },
+        {
+          "path": "styles.css",
+          "sha256": "14df12c9507d382c1863030dda5e4933e86581c1f298a62ff17475aa5790ce69"
+        }
+      ],
+      "evidence_boundary": "Observed CLI generation; no automatic visual verdict or user acceptance. Model configuration is inherited, not independently attested.",
+      "status": "GENERATED",
+      "id": "c-radio-2",
+      "arm": "candidate",
+      "run_sha256": "d70b12501b9ffd5e37a2ae22f0c79ca4675b205f1ff04b5283bcd15dc6009a78",
+      "trace_sha256": "6b9e507987a02ca932ff44d8919931eecce3b991132beff86d3caee0bc25b75c",
+      "capture_receipt_sha256": "72bc3b141e6baaf381dc80d31b87398a75491a177a3bd39aa515b943dcf6ab0d"
+    },
+    {
+      "schema": "1.0",
+      "case": "textile-exhibition",
+      "repeat": 1,
+      "snapshot_sha256": "443349809181131fcc0a0c47849aaf873bd7c922b54d9c848076b0ecf88e04c4",
+      "briefs_sha256": "70f0e30cb854be09dc527083c0b389cb25c3af9731562a40fa606cc70b4e0373",
+      "prompt_sha256": "dbbfad34a440abbd2e3f7481d9dfba604c731c0444ae4a0f8da54db3bfe64a1f",
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 551.469,
+      "usage": {
+        "input_tokens": 1381144,
+        "cached_input_tokens": 1271168,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 26658,
+        "reasoning_output_tokens": 4699
+      },
+      "skill_modified_by_subject": false,
+      "site_files": [
+        {
+          "path": "app.js",
+          "sha256": "11175f27a1988d146a90cbc4ad10ef7a87148730d1d736259f02a67a5ce96988"
+        },
+        {
+          "path": "cloth-atlas.svg",
+          "sha256": "89f882a8061bdb7769bb2003e8712813fa83fd42836587906651d188506708d4"
+        },
+        {
+          "path": "index.html",
+          "sha256": "dfae4a31c4eccb0b45e631a69bb7f785119a10b0ca1aad69b0299cb8558d812d"
+        },
+        {
+          "path": "styles.css",
+          "sha256": "87f4cfc94388b31b33d057be7daa0fd08aac5a747638ead8472cd3c3ef21d5b4"
+        }
+      ],
+      "evidence_boundary": "Observed CLI generation; no automatic visual verdict or user acceptance. Model configuration is inherited, not independently attested.",
+      "status": "GENERATED",
+      "id": "c-textile-1",
+      "arm": "candidate",
+      "run_sha256": "74130df79174bc4e243101ad0155d01b90c1eae397dd3b4e9b37c7ca3edab871",
+      "trace_sha256": "0d5c27ad7ad4893730e9d5760e1095613346e2ec83f3e59207039862de621a3e",
+      "capture_receipt_sha256": "32aabdcee794f4581ca8afbe227f26205eca8e6d3a66389372f09e8955fe371a"
+    },
+    {
+      "schema": "1.0",
+      "case": "textile-exhibition",
+      "repeat": 2,
+      "snapshot_sha256": "443349809181131fcc0a0c47849aaf873bd7c922b54d9c848076b0ecf88e04c4",
+      "briefs_sha256": "70f0e30cb854be09dc527083c0b389cb25c3af9731562a40fa606cc70b4e0373",
+      "prompt_sha256": "dbbfad34a440abbd2e3f7481d9dfba604c731c0444ae4a0f8da54db3bfe64a1f",
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 601.734,
+      "usage": {
+        "input_tokens": 1950783,
+        "cached_input_tokens": 1820800,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 27230,
+        "reasoning_output_tokens": 6652
+      },
+      "skill_modified_by_subject": false,
+      "site_files": [
+        {
+          "path": "app.js",
+          "sha256": "af159ae08d03f3d5b740a9721042f796c4575c7ac94921b7239147283b154869"
+        },
+        {
+          "path": "index.html",
+          "sha256": "ae97bae1fe793c34073d4ecdf8353d3e24bcb5f0e1a48f1edf2d8228dcb16697"
+        },
+        {
+          "path": "styles.css",
+          "sha256": "437f9a368918ed0683561f24dcb9ed93ae2b7f0fa94ace7c9b19d4d0fc1f2396"
+        },
+        {
+          "path": "textile.svg",
+          "sha256": "d7856fc7e7ba7aeb26b747cd80908e6b0ed67a500427170c0b521d4d30e2d19e"
+        }
+      ],
+      "evidence_boundary": "Observed CLI generation; no automatic visual verdict or user acceptance. Model configuration is inherited, not independently attested.",
+      "status": "GENERATED",
+      "id": "c-textile-2",
+      "arm": "candidate",
+      "run_sha256": "bc4e2a2b00311df55605930eb518eeb65d246bb26f3d2ac9b6d6940af8cd45c9",
+      "trace_sha256": "20f80b694111c962ac4e3dd6c2c617fe667f2fd4f20ee8da9224ebf3649f3366",
+      "capture_receipt_sha256": "73b3593dfc4dfef8df533844ff13137c101cbc9de1b77b598c0da37bc1a44a48"
+    }
+  ],
+  "reviews": [
+    {
+      "case": "radio",
+      "review_sha256": "ceab4cedae784640b13f63d40b8b59d5129d53e20e3e6e91985a4a76da54d378",
+      "trace_sha256": "e9bce3e63ba3e3594d685c651f9259614345cba0e1b22a84f7c5d821c19ea723",
+      "labels": {
+        "A": "b-radio-1",
+        "B": "c-radio-1",
+        "C": "c-radio-2",
+        "D": "b-radio-2"
+      },
+      "method": "Inspected all 12 supplied screenshots and recorded initial findings in FIRST.md before reading source. Then inspected A/B/C/D and used observer.mjs with local Chrome to check each at 1440, 820 and 390 CSS pixels, including native-size form, service, error and preview captures. Checked every stated fact. KEEP means acceptance within this brief and observed scope; pair preference is separate. Final evidence: review-captures-final/receipt.json and review-evidence/interaction-results.json.",
+      "artifacts": [
+        {
+          "label": "A",
+          "visible_idea": "A restrained workshop page built around an olive radio, cream paper, rust actions, ruled services and a cream request sheet on dark green.",
+          "verdict": "KEEP",
+          "findings": [
+            "The illustration, italic headings, tuning marks and sheet details form a coherent character throughout the page.",
+            "The filled hero action and nearby inspection credit make the starting offer clear. All required prices, approval conditions, turnaround and repair uncertainty are preserved.",
+            "The 820 columns remain readable and the 390 layout stacks cleanly. No page overflow was observed in checked states.",
+            "Mobile field text remains 14px; 11px conditions and helpers have less visual weight than the main copy, but remain readable in native-size captures."
+          ],
+          "interaction_evidence": "At all three widths, actual browser activation reached the request sheet, rejected empty/whitespace fields and malformed email, and focused the relevant field. Preview displayed the entered details literally, preserved multiline text and explicitly denied sending or booking. Return to editing retained values; revised submission updated the preview. Keyboard activation at 1440 and touch emulation with long text at 390 passed. No submission request was observed."
+        },
+        {
+          "label": "B",
+          "visible_idea": "A spacious editorial composition with a large three-line headline, two-tone radio, understated hero link and an offset cream request card.",
+          "verdict": "KEEP",
+          "findings": [
+            "The expressive type scale continues into services, inspection copy, preview and footer; the character extends beyond the hero.",
+            "All services and exact factual terms are present. The inspection fee receives strong emphasis in the request section.",
+            "The hero link is less prominent than A's button, and inspection pricing appears later in the page.",
+            "Responsive layouts remain coherent. Mobile service copy is 13px, approval notes 11px and the repeated local-preview footnote 10px; these are the weakest real-size details, without obscuring the larger disclosures."
+          ],
+          "interaction_evidence": "At all three widths, the hero link reached the inspection section. Browser submissions rejected blank/whitespace input and malformed email with field errors and appropriate focus. Valid previews accurately retained literal text and line breaks, with clear not-sent/not-booked language. Editing preserved values and re-preview reflected changes. Wide keyboard and narrow touch/long-text checks passed. No submission request was observed."
+        },
+        {
+          "label": "C",
+          "visible_idea": "Warm illustrated storytelling using a terracotta radio, arched peach backdrop, slash emblem, monospaced labels and a continuous plum request area.",
+          "verdict": "KEEP",
+          "findings": [
+            "Color, typography, dividers, controls and preview treatment sustain a distinctive authored direction across the complete experience.",
+            "The hero exposes inspection fee and turnaround early. All required facts remain present; the preview also repeats both repair starting prices.",
+            "At 820, prices stack beneath service names without collisions. At 390, terms and form separate clearly; dark-section labels, helpers and errors remain readable.",
+            "The long device placeholder is cropped at 390. Its persistent helper supplies the complete instruction, so this is a finish weakness rather than a task failure."
+          ],
+          "interaction_evidence": "Browser activation at all three widths reached inspection and rejected blank/whitespace input and malformed email. Preview matched device, problem and email, displayed markup-like text literally, and stated that nothing was booked or sent. Returning restored the populated form and focus; revised previews updated correctly. Keyboard and narrow touch/long-text checks passed without page overflow. Only a local favicon GET was observed, with no submission request."
+        },
+        {
+          "label": "D",
+          "visible_idea": "A workshop ledger: tilted cream-and-green radio, early inspection summary, full-width service columns and a dark terms card beside a pale form.",
+          "verdict": "KEEP",
+          "findings": [
+            "The factual strip and ledger are meaningful organizing choices; waveform and tuning details give the subdued visual system authored character.",
+            "Fee, credit and turnaround are available near the hero. All three services, starting prices, approval conditions and repair uncertainty are preserved.",
+            "The 820 ledger remains readable. At 390, descriptions move below service names and prices without observed collisions or page overflow.",
+            "The substantial terms card precedes entry on mobile, lengthening the request path. Small price annotations receive less emphasis, although their facts are repeated in readable descriptions and terms."
+          ],
+          "interaction_evidence": "At all three widths, the hero action reached the request section. Browser submissions rejected blank/whitespace fields and malformed email, then produced accurate, explicitly unsent previews. Edit request preserved values and restored device focus; subsequent previews reflected edits. Wide keyboard and narrow touch/long-text checks passed. Only a local favicon GET was observed, with no submission request."
+        }
+      ],
+      "comparisons": [
+        {
+          "pair": "A/B",
+          "preferred": "B",
+          "reason": "B's typographic rhythm, illustration, inspection emphasis and preview card carry a more expressive character through the whole page while retaining factual and interaction completeness. Both meet the observed acceptance criteria.",
+          "tradeoffs": [
+            "A provides a stronger initial action and earlier inspection credit disclosure.",
+            "A is more compact and gives mobile service descriptions larger text.",
+            "B's understated hero action and finer supporting text remain weaknesses despite the preference."
+          ],
+          "preferred_run": "c-radio-1",
+          "preferred_arm": "candidate"
+        },
+        {
+          "pair": "C/D",
+          "preferred": "C",
+          "reason": "C combines distinctive visual character with a cohesive request and preview area, readable pressure-width services and a shorter mobile sequence. Its preference rests on the complete experience; D also meets the observed acceptance criteria.",
+          "tradeoffs": [
+            "D provides the strongest early factual overview and aligned service-price scanning.",
+            "C's pressure-width introductory heading wraps heavily, and its narrow device placeholder is cropped.",
+            "D's terms card reinforces reassurance but adds substantial mobile scrolling before entry."
+          ],
+          "preferred_run": "c-radio-2",
+          "preferred_arm": "candidate"
+        }
+      ],
+      "limitations": [
+        "Browser checks used Chrome 154 on Windows, 900px viewport height, DPR 1, light appearance and reduced motion. Other browsers, intermediate widths, zoom, forced colors and normal-motion behavior were not verified.",
+        "Values were filled through native DOM setters; submission and recovery used actual pointer/touch-emulation events, plus keyboard activation at 1440. Physical devices and onscreen keyboards were not tested.",
+        "Screen-reader behavior, JavaScript-disabled operation, reload persistence and secondary navigation were not verified. This is not production accessibility certification or evidence of user preference.",
+        "No material brief failure was found in the observed scope. Sources remained unchanged; no external services, additional tasks, skills or delegates were used."
+      ]
+    },
+    {
+      "case": "textile",
+      "review_sha256": "0d2389bedd3dea4058aeeb7f34b76a6cc6c298e35aeff3bb96f1ce90f87b8245",
+      "trace_sha256": "175d0e735b4f07227491c34b9500771094fc0fd75f8262cb9170a6a97d8acb55",
+      "labels": {
+        "A": "b-textile-1",
+        "B": "c-textile-1",
+        "C": "c-textile-2",
+        "D": "b-textile-2"
+      },
+      "method": "Reviewed all 12 supplied screenshots and recorded initial findings in FIRST.md before reading implementation source. Then inspected A–D without editing them and used observer.mjs with system Chrome 154 for browser checks at 1440, 820, 390 and 320 pixels, plus Tab/Enter flows at 390. Inspected native-size workshop, form and preview crops. Evidence is in browser-evidence-2/receipt.json, interaction-checks.json and check-summary.json. KEEP means acceptable within these observed checks; comparison preference is separate.",
+      "artifacts": [
+        {
+          "label": "A",
+          "visible_idea": "An exhibition poster built from stitch samples, navy editorial rules, expressive serif typography and a mustard reservation band.",
+          "verdict": "KEEP",
+          "findings": [
+            "The visual system continues through the comparison, form and preview. The mustard band makes the reservation destination clear; card-top prices make paid/free comparison immediate.",
+            "All supplied exhibition and workshop facts are present and accurate, with care-oriented language and no invented endorsements or historical claims.",
+            "The 820 layout preserves readable parallel comparisons; narrow layouts stack cleanly. Native-size fields and tables remain readable, and long preview details wrap without horizontal overflow.",
+            "The mobile illustration delays practical visiting information, and captions are modest in size. These are hierarchy tradeoffs; no material task failure was observed."
+          ],
+          "interaction_evidence": "At all four widths, missing choice, whitespace-only name and malformed email blocked preview and exposed errors. Both workshops produced correct dates, times, durations, costs, bring instructions and entered details. Changing choice hid the previous preview, proving stale content cannot remain visibly current. Edit retained details and returned focus to the selection summary; resubmission reflected changes. Tab/Enter reached choice, preview and edit. Reload cleared state; no requests occurred during the flows."
+        },
+        {
+          "label": "B",
+          "visible_idea": "A quiet paper catalogue with a mounted patch composition, rust display title, framed workshop cards and a contrasting navy preview.",
+          "verdict": "REVISE",
+          "findings": [
+            "The stitching wordmark, mounted illustration, paper cards and closing cloth/story language form a coherent identity beyond the hero.",
+            "Facts are accurate and workshop rows align clearly. Prices require more scanning than A's card-top treatment, but comparison remains straightforward.",
+            "Default and long-content states remained readable without horizontal overflow at the tested widths.",
+            "Material recovery failure: choosing Repair Stories while a Visible Mending preview is open leaves that preview visible with the old Saturday date and EUR 12, despite Repair Stories becoming selected. Its local-only disclaimer remains truthful, but its workshop content contradicts the current selection."
+          ],
+          "interaction_evidence": "Validation, both initial workshop previews, retained details and edited resubmission worked. The stale-preview sequence reproduced at 1440, 820, 390 and 320: preview Visible Mending, select Repair Stories, observe the old visible preview. Edit followed by Preview restores correct Repair Stories content, proving recovery is possible but requires an additional explicit cycle. Tab/Enter completed the initial preview/edit path. Reload cleared state; no flow requests occurred."
+        },
+        {
+          "label": "C",
+          "visible_idea": "A repair-centered editorial page with frayed cloth, offset typography, differentiated workshop rules and an inset paper reservation panel.",
+          "verdict": "KEEP",
+          "findings": [
+            "Repair-specific character extends from the irregular cloth and stitches into the worktable section, workshop accents and paper form; the identity does not depend solely on the hero.",
+            "All supplied facts and comparison requirements are met. The preview clearly states that nothing was sent and no place was reserved.",
+            "Native-size forms and tables are readable, with clean stacking and long-detail wrapping at narrow widths.",
+            "The isolated large year weakens date scanning on mobile. There is no hero workshop action, and the mobile header removes the exhibition link.",
+            "Edit retains data but returns focus to the selected workshop button above the form, adding a detour for someone changing only contact details. No material completion failure was observed."
+          ],
+          "interaction_evidence": "At every tested width, validation blocked incomplete or invalid submissions; both previews contained correct workshop and visitor details. Selecting another workshop hid the old preview and focused the name field, proving a consistent choice-to-form handoff. Edit preserved values, and changed details appeared on resubmission. The keyboard case confirmed the return to the workshop button after Edit. Reload cleared state; no flow requests occurred."
+        },
+        {
+          "label": "D",
+          "visible_idea": "A restrained exhibition page with mounted textile art, a shared workshop comparison frame and a separate pale reservation area.",
+          "verdict": "KEEP",
+          "findings": [
+            "The shared comparison frame, emphasized times and aligned controls support practical comparison. Accurate group-size wording explicitly avoids implying checked availability.",
+            "All supplied facts are accurate. The unselected summary, return link and repeated local-preview language make the reservation boundary clear.",
+            "The illustration, rust stitching accents and invitation language provide relevant character despite more conventional typography.",
+            "Tables, fields and long previews remained readable without horizontal overflow at all tested widths.",
+            "At 390, navigation becomes three 11-pixel lines with approximately 21-pixel-high link boxes. The exhibition heading also wraps awkwardly. These are narrow-screen finish concerns; no blocked interaction was observed."
+          ],
+          "interaction_evidence": "Validation blocked missing choice and invalid details. Both workshop previews were correct; changing choice hid the old preview and retained entered values. Selection left focus on the workshop button, requiring continued navigation to the form. Edit returned directly to the name field, and resubmission reflected changes. Tab/Enter completed choice, preview and edit. Reload cleared state; no flow requests occurred."
+        }
+      ],
+      "comparisons": [
+        {
+          "pair": "A/B",
+          "preferred": "A",
+          "reason": "A combines a coherent exhibition identity with faster price scanning, a clearer reservation destination and consistent preview invalidation. B's visual treatment is credible, but its reproduced stale-preview failure prevents acceptance as delivered.",
+          "tradeoffs": [
+            "B offers stronger card boundaries and a particularly clear contrasting preview surface.",
+            "A's brighter reservation band provides stronger hierarchy; its long mobile illustration postpones visiting facts.",
+            "B needs revision regardless of whether its quieter visual treatment is preferred."
+          ],
+          "preferred_run": "b-textile-1",
+          "preferred_arm": "baseline"
+        },
+        {
+          "pair": "C/D",
+          "preferred": "C",
+          "reason": "C has a slight visual preference for this brief because its repair-specific material language continues through the whole experience while the required flow works. D is also acceptable and offers clearer practical cues; this preference does not establish broader release superiority.",
+          "tradeoffs": [
+            "D provides a hero workshop action, reservation navigation, clearer date scanning and explicit availability boundaries.",
+            "D's Edit action returns directly to contact details; C returns to the workshop choice.",
+            "C offers stronger material character and readable mobile typography; its reduced navigation and date hierarchy remain weaknesses."
+          ],
+          "preferred_run": "c-textile-2",
+          "preferred_arm": "candidate"
+        }
+      ],
+      "limitations": [
+        "Browser evidence covers headless Chrome 154, DPR 1, light appearance and reduced motion. Touch, mobile soft keyboards, zoom, other browsers, forced colors and normal-motion behavior were not tested.",
+        "Keyboard checks covered Tab/Enter selection, preview and editing for Visible Mending. Field values were inserted using the native value setter and input/change events; complete physical typing, keyboard error recovery and keyboard workshop switching were not separately tested.",
+        "No screen-reader or production accessibility certification is claimed. Width measurements establish absence of observed horizontal overflow; native-size image inspection supports the bounded readability findings.",
+        "Zero recorded requests demonstrates local behavior during the exercised flows. Source inspection and unchanged source hashes are supporting evidence, not substitutes for interaction checks.",
+        "Visual preferences are judgments against this fictional brief, not measured user preferences or claims of historical textile authenticity."
+      ]
+    },
+    {
+      "case": "berth",
+      "review_sha256": "9046853ed29bdc97cb657335a2c878bbeb584feac80c7377b09b9ed6c3969a03",
+      "trace_sha256": "6141663ac0dcade09346d6d7663c086d22db582cf8571d185c8abd83e083989a",
+      "labels": {
+        "A": "b-berth-1",
+        "B": "c-berth-1",
+        "C": "c-berth-2",
+        "D": "b-berth-2"
+      },
+      "method": "Inspected all twelve supplied screenshots and recorded organizing differences in FIRST.md before reading source. Then inspected A/B/C/D and ran 55 local browser cases through observer.mjs using Node 22 and system Chrome. Actual pointer, emulated touch and Tab/Enter events exercised the controls. Selecting every record checked its displayed identity, timing, priority and assignee against the brief. Filter transitions checked membership, visible counts and selection retention or replacement. Completion checked status changes, counts, action removal and the next selection. Exhausting Open checked empty-state coherence and recovery; reload checked restoration of the initial list, B-04 details and 5/4/1 counts. Browser captures and interaction traces are saved in review-evidence/, review-followup-evidence/, review-interactions.json and review-followup-interactions.json. Source inventories remained unchanged. Verdicts assess the brief within the observed scope; pair preferences are separate judgments.",
+      "artifacts": [
+        {
+          "label": "A",
+          "visible_idea": "Separate list and detail cards; berth, status and issue grouped together; aligned operational columns become explicitly labelled metadata on phones.",
+          "verdict": "KEEP",
+          "findings": [
+            "Calm hierarchy, restrained color and clear selection support the task. All supplied facts remain available at 1440, 820 and 390, without observed clipping.",
+            "Phone rows use helpful metadata labels, but the long list places the initial detail below the viewport. Actual row selection moves focus and view to detail, and Back to issues restores the selected row.",
+            "After completing C-07, its row still says Due tomorrow while A-03 says Completed today. The original due date remains truthful, and completion today appears in detail, but the list gives completed records inconsistent timing emphasis.",
+            "Completing the last Open record, D-02, wraps selection to B-04. This remains coherent but moves farther from the operator's previous position than the neighboring-record fallback in B.",
+            "When Open becomes empty at 390, focus stays on the no-selection detail panel rather than the available recovery action. Recovery works, but its focus path is less direct. No blocking factual or interaction failure was observed."
+          ],
+          "interaction_evidence": "Every record's displayed details matched the brief. Open retained D-02; Completed replaced it with A-03; returning to All retained A-03. Completing C-07 under All produced counts 5/3/2 and correct filter membership; completing it under Open selected D-02. Exhausting Open produced 5/0/5, no selected row and no completion action; View all restored the completed records. Pointer at 820 and touch at 390 verified detail navigation, completion and return focus. Tab/Enter verified Open filtering, A-12 selection and completion. Reload restored the initial state."
+        },
+        {
+          "label": "B",
+          "visible_idea": "Separate cards with explicit panel headings, a berth gutter, status beneath each issue and an explicit Selected label; stacked detail facts spread across tablet width.",
+          "verdict": "KEEP",
+          "findings": [
+            "The explicit selected label, clear issue hierarchy and category-aware visible count make the relationship between list and detail easy to follow.",
+            "Newly completed rows show Completed today, while detail preserves the original due date alongside the completion date. This supports both scanning and exact inspection.",
+            "At 820, three initial facts use the available width effectively. Completion adds a fourth fact on another row; the card grows but retains all information without clipping.",
+            "The extra heading and status lines create the longest supplied phone page. Small inline metadata is comparatively crowded, and the desktop issue column separates issues from operational fields with considerable empty space.",
+            "Selection, completion and empty-state recovery preserve useful focus. No blocking brief failure was observed; the preference over A does not remove B's density tradeoffs."
+          ],
+          "interaction_evidence": "All five records' displayed details matched. Filter transitions retained visible selection and replaced hidden selection correctly. Completing C-07 produced 5/3/2, preserved Due tomorrow and added Completed today; Open excluded it. Completing the last Open row selected the preceding C-07 rather than wrapping. Exhausting Open cleared detail and focused View completed issues; that action recovered all five completed records. At 820/390, selection focused the berth in detail and Back to issue list returned to its row. Native keyboard filtering, selection and completion worked. Reload restored the initial state."
+        },
+        {
+          "label": "C",
+          "visible_idea": "One connected frame containing list and detail; status and timing share a column, and narrow rows place priority beneath the berth.",
+          "verdict": "KEEP",
+          "findings": [
+            "The connected frame and explicit Open/Completed labels establish a coherent workspace with relatively compact rows.",
+            "At 390, priority remains readable as text, but its small, unlabelled position beneath the berth weakens the metadata reading order.",
+            "At 820, detail facts occupy only the left portion of the pane, leaving substantial unused width. This is a composition tradeoff rather than missing information.",
+            "Selecting a narrow row moves to detail, but no direct return control is provided. Completion and empty Open retain focus on the detail container; recovery through the filters works but requires more navigation.",
+            "Newly completed detail preserves both due and completion dates. Additional 621/626 checks found no clipped facts or horizontal page overflow. No blocking brief failure was observed."
+          ],
+          "interaction_evidence": "All five displayed records matched the brief. Filtering maintained a visible selected record and matching detail. Completing C-07 under All produced 5/3/2, changed its list timing to Completed today and retained Due tomorrow plus Completed today in detail. Under Open, completion selected the next record; completing D-02 selected C-07. Exhausting Open produced 5/0/5, cleared selection and hid the action; choosing All recovered the completed records. Pointer/touch checks verified narrow detail movement and completion. Tab/Enter exercised filtering, selection and completion. Reload restored the initial state."
+        },
+        {
+          "label": "D",
+          "visible_idea": "Compact separate cards with assignee beneath each issue, prominent priority and a visible selected-berth shortcut at constrained widths.",
+          "verdict": "KEEP",
+          "findings": [
+            "The shortest supplied phone composition retains useful facts and readable issue hierarchy. Its density suits repeated scanning without adding invented content or expressive decoration.",
+            "Open status is conveyed through Due today/tomorrow rather than a separate list label; completed rows explicitly say Completed today. The distinction remained coherent after actual completion.",
+            "Narrow row selection keeps focus in the list while updating detail. The shortcut tracks the selected berth and moves focus to the detail heading, providing a deliberate inspection route.",
+            "Completion recovers focus to a visible row, or Show all issues when Open becomes empty. There is no direct return control for an operator who visits detail without completing an issue.",
+            "Original due dates and completion dates remain available together in detail. No blocking brief failure was observed; compactness alone is not the basis for acceptance."
+          ],
+          "interaction_evidence": "Every displayed record matched the brief, allowing presentation capitalization. Filters maintained correct membership, counts and selected details. Completing C-07 produced 5/3/2 and Completed today in the list while preserving both dates in detail. Open completion selected the next or preceding visible record. Exhausting Open produced 5/0/5, cleared selection, hid the shortcut and focused Show all issues; recovery worked. Touch verified that the shortcut reached B-04 initially and D-02 after selection. Keyboard filtering, selection and completion worked. Reload restored the initial state."
+        }
+      ],
+      "comparisons": [
+        {
+          "pair": "A/B",
+          "preferred": "B",
+          "reason": "B is narrowly preferred for explicit selection, consistent completion timing in the list, neighboring-record fallback and direct empty-state focus recovery. Both meet the brief in the observed scope and receive KEEP.",
+          "tradeoffs": [
+            "A has simpler panel structure, larger operational metadata and explicit phone labels.",
+            "B adds vertical length and smaller secondary text; its desktop operational fields are farther from the issue names.",
+            "A preserves coherent state despite its timing emphasis and last-row selection wrap; those differences do not establish a blocking failure."
+          ],
+          "preferred_run": "c-berth-1",
+          "preferred_arm": "candidate"
+        },
+        {
+          "pair": "C/D",
+          "preferred": "D",
+          "reason": "D better supports repeated scanning through compact rows, clearer phone metadata, retained row focus, a discoverable detail shortcut and recovery focused on an available action. Both preserve facts and coherent state and receive KEEP.",
+          "tradeoffs": [
+            "C explicitly labels list status and automatically moves to detail, reducing the steps needed for immediate inspection.",
+            "D requires a separate shortcut activation to deliberately enter detail at narrow widths.",
+            "Neither supplies a direct return control in detail; C also leaves more tablet width unused and retains empty-state focus on a non-action container."
+          ],
+          "preferred_run": "b-berth-2",
+          "preferred_arm": "baseline"
+        }
+      ],
+      "limitations": [
+        "Observed one local Chrome version at DPR 1 with light appearance and reduced motion. Other engines, physical touch devices, zoom levels and assistive technologies were not tested.",
+        "The complete filter and record-inspection suite ran at 1440. At 820/390, checks concentrated on C-07 selection/completion, navigation and the 390 empty Open state; every record/state/input/width combination was not exercised.",
+        "Tab/Enter verified a concrete filtering, selection and completion route. This does not establish production accessibility certification or exhaustive focus-order correctness.",
+        "Visual preferences reflect this calm utility brief and the observed artifacts, not inferred user taste or a claim of general improvement.",
+        "No blocking brief failure was observed in the exercised paths. KEEP is scoped acceptance of these fictional local demos, not production release certification."
+      ]
+    }
+  ],
+  "state_proof": {
+    "original": {
+      "receipt_sha256": "eb5618e72d0630284780f9e806adafdeae5b42aac560404bd18aea3630858cc3",
+      "plan_sha256": "83b8ae31ceabec2478fde8123f26c8266a7ce37a6273e924496579b4232f4896"
+    },
+    "repaired": {
+      "receipt_sha256": "7cce68841cd249824b519fee313037a318a9c97cacdc424ab6684915fe04dd99",
+      "plan_sha256": "0b11e4f67deb629da8b7f676f7ae300d7682661f7f5df4b02f87dae97a363d5b"
+    }
+  },
+  "post_pilot_amendments": [
+    "Removed repository-specific optional harness pointer from installed evaluation guidance; no generation accessed that reference.",
+    "Added affected-dependency transition proof to quality gates after the reproduced stale preview. This amendment has browser reproduction/repair evidence, not a new repeated-generation claim."
+  ]
+}

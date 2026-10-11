@@ -1,0 +1,21 @@
+{
+  "schema": "1.0",
+  "boundary": "Fictional, held-out single-page briefs; no expected layout, palette, metaphor, asset choice or candidate count. Freeze before changing the skill.",
+  "cases": [
+    {
+      "id": "radio-workshop",
+      "name": "Second Frequency",
+      "brief": "Design a complete single-page experience for Second Frequency, a fictional workshop restoring portable radios. Collectors and people repairing a family keepsake should understand the services and request a diagnostic inspection. The page should have a distinctive, authored character while conveying careful workmanship. The page job, offer and local request flow are settled; visual direction is open. Facts: diagnostic inspection EUR 25, credited toward an accepted repair; electronic repair from EUR 95 after approval; case and tuning restoration from EUR 65 after approval; typical inspection turnaround 5 working days; no promise that every radio can be repaired. Explain those three services, show the inspection terms and provide a request form collecting device, problem and contact email. Submit produces a local preview, explicitly not a sent booking. Include a clear way to return to editing. Preserve all facts and the EUR currency."
+    },
+    {
+      "id": "textile-exhibition",
+      "name": "Patch Atlas",
+      "brief": "Design a complete single-page experience for Patch Atlas, a fictional small exhibition about repaired textiles and the stories of their owners. Visitors should understand the exhibition, compare two workshops and make a local reservation preview. The page should feel culturally specific and memorable, with care rather than luxury sales language. The page job, workshop choices and reservation flow are settled; visual direction is open. Facts: exhibition 17 October to 8 November 2026, Friday to Sunday 11:00-18:00, Studio 4, entrance free. Workshop Visible Mending: Saturday 24 October 14:00, 90 minutes, EUR 12, beginners welcome, bring one worn garment, 8 places. Workshop Repair Stories: Sunday 25 October 11:30, 60 minutes, free, bring a textile or a photograph, 12 places. Compare the exact workshops, allow choosing one, collect name and email, and show a local reservation preview with an edit path; no actual reservation is sent. Do not invent sponsors, reviews or historical claims."
+    },
+    {
+      "id": "berth-operations",
+      "name": "Harbor Desk",
+      "brief": "Design a complete single-page daily inspection workspace for Harbor Desk, a fictional small marina. Operators repeatedly scan issues, filter the list and inspect a selected berth. Prioritize calm clarity, useful density and predictable operation; an expressive identity is not requested. The page job, records and interactions are settled; composition is open. Records: B-04, loose cleat, due today, high priority, assigned Mira; A-12, shore power check, due today, normal priority, assigned Leon; C-07, hose replacement, due tomorrow, normal priority, unassigned; A-03, ladder check, completed today, normal priority, assigned Mira; D-02, fender replacement, due tomorrow, low priority, assigned Leon. Support All/Open/Completed filtering, visible count, selecting a record, seeing its exact details, and locally marking an open issue completed. Selection and counts must remain coherent after filtering or completion. Explain that changes are local to this demo. Preserve exact records and avoid invented metrics, maps, permissions or backend promises."
+    }
+  ]
+}

@@ -24,6 +24,8 @@ For a new or reworked page hierarchy, start with the [page map, copy and action 
 
 For each material decision, state what evidence could keep, revise, or reject it. Cover only applicable surfaces, but always include the primary outcome, truthful content, accessibility, responsive behavior, important states, and build/runtime integrity.
 
+When a live selection or input determines an already-visible preview, quote, result or inspector, exercise the dependency-changing transition. The current output must update or visibly invalidate before it can contradict the new selection; verify retained inputs and recovery, dependent counts and state styling as applicable. Correct states viewed separately do not prove this transition. Preserve deliberately historical or accepted snapshots as clearly identified records rather than clearing them as if they were current drafts. Keep the check scoped to the affected dependency, including its relevant narrow/pressure contexts.
+
 Use one record:
 
 ```text

@@ -50,6 +50,8 @@ Goodturn, Doppler, and the municipal, warehouse, and literary forward-tests prov
 
 ## Observed real-agent behavior
 
+The separate opt-in [creative-search pilot](../creative-search/README.md) runs real generation against frozen complete baseline/candidate copies. Its raw host and rendered evidence is independent of this deterministic runner; bounded findings must not be promoted to a creativity certificate.
+
 The bounded read-only records in [HOST-PROBES.md](HOST-PROBES.md) cover the six calibrated scopes plus an exact committed-methodology control and the unfamiliar-project discovery failure/correction. They record task, commit, configured model/reasoning, tool context, actual reference loading, packet/research/candidate use, process depth, proof, observable time, uncertainty, and dirty-worktree fingerprints.
 
 They remain evidence for those runs only. The host did not expose token totals or independent runtime model identity, the sample is small, several tasks use supplied host facts, and repeated agent-run variance was not established. The pre-change control also stayed Direct, which rejects a universal “old Snowe always widened” claim. Deterministic and rendered layers therefore remain non-causal; no host probe is an aesthetic or generalization certificate.

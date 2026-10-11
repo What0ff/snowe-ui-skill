@@ -47,6 +47,7 @@ snowe-ui-skill/
 │   │   └── reviews/
 │   ├── correction-transfer/
 │   │   └── captures/
+│   ├── creative-search/
 │   ├── density/
 │   │   └── captures/
 │   ├── designer-behavior/
@@ -110,6 +111,7 @@ snowe-ui-skill/
 | `skill/snowe-ui-skill/scripts/icon_review.py` | Deterministic icon decision/context comparison builder |
 | `skill/snowe-ui-skill/scripts/contrast.py` | Exact opaque-color contrast checker |
 | `evals/designer-behavior/run_eval.py` | Cross-business deterministic-contract regression |
+| `evals/creative-search/run_pilot.py` | Opt-in frozen-copy real-agent generation and browser capture pilot |
 | `benchmarks/bicycle-commerce/index.html` | Rendered bicycle-commerce forward-test |
 | `scripts/install_skill.py` | Exact standalone skill install/update helper |
 | `scripts/browser-smoke.mjs` | Cross-platform Chrome/CDP rendered regression |
@@ -132,10 +134,10 @@ The generated map itself is excluded from the counts.
 | Extension | Files |
 | --- | --- |
 | `.png` | 478 |
-| `.md` | 76 |
-| `.json` | 69 |
+| `.md` | 78 |
+| `.json` | 71 |
 | `.jpg` | 52 |
-| `.py` | 37 |
+| `.py` | 39 |
 | `.csv` | 32 |
 | `.svg` | 22 |
 | `.html` | 15 |
@@ -167,6 +169,7 @@ The generated map itself is excluded from the counts.
 | Change exact color/contrast validation | `skill/snowe-ui-skill/scripts/contrast.py` |
 | Change a runtime dataset or schema (verify configured headers) | `skill/snowe-ui-skill/scripts/core.py` |
 | Change process-depth contracts or inspect bounded observed-host probes | `evals/designer-behavior/` |
+| Run or inspect repeated creative-search generation evidence | `evals/creative-search/` |
 | Change the operational icon decision proof | `evals/icon-decisions/` |
 | Change or inspect the isolated Title Bot hierarchy pilot | `evals/titlebot-hierarchy/` |
 | Change required-content visibility or declared action identity checks | `scripts/ui-proof.mjs` |

@@ -113,7 +113,7 @@ GitHub Actions runs four independent surfaces:
 
 CI does not perform aesthetic certification, manual browser review, lint/format/type/coverage, packaging, deployment, or release publication.
 
-The independent `.github/workflows/pages.yml` path-filtered workflow uploads `benchmarks/soda-campaign/` as the GitHub Pages artifact root and deploys it through the `github-pages` environment. It runs only for Doppler/workflow changes or manual dispatch, does not replace or alter the three normal CI surfaces, and adds no benchmark build step.
+Active publication uses GitHub Pages `build_type:legacy`, source `codex/doppler-pages:/`. The branch contains an exact snapshot of `benchmarks/soda-campaign/` at its root plus `.nojekyll`, bypassing Jekyll while repository Actions remain disabled. Updating `main` alone does not update that snapshot; publication must also update the source branch. Verify the Pages settings and public HTML/CSS/JavaScript/assets after publication. The independent `.github/workflows/pages.yml` remains an inactive path-filtered alternative with no benchmark build step.
 
 ## Identity and mixed-control acceptance
 

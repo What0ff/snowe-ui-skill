@@ -501,7 +501,9 @@ class DecisionPacketGenerator:
                 "identity_sources": _identity_sources(),
                 "direction_method": [
                     "Frame directions as perceptual and behavioral theses, not style labels or mood adjectives.",
+                    "Translate a verified product source into a perceptual mechanism, an inventive move, an expected consequence, and a rendered proof slice; optional analogies widen search without selecting a style.",
                     "Make finalists differ in composition, typographic voice, image/graphic logic, material behavior, or interaction character where those differences express a real product trade-off.",
+                    "When distinctive character is required, evaluate recognizability and product-specific invention alongside clarity and fit. Accepted utility and exact supplied targets do not acquire a novelty obligation.",
                     "Choose one primary identity carrier and define its repetition boundary. The carrier may be architecture, type, content behavior, imagery, graphics, data, or motion; decoration is optional.",
                     "Use typography, color, shape, and material as a coherent system derived from content, scripts, platform, and desired perception. A dataset pairing or palette is only a candidate.",
                 ],

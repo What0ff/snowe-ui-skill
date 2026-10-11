@@ -17,7 +17,7 @@ escalation trigger
 This is an evidence trace, not keyword or semantic classification. A request mentioning one component is not automatically Direct, and a multi-file change is not automatically Portfolio. Start with the high-salience consequence—the user or system failure that matters if the work is wrong—then trace the change surface: the real owner/consumer graph.
 
 - **Direct:** continue with this reference only if the answer is not already a bounded invariant. A coherent owner, no newly affected sibling consumer/shared contract, and known or learned behavior justify local implementation plus rendered QA. Stop at the affected invariant. Do not open a packet, broad research, candidate set, architecture exercise, asset/motion exploration, or evaluation route.
-- **Focused:** use this protocol for one material choice in a known product/flow, including an open page hierarchy or a local symptom with a shared owner. Compare the current baseline with the smallest credible challenger in the affected context and representative sibling contexts. Call that a **shared-system proof**, not a whole-product workshop.
+- **Focused:** use this protocol for one material choice in a known product/flow, including an open page hierarchy or a local symptom with a shared owner. Compare the current baseline with credible challengers in the affected context and representative sibling contexts. A bounded choice normally needs the smallest credible challenger; an open visual thesis may compare several directions while its owners and product contracts stay fixed. Call that a **shared-system proof**, not a whole-product workshop.
 - **Portfolio:** use the complete protocol only when evidence shows material uncertainty in user goals, topology, journey, content/object relationships, interaction, responsive transformation, or system contracts. These concern unresolved page jobs or wider product contracts; composition of known page objects stays Focused. A genuinely new experience/architecture/identity normally exposes one or more of those uncertainties; name the uncertainty before widening. Whole-journey framing and structurally different candidates are then proportionate.
 
 The depth record must state `references loaded`, `references not loaded`, `proof`, `stop`, and `escalation`. Escalate only if proof reveals a new owner/consumer, a failed invariant that cannot be repaired locally, or one of the material Portfolio uncertainties. Stop when the calibrated proof closes the live uncertainty; do not widen merely because more references exist.
@@ -39,6 +39,8 @@ Evidence required:
 ### Focused
 
 Use when a material choice inside a known page/flow is unresolved, its internal hierarchy needs rebuilding, or a shared owner needs proof across sibling consumers. Keep the current product as a baseline and introduce challengers only for the decision that can materially improve. Do not promote a shared-system proof into Portfolio unless it exposes a material goal, topology, journey, content, interaction, responsive, or system-contract uncertainty.
+
+Choose search breadth from the open decision, separately from process breadth. A known page job can support distinct visual theses without a whole-journey workshop. State fixed requirements and inventive freedom, then use the affected proof slice to decide whether another direction adds useful evidence. Preserve exact targets and accepted quiet systems; candidate quantity and expressive intensity are not success criteria.
 
 Evidence required:
 
@@ -118,7 +120,9 @@ Keep discovery and selection separate enough to notice anchoring, but do not ign
 
 ## 5. Generate Candidates From Causes
 
-Whole-system candidate directions and whole-journey candidate records are Portfolio-only unless calibration explicitly escalates. Rebuilding the internal hierarchy of one page with a known job is Focused; use [page-hierarchy.md](page-hierarchy.md) before selecting its components. Focused work records the current baseline and smallest credible challenger for the affected decision, with sibling contexts when a shared owner is involved; it does not require a candidate to explain the whole journey, navigation, page jobs, art direction, assets, or motion.
+Whole-system candidate directions and whole-journey candidate records are Portfolio-only unless calibration explicitly escalates. Rebuilding the internal hierarchy of one page with a known job is Focused; use [page-hierarchy.md](page-hierarchy.md) before selecting its components. Focused work records the current baseline and closest credible challenger for the affected decision, with sibling contexts when a shared owner is involved; it does not require a candidate to explain the whole journey, navigation, page jobs, art direction, assets, or motion.
+
+For an open visual thesis, the Focused comparison may include several materially different directions scoped to that same page or owner. Use [art-direction-gate.md](art-direction-gate.md) to derive and render them from product evidence. Retain the closest rejected direction and decisive difference; do not expand their records into unrelated journey, asset or motion obligations.
 
 For each Portfolio candidate:
 

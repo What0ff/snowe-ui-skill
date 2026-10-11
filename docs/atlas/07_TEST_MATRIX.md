@@ -4,7 +4,7 @@
 
 - Installable product/test runtime: Python 3.11+ standard library.
 - Repository browser smoke/capture: Node 22 plus system Chrome/Chromium; no npm install; CI covers Ubuntu and Windows.
-- Public showcase deployment: GitHub Pages custom workflow uploading `benchmarks/soda-campaign/` without a build step.
+- Public showcase deployment: GitHub Pages branch `codex/doppler-pages:/`, a Doppler folder snapshot plus `.nojekyll`, with repository Actions disabled. The checked-in custom workflow remains an inactive alternative.
 - Working directory: repository root.
 - CI covers the strict public contributor-context/atlas contract on Ubuntu/Python 3.13, Python 3.11/3.13 regressions on Ubuntu/Windows, deterministic contracts on Ubuntu/Python 3.13, and browser smoke on Ubuntu/Windows with Node 22.
 
@@ -64,6 +64,12 @@ python evals/designer-behavior/run_eval.py
 Current inspected result: **18 `KEEP` findings**, no `REVISE`/`REJECT`. Coverage includes six businesses, English/Russian/mixed equivalence, ambiguous vocabulary, unknown domain, unresolved pressure, paraphrase stability, meaningful business change, coherent-system preservation, no-image/no-motion/custom rejection, dataset absence, progressive disclosure, six authored scope traces, a complete boolean whole-system uncertainty surface, exact per-case reference/process/artifact/stop/escalation and progressive-reason contracts, structurally exclusive depth-proportional delivery, widening/flattening/high-consequence/global-ceremony mutations, and semantic/evidence boundaries. The booleans are authored test evidence, never inferred from task text. Output marks deterministic contracts as measured, rendered/browser regression as separate, and observed real-agent behavior as not measured by this runner. It contains no creativity/layout/style score.
 
 `evals/designer-behavior/HOST-PROBES.md` is the separately inspected bounded host series. It records the exact commit/diff fingerprint, configured GPT-5.6 Luna/max task/context/tools, reference loads, packet/research/candidate activation, implementation/proof depth, and observable timing for a pre-change control and current narrow, shared, medium, high-consequence, unfamiliar-target, and Portfolio work. Tokens and independent runtime self-identity were not observable; the small non-repeated series is not causal or generalization evidence.
+
+### Opt-in creative-search generation pilot
+
+`evals/creative-search/README.md` routes frozen complete baseline/candidate copies, three held-out single-page briefs and repeated real Codex CLI subjects. `run_pilot.py snapshot`, `generate`, `capture` and `check` preserve exact source/prompt bindings, unchanged generated artifacts and exposed usage/time. Generation uses inherited authenticated host configuration; browser capture uses the frozen optional observer with Node 22/system Chrome or Edge. Neither generation nor model judgment is invoked by normal CI.
+
+`python -m unittest discover -s tests -p test_creative_pilot.py -v` tests changed snapshots/briefs/prompts/artifacts, added resources, incomplete runs, raw completed-turn usage and refusal to overwrite evidence without invoking a model. Default captures use 1440/820/390 and reduced motion; important interaction, normal-motion, accessibility and aesthetic claims require separately recorded actual proof. Offline assets and small repetitions bound the pilot.
 
 ### Benchmark JavaScript and browser smoke
 
@@ -187,11 +193,11 @@ python scripts/atlas/generate_atlas.py --check
 | Python matrix | compile + current full unittest suite on Ubuntu/Windows, Python 3.11/3.13 |
 | Designer behavior | behavior runner on Ubuntu/Python 3.13 |
 | Rendered benchmark smoke | Node 22/system Chrome CDP on Ubuntu and Windows, five-minute timeout per matrix job |
-| Doppler Pages deployment | Path-filtered static artifact upload/deploy to the `github-pages` environment |
+| Doppler Pages deployment | Active static branch snapshot with `.nojekyll`; retained workflow is an inactive alternative |
 
-Normal CI triggers on pushes to `main`, pull requests, and manual dispatch with read-only permissions. Pages triggers only on `main` changes beneath `benchmarks/soda-campaign/`, changes to its workflow, or manual dispatch; it adds only `pages: write` and `id-token: write` required for deployment.
+Configured normal CI triggers are pushes to `main`, pull requests, and manual dispatch with read-only permissions; repository Actions are currently disabled. The retained Pages workflow has path-filtered `main` and manual triggers with `pages: write` and `id-token: write`, but is not the active publication route. The active branch snapshot must be updated separately from `main`.
 
-Normal CI does not run manual aesthetic review, lint/format/type/coverage, packaging, deployment, or release validation. The separate Pages workflow publishes only the validated static Doppler artifact and performs no aesthetic certification or benchmark build.
+Normal CI does not run manual aesthetic review, lint/format/type/coverage, packaging, deployment, or release validation. Either Pages route publishes static Doppler files and performs no aesthetic certification or benchmark build.
 
 ## Change-to-test routing
 
@@ -211,7 +217,7 @@ Normal CI does not run manual aesthetic review, lint/format/type/coverage, packa
 | Forward-tests | Forward suite, all affected JS, browser smoke, captures, QA, and cross-comparison when causal dimensions change. |
 | Browser script/CI | Node syntax, local smoke on system Chrome, CI contract test, platform/path review. |
 | Installer/public install docs | Installation/runtime-hardening tests for exact fresh/repeated copies, lock contention, safe transient recovery, source/staging revalidation, rollback, redirected/path overlap, public CLI, and stale legacy-command removal. |
-| Pages workflow/live URL | Soda suite, folder-as-root asset/hash/interaction audit, workflow syntax/run result, Pages settings read-back, and public URL browser verification. |
+| Pages publication/live URL | Soda suite, exact static snapshot plus `.nojekyll`, folder-as-root asset/hash/interaction audit, Pages source/Actions settings read-back, and public URL browser verification; workflow result only when that route is used. |
 | Repository structure or context boundary | Contributor-context check, atlas `--write` then `--check`, fresh-clone simulation, complete status/diff/ignore inspection. |
 
 ## Identity and control relationship proof
@@ -220,7 +226,7 @@ Identity/alignment evidence uses `evals/identity-alignment/build_contracts.py` t
 
 ## Missing command surfaces
 
-No local command currently provides linting/formatting, static typing, coverage, package/plugin build or publication, visual-diff approval, full accessibility-engine audit, icon recognition/usability research, or backend integration validation. The bounded host series cannot expose exact token totals or independently attest runtime model identity. Exact standalone-copy installation is tested; GitHub Pages deployment exists only through its hosted workflow. Do not invent or report unavailable checks as executed.
+No local command currently provides linting/formatting, static typing, coverage, package/plugin build or publication, visual-diff approval, full accessibility-engine audit, icon recognition/usability research, or backend integration validation. The bounded host series cannot expose exact token totals or independently attest runtime model identity. Exact standalone-copy installation is tested; Pages publication uses the remote branch/settings or the inactive workflow alternative. The direct `.nojekyll` deployment has no latest-build record in the inspected API; verify actual public bytes and behavior rather than claiming a workflow run. Do not invent or report unavailable checks as executed.
 
 ## Completion cases and migration checks
 

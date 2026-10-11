@@ -51,6 +51,12 @@ Directions must differ where the product tension lives. They may differ through:
 
 Do not manufacture distinction with arbitrary palettes, radii, icon swaps, or effects. Do not force all dimensions to differ when the brief does not justify it.
 
+Search breadth follows the open visual question, independently of the task's architectural breadth. In Focused work, keep the page job, factual content, actions, owners and accepted constraints fixed while exploring the affected visual thesis. Do not declare Portfolio merely because several visual directions are useful. A bounded repair still uses its smallest credible challenger.
+
+Translate a product source into an invention: observed property or behavior → perceptual mechanism → compositional or interaction move → expected consequence → rendered proof. When the first idea repeats a familiar template, try a relevant transformation such as changing scale relationships, expressing a real process spatially, or transferring a useful principle from an adjacent medium. These are optional search operations, not a style catalog or mandatory sequence. Keep the source truthful; a metaphor must not fabricate product features or make familiar actions ambiguous.
+
+Sketch unresolved directions cheaply before polishing one. Hold content, state and viewport constant; render the decision surface and a repeated or secondary context that could invalidate its carrier. A renamed concept with the same visible relationships adds no search coverage. Return to the fixed requirements after an adventurous sketch and reject it if those requirements depend on removing its central idea.
+
 When color expression is the open decision, compare actual role palettes using the [color and material rules](design-foundations.md#color-and-material). Tie the chosen hue family and color area to product evidence and the intended task/identity, then explain the role of chroma and lightness. Neither a uniformly pale accent set nor an arbitrary full-page hue is an unquestioned starting point.
 
 Complete that selection before scaling the implementation or presenting it as finished. The agent owns ordinary reversible palette choices; internal comparison must lead to a justified selected direction, not a menu that requires the user to become the designer. A swatch set, readable color pairs or a theme-name explanation cannot replace the full-context judgment.
@@ -103,7 +109,9 @@ Inspect:
 
 Reject a direction when it contradicts the product truth, depends on unavailable or misleading content, makes accessibility structurally infeasible, obscures the primary outcome, or becomes incoherent across real states. Keep unknowns explicit and prototype them when they can change the winner.
 
-Select the direction with the strongest causal and rendered evidence. Novelty breaks ties only after clarity, coherence, and fit survive. Hybridize only moves that form one thesis; do not average a portfolio into a collage.
+Select the direction with the strongest causal and rendered evidence. When the brief requires distinctive character, evaluate recognizability and product-specific invention as an explicit outcome alongside clarity, coherence and fit; novelty alone cannot compensate for a failed requirement. For accepted utility or an exact supplied target, novelty has no independent priority. Hybridize only moves that form one thesis; do not average a portfolio into a collage.
+
+Before reading a candidate's rationale, describe the visible organizing difference and whether its carrier belongs to this product. Then check the explanation against those observations. A confident story cannot rescue an interchangeable render. Label a later pass by the same author as self-review; neither a model critic nor an image-similarity metric establishes human preference.
 
 Ask the user to choose only when viable directions imply materially different business or brand positions. Do not ask them to decide reversible details that the designer can resolve through evidence.
 
@@ -140,6 +148,8 @@ Record:
 - strongest rejected direction and decisive weakness.
 
 This is a drift boundary, not a permanent law. Reopen it when real content, rendered behavior, user evidence, asset quality, performance, or platform constraints invalidate the premise.
+
+Retain a material successful invention as a conditional hypothesis in existing project evidence: source, mechanism, before/after or rejected comparison, observed outcome, applicability and counterexample. Reuse the mechanism only after checking its fit in the new context. Do not create a global taste profile, treat a single success as general learning, or edit the shared skill during ordinary product work.
 
 ## 9. Rendered Art-Direction Review
 

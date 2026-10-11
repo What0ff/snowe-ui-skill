@@ -19,6 +19,10 @@ The installable directory targets Codex and compatible hosts that discover `SKIL
 
 The Python CLI is local. It contains no HTTP client, socket, telemetry, secret, auth flow, external model call, or installer. URLs in evidence rows are returned but not fetched or verified.
 
+## Opt-in real-agent evaluation
+
+`evals/creative-search/run_pilot.py generate` requires a locally authenticated Codex CLI on PATH and makes real model calls through its inherited host configuration. Snapshot, integrity/unit checks and normal CI do not invoke a model. No credential, authentication workflow, model SDK or product dependency is added. Separate captures use the frozen optional Node 22/system-browser observer; raw host evidence stays in ignored local working output. The host's installed-skill metadata and independently unobservable backend identity limit comparison claims.
+
 ## Benchmark assets/runtime
 
 All five benchmarks are dependency-free HTML/CSS/JavaScript with no build step, CDN, analytics, backend, form endpoint, or runtime network dependency. Doppler is additionally published as a static GitHub Pages showcase from its checked-in folder.
@@ -61,7 +65,9 @@ Its public contributor-context job uses only Python 3.13 standard-library code p
 
 Permissions are `contents: read`; CI performs no deployment, release, package publication, cache, credential write, or artifact upload.
 
-`.github/workflows/pages.yml` uses the official Pages artifact flow:
+The active Pages configuration uses branch publication: `build_type:legacy`, source `codex/doppler-pages:/`, with `.nojekyll` at the source root. Repository Actions remain disabled. The branch is an exact static snapshot of `benchmarks/soda-campaign/` plus that marker; there is no Jekyll/framework build or Actions artifact upload in this route. Publishing another revision requires updating the source branch, not only `main`. On 2026-10-08, the public root and all 23 runtime/source assets matched the new Doppler bytes, and live flavor selection/confirmation worked. The latest-build API returned 404 on this direct static route; public bytes and source-settings read-back supplied the deployment evidence.
+
+The retained, inactive `.github/workflows/pages.yml` uses the official Pages artifact flow when Actions are enabled and workflow publication is selected:
 
 - `actions/checkout@v4`;
 - `actions/configure-pages@v5`;
@@ -83,7 +89,7 @@ Its minimal workflow permissions are `contents: read`, `pages: write`, and `id-t
 - Missing Chrome/Chromium makes browser smoke fail with an explicit `CHROME_PATH` instruction; committed captures/tests remain available.
 - Missing/ignored durable contributor files, tracked private state, or a stale structural atlas fails the repository-context CI job before those defects can become accepted public guidance.
 - Missing image generator does not invalidate no-image scenarios or committed benchmark viewing.
-- GitHub Pages or Actions unavailability affects only the public Doppler mirror; the checked-in benchmark remains directly runnable as a static site.
+- GitHub Pages unavailability affects only the public Doppler mirror; the checked-in benchmark remains directly runnable as a static site. Disabled repository Actions block the retained workflow route, while the active `.nojekyll` branch route does not require enabling them.
 
 Before adding a dependency, intentionally revise the standard-library/no-build contracts, add manifest/lock strategy where relevant, update CI/setup docs, and test copied-skill portability.
 
