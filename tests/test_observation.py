@@ -239,4 +239,85 @@ class ReplayKeyTests(unittest.TestCase):
             inspect_capture(root, binding(root, "captures/receipt.json"), binding(root, "plan.json"))
 
 
+class ObserverAdapterTests(unittest.TestCase):
+    """Browser discovery, sandbox policy and CLI errors of the optional Node adapter."""
+
+    def setUp(self):
+        if not node_executable(): self.skipTest("Node 22+ is unavailable")
+
+    def evaluate(self, expression):
+        script = f"import * as observer from {json.dumps(OBSERVER.as_uri())};\nconsole.log(JSON.stringify(await ({expression})));"
+        result = subprocess.run([node_executable(), "--input-type=module", "-e", script], capture_output=True, text=True, timeout=60)
+        self.assertEqual(0, result.returncode, result.stderr)
+        return json.loads(result.stdout)
+
+    def test_browser_candidates_cover_per_user_and_relocated_installs(self):
+        windows = self.evaluate("observer.browserCandidates({platform:'win32', env:{ProgramFiles:'D:\\\\Apps', 'ProgramFiles(x86)':'D:\\\\Apps86', LOCALAPPDATA:'C:\\\\Users\\\\u\\\\AppData\\\\Local'}, home:'C:\\\\Users\\\\u'})")
+        for expected in ("C:\\Users\\u\\AppData\\Local\\Google\\Chrome\\Application\\chrome.exe",
+                         "D:\\Apps\\Google\\Chrome\\Application\\chrome.exe",
+                         "D:\\Apps86\\Microsoft\\Edge\\Application\\msedge.exe"):
+            self.assertIn(expected, windows)
+        self.assertFalse(any(candidate.startswith("C:\\Program Files") for candidate in windows), windows)
+        defaults = self.evaluate("observer.browserCandidates({platform:'win32', env:{}, home:'C:\\\\Users\\\\u'})")
+        self.assertIn("C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe", defaults)
+        mac = self.evaluate("observer.browserCandidates({platform:'darwin', env:{}, home:'/Users/u'})")
+        for expected in ("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+                         "/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge",
+                         "/Applications/Chromium.app/Contents/MacOS/Chromium",
+                         "/Users/u/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"):
+            self.assertIn(expected, mac)
+        linux = self.evaluate("observer.browserCandidates({platform:'linux', env:{CHROME_PATH:'/opt/custom/chrome'}, home:'/home/u'})")
+        self.assertEqual("/opt/custom/chrome", linux[0])
+        self.assertIn("/usr/bin/microsoft-edge-stable", linux)
+        self.assertIn("microsoft-edge-stable", self.evaluate("observer.pathBrowserNames"))
+
+    def test_sandbox_is_disabled_only_when_needed_or_requested(self):
+        cases = {
+            "{platform:'linux', env:{}, uid:0, exists:()=>false}": False,
+            "{platform:'linux', env:{}, uid:1000, exists:p=>p==='/.dockerenv'}": False,
+            "{platform:'linux', env:{container:'podman'}, uid:1000, exists:()=>false}": False,
+            "{platform:'win32', env:{SNOWE_OBSERVE_NO_SANDBOX:'1'}, exists:()=>false}": False,
+            "{platform:'linux', env:{}, uid:1000, exists:()=>false}": True,
+            "{platform:'darwin', env:{}, uid:0, exists:()=>false}": True,
+            "{platform:'win32', env:{}, exists:()=>false}": True,
+        }
+        for options, sandboxed in cases.items():
+            with self.subTest(options=options):
+                policy = self.evaluate(f"observer.sandboxPolicy({options})")
+                self.assertIs(sandboxed, policy["sandbox"])
+                self.assertTrue(policy["reason"])
+        sandboxed = self.evaluate("observer.browserArguments({profile:'/tmp/p', sandbox:true})")
+        unsandboxed = self.evaluate("observer.browserArguments({profile:'/tmp/p', sandbox:false})")
+        self.assertNotIn("--no-sandbox", sandboxed)
+        self.assertIn("--no-sandbox", unsandboxed)
+
+    def test_unavailable_capture_names_its_cause(self):
+        old_node = self.evaluate("observer.unavailableReasons({nodeVersion:'20.11.1', webSocket:true, browser:'/usr/bin/chromium', env:{}})")
+        self.assertEqual(1, len(old_node))
+        self.assertIn("Node 20.11.1", old_node[0])
+        self.assertIn("22", old_node[0])
+        no_browser = self.evaluate("observer.unavailableReasons({nodeVersion:'22.1.0', webSocket:true, browser:null, env:{CHROME_PATH:'/missing/chrome'}})")
+        self.assertEqual(1, len(no_browser))
+        self.assertIn("/missing/chrome", no_browser[0])
+        self.assertIn("Chrome", no_browser[0])
+        self.assertEqual([], self.evaluate("observer.unavailableReasons({nodeVersion:'22.1.0', webSocket:true, browser:'/usr/bin/chromium', env:{}})"))
+        capabilities = self.evaluate("observer.capabilities()")
+        self.assertIn("reasons", capabilities)
+        self.assertIn("sandbox", capabilities)
+
+    def test_cli_usage_errors_print_usage_without_a_stack(self):
+        for arguments in ([], ["capture", "only-workspace"], ["compare", "a", "b"], ["unknown"]):
+            with self.subTest(arguments=arguments):
+                result = subprocess.run([node_executable(), str(OBSERVER), *arguments], capture_output=True, text=True, timeout=60)
+                self.assertEqual(2, result.returncode, result.stdout + result.stderr)
+                self.assertIn("Usage: observe.mjs", result.stderr)
+                self.assertNotIn("    at ", result.stderr)
+        with tempfile.TemporaryDirectory() as directory:
+            failed = subprocess.run([node_executable(), str(OBSERVER), "capture", directory, "missing-plan.json", "out"],
+                                    capture_output=True, text=True, timeout=60)
+            self.assertEqual(1, failed.returncode)
+            self.assertIn("observe.mjs: error:", failed.stderr)
+            self.assertNotIn("    at ", failed.stderr)
+
+
 if __name__ == "__main__": unittest.main()

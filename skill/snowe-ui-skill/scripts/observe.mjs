@@ -5,7 +5,7 @@ import {createHash} from 'node:crypto';
 import {createServer} from 'node:http';
 import {existsSync} from 'node:fs';
 import {lstat, mkdir, mkdtemp, readFile, readdir, realpath, rm, writeFile} from 'node:fs/promises';
-import {tmpdir} from 'node:os';
+import {homedir, tmpdir} from 'node:os';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 
@@ -30,20 +30,63 @@ export function keyEvent(name) {
   return Object.hasOwn(keyEvents, canonical) ? keyEvents[canonical] : null;
 }
 
-export function capabilities() {
-  const candidates = [process.env.CHROME_PATH];
-  if (process.platform === 'win32') candidates.push(...['C:/Program Files','C:/Program Files (x86)'].flatMap(p => [p+'/Google/Chrome/Application/chrome.exe', p+'/Microsoft/Edge/Application/msedge.exe']));
-  else if (process.platform === 'darwin') candidates.push('/Applications/Google Chrome.app/Contents/MacOS/Google Chrome');
-  else candidates.push('/usr/bin/google-chrome','/usr/bin/google-chrome-stable','/usr/bin/chromium','/usr/bin/chromium-browser');
-  let browser = candidates.find(p => p && existsSync(p));
-  if (!browser && process.platform !== 'win32') {
-    for (const name of ['google-chrome','chromium','microsoft-edge']) {
-      const result = spawnSync('which',[name],{encoding:'utf8'});
-      if (result.status === 0) { browser = result.stdout.trim(); break; }
-    }
+// Browser discovery: CHROME_PATH first, then Chrome, Edge and Chromium in machine-wide and
+// per-user locations, then a PATH lookup outside Windows.
+export const pathBrowserNames = ['google-chrome','google-chrome-stable','chromium','chromium-browser','microsoft-edge','microsoft-edge-stable'];
+export function browserCandidates({platform=process.platform, env=process.env, home=homedir()}={}) {
+  const candidates = [env.CHROME_PATH];
+  if (platform === 'win32') {
+    const join = path.win32.join;
+    const roots = [env.ProgramFiles || 'C:\\Program Files', env['ProgramFiles(x86)'] || 'C:\\Program Files (x86)', env.LOCALAPPDATA || join(home,'AppData','Local')];
+    for (const product of [['Google','Chrome','Application','chrome.exe'], ['Microsoft','Edge','Application','msedge.exe'], ['Chromium','Application','chrome.exe']])
+      for (const root of roots) candidates.push(join(root, ...product));
+  } else if (platform === 'darwin') {
+    for (const app of ['Google Chrome.app/Contents/MacOS/Google Chrome', 'Microsoft Edge.app/Contents/MacOS/Microsoft Edge', 'Chromium.app/Contents/MacOS/Chromium'])
+      for (const folder of ['/Applications', path.posix.join(home,'Applications')]) candidates.push(path.posix.join(folder, app));
+  } else candidates.push(...pathBrowserNames.map(name => '/usr/bin/'+name), '/snap/bin/chromium');
+  return [...new Set(candidates.filter(Boolean))];
+}
+
+function findBrowser() {
+  const found = browserCandidates().find(candidate => existsSync(candidate));
+  if (found || process.platform === 'win32') return found || null;
+  for (const name of pathBrowserNames) {
+    const result = spawnSync('which',[name],{encoding:'utf8'});
+    if (result.status === 0 && result.stdout.trim()) return result.stdout.trim();
   }
-  const supported = Number(process.versions.node.split('.')[0]) >= 22 && typeof WebSocket === 'function';
-  return {node:process.versions.node, browser:browser || null, available:!!browser && supported,
+  return null;
+}
+
+// Why capture cannot run on this host; empty when it can.
+export function unavailableReasons({nodeVersion=process.versions.node, webSocket=typeof WebSocket === 'function', browser, env=process.env}={}) {
+  const reasons = [];
+  if (Number(nodeVersion.split('.')[0]) < 22) reasons.push(`Node ${nodeVersion} is older than the required Node 22`);
+  else if (!webSocket) reasons.push(`Node ${nodeVersion} has no global WebSocket; use Node 22 or newer`);
+  if (!browser) reasons.push(env.CHROME_PATH
+    ? `CHROME_PATH=${env.CHROME_PATH} does not exist, and no Chrome, Chromium or Edge was found in standard locations`
+    : 'No Chrome, Chromium or Edge was found in standard locations or on PATH; set CHROME_PATH to the browser executable');
+  return reasons;
+}
+
+// Keep Chromium's sandbox unless it cannot work (Linux root or containers) or the caller opts out.
+export function sandboxPolicy({platform=process.platform, env=process.env, uid=process.getuid?.(), exists=existsSync, requested=false}={}) {
+  if (requested) return {sandbox:false, reason:'--no-sandbox was requested'};
+  if (/^(1|true|yes)$/i.test(env.SNOWE_OBSERVE_NO_SANDBOX || '')) return {sandbox:false, reason:'SNOWE_OBSERVE_NO_SANDBOX is set'};
+  if (platform === 'linux') {
+    if (uid === 0) return {sandbox:false, reason:'running as root on Linux, where Chromium cannot start its sandbox'};
+    if (exists('/.dockerenv') || exists('/run/.containerenv') || env.container || env.KUBERNETES_SERVICE_HOST)
+      return {sandbox:false, reason:'running in a Linux container, which usually lacks the namespaces the Chromium sandbox needs'};
+  }
+  return {sandbox:true, reason:'Chromium sandbox enabled'};
+}
+
+export function browserArguments({profile, sandbox}) {
+  return ['--headless=new','--hide-scrollbars','--remote-debugging-port=0','--remote-debugging-address=127.0.0.1',`--user-data-dir=${profile}`,'--disable-background-networking','--disable-extensions','--no-first-run','--no-default-browser-check',...(sandbox?[]:['--no-sandbox']),'about:blank'];
+}
+
+export function capabilities({noSandbox=false}={}) {
+  const browser = findBrowser(), reasons = unavailableReasons({browser});
+  return {node:process.versions.node, browser, available:reasons.length === 0, reasons, sandbox:sandboxPolicy({requested:noSandbox}),
     supports:['local-static','click','fill','key','scroll','wait','viewport','dpr','light-dark','touch','reduced-motion','computed-layers','font-faces','resource-closure','png','comparison'],
     unavailable:['cross-origin-resources','closed-shadow-roots','native-apps','production-backends','independent-aesthetic-judgment'],
     boundary:'Optional adapter; Python core requires only its standard library. Use host browser tools for other environments and report unbound proof.'};
@@ -134,12 +177,12 @@ async function replay(client, step, input) {
   throw new Error('Unknown replay step');
 }
 
-export async function capture({workspace, planPath, output, audit}) {
+export async function capture({workspace, planPath, output, audit, noSandbox=false}) {
   const root=await realpath(workspace),planFile=await contained(root,planPath),planBytes=await readFile(planFile),plan=JSON.parse(planBytes);
   assert(plan.schema==='1.0' && plan.cases?.length && plan.sourceRoots?.length,'Invalid plan');
   const destination=await contained(root,output,false);
   assert(!plan.sourceRoots.some(name=>output===name||output.startsWith(name+'/')||name.startsWith(output+'/')),'Capture output must be disjoint from sources');
-  const available=capabilities();assert(available.available,'Browser observation unavailable; run capabilities and use an available host adapter');
+  const available=capabilities({noSandbox});assert(available.available,'Browser observation unavailable: '+available.reasons.join('; ')+'. Use the host browser tools and record formal browser proof as UNKNOWN');
   const sources=await inventory(root,plan.sourceRoots),sourceMap=new Map(sources.map(s=>[s.path,s.sha256]));
   const served=new Map();
   const server=createServer(async(req,res)=>{
@@ -160,10 +203,20 @@ export async function capture({workspace, planPath, output, audit}) {
     await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
     const origin='http://127.0.0.1:'+server.address().port;
     profile=await mkdtemp(path.join(tmpdir(),'snowe-observe-'));
-    child=spawn(available.browser,['--headless=new','--hide-scrollbars','--remote-debugging-port=0','--remote-debugging-address=127.0.0.1',`--user-data-dir=${profile}`,'--disable-background-networking','--disable-extensions','--no-first-run','--no-default-browser-check','--no-sandbox','about:blank'],{stdio:'ignore',windowsHide:true});
-    let spawnError;child.on('error',error=>{spawnError=error;});
+    const sandbox=available.sandbox;
+    child=spawn(available.browser,browserArguments({profile,sandbox:sandbox.sandbox}),{stdio:['ignore','ignore','pipe'],windowsHide:true});
+    let spawnError,browserLog='';child.on('error',error=>{spawnError=error;});
+    child.stderr.on('data',chunk=>{browserLog=(browserLog+chunk).slice(-2000);});
+    const sandboxHint=sandbox.sandbox&&process.platform==='linux'?'. If the Chromium sandbox is unavailable on this host (container or restricted user namespaces), rerun with --no-sandbox or SNOWE_OBSERVE_NO_SANDBOX=1':'';
     let port;
-    await until(async()=>{if(spawnError)throw spawnError;try{port=Number((await readFile(path.join(profile,'DevToolsActivePort'),'utf8')).split('\n')[0]);return !!port;}catch{return false;}},'Chrome did not start',15000);
+    await until(async()=>{
+      if(spawnError)throw spawnError;
+      if(child.exitCode!==null||child.signalCode!==null){
+        const detail=browserLog.trim().split('\n').slice(-3).join(' | ');
+        throw new Error(`Browser exited before DevTools became available (${child.exitCode??child.signalCode})${sandboxHint}${detail?': '+detail:''}`);
+      }
+      try{port=Number((await readFile(path.join(profile,'DevToolsActivePort'),'utf8')).split('\n')[0]);return !!port;}catch{return false;}
+    },'Browser did not expose DevTools within 15 s'+sandboxHint,15000);
     const targets=await (await fetch(`http://127.0.0.1:${port}/json/list`)).json();
     const target=targets.find(t=>t.type==='page');assert(target,'No browser page');
     client=new CDP(target.webSocketDebuggerUrl);await client.connect();
@@ -310,6 +363,8 @@ export async function capture({workspace, planPath, output, audit}) {
     if(child&&child.exitCode===null) {
       try{await until(()=>child.exitCode!==null||child.signalCode!==null,'Browser did not exit',5000);}catch{child.kill('SIGKILL');try{await until(()=>child.exitCode!==null||child.signalCode!==null,'Browser did not terminate',10000);}catch(e){cleanup.push(e);}}
     }
+    // A browser helper that inherited the diagnostic pipe must not keep this process alive.
+    child?.stderr?.destroy();
     try{await new Promise(resolve=>server.close(resolve));}catch(e){cleanup.push(e);}
     if(profile){try{await rm(profile,{recursive:true,force:true,maxRetries:12,retryDelay:100});}catch(e){cleanup.push(e);}}
     if(cleanup.length)throw new AggregateError(cleanup,'Observation cleanup failed');
@@ -370,12 +425,27 @@ export async function compare(workspace, before, after, output) {
   return {comparison:output,pairs:rows.length};
 }
 
+const usage=`Usage: observe.mjs capabilities [--no-sandbox]
+       observe.mjs capture [--no-sandbox] <workspace> <plan.json> <fresh-output-dir>
+       observe.mjs compare <workspace> <before-receipt> <after-receipt> <output.html>
+--no-sandbox (or SNOWE_OBSERVE_NO_SANDBOX=1) disables the Chromium sandbox; it is disabled automatically as root on Linux and in Linux containers.`;
+
+function describeError(error){
+  const causes=error instanceof AggregateError?': '+error.errors.map(cause=>cause?.message||String(cause)).join('; '):'';
+  // Full stacks only on request; operational failures read best as one message.
+  return 'observe.mjs: error: '+(process.env.SNOWE_OBSERVE_DEBUG?error?.stack||String(error):(error?.message||String(error))+causes);
+}
+
 if(process.argv[1]&&path.resolve(process.argv[1])===script){
-  const [command,...args]=process.argv.slice(2);
-  try{
-    if(command==='capabilities')console.log(JSON.stringify(capabilities(),null,2));
-    else if(command==='capture'&&args.length===3)console.log(JSON.stringify(await capture({workspace:args[0],planPath:args[1],output:args[2]}),null,2));
-    else if(command==='compare'&&args.length===4)console.log(JSON.stringify(await compare(...args),null,2));
-    else throw new Error('Usage: observe.mjs capabilities | capture <workspace> <plan.json> <fresh-output-dir> | compare <workspace> <before-receipt> <after-receipt> <output.html>');
-  }catch(error){console.error(error.stack);process.exitCode=1;}
+  const [command,...rest]=process.argv.slice(2);
+  const noSandbox=rest.includes('--no-sandbox'),args=rest.filter(argument=>argument!=='--no-sandbox');
+  const run=command==='capabilities'&&args.length===0?()=>capabilities({noSandbox})
+    :command==='capture'&&args.length===3?()=>capture({workspace:args[0],planPath:args[1],output:args[2],noSandbox})
+    :command==='compare'&&args.length===4&&!noSandbox?()=>compare(...args)
+    :null;
+  if(!run){console.error(usage);process.exitCode=2;}
+  else{
+    try{console.log(JSON.stringify(await run(),null,2));}
+    catch(error){console.error(describeError(error));process.exitCode=1;}
+  }
 }
