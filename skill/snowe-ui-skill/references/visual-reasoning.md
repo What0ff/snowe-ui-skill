@@ -54,19 +54,9 @@ Keep a compact chain: **observation → plausible cause → one relational chang
 
 Retain rejected repairs with reasons: making the button larger may have restored attention but damaged proportion and crowded the mobile line; removing a backing may have quieted the page but erased selection. A supported lesson records applicability and a counterexample, with bound before/after evidence. Never turn “this decorative disk competed with these labels” into “remove all round shapes.” See the hypothesis record in [visual-system-and-observation.md](visual-system-and-observation.md).
 
-## Specialized routes
+## Specialized Checks
 
-### A small material artifact can invalidate a strong composition
-
-![Detached-looking lid reported in a product scene](figures/lid-artifact.png)
-
-The bright oval is not justified by calling it metallic. Check whether it actually shares the body's diameter, projection and movement. In this case a separate lid projection and a cylinder built from a rotated screen box made the surfaces incompatible. A first attempt to attach the lid still lost its visible top at the camera angle; the next exposed the radius mismatch. Both repairs needed rejection despite valid DOM structure.
-
-![Repaired local geometry and connected top surface](figures/lid-repaired.png)
-
-The repaired object uses local dimensions for both parts, one rigid 3D owner and a viewing angle that exposes the real surface. These diagnostic images differ in framing/scale; native context and temporal evidence close the specific repair. The lesson is surface attachment and visible contact, not “remove white” or “all highlights are artifacts.” A specified foil treatment or deliberate illustration may legitimately use bright reflections. Likewise, `getBoundingClientRect()` remains appropriate for projected hit testing and placement; it is not automatically the right input to construct transformed geometry.
-
-After fixing a high-salience joint, repeat the perimeter and small-control sweep. In the same campaign, an inherited light `currentColor` made a keyboard focus ring disappear against the light area outside a dark button. Its text pair was readable, but the ring needed a separate contrast role. Check the adjacent substrate and clipping at the real focus state rather than assuming one foreground color serves every paint role.
+A small material artifact can invalidate a strong composition; see the [recorded incidents](failure-patterns.md#recorded-incidents) for worked examples of surface attachment and separate contrast roles.
 
 - **Charts:** establish the analytical question, scale/domain and comparison relationship; inspect low/high/zero/missing/outlier data. Compare encodings before decoration. Color series with differing area can imply false importance; labels and annotations must survive actual density. Use the installed chart evidence only for a caller-selected open question.
 - **Complex color/layers:** trace the final paint through ancestors, pseudo-elements, filters, blend modes and backdrops. Compare over representative underlying content and both themes. A token change that misses a portal or table header is incomplete.

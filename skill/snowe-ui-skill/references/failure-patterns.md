@@ -33,3 +33,31 @@ Use before accepting an original visual design, and whenever a result looks gene
 2. List each pattern you see, with the element and the state.
 3. For each, apply the replacement, or write the one-line reason this product is the exception.
 4. Rerender and compare. Removing a pattern must leave a positive design, not an emptier one. If the result looks bare, revisit the direction with [art-direction-gate.md](art-direction-gate.md) rather than adding new decoration.
+
+## Recorded Incidents
+
+Specific past failures, kept as worked examples. Each entry names the general lesson; apply it only where the same mechanism exists.
+
+### A detached-looking lid on a rotated 3D can
+
+![Detached-looking lid reported in a product scene](figures/lid-artifact.png)
+
+- **Symptom:** a bright oval floated above a CSS-3D can and was explained away as "metallic lighting".
+- **Cause:** the cylinder was built from `getBoundingClientRect()` width, an axis-aligned screen box that already includes ancestor transforms, while the lid used local CSS width, so the parts used incompatible geometry. A first repair still hid the visible top at that camera angle, and a second exposed the radius mismatch.
+- **Fix:** build both parts from local resolved dimensions under one rigid 3D owner, with a viewing angle that shows the real surface.
+
+![Repaired local geometry and connected top surface](figures/lid-repaired.png)
+
+- **Lesson:** derive object geometry from local dimensions and apply one projection. Projected boxes stay correct for hit testing and placement. Verify painted contact, not DOM attachment, and do not dismiss an unexplained bright sliver as lighting before checking that it attaches to its surface. Deliberate foil or illustrated reflections remain legitimate.
+
+### A focus ring that vanished beside a dark button
+
+- **Symptom:** after the lid repair, keyboard focus on a dark button showed no ring against the light area around it.
+- **Cause:** the ring inherited a light `currentColor` meant for the button's text.
+- **Lesson:** focus rings, borders and icons are separate contrast roles. Check each against its own adjacent substrate in the real focus state.
+
+### A short menu stretched across a tablet header
+
+- **Symptom:** a five-item navigation menu spanned the full header width at tablet size.
+- **Cause:** `left: 0; right: 0` was convenient, not chosen.
+- **Lesson:** size a secondary surface from its content and its relationship to the trigger.

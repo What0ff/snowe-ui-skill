@@ -117,7 +117,7 @@ There is no database, long-running product process, shared runtime cache, teleme
 
 `references/app-patterns.md` owns behavioral defaults for repeated-use applications: navigation shells, list/detail, search, filters, sort and long collections, bulk actions, loading/empty/error/stale states, undo versus confirm, optimistic updates, saving, toasts, create/onboarding/settings/destructive flows, keyboard use and mobile specifics. It does not choose visual style.
 
-`references/failure-patterns.md` owns the generic-output diagnostics (symptom, usual cause, check, constructive replacement, legitimate exception) used before accepting an original visual design; it is an inspection list with explicit exceptions, not a style ban or a substitute for a positive direction.
+`references/failure-patterns.md` owns the generic-output diagnostics (symptom, usual cause, check, constructive replacement, legitimate exception) used before accepting an original visual design; it is an inspection list with explicit exceptions, not a style ban or a substitute for a positive direction. Its Recorded Incidents section holds single-incident worked examples (the rotated-can lid built from projected boxes, a focus ring inheriting text `currentColor`, a stretched tablet menu); general references keep one-sentence principles that link there.
 
 `references/design-foundations.md#starting-points` owns explicit default craft values (typography, spacing, color, dark theme, elevation, states and focus, forms, data tables) framed as starting points to beat with a recorded reason; an accepted system's values take precedence, and local catalogs still never choose style, palette or typography.
 
