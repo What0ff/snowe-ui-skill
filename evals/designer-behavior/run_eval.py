@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 import sys
 from pathlib import Path
 from typing import Any
@@ -303,161 +304,56 @@ PROGRESSIVE_DISCLOSURE_REASONS = {
     "benchmark-comparison": "The active work is cross-scenario evidence, not asset production or local retrieval.",
 }
 
-DELIVERY_CONTRACT_LINES = (
-    "Report the result, evidence and material limitations; do not invent fields for work that was responsibly skipped. Keep detailed traces in working evidence, not routine user-facing replies.",
-    "- **Direct:** state the correction, affected proof and remaining unknowns.",
-    "- **Focused:** also explain the resolved choice and relevant shared-consumer checks.",
-    "- **Portfolio:** also summarize the selected direction, meaningful tradeoff and required whole-experience proof.",
+# Short concept anchors guard the scoped-process invariants. Each anchor is a
+# few words that must survive any rewrite; the prose around it may change
+# freely. Verbatim section copies used to live here and froze SKILL.md wording.
+SKILL_REQUIRED_CONCEPTS = {
+    "depth vocabulary": ("**Direct**", "**Focused**", "**Portfolio**"),
+    "progressive disclosure without preloading": ("Do not preload",),
+    "provisional depth escalates and de-escalates": ("Escalate", "De-escalate"),
+    "consequence raises proof, not process breadth": ("proof intensity",),
+    "missing evidence stays unknown": ("`UNKNOWN`",),
+    "correction check gates completion": ("`BLOCKED`", "`REVIEW_REQUIRED`"),
+    "decision packet optional, analogs opt-in": ("--decision-packet", "--analog-query"),
+}
+EXPLORATION_REQUIRED_CONCEPTS = {
+    "direct work opens no packet or workshop": ("do not open a packet",),
+}
+# Deliberate negative fixtures; this is not a general contradiction detector.
+FORBIDDEN_GLOBAL_OBLIGATIONS = (
+    "every task must run architecture",
+    "preload the entire library for every task",
+    "preload all references",
 )
+DELIVERY_DEPTH_MARKERS = ("**Direct:**", "**Focused:**", "**Portfolio:**")
+UNSCOPED_DELIVERY = re.compile(r"\b(?:every|all) tasks?\b", re.IGNORECASE)
 
 
-def canonical_contract_lines(block: str) -> tuple[str, ...]:
-    """Return the non-empty, whitespace-normalized lines of a contract block."""
-
-    return tuple(line.strip() for line in block.splitlines() if line.strip())
-
-
-SKILL_CALIBRATION_CONTRACT_LINES = canonical_contract_lines(
-    """## Calibrate Consequence and Change Surface
-Before loading a broad reference or opening product framing, calibrate the task from observed repository and product facts. Do not infer depth from the request's wording, a component name, a file count, or a product category. A one-component symptom can expose a shared contract; a multi-file change can still be a bounded implementation. Record the smallest useful depth record:
-```text
-request / desired outcome:
-visible symptom or open decision:
-affected invariant and states:
-actual owner(s):
-dependencies and sibling consumers:
-shared tokens, hooks, data, or system contracts touched:
-user-goal, topology, journey, content, interaction, responsive, or system uncertainty:
-reversibility and consequence if wrong:
-depth:
-references loaded / deliberately not loaded:
-proof and stop condition:
-escalation trigger:
-```
-Inspect the real owner, its dependencies, sibling consumers, relevant states and breakpoints, and any shared contract before choosing a route. This is a change-surface inspection, not a semantic classifier. Start with the high-salience consequence—the user or system failure that matters if the correction is wrong—then trace the change surface: the actual set of owners and consumers that can be affected.
-Choose the smallest depth supported by that record:
-- **Direct** requires a bounded invariant in a coherent accepted system, a known or learned answer, and no newly affected sibling consumer or shared contract. Inspect the local owner and context, implement, render the affected state, and stop at the affected invariant. Direct work does not open a decision packet, broad research, candidate generation, architecture work, asset or motion exploration, or designer evaluation. It may load a directly relevant validation reference and may use rendered QA.
-- **Focused** is for a material choice in a known product/flow, including a shared owner or rebuilding the hierarchy of one page whose job and objects are understood. Use a page map before component choices for that hierarchy decision. Compare the current baseline and credible challengers in the affected context and, for a shared owner, in representative sibling contexts. A bounded choice normally needs only the smallest credible challenger; an open visual thesis may need several meaningfully different directions within the same owners and settled product contracts. This is a shared-system proof, not a Portfolio workshop; do not widen to a whole journey unless the proof exposes a material contract uncertainty.
-- **Portfolio** activates only when inspection reveals material uncertainty in user goals, topology, journey, content/object relationships, interaction contracts, responsive transformations, or system contracts. These are unresolved page jobs or wider product contracts, not merely the composition of known objects on one page. A genuinely new experience, architecture, or identity normally exposes one or more of those uncertainties; prove which one before widening. Portfolio earns whole-journey framing, structurally different candidates, risky-slice prototypes, and the full relevant loop.
-Depth is provisional. Escalate only when implementation or proof reveals one of the Portfolio uncertainties above, a newly affected owner/consumer, or a failed invariant that cannot be repaired locally. De-escalate when evidence closes the uncertainty. The record must name what was loaded, what was skipped, the proof that supports the chosen depth, and the explicit stop or escalation trigger; absence of a trigger is not evidence for broad work.
-Consequence changes proof intensity independently of process breadth. A narrow safety-, privacy-, financial-, or accessibility-critical invariant may remain Direct when its owner and answer are bounded, but its proof must cover the relevant failure/recovery path, input and assistive modes, adverse states, and rollback condition. High consequence is not permission to open unrelated architecture, research, or candidate work.
-Creative search breadth is also independent of task breadth. For an open visual choice, name what is fixed, what can be invented, and what rendered difference could justify another direction. Explore until the relevant alternatives are represented or evidence stops changing the choice; there is no fixed candidate count. This does not activate creative search for Direct work, reopen supplied designs, or require expressive treatment for accepted quiet utility."""
-)
-
-SKILL_ROUTE_CONTRACT_LINES = canonical_contract_lines(
-    """## Route the Work
-Load only the references whose decision is active. Do not preload the library, and do not follow a nested link merely because another reference mentions that domain.
-- Read [exploration-protocol.md](references/exploration-protocol.md) when a material decision needs alternatives, causal comparison, or convergence. Skip it for a direct, already-bounded implementation fix.
-- Read [page-hierarchy.md](references/page-hierarchy.md) before component selection for an open single-page hierarchy, user-facing copy or action-duplication decision. It does not open whole-product architecture for a known page job.
-- Read [experience-architecture.md](references/experience-architecture.md) for a new site/product topology, page family, navigation model, conversion/task flow, or structural redesign. A narrow component fix does not need it.
-- Read [art-direction-gate.md](references/art-direction-gate.md) and [design-foundations.md](references/design-foundations.md) for a new identity, campaign, material visual-system change, or open visual thesis in a known page. Preserve a coherent existing system unless evidence opens that decision.
-- Read [imagery-and-assets.md](references/imagery-and-assets.md) only when photography, illustration, diagrams, generated imagery, or a material custom visual is genuinely under consideration. A recorded no-image decision ends this route.
-- Read [iconography-system.md](references/iconography-system.md) for icon-source choice, an icon system, a product-specific metaphor, or custom icon work. A routine known glyph does not trigger the broader custom-asset process.
-- Read [motion-and-interaction.md](references/motion-and-interaction.md) only when motion carries information or character, or when an existing transition is failing. Static work does not need a motion exploration.
-- Read [research-and-evidence.md](references/research-and-evidence.md) when current external evidence can change a high-leverage decision; skip saturated or already verified questions.
-- Read [quality-gates.md](references/quality-gates.md) for implementation validation, accessibility/content/responsive stress, states, performance, or rendered critique. Do not use it as a substitute for product framing.
-- Read [visual-system-and-observation.md](references/visual-system-and-observation.md) for affected shared owners/layers, versioned visual contracts or portable checked browser evidence. Keep its scope proportional to the live decision.
-- Read [visual-reasoning.md](references/visual-reasoning.md) for open visual relationships, impression-to-decision translation, image comparisons or a repair whose perceptual cause is uncertain.
-- Read [designer-evaluation.md](references/designer-evaluation.md) for benchmark design, comparative evaluation, or systemic behavior review—not every routine delivery.
-- Read [cli-reference.md](references/cli-reference.md) only when invoking local retrieval, packets, persistence, stack guidance, contrast, or SVG validation.
-Read only the references needed for the current decision. Do not make every project execute every specialist workflow."""
-)
-
-SKILL_LOCAL_DECISION_SUPPORT_CONTRACT_LINES = canonical_contract_lines(
-    """## Local Decision Support
-The optional decision packet is a Portfolio/open-inquiry workbench. Do not open it for Direct corrections; Focused work normally uses its compact affected-decision record instead. Use the packet only when whole-problem framing is proportionate or the user explicitly requests it:
-```text
-python <skill-directory>/scripts/search.py "<real brief>" --decision-packet --format markdown --project-name "<name>"
-```
-The deterministic packet preserves the brief and leaves unknown mode, platform, pressures, language, and ambiguous domain terms unresolved. It does not run a keyword classifier. Local product analogs are off by default; request them with `--analog-query` only when a caller-chosen lexical lookup can change a live decision.
-Use targeted domain and stack retrieval only for unresolved questions. Every result states its evidence role and limitation, and layout/style/palette/type/motion recipe domains intentionally do not exist. Chart retrieval withholds unsupported exact thresholds, threshold-bearing use/avoid prose, palettes, accessibility grades, library recommendations, and interaction prescriptions. For a material custom SVG decision, use the structural validator and representative-control comparison helper described in [cli-reference.md](references/cli-reference.md), then inspect the claimed winner and closest rejected alternative in the actual owning component. The helper cannot choose or certify optical quality; a routine learned glyph in an accepted family does not require a candidate workshop."""
-)
-
-EXPLORATION_CALIBRATION_CONTRACT_LINES = canonical_contract_lines(
-    """## 0. Calibrate consequence and change surface first
-Do not begin this exploration protocol until a local depth record has been made from observed repository/product evidence. Resolve the requested target before treating it as missing: search exact user-supplied product, feature, route, or visible-label identifiers in file paths and file content, then follow repository manifests, indexes, entrypoints, and rendered routes. A filename miss is not absence evidence. Inspect the actual owner, dependencies, sibling consumers, relevant states and responsive surfaces, and shared tokens/hooks/data/system contracts. Record:
-```text
-request / desired outcome → visible symptom or open decision
-affected invariant → owner(s) → dependencies and sibling consumers
-shared contracts → material uncertainties → consequence if wrong
-depth → references loaded / not loaded → proof → stop condition
-escalation trigger
-```
-This is an evidence trace, not keyword or semantic classification. A request mentioning one component is not automatically Direct, and a multi-file change is not automatically Portfolio. Start with the high-salience consequence—the user or system failure that matters if the work is wrong—then trace the change surface: the real owner/consumer graph.
-- **Direct:** continue with this reference only if the answer is not already a bounded invariant. A coherent owner, no newly affected sibling consumer/shared contract, and known or learned behavior justify local implementation plus rendered QA. Stop at the affected invariant. Do not open a packet, broad research, candidate set, architecture exercise, asset/motion exploration, or evaluation route.
-- **Focused:** use this protocol for one material choice in a known product/flow, including an open page hierarchy or a local symptom with a shared owner. Compare the current baseline with credible challengers in the affected context and representative sibling contexts. A bounded choice normally needs the smallest credible challenger; an open visual thesis may compare several directions while its owners and product contracts stay fixed. Call that a **shared-system proof**, not a whole-product workshop.
-- **Portfolio:** use the complete protocol only when evidence shows material uncertainty in user goals, topology, journey, content/object relationships, interaction, responsive transformation, or system contracts. These concern unresolved page jobs or wider product contracts; composition of known page objects stays Focused. A genuinely new experience/architecture/identity normally exposes one or more of those uncertainties; name the uncertainty before widening. Whole-journey framing and structurally different candidates are then proportionate.
-The depth record must state `references loaded`, `references not loaded`, `proof`, `stop`, and `escalation`. Escalate only if proof reveals a new owner/consumer, a failed invariant that cannot be repaired locally, or one of the material Portfolio uncertainties. Stop when the calibrated proof closes the live uncertainty; do not widen merely because more references exist."""
-)
-
-# The second reference section repeats the operative Direct/Focused/Portfolio
-# conditions and evidence floor; keep that route surface independently closed.
-EXPLORATION_INQUIRY_CONTRACT_LINES = canonical_contract_lines(
-    """## 1. Calibrate the Inquiry
-Inquiry depth follows consequence, uncertainty, and reversibility.
-### Direct
-Use when the change is narrow, the system is coherent, and the answer is learned or accepted after owner/dependency inspection. Examples: repair focus, add a known state, correct a close icon, extend a tokenized component. A one-component symptom with a shared owner belongs in Focused, not Direct.
-Evidence required:
-- repository and rendered context;
-- the affected invariant and state;
-- targeted implementation and rerender.
-### Focused
-Use when a material choice inside a known page/flow is unresolved, its internal hierarchy needs rebuilding, or a shared owner needs proof across sibling consumers. Keep the current product as a baseline and introduce challengers only for the decision that can materially improve. Do not promote a shared-system proof into Portfolio unless it exposes a material goal, topology, journey, content, interaction, responsive, or system-contract uncertainty.
-Choose search breadth from the open decision, separately from process breadth. A known page job can support distinct visual theses without a whole-journey workshop. State fixed requirements and inventive freedom, then use the affected proof slice to decide whether another direction adds useful evidence. Preserve exact targets and accepted quiet systems; candidate quantity and expressive intensity are not success criteria.
-Evidence required:
-- causal driver and expected consequence;
-- current baseline plus credible alternatives;
-- same-content comparison at the affected sizes and states;
-- accepted decision and revisit trigger.
-### Portfolio
-Use for new experiences, whole-product topology, unresolved page jobs, navigation, conversion models, identities, or high-impact unresolved work only when the calibration shows material uncertainty in those contracts. Generate enough candidates to cover the real trade-offs; do not enforce an arbitrary concept count.
-Evidence required:
-- whole-journey and content/object model;
-- structurally distinct candidates;
-- proof slices using real content;
-- strongest rejected alternative;
-- implementation contract and rendered learning.
-Escalate when a supposedly routine answer proves weak, generic, inaccessible, inconsistent, or contradicted by current evidence and the failure reaches a material contract or another owner/consumer. De-escalate when further search is unlikely to change the decision. Record the evidence and the trigger either way."""
-)
-
-
-
-def markdown_section_lines(
-    text: str, start_heading: str, end_heading: str
-) -> tuple[str, ...] | None:
-    """Extract one exact, scoped Markdown section without interpreting prose."""
-
-    lines = text.splitlines()
-    try:
-        start = lines.index(start_heading)
-        end = lines.index(end_heading, start + 1)
-    except ValueError:
-        return None
-    return canonical_contract_lines("\n".join(lines[start:end]))
+def reference_route_failures(skill_text: str) -> list[str]:
+    """Every installed reference must be reachable from the root router."""
+    return [
+        f"Scoped contract route missing for references/{path.name}"
+        for path in sorted((SKILL_ROOT / "references").glob("*.md"))
+        if f"references/{path.name}" not in skill_text
+    ]
 
 
 def scope_document_contract_failures(skill_text: str, exploration_text: str) -> list[str]:
-    """Guard explicit critical route clauses; fingerprints identify revisions only."""
-    contracts = (
-        (skill_text, "## Calibrate Consequence and Change Surface", "## Route the Work", SKILL_CALIBRATION_CONTRACT_LINES),
-        (skill_text, "## Route the Work", "## The Design Loop", SKILL_ROUTE_CONTRACT_LINES),
-        (skill_text, "## Local Decision Support", "## Delivery", SKILL_LOCAL_DECISION_SUPPORT_CONTRACT_LINES),
-        (exploration_text, "## 0. Calibrate consequence and change surface first", "## 1. Calibrate the Inquiry", EXPLORATION_CALIBRATION_CONTRACT_LINES),
-        (exploration_text, "## 1. Calibrate the Inquiry", "## 2. Frame a Decision Graph", EXPLORATION_INQUIRY_CONTRACT_LINES),
-    )
-    failures = ["Critical scoped contract changed or is missing" for text, start, end, expected in contracts
-                if markdown_section_lines(text, start, end) != expected]
-    for clause in (
-        "The loop is conditional on calibrated depth.",
-        "Direct implements and proves the affected invariant;",
-        "missing or stale required evidence remains `UNKNOWN`.",
-        "Run the scoped correction check; `BLOCKED` and `REVIEW_REQUIRED` cannot be reported as completion.",
-    ):
-        if clause not in skill_text: failures.append("Required scoped contract clause missing: " + clause)
-    # Deliberate negative fixtures; this is not a general natural-language contradiction detector.
-    for line in skill_text.splitlines():
-        if line.strip().startswith(("Every task must run architecture", "Preload the entire library for every task")):
+    """Guard scoped-process invariants by concept anchors, routes and negative fixtures."""
+    failures: list[str] = []
+    for label, anchors in SKILL_REQUIRED_CONCEPTS.items():
+        missing = [anchor for anchor in anchors if anchor not in skill_text]
+        if missing:
+            failures.append(f"Required scoped contract concept missing ({label}): {', '.join(missing)}")
+    lowered_exploration = exploration_text.lower()
+    for label, anchors in EXPLORATION_REQUIRED_CONCEPTS.items():
+        missing = [anchor for anchor in anchors if anchor not in lowered_exploration]
+        if missing:
+            failures.append(f"Required scoped contract concept missing ({label}): {', '.join(missing)}")
+    for line in (skill_text + "\n" + exploration_text).splitlines():
+        if line.strip().lower().startswith(FORBIDDEN_GLOBAL_OBLIGATIONS):
             failures.append("Contradictory global scoped contract obligation")
+    failures.extend(reference_route_failures(skill_text))
     return failures
 
 
@@ -551,8 +447,7 @@ def scope_calibration_contract(
         failures.append("depth-proportional delivery section is missing")
     else:
         delivery_section = skill_text.split("## Delivery", 1)[1]
-        delivery_lines = [line.strip() for line in delivery_section.splitlines() if line.strip()]
-        if tuple(delivery_lines) != DELIVERY_CONTRACT_LINES:
+        if any(marker not in delivery_section for marker in DELIVERY_DEPTH_MARKERS) or UNSCOPED_DELIVERY.search(delivery_section):
             failures.append(
                 "delivery section contains an unscoped or missing process obligation"
             )

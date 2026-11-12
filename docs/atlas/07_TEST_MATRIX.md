@@ -241,7 +241,7 @@ python scripts/install_skill.py --diagnose
 
 Main smoke includes six authored before/after cases with current 900/390 PNGs: preserved type roles, drift, contextual glyphs, backings, multilingual bounded lists/alignment and continuation. It verifies keyboard scrolling to the end, empty/loading states and panel-centered action geometry. Icon stress uses schema 1.1 Russian/German/Arabic content at 320/390/900/1440 and 100/200% text, checking headers, status, metadata, preview text and focus bounds. Version 1.0 remains a regression input. Screenshots/self-review do not prove independent model improvement.
 
-The instruction fingerprint is an output revision identifier only. Critical route clauses and six authored consequence/scope traces still reject their tested contradictions; removed whole-document equality and obsolete stage wording are not semantic-quality evidence. Internal proof records remain detailed, while user-facing delivery is brief.
+The instruction fingerprint is an output revision identifier only. Concept anchors, forbidden global obligations, the routed-reference check and six authored consequence/scope traces still reject their tested contradictions while allowing benign rewording; removed whole-document equality and obsolete stage wording are not semantic-quality evidence. Internal proof records remain detailed, while user-facing delivery is brief.
 
 The density fixture’s first tighter visual proposal was user-rejected and is not a visual KEEP. The current candidate changes grouping/selector composition and uses scoped identity cues; README distinguishes its technical contract from proposal/user acceptance. A correction regression ensures new user rejection reopens verified work even without source changes.
 

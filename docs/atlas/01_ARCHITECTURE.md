@@ -106,7 +106,7 @@ Symbol source choice precedes custom exploration: third-party identities retain 
 There is no database, long-running product process, shared runtime cache, telemetry path, network client, package manager, or browser dependency in the installable Python runtime. Project persistence and the repository-only installer use short-lived OS file locks plus filesystem identity/atomicity; neither creates an ongoing service.
 
 - Six authored acceptance tasks under evals/acceptance-cases exercise retained typography, role drift, contextual custom icons, backings, multilingual bounded lists/alignment, and correction continuation. Hash-bound PNGs and implementer self-review remain separate from technical assertions and generalization claims.
-- The primary skill entry is reduced to priorities, scoped routing, a short execution/proof loop and concise delivery. Document fingerprints identify revisions; critical clauses and authored route scenarios provide bounded contract checks.
+- The primary skill entry is reduced to priorities, scoped routing, a short execution/proof loop and concise delivery. Document fingerprints identify revisions; short concept anchors, forbidden global obligations, a routed-reference check (every `references/*.md` linked from SKILL.md) and authored route scenarios provide bounded contract checks without freezing section wording.
 - The repository installer diagnoses duplicate copies and explicitly migrates the legacy location into a digest-recorded backup outside discovery; retry and post-move failure recovery preserve old files.
 
 ## Known-page composition boundary

@@ -373,6 +373,16 @@ class ScopeContractTests(unittest.TestCase):
         )
         self.assertEqual(failures, [])
 
+    def test_benign_rewording_keeps_scoped_contracts_but_lost_routes_fail(self):
+        runner = load_runner()
+        skill = SKILL.read_text(encoding="utf-8")
+        exploration = EXPLORATION.read_text(encoding="utf-8")
+        reworded = skill.replace("Before loading a broad reference", "Before you load any broad reference", 1)
+        self.assertNotEqual(skill, reworded)
+        self.assertEqual([], runner.scope_document_contract_failures(reworded, exploration))
+        unrouted = skill.replace("references/icon-craft.md", "references/removed.md")
+        self.assertTrue(any("route missing" in failure for failure in runner.scope_document_contract_failures(unrouted, exploration)))
+
     def test_uncertainty_surface_is_independent_of_runner_vocabulary(self):
         runner = load_runner()
         self.assertEqual(EXPECTED_UNCERTAINTY_SURFACE_FIELDS, runner.UNCERTAINTY_SURFACE_FIELDS)
