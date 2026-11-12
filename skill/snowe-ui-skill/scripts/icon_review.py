@@ -23,6 +23,12 @@ import uuid
 from pathlib import Path
 from typing import Any
 
+# Isolated interpreters (python -I, PYTHONSAFEPATH) drop the script directory
+# from sys.path; the sibling modules below belong to this skill.
+_SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+if _SCRIPT_DIR not in sys.path:
+    sys.path.insert(0, _SCRIPT_DIR)
+
 from asset_quality import AssetValidationError, validate_svg_asset
 
 

@@ -11,7 +11,7 @@ python <skill-directory>/scripts/icon_review.py --help
 python <skill-directory>/scripts/contrast.py --help
 ```
 
-Use an available Python 3 interpreter. Do not install or modify system Python merely to run Snowe without user authorization.
+Use an available Python 3.11+ interpreter; isolated mode (`python -I`) is supported. Do not install or modify system Python merely to run Snowe without user authorization.
 
 ## Open a Decision Packet
 

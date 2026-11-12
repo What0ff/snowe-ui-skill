@@ -11,6 +11,12 @@ from pathlib import Path, PurePosixPath
 import re
 import sys
 
+# Isolated interpreters (python -I, PYTHONSAFEPATH) drop the script directory
+# from sys.path; the sibling modules below belong to this skill.
+_SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+if _SCRIPT_DIR not in sys.path:
+    sys.path.insert(0, _SCRIPT_DIR)
+
 from decision_packet import (
     locked_project_state, _atomic_write_text, _reject_reparse_chain,
     _normalize_lexical_aliases, _shared_regular_file,

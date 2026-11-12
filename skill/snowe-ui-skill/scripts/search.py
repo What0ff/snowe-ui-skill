@@ -27,6 +27,14 @@ Persistence:
 import argparse
 import sys
 import io
+import os
+
+# Isolated interpreters (python -I, PYTHONSAFEPATH) drop the script directory
+# from sys.path; the sibling modules below belong to this skill.
+_SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+if _SCRIPT_DIR not in sys.path:
+    sys.path.insert(0, _SCRIPT_DIR)
+
 from core import CSV_CONFIG, AVAILABLE_STACKS, MAX_RESULTS, search, search_stack
 from decision_packet import generate_decision_packet, sensitive_markers, slugify_name
 

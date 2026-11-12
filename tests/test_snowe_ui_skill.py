@@ -456,6 +456,13 @@ class PersistenceTests(unittest.TestCase):
             page = Path(result["design_intelligence_dir"]) / "pages" / "find-a-bike.md"
             self.assertIn("Product selection and fit evidence", page.read_text(encoding="utf-8"))
 
+    def test_entry_scripts_run_under_isolated_python(self):
+        # Hosts may run python -I, which drops the script directory from sys.path.
+        for script in ("search.py", "corrections.py", "visual_review.py", "icon_review.py", "asset_quality.py", "contrast.py"):
+            result = subprocess.run([sys.executable, "-I", str(SCRIPTS / script), "--help"],
+                capture_output=True, text=True, timeout=60)
+            self.assertEqual(0, result.returncode, f"{script}: {result.stderr}")
+
     def test_sensitive_markers_flag_secrets_without_flagging_ordinary_briefs(self):
         from decision_packet import sensitive_markers
 

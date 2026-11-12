@@ -10,7 +10,7 @@
 
 ## Imports and console behavior
 
-- `search.py` and `decision_packet.py` use bare sibling imports. Run documented script paths or add the scripts directory to `sys.path` as tests do; this is not an installed Python package.
+- Product scripts use bare sibling imports; this is not an installed Python package. The entry scripts (`search.py`, `corrections.py`, `visual_review.py`, `icon_review.py`) add their own directory to `sys.path`, so they also run under `python -I` / `PYTHONSAFEPATH`. Library modules imported directly (as tests do) still need the scripts directory on `sys.path`.
 - UTF-8 console normalization exists in `search.py`; direct module callers do not inherit it.
 - JSON mode reserves stdout for one valid JSON document; persistence summaries go to stderr. Packet-only and search-only flags are rejected outside their owning mode rather than silently ignored.
 

@@ -9,6 +9,12 @@ import re
 import sys
 import json
 
+# Isolated interpreters (python -I, PYTHONSAFEPATH) drop the script directory
+# from sys.path; the sibling modules below belong to this skill.
+_SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+if _SCRIPT_DIR not in sys.path:
+    sys.path.insert(0, _SCRIPT_DIR)
+
 from checked_evidence import file_digest, object_fields, read_json, text
 from decision_packet import _normalize_lexical_aliases, _reject_reparse_chain
 from observation import inspect_capture
