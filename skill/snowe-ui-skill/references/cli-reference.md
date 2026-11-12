@@ -104,7 +104,7 @@ Every result reports a **source role** and **use boundary**. Ranking is English-
 | `google-fonts` | Bundled font metadata snapshot; verify current official files and license |
 | `ux` | Issue prompts and heuristics to verify in the actual flow |
 | `web` | App-interface/accessibility prompts; verify platform applicability |
-| `chart` | Unsourced encoding/accessibility prompts; unsupported exact thresholds, threshold-bearing use/avoid prose, palettes, grades, libraries, and interaction prescriptions are withheld |
+| `chart` | Unsourced encoding/accessibility prompts; unsupported exact thresholds, threshold-bearing use/avoid prose, palettes, grades, libraries, and interaction prescriptions are absent from the bundled catalog |
 | `react` | React/Next performance prompts; verify current repository/version |
 | `icon-concepts` | Role-first metaphor prompts and ambiguity warnings |
 | `icon-families` | Source discovery snapshot; verify current official source/license |
@@ -354,7 +354,7 @@ The helper accepts `#RGB`, `#RRGGBB`, `rgb(r,g,b)`, `black`, and `white`. It use
 
 - `source_role` explains what a dataset can contribute; `warning` states what it cannot decide.
 - Empty or low-quality lexical results mean the local snapshot has little evidence, not that the design space is empty.
-- Retrieved numeric claims are unverified until traced to a credible current source; unsupported chart thresholds, threshold-bearing use/avoid prose, grades, palette values, library advice, and interaction prescriptions are not returned at all.
+- Retrieved numeric claims are unverified until traced to a credible current source; unsupported chart thresholds, threshold-bearing use/avoid prose, grades, palette values, library advice, and interaction prescriptions are not in the bundled catalog at all.
 - A contrast calculation applies only to its exact solid rendered pair; imagery, gradients, transparency, effects, and states require contextual measurement.
 - A font remains `UNKNOWN` until actual files/dependency, script coverage, license, metrics, representative content, fallbacks, and rendering are checked.
 - An SVG `PASS` is structural only; an icon-comparison sheet proves only that the declared contexts rendered technically, not that the selected glyph is optically or semantically best.

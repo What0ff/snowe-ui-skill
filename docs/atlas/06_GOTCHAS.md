@@ -28,7 +28,8 @@
 - Every domain and stack result retains `source_role` and `warning`. Stack responses also count returned rows with and without `Docs URL`; a present URL is not automatically current/primary, and a missing URL is explicitly unsourced bundled guidance. Removing these boundaries can turn a snapshot into apparent authority.
 - Landing/layout, style bundle, palette, typography pairing, and motion preset catalogs were deleted. Do not reintroduce their solution fields under a new evidence label without provenance and an observed failure that outweighs anchoring.
 - `icon-candidates` requires exactly one supported family and a real subject; compare sources through separate auditable lookups.
-- `CSV_CONFIG`/`STACK_CONFIG` headers are exact contracts; malformed quoting or renamed columns can silently empty fields.
+- `CSV_CONFIG`/`STACK_CONFIG` headers are exact contracts; malformed quoting or renamed columns can silently empty fields. `tests/test_catalogs.py` requires every bundled CSV to be BOM-free UTF-8 with LF endings, a final newline, a rectangular shape, unique `No` ids, and every configured column present.
+- Filtering a column out of output does not remove it from the installed file. `tests/test_catalogs.py` scans every cell of every bundled CSV for hex colors, millisecond durations, Tailwind color utilities, numbered template prescriptions (`dashboard-01`), and frame-rate claims. Its `PENDING_OUTSIDE_THIS_CLEANUP` list names exact file/row/match findings in stack catalogs owned by a separate cleanup; a stale entry fails, so delete each entry when its row is cleaned.
 
 ## Open-decision and progressive-disclosure contracts
 

@@ -38,13 +38,13 @@ ICON_CANDIDATE_FAMILY_ALIASES = {
 CSV_CONFIG = {
     "chart": {
         "file": "charts.csv",
-        "search_cols": ["Data Type", "Keywords", "Best Chart Type", "When to Use", "When NOT to Use", "Accessibility Notes"],
-        # Keep retrieval to discovery prompts the bundled snapshot can support.
+        "search_cols": ["Data Type", "Keywords", "Best Chart Type", "Secondary Options", "Accessibility Notes"],
+        # The bundled catalog holds only discovery prompts it can support.
         # Exact data-volume thresholds, threshold-bearing use/avoid prose,
         # palette values, accessibility grades, library recommendations, and
-        # interaction prescriptions are withheld:
-        # none of those time-sensitive or context-dependent claims carries a
-        # primary-source citation in the catalog.
+        # interaction prescriptions were deleted from charts.csv (not merely
+        # hidden): none of those time-sensitive or context-dependent claims
+        # carried a primary-source citation.
         "output_cols": [
             "Data Type",
             "Keywords",
@@ -133,7 +133,7 @@ DOMAIN_SOURCE_ROLES = {
         "unsourced visualization-discovery snapshot",
         "Treat returned encodings, limitations, and accessibility notes as prompts only. "
         "Choose from the user's analytical question and representative data; verify semantics, accessibility, performance, edge states, and current library support with the target implementation and primary sources. "
-        "Unsupported exact thresholds, palette values, accessibility grades, library recommendations, and interaction prescriptions are intentionally not returned.",
+        "Unsupported exact thresholds, palette values, accessibility grades, library recommendations, and interaction prescriptions are intentionally not part of the bundled catalog.",
     ),
     "ux": (
         "general UX guidance",

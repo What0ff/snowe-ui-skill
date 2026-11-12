@@ -37,7 +37,7 @@ Icon comparison schema `1.2` requires context `lang`, `dir` (`ltr | rtl | auto`)
 
 Every live domain has an epistemic role and use boundary. Product output is only `Product Type` plus `Keywords`. Icon lookup removes legacy style/guideline rows. `icon-candidates` additionally requires exactly one named supported family and a real subject.
 
-Chart retrieval is a visualization-discovery snapshot. Output deliberately withholds unsupported exact data-volume thresholds, color prescriptions, accessibility grades, library recommendations, and interaction levels rather than presenting catalog fields as measured authority.
+Chart retrieval is a visualization-discovery snapshot. `charts.csv` holds only the returned columns: unsupported exact data-volume thresholds, use/avoid prose, color prescriptions, accessibility grades, library recommendations, and interaction levels were deleted from the shipped file, not merely hidden from output.
 
 `search_stack(query, stack, max_results)` returns:
 
@@ -98,10 +98,10 @@ Live configuration, not directory presence, defines runtime inputs:
 |---|---:|---|
 | `products.csv` | 192 | Caller-requested lexical product analog terms only. |
 | `google-fonts.csv` | 1,923 | Font metadata snapshot, not a font decision. |
-| `ux-guidelines.csv` | 99 | General UX prompts with contextual verification boundary. |
+| `ux-guidelines.csv` | 91 | General UX prompts with contextual verification boundary; row ids are stable (merged duplicates leave gaps). |
 | `app-interface.csv` | 30 | Web implementation/accessibility prompts. |
 | `react-performance.csv` | 44 | React performance prompts requiring version/current-doc verification. |
-| `charts.csv` | 25 | Encoding alternatives, limitations, and accessibility prompts. |
+| `charts.csv` | 25 | Encoding alternatives, limitations, and accessibility prompts (seven columns; nothing withheld remains in the file). |
 | `icons.csv` | 104 | Legacy familiar-action lookup after style/guideline filtering; no third-party brand marks (those come from official artwork). |
 | `icon-families.csv` | 10 | Source discovery snapshot. |
 | `icon-concepts.csv` | 21 | Role/metaphor questions. |

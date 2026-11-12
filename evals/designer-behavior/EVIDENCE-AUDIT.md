@@ -16,6 +16,8 @@ This audit records the hardening decision for fields that could silently move Sn
 | `colors.csv`: product key and every palette role | Product-to-palette mapping with no brand evidence, rendered contrast, state coverage, provenance, or current context. | Dataset and domain deleted. |
 | `typography.csv`: pairing, mood, `Best For`, imports, config, notes | Ready-made pairing recipes; font availability, scripts, license, metrics, files, and representative content were not proven. | Dataset and domain deleted. The Google Fonts catalog remains metadata only. |
 | `motion.csv`: intensity, trigger, duration, easing, snippet, framework notes, `Do` / `Don't` | Motion was encoded as a preset rather than a consequence of state, continuity, explanation, feedback, or character. Snippets and framework claims can also age. | Dataset and domain deleted. Motion remains an open design outcome, including no animation. |
+| `charts.csv`: `When to Use`, `When NOT to Use`, `Data Volume Threshold`, `Color Guidance`, `Accessibility Grade`, `Library Recommendation`, `Interactive Level` | Output already withheld these unsourced thresholds, hex palettes, grades, and library picks, but the installed file still shipped them to any agent that opened it. Several returned notes also misstated WCAG (for example, that pie charts "fail WCAG"). | Columns deleted from the file (2026-11-12). Returned notes rewritten to cite the actual success criteria (SC 1.4.1, 1.4.13, 2.1.1, 2.2.2) or to describe the perceptual limitation without an invented threshold. |
+| `ux-guidelines.csv` / `app-interface.csv`: duration ranges, easing presets, per-view animation counts, hex and Tailwind color examples, `glass material`, obsolete `fastclick`, duplicate rows | Motion and color presets in a guidance costume; a 44 px target misattributed to WCAG; duplicate rows split retrieval. | Values removed or replaced with the governing standard (WCAG 2.2 SC 2.5.8 24×24 CSS px floor, platform 44 pt / 48 dp guidance stated as platform guidance); eight duplicate or obsolete UX rows merged or removed with stable row ids (2026-11-12). |
 
 The deleted layouts were not moved into an “archive” inside the installable skill: the rows lacked provenance and unique evidence strong enough to justify the anchoring risk. Git history remains the historical record.
 
@@ -39,6 +41,8 @@ Automated coverage protects the following facts:
 - obsolete recipe domains and files cannot reappear unnoticed;
 - the product catalog exposes only lexical analogy fields;
 - bundled CSVs contain no numeric conversion/engagement/time-on-page claims in the rejected forms;
+- no bundled CSV cell contains a hex color, millisecond duration, Tailwind color utility, numbered template prescription, or frame-rate claim, except exact pending findings in stack catalogs owned by a separate cleanup (`tests/test_catalogs.py`);
+- every bundled CSV is BOM-free UTF-8 with LF endings and rectangular rows, and every configured column exists;
 - deleting or perturbing local analog retrieval does not change situation framing or architecture inquiry.
 
 This audit classifies evidence quality; it does not claim that a retained row is current truth. Every retrieved result still carries a source role and a use boundary.

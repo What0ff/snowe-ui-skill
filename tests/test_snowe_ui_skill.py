@@ -550,7 +550,7 @@ class RetrievalTests(unittest.TestCase):
         self.assertTrue(result["results"])
         self.assertTrue(all(withheld.isdisjoint(item) for item in result["results"]))
         self.assertIn("unsourced", result["source_role"])
-        self.assertIn("intentionally not returned", result["warning"])
+        self.assertIn("intentionally not part of the bundled catalog", result["warning"])
         self.assertIn("primary sources", result["warning"])
 
     def test_every_stack_exposes_role_boundary_and_documentation_coverage(self):
