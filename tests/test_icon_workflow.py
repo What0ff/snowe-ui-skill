@@ -804,6 +804,156 @@ class SolidAndDuotoneValidatorTests(SvgFixtureMixin, unittest.TestCase):
         result = self.validate(source, chain(fill_language, lambda value: value.update({"target_sizes": [48]})))
         self.assertFalse(any("below 1 CSS px" in warning for warning in result["warnings"]), result["warnings"])
 
+    def test_project_owned_license_binding_applies_only_to_original_artwork(self):
+        source = (
+            SVG_OPEN + ' viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" '
+            'stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16"/></svg>'
+        )
+        project_owned = lambda value: value["evidence"].update({"license": {"kind": "project-owned"}})
+        self.assert_valid(source, project_owned)
+
+        def external(value):
+            project_owned(value)
+            value["provenance"].update({"kind": "external", "source_ref": "https://example.com/probe.svg"})
+            value["evidence"]["source"] = {"kind": "external", "verification": "unverified"}
+        self.assert_rejected(source, "project-owned", external)
+        self.assert_rejected(
+            source,
+            "evidence.license",
+            lambda value: value["evidence"].update({"license": {"kind": "project-owned", "path": "probe-license.txt"}}),
+        )
+        self.assert_rejected(
+            source,
+            "evidence.license",
+            lambda value: value["evidence"].update({"license": {"kind": "borrowed"}}),
+        )
+
+
+class MetadataErgonomicsTests(unittest.TestCase):
+    STROKE_SVG = (
+        SVG_OPEN + ' viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" '
+        'stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16"/></svg>'
+    )
+
+    def run_cli(self, *arguments: str) -> subprocess.CompletedProcess:
+        return subprocess.run(
+            [sys.executable, str(SCRIPTS / "asset_quality.py"), *arguments],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            check=False,
+        )
+
+    def fill_placeholders(self, value: dict) -> None:
+        value.update(
+            {
+                "role": "close action icon",
+                "source": "repository-owned custom drawing",
+                "license": "project-owned",
+                "accessibility_owner": "owning labeled button; SVG decorative",
+                "target_sizes": [16, 20, 24],
+            }
+        )
+        value["drawing_language"].update(
+            {"corner_language": "rounded monoline terminals", "detail_budget": "one horizontal stroke at 16 px"}
+        )
+        value["provenance"].update({"creator": "test fixture author", "source_ref": "icon.source.md#icon", "reviewed": "2026-08-23"})
+        value["evidence"]["source"]["path"] = "icon.source.md"
+
+    def test_init_metadata_and_rehash_round_trip(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            root = Path(temporary_directory)
+            svg = root / "icon.svg"
+            svg.write_text(self.STROKE_SVG, encoding="utf-8")
+            metadata = root / "icon.metadata.json"
+
+            created = self.run_cli(str(svg), "--init-metadata")
+            self.assertEqual(0, created.returncode, created.stderr)
+            self.assertIn("icon.metadata.json", created.stdout)
+            value = json.loads(metadata.read_text(encoding="utf-8"))
+            self.assertEqual("icon", value["name"])
+            self.assertEqual(hashlib.sha256(svg.read_bytes()).hexdigest(), value["provenance"]["sha256"])
+            self.assertEqual(
+                {"mode": "stroke", "stroke_width": 2, "linecap": "round", "linejoin": "round"},
+                {key: value["drawing_language"][key] for key in ("mode", "stroke_width", "linecap", "linejoin")},
+            )
+            self.assertEqual({"kind": "project-owned"}, value["evidence"]["license"])
+
+            # Placeholders still fail until a person fills them.
+            unfilled = validate_svg_asset(svg, metadata)
+            self.assertFalse(unfilled["valid"])
+            self.assertIn("non-placeholder", " ".join(unfilled["errors"]))
+
+            refused = self.run_cli(str(svg), "--init-metadata")
+            self.assertNotEqual(0, refused.returncode)
+            self.assertIn("already exists", refused.stderr + refused.stdout)
+
+            self.fill_placeholders(value)
+            metadata.write_text(json.dumps(value, indent=2), encoding="utf-8")
+            (root / "icon.source.md").write_bytes(b"# icon\nDrawn for the test fixture.\n")
+
+            rehashed = self.run_cli(str(svg), "--metadata", str(metadata), "--rehash")
+            self.assertEqual(0, rehashed.returncode, rehashed.stdout + rehashed.stderr)
+            self.assertIn("evidence.source.sha256", rehashed.stdout)
+            self.assertIn("PASS", rehashed.stdout)
+
+            svg.write_text(self.STROKE_SVG.replace("M4 12h16", "M5 12h14"), encoding="utf-8")
+            stale = validate_svg_asset(svg, metadata)
+            self.assertIn("provenance.sha256 does not match", " ".join(stale["errors"]))
+            rehashed = self.run_cli(str(svg), "--metadata", str(metadata), "--rehash", "--json")
+            self.assertEqual(0, rehashed.returncode, rehashed.stdout + rehashed.stderr)
+            report = json.loads(rehashed.stdout)
+            self.assertTrue(report["valid"], report)
+            self.assertEqual(["provenance.sha256"], [change["field"] for change in report["rehash"]["changed"]])
+            self.assertEqual(
+                hashlib.sha256(svg.read_bytes()).hexdigest(),
+                json.loads(metadata.read_text(encoding="utf-8"))["provenance"]["sha256"],
+            )
+
+    def test_rehash_never_rebinds_external_or_brand_artwork(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            root = Path(temporary_directory)
+            svg = root / "icon.svg"
+            svg.write_text(self.STROKE_SVG, encoding="utf-8")
+            created = self.run_cli(str(svg), "--init-metadata", "--provenance", "external")
+            self.assertEqual(0, created.returncode, created.stderr)
+            metadata = root / "icon.metadata.json"
+            value = json.loads(metadata.read_text(encoding="utf-8"))
+            self.assertEqual({"kind": "external", "verification": "unverified"}, value["evidence"]["source"])
+            self.assertIn("path", value["evidence"]["license"])
+            original_digest = value["provenance"]["sha256"]
+
+            svg.write_text(self.STROKE_SVG.replace("M4 12h16", "M5 12h14"), encoding="utf-8")
+            rehashed = self.run_cli(str(svg), "--metadata", str(metadata), "--rehash")
+            self.assertNotEqual(0, rehashed.returncode)
+            self.assertIn("external", rehashed.stdout)
+            self.assertEqual(original_digest, json.loads(metadata.read_text(encoding="utf-8"))["provenance"]["sha256"])
+
+    def test_rehash_refuses_unsafe_evidence_paths_without_writing(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            root = Path(temporary_directory)
+            svg = root / "icon.svg"
+            svg.write_text(self.STROKE_SVG, encoding="utf-8")
+            self.assertEqual(0, self.run_cli(str(svg), "--init-metadata").returncode)
+            metadata = root / "icon.metadata.json"
+            value = json.loads(metadata.read_text(encoding="utf-8"))
+            self.fill_placeholders(value)
+            value["evidence"]["source"]["path"] = "C:/outside.md"
+            before = json.dumps(value, indent=2)
+            metadata.write_text(before, encoding="utf-8")
+            rehashed = self.run_cli(str(svg), "--metadata", str(metadata), "--rehash")
+            self.assertNotEqual(0, rehashed.returncode)
+            self.assertEqual(before, metadata.read_text(encoding="utf-8"))
+
+    def test_validation_still_requires_metadata(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            svg = Path(temporary_directory) / "icon.svg"
+            svg.write_text(self.STROKE_SVG, encoding="utf-8")
+            result = self.run_cli(str(svg))
+            self.assertNotEqual(0, result.returncode)
+            self.assertIn("--metadata", result.stderr)
+
 
 class IconDecisionWorkflowTests(unittest.TestCase):
     def test_multilingual_stress_sheet_matches_validated_source(self):

@@ -6,6 +6,10 @@ geometry inside the declared bounds, drawing-language consistency (stroke,
 fill, mixed, or layered duotone), and exact provenance binding. Recognition and
 optical/UI quality still require rendered human comparison against existing
 and no-icon alternatives.
+
+``--init-metadata`` writes a complete metadata skeleton whose ``<...>``
+placeholders fail validation until a person fills them; ``--rehash`` rebinds
+original-provenance and local evidence digests after an intentional edit.
 """
 
 from __future__ import annotations
@@ -19,6 +23,7 @@ import os
 import re
 import stat
 import sys
+import uuid
 import xml.etree.ElementTree as ET
 from datetime import date
 from pathlib import Path
@@ -47,6 +52,9 @@ GEOMETRY_ELEMENTS = {"path", "circle", "ellipse", "rect", "line", "polyline", "p
 PAINT_ATTRIBUTES = {"fill", "stroke", "color", "stop-color", "flood-color", "lighting-color"}
 SAFE_PAINT = {"none", "currentcolor", "transparent"}
 PLACEHOLDERS = {"", "-", "n/a", "na", "none", "not provided", "tbd", "todo", "unknown", "unspecified"}
+# --init-metadata writes "<...>" prompts; a whole-value angle-bracket string is
+# never a real declaration, so it fails exactly like the words above.
+PLACEHOLDER_RE = re.compile(r"\s*<[^<>]*>\s*")
 LINECAPS = {"butt", "round", "square", "not applicable"}
 # "arcs" is excluded: browsers do not implement it and fall back to miter,
 # whose spike extent the bounds proof below cannot certify.
@@ -229,7 +237,11 @@ def _live_area(value: Any) -> Bounds | None:
 
 
 def _meaningful(value: Any) -> bool:
-    return isinstance(value, str) and value.strip().casefold() not in PLACEHOLDERS
+    return (
+        isinstance(value, str)
+        and value.strip().casefold() not in PLACEHOLDERS
+        and not PLACEHOLDER_RE.fullmatch(value)
+    )
 
 
 def _json_tree_error(value: Any, label: str) -> str | None:
@@ -336,6 +348,9 @@ def _evidence_path_text(path_value: Any, field: str, errors: list[str]) -> str |
         errors.append(f"{field}.path must be a non-empty metadata-relative local path.")
         return None
     path_text = path_value.strip()
+    if PLACEHOLDER_RE.fullmatch(path_text):
+        errors.append(f"{field}.path is an unfilled placeholder; name the metadata-relative evidence file.")
+        return None
     path_object = Path(path_text)
     if (
         path_object.is_absolute()
@@ -466,7 +481,21 @@ def _validate_evidence(
         expected_kind = "local" if provenance_kind == "original" else "external" if provenance_kind == "external" else ""
         if expected_kind and source_kind != expected_kind:
             errors.append(f"evidence.source.kind must be {expected_kind!r} for provenance.kind {provenance_kind!r}.")
-    _evidence_file(metadata_path, evidence.get("license"), "evidence.license", errors)
+    license_binding = evidence.get("license")
+    if isinstance(license_binding, dict) and "kind" in license_binding:
+        # A drawing the project made itself carries its own license; only
+        # imported artwork needs a retained license file to bind.
+        if license_binding != {"kind": "project-owned"}:
+            errors.append(
+                'evidence.license must be a {path, sha256} file binding or exactly {"kind": "project-owned"}.'
+            )
+        elif provenance_kind != "original" or metadata.get("asset_type") == "brand-mark":
+            errors.append(
+                "evidence.license kind 'project-owned' applies only to original provenance; "
+                "external sources still require a local license file binding."
+            )
+    else:
+        _evidence_file(metadata_path, license_binding, "evidence.license", errors)
 
 
 def _duotone_tone(tones: Any, errors: list[str] | None = None) -> float | None:
@@ -1553,23 +1582,344 @@ def validate_svg_asset(svg_path: str | Path, metadata_path: str | Path | None = 
     return {"path": str(svg_file), "metadata": str(meta_file) if meta_file else None, "valid": not errors, "errors": list(dict.fromkeys(errors)), "warnings": list(dict.fromkeys(warnings)), "checks": checks}
 
 
+def default_metadata_path(svg_path: str | Path) -> Path:
+    svg_file = Path(svg_path)
+    return svg_file.with_name(f"{svg_file.stem}.metadata.json")
+
+
+def _read_svg_for_metadata(svg_file: Path) -> tuple[bytes, ET.Element]:
+    redirect = _reparse_in_chain(svg_file)
+    if redirect is not None:
+        raise AssetValidationError(f"SVG path must not contain a symlink, junction, or reparse point: {redirect}")
+    try:
+        if svg_file.stat().st_size > MAX_SVG_BYTES:
+            raise AssetValidationError(f"SVG exceeds the deterministic {MAX_SVG_BYTES}-byte safety limit.")
+        svg_bytes = svg_file.read_bytes()
+        source = svg_bytes.decode("utf-8")
+    except FileNotFoundError as error:
+        raise AssetValidationError(f"SVG file not found: {svg_file}") from error
+    except OSError as error:
+        raise AssetValidationError(f"SVG file cannot be read safely: {svg_file}: {error}") from error
+    except UnicodeDecodeError as error:
+        raise AssetValidationError(f"SVG is not valid UTF-8 text: {error}") from error
+    if UNSAFE_DECLARATION.search(source):
+        raise AssetValidationError("DOCTYPE, ENTITY, and xml-stylesheet declarations are not allowed.")
+    try:
+        root = ET.fromstring(source)
+    except (ET.ParseError, RecursionError, ValueError) as error:
+        raise AssetValidationError(f"SVG is not valid XML: {error}") from error
+    return svg_bytes, root
+
+
+def _json_number(value: float) -> int | float:
+    return int(value) if float(value).is_integer() else value
+
+
+def _placeholder_fields(value: Any, prefix: str = "") -> list[str]:
+    if isinstance(value, dict):
+        return [field for key, child in value.items() for field in _placeholder_fields(child, f"{prefix}{key}.")]
+    return [prefix.rstrip(".")] if isinstance(value, str) and PLACEHOLDER_RE.fullmatch(value) else []
+
+
+def _atomic_write_json(path: Path, value: dict[str, Any]) -> None:
+    temporary = path.with_name(f".{path.name}.tmp-{uuid.uuid4().hex}")
+    try:
+        with temporary.open("x", encoding="utf-8", newline="\n") as handle:
+            handle.write(json.dumps(value, indent=2, ensure_ascii=False) + "\n")
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(temporary, path)
+    finally:
+        if temporary.exists():
+            temporary.unlink()
+
+
+def init_metadata(
+    svg_path: str | Path,
+    metadata_path: str | Path | None = None,
+    *,
+    provenance: str = "original",
+) -> dict[str, Any]:
+    """Write a complete metadata skeleton beside an SVG without overwriting anything.
+
+    Facts the SVG proves (name, grid, digest, observed drawing language) are
+    computed. Judgments only a person can make stay as ``<...>`` placeholders,
+    which fail validation until replaced.
+    """
+    if provenance not in {"original", "external"}:
+        raise AssetValidationError("--provenance must be original or external.")
+    svg_file = Path(svg_path)
+    meta_file = Path(metadata_path) if metadata_path else default_metadata_path(svg_file)
+    svg_bytes, root = _read_svg_for_metadata(svg_file)
+    redirect = _reparse_in_chain(meta_file)
+    if redirect is not None:
+        raise AssetValidationError(f"Metadata path must not contain a symlink, junction, or reparse point: {redirect}")
+    if os.path.lexists(meta_file):
+        raise AssetValidationError(
+            f"Metadata file already exists: {meta_file}; edit it, or run --rehash after an intentional SVG edit."
+        )
+    observed = _inspect_svg_root(root, {}, None, None, [], [], [])
+    view_box = observed["view_box"]
+    if view_box is None:
+        raise AssetValidationError("SVG must declare a valid positive viewBox before metadata can be initialized.")
+    width, height = view_box[2], view_box[3]
+    if observed["layers"]:
+        mode = "duotone"
+    elif observed["fill"] and observed["stroke"]:
+        mode = "mixed"
+    elif observed["stroke"]:
+        mode = "stroke"
+    else:
+        mode = "fill"
+    language: dict[str, Any] = {"mode": mode}
+    if observed["stroke"]:
+        widths, caps, joins = observed["stroke_widths"], observed["linecaps"], observed["linejoins"]
+        language["stroke_width"] = (
+            _json_number(next(iter(widths)))
+            if len(widths) == 1
+            else f"<one stroke width; the artwork uses {', '.join(f'{item:g}' for item in sorted(widths))}>"
+        )
+        language["linecap"] = next(iter(caps)) if len(caps) == 1 else f"<one linecap; the artwork uses {', '.join(sorted(caps))}>"
+        language["linejoin"] = next(iter(joins)) if len(joins) == 1 else f"<one linejoin; the artwork uses {', '.join(sorted(joins))}>"
+    else:
+        language.update({"stroke_width": 0, "linecap": "not applicable", "linejoin": "not applicable"})
+    if mode == "duotone":
+        alphas = observed["secondary_alphas"]
+        language["tones"] = {
+            "secondary_opacity": _json_number(next(iter(alphas)))
+            if len(alphas) == 1
+            else "<declared secondary-layer opacity from 0.12 to 0.6>"
+        }
+    language["corner_language"] = "<corner and terminal language shared with the family>"
+    language["detail_budget"] = "<details that must survive the smallest target size>"
+    digest = hashlib.sha256(svg_bytes).hexdigest()
+    if provenance == "original":
+        provenance_value = {
+            "kind": "original",
+            "creator": "<who drew this icon>",
+            "source_ref": "<metadata-relative design record, e.g. icon.source.md#icon>",
+            "reviewed": "<YYYY-MM-DD>",
+            "sha256": digest,
+        }
+        evidence = {
+            "source": {"kind": "local", "path": "<metadata-relative source record file>", "sha256": "<run --rehash after setting path>"},
+            "license": {"kind": "project-owned"},
+        }
+    else:
+        provenance_value = {
+            "kind": "external",
+            "creator": "<upstream author or project>",
+            "source_ref": "<canonical HTTPS URL pinned to the upstream revision>",
+            "reviewed": "<YYYY-MM-DD>",
+            "sha256": digest,
+        }
+        evidence = {
+            "source": {"kind": "external", "verification": "unverified"},
+            "license": {"path": "<metadata-relative retained license file>", "sha256": "<run --rehash after setting path>"},
+        }
+    skeleton: dict[str, Any] = {
+        "name": svg_file.stem,
+        "asset_type": "interface-icon",
+        "role": "<UI role this icon serves>",
+        "grid": _json_number(width) if math.isclose(width, height) else f"{width:g} x {height:g}",
+        "live_area": {"min_x": 0, "min_y": 0, "max_x": _json_number(width), "max_y": _json_number(height)},
+        "drawing_language": language,
+        "target_sizes": "<actual implemented slot sizes in CSS px, e.g. [16, 20]>",
+        "source": "<where this drawing comes from>",
+        "license": "<license statement, e.g. project-owned>",
+        "accessibility_owner": "<element that owns the accessible name; SVG decorative or labelled>",
+        "provenance": provenance_value,
+        "evidence": evidence,
+    }
+    # Report structural problems against the inferred language, not the empty skeleton.
+    svg_errors: list[str] = []
+    _inspect_svg_root(root, {"drawing_language": language}, None, None, svg_errors, [], [])
+    with open(meta_file, "x", encoding="utf-8", newline="\n") as handle:
+        handle.write(json.dumps(skeleton, indent=2, ensure_ascii=False) + "\n")
+    return {
+        "metadata": str(meta_file),
+        "svg": str(svg_file),
+        "sha256": digest,
+        "drawing_language": {key: language[key] for key in ("mode", "stroke_width", "linecap", "linejoin")},
+        "placeholders": _placeholder_fields(skeleton),
+        "svg_errors": list(dict.fromkeys(svg_errors)),
+    }
+
+
+def rehash_metadata(svg_path: str | Path, metadata_path: str | Path) -> dict[str, Any]:
+    """Rebind digests after an intentional edit; never rebinds imported artwork.
+
+    Original provenance takes the current SVG digest. Local source/license
+    evidence takes the current bytes of the files already named. External or
+    brand-mark provenance keeps its upstream digest. Nothing is written when
+    any named evidence file is unsafe or unreadable.
+    """
+    svg_file, meta_file = Path(svg_path), Path(metadata_path)
+    for label, path in (("SVG", svg_file), ("Metadata", meta_file)):
+        redirect = _reparse_in_chain(path)
+        if redirect is not None:
+            raise AssetValidationError(f"{label} path must not contain a symlink, junction, or reparse point: {redirect}")
+    metadata, load_errors = _load_metadata(meta_file)
+    if load_errors:
+        raise AssetValidationError("; ".join(load_errors))
+    try:
+        if svg_file.stat().st_size > MAX_SVG_BYTES:
+            raise AssetValidationError(f"SVG exceeds the deterministic {MAX_SVG_BYTES}-byte safety limit.")
+        digest = hashlib.sha256(svg_file.read_bytes()).hexdigest()
+    except FileNotFoundError as error:
+        raise AssetValidationError(f"SVG file not found: {svg_file}") from error
+    except OSError as error:
+        raise AssetValidationError(f"SVG file cannot be read safely: {svg_file}: {error}") from error
+    report: dict[str, Any] = {"changed": [], "unchanged": [], "skipped": [], "errors": [], "written": False}
+
+    def bind(container: dict[str, Any], field: str, value: str) -> None:
+        previous = container.get("sha256")
+        if previous == value:
+            report["unchanged"].append(field)
+        else:
+            report["changed"].append({"field": field, "old": previous, "new": value})
+            container["sha256"] = value
+
+    brand_mark = metadata.get("asset_type") == "brand-mark"
+    provenance = metadata.get("provenance")
+    kind = str(provenance.get("kind", "")).strip().casefold() if isinstance(provenance, dict) else ""
+    if not isinstance(provenance, dict):
+        report["skipped"].append({"field": "provenance.sha256", "reason": "provenance is not an object"})
+    elif kind == "original" and not brand_mark:
+        bind(provenance, "provenance.sha256", digest)
+    elif provenance.get("sha256") == digest:
+        report["unchanged"].append("provenance.sha256")
+    elif kind == "external" or brand_mark:
+        report["skipped"].append({
+            "field": "provenance.sha256",
+            "reason": "external provenance binds the upstream bytes; restore the upstream SVG, or re-import and review it, instead of rebinding an edited copy",
+        })
+    else:
+        report["skipped"].append({"field": "provenance.sha256", "reason": "provenance.kind must be 'original' before its digest can be rebound"})
+    evidence = metadata.get("evidence")
+    if isinstance(evidence, dict):
+        for field in ("source", "license"):
+            binding = evidence.get(field)
+            label = f"evidence.{field}"
+            if not isinstance(binding, dict) or "path" not in binding:
+                continue
+            if field == "source" and str(binding.get("kind", "")).strip().casefold() != "local":
+                continue
+            path_value = binding.get("path")
+            if isinstance(path_value, str) and PLACEHOLDER_RE.fullmatch(path_value):
+                report["skipped"].append({"field": f"{label}.sha256", "reason": f"{label}.path is still a placeholder"})
+                continue
+            binding_errors: list[str] = []
+            path_text = _evidence_path_text(path_value, label, binding_errors)
+            actual = _evidence_digest(meta_file, path_text, label, binding_errors)[1] if path_text is not None else None
+            if actual is None:
+                report["errors"].extend(binding_errors)
+            else:
+                bind(binding, f"{label}.sha256", actual)
+    if isinstance(metadata.get("brand"), dict):
+        report["skipped"].append({
+            "field": "brand.artwork.sha256, brand.usage.sha256",
+            "reason": "imported brand bindings are never rehashed; they keep binding the retained upstream records",
+        })
+    if report["errors"]:
+        report["changed"] = []
+        return report
+    if report["changed"]:
+        _atomic_write_json(meta_file, metadata)
+        report["written"] = True
+    return report
+
+
+def _print_result(result: dict[str, Any]) -> None:
+    print(f"{'PASS' if result['valid'] else 'FAIL'}: {result['path']}")
+    for error in result["errors"]:
+        print(f"ERROR: {error}")
+    for warning in result["warnings"]:
+        print(f"WARNING: {warning}")
+    for check in result["checks"]:
+        print(f"CHECK: {check}")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Validate a self-contained SVG interface icon and exact provenance metadata")
     parser.add_argument("svg", help="Path to the SVG asset")
-    parser.add_argument("--metadata", "-m", required=True, help="Path to companion asset metadata JSON")
+    parser.add_argument(
+        "--metadata", "-m",
+        help="Path to companion asset metadata JSON (required to validate or rehash; "
+        "--init-metadata defaults to <svg-stem>.metadata.json beside the SVG)",
+    )
     parser.add_argument("--json", action="store_true", help="Emit machine-readable JSON")
+    action = parser.add_mutually_exclusive_group()
+    action.add_argument(
+        "--init-metadata", action="store_true",
+        help="Write a complete metadata skeleton with the computed SVG digest and observed drawing language; "
+        "<...> placeholders fail validation until filled. Never overwrites an existing file.",
+    )
+    action.add_argument(
+        "--rehash", action="store_true",
+        help="After an intentional edit, recompute original provenance and local evidence SHA-256 values, "
+        "print what changed, then validate. External and brand artwork digests are never rebound.",
+    )
+    parser.add_argument(
+        "--provenance", choices=("original", "external"),
+        help="With --init-metadata: skeleton provenance kind (default original, with a project-owned license binding)",
+    )
     args = parser.parse_args()
+    if args.provenance and not args.init_metadata:
+        parser.error("--provenance applies only to --init-metadata")
+    if not args.init_metadata and not args.metadata:
+        parser.error("--metadata is required unless --init-metadata is used")
+
+    if args.init_metadata:
+        try:
+            created = init_metadata(args.svg, args.metadata, provenance=args.provenance or "original")
+        except (AssetValidationError, OSError) as error:
+            print(f"INIT FAILED: {error}", file=sys.stderr)
+            return 1
+        if args.json:
+            print(json.dumps(created, indent=2, ensure_ascii=False))
+        else:
+            print(f"WROTE: {created['metadata']}")
+            language = ", ".join(f"{key}={value}" for key, value in created["drawing_language"].items())
+            print(f"INFERRED: drawing_language {language}; provenance.sha256={created['sha256']}")
+            for error in created["svg_errors"]:
+                print(f"SVG ERROR: {error}")
+            print("FILL: " + ", ".join(created["placeholders"]))
+            print("NEXT: replace every <...> placeholder (they fail validation), then run --rehash to bind evidence digests and validate.")
+        return 0
+
+    if args.rehash:
+        try:
+            report = rehash_metadata(args.svg, args.metadata)
+        except (AssetValidationError, OSError) as error:
+            print(f"REHASH FAILED: {error}", file=sys.stderr)
+            return 1
+        if report["errors"]:
+            if args.json:
+                print(json.dumps({"valid": False, "rehash": report}, indent=2, ensure_ascii=False))
+            else:
+                for error in report["errors"]:
+                    print(f"REHASH ERROR: {error}")
+                print("NOT WRITTEN: metadata left unchanged.")
+            return 1
+        result = validate_svg_asset(args.svg, args.metadata)
+        if args.json:
+            print(json.dumps({**result, "rehash": report}, indent=2, ensure_ascii=False))
+        else:
+            for change in report["changed"]:
+                print(f"UPDATED {change['field']}: {change['old']} -> {change['new']}")
+            for field in report["unchanged"]:
+                print(f"UNCHANGED {field}")
+            for item in report["skipped"]:
+                print(f"SKIPPED {item['field']}: {item['reason']}")
+            _print_result(result)
+        return 0 if result["valid"] else 1
+
     result = validate_svg_asset(args.svg, args.metadata)
     if args.json:
         print(json.dumps(result, indent=2, ensure_ascii=False))
     else:
-        print(f"{'PASS' if result['valid'] else 'FAIL'}: {result['path']}")
-        for error in result["errors"]:
-            print(f"ERROR: {error}")
-        for warning in result["warnings"]:
-            print(f"WARNING: {warning}")
-        for check in result["checks"]:
-            print(f"CHECK: {check}")
+        _print_result(result)
     return 0 if result["valid"] else 1
 
 
