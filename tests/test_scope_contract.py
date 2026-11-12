@@ -344,7 +344,7 @@ class ScopeContractTests(unittest.TestCase):
             ("no preload", skill_text.replace("Do not preload the library", "Preload all references"), exploration_text),
             ("global ceremony", skill_text.replace("## Delivery", "Every task must run architecture and all reviews.\n\n## Delivery"), exploration_text),
             ("missing proof closure", skill_text.replace("missing or stale required evidence remains `UNKNOWN`.", "missing proof is accepted."), exploration_text),
-            ("memory closure", skill_text.replace("Run the scoped correction check; `BLOCKED` and `REVIEW_REQUIRED` cannot be reported as completion.", "Skip memory checks."), exploration_text),
+            ("memory closure", skill_text.replace("When a correction journal exists, `BLOCKED` and `REVIEW_REQUIRED` cannot be reported as completion.", "Skip memory checks."), exploration_text),
         )
         for label, mutated_skill, mutated_exploration in mutations:
             failures, _, _ = runner.scope_calibration_contract(
@@ -377,7 +377,7 @@ class ScopeContractTests(unittest.TestCase):
         runner = load_runner()
         skill = SKILL.read_text(encoding="utf-8")
         exploration = EXPLORATION.read_text(encoding="utf-8")
-        reworded = skill.replace("Before loading a broad reference", "Before you load any broad reference", 1)
+        reworded = skill.replace("Calibrate from observed repository and product facts", "Calibrate from the observed repository and product facts", 1)
         self.assertNotEqual(skill, reworded)
         self.assertEqual([], runner.scope_document_contract_failures(reworded, exploration))
         unrouted = skill.replace("references/icon-craft.md", "references/removed.md")
