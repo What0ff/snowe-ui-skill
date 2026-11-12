@@ -239,5 +239,70 @@ class UxCatalogTests(unittest.TestCase):
             self.assertNotIn(removed, {row["No"] for row in rows})
 
 
+class NativeStackTests(unittest.TestCase):
+    """Recommended columns must not teach APIs the platform has superseded."""
+
+    RECOMMENDING = ("Guideline", "Do", "Code Good")
+
+    def rows(self, stack):
+        with (DATA_DIR / STACK_CONFIG[stack]["file"]).open(encoding="utf-8", newline="") as handle:
+            return list(csv.DictReader(handle))
+
+    def recommended_text(self, stack):
+        return [
+            (row["No"], " ".join(row[column] for column in self.RECOMMENDING))
+            for row in self.rows(stack)
+        ]
+
+    def assert_not_recommended(self, stack, pattern):
+        offenders = [number for number, text in self.recommended_text(stack) if re.search(pattern, text)]
+        self.assertEqual([], offenders, f"{stack} recommends {pattern!r}")
+
+    def test_flutter_recommends_current_apis(self):
+        for superseded in (
+            r"\btextScaleFactor\b",
+            r"\bonPopInvoked\b(?!WithResult)",
+            r"\bWillPopScope\b",
+            r"\bpushNamed\b",
+            r"\bprimaryColor\b",
+            r"FutureBuilder\(future:\s*\w+\(",
+        ):
+            self.assert_not_recommended("flutter", superseded)
+        text = " ".join(" ".join(row.values()) for row in self.rows("flutter"))
+        self.assertIn("onPopInvokedWithResult", text)
+        self.assertIn("textScalerOf", text)
+
+    def test_swiftui_recommends_current_apis_and_observation(self):
+        for superseded in (
+            r"\.animation\(\.[A-Za-z]+(?:\([^)]*\))?\)",
+            r"\bforegroundColor\(",
+            r"\bcornerRadius\(",
+            r"\bNavigationView\b(?! in new code)",
+            r"\bpresentationMode\b",
+        ):
+            self.assert_not_recommended("swiftui", superseded)
+        high = [row for row in self.rows("swiftui") if row["Severity"] == "High"]
+        self.assertFalse(
+            [row["No"] for row in high if "ObservableObject" in row["Do"] and "@Observable" not in row["Do"]],
+            "a High-severity row makes ObservableObject the default",
+        )
+        modifier_order = next(row for row in self.rows("swiftui") if row["Guideline"] == "Order modifiers correctly")
+        self.assertIn("padding before background", modifier_order["Do"])
+        self.assertTrue(modifier_order["Code Good"].startswith(".padding().background"))
+
+    def test_compose_rows_carry_code_and_current_guidance(self):
+        rows = self.rows("jetpack-compose")
+        self.assertFalse([row["No"] for row in rows if " ? " in " ".join(row.values())], "mangled arrows")
+        codeish = re.compile(r"[(){}=:]")
+        self.assertFalse(
+            # Tooling rows (Layout Inspector) describe a procedure, not code.
+            [row["No"] for row in rows if row["Category"] != "Debug" and not codeish.search(row["Code Good"])],
+            "Code Good must contain code, not a slogan",
+        )
+        self.assert_not_recommended("jetpack-compose", r"\bChannel\b|receiveAsFlow")
+        self.assert_not_recommended("jetpack-compose", r"collectAsState\(\)")
+        self.assertTrue(all(row["Docs URL"].startswith("https://") for row in rows if row["Docs URL"]))
+
+
 if __name__ == "__main__":
     unittest.main()
