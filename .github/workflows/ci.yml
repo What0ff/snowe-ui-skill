@@ -77,6 +77,10 @@ jobs:
     name: Rendered benchmark smoke on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 5
+    env:
+      # Ubuntu 24.04 runners restrict unprivileged user namespaces, which the
+      # Chromium sandbox needs; the product observer keeps it on elsewhere.
+      SNOWE_OBSERVE_NO_SANDBOX: ${{ startsWith(matrix.os, 'ubuntu') && '1' || '' }}
     strategy:
       fail-fast: false
       matrix:
