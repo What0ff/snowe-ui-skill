@@ -7,7 +7,7 @@ from copy import deepcopy
 from datetime import datetime, timezone
 import json
 import os
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 import re
 import sys
 
@@ -209,16 +209,36 @@ def load_journal(path, identity):
     return journal
 
 
+def _owner_set(owners):
+    # "./src/a.css" and "src/a.css" name the same workspace file.
+    return {PurePosixPath(owner).as_posix() for owner in owners}
+
+
 def applies(entry, active):
     if active is None: return True
     own = entry["scope"]
-    overlap = any(set(own[key]) & set(active[key]) for key in ("owners", "routes"))
+    overlap = bool(_owner_set(own["owners"]) & _owner_set(active["owners"])) or bool(set(own["routes"]) & set(active["routes"]))
     return overlap and (not own["states"] or not active["states"] or bool(set(own["states"]) & set(active["states"])))
+
+
+def known_journal_identities(root):
+    """Project identities that already have a correction journal in this workspace."""
+    names = []
+    base = root / "design-intelligence"
+    if not base.is_dir(): return names
+    for journal in sorted(base.glob("*/CORRECTIONS.json")):
+        try:
+            identity = read_json(journal).get("project_identity")
+        except (ValueError, OSError, AttributeError):
+            continue
+        if isinstance(identity, str) and identity.strip(): names.append(identity)
+    return names
 
 
 def execute(command, *, workspace, project, payload=None):
     root = _normalize_lexical_aliases(Path(os.path.abspath(workspace)), "Workspace")
     _reject_reparse_chain(root, "Workspace")
+    if not root.is_dir(): raise ValueError(f"Workspace is not an existing directory: {root}")
     identity = text(project, "project").strip()
     data = deepcopy(payload)
     readonly = command in {"list", "check"}
@@ -230,6 +250,13 @@ def execute(command, *, workspace, project, payload=None):
         entries = journal["records"]
         if readonly:
             if data is not None: scope(data)
+            present = bool(path and path.exists())
+            others = [] if present else [name for name in known_journal_identities(root) if name != identity]
+            if others:
+                # A mistyped identity must not look like a project without corrections.
+                if command == "list": return {"project_identity": identity, "journal": "absent", "known_projects": others, "records": [], "review_required": []}
+                return {"status": "NO_JOURNAL", "project_identity": identity, "journal": "absent", "known_projects": others,
+                    "applicable": [], "blocked": [], "stale": [], "boundary": "No journal for this identity; check --project against known_projects"}
             integrity = {entry["id"]: confirmation_issues(entry) for entry in entries}
             def applicable(entry):
                 if applies(entry, data): return True
@@ -249,7 +276,7 @@ def execute(command, *, workspace, project, payload=None):
                 if entry["status"] == "superseded" and entry["replacement"] not in included:
                     selected.append(by_id[entry["replacement"]])
                     included.add(entry["replacement"])
-            if command == "list": return {"project_identity": identity, "records": selected,
+            if command == "list": return {"project_identity": identity, "journal": "present" if present else "absent", "records": selected,
                 "review_required": [{"id": e["id"], "issues": integrity[e["id"]]} for e in selected if integrity[e["id"]]]}
             blocked, stale = [], []
             for entry in selected:
@@ -257,7 +284,7 @@ def execute(command, *, workspace, project, payload=None):
                 issues = list(integrity[entry["id"]])
                 if entry["status"] == "verified": issues.extend(proof_current(root, entry["proof"], entry))
                 if issues: stale.append({"id": entry["id"], "issues": issues})
-            return {"status": "BLOCKED" if blocked else "REVIEW_REQUIRED" if stale else "PASS", "project_identity": identity, "applicable": [e["id"] for e in selected], "blocked": blocked, "stale": stale, "boundary": "Recorded proof integrity; not independent visual certification"}
+            return {"status": "BLOCKED" if blocked else "REVIEW_REQUIRED" if stale else "PASS", "project_identity": identity, "journal": "present" if present else "absent", "applicable": [e["id"] for e in selected], "blocked": blocked, "stale": stale, "boundary": "Recorded proof integrity; not independent visual certification"}
         if command == "record":
             base_record(data)
             existing = next((e for e in entries if e["id"] == data["id"]), None)
@@ -317,7 +344,7 @@ def main():
         if args.command not in {"list", "check"} and not args.input: raise ValueError("This command requires --input")
         result = execute(args.command, workspace=args.workspace, project=args.project, payload=read_json(args.input) if args.input else None)
         print(json.dumps(result, ensure_ascii=False, indent=2))
-        return {"PASS": 0, "BLOCKED": 2, "REVIEW_REQUIRED": 3}.get(result.get("status"), 0)
+        return {"PASS": 0, "BLOCKED": 2, "REVIEW_REQUIRED": 3, "NO_JOURNAL": 4}.get(result.get("status"), 0)
     except (ValueError, OSError, RuntimeError, TypeError, KeyError) as error:
         print(json.dumps({"error": str(error)}, ensure_ascii=False), file=sys.stderr)
         return 1

@@ -41,8 +41,33 @@ class CorrectionTests(unittest.TestCase):
                 "review": {"reviewer": "Authored test", "finding": "Contract fixture only", "viewport": "390x844@1", "state": "default", "method": "self-review", "verdict": "KEEP", "report": "review.json"}}]}
 
     def test_empty_check_creates_no_state(self):
-        self.assertEqual("PASS", self.call("check")["status"])
+        result = self.call("check")
+        self.assertEqual("PASS", result["status"])
+        self.assertEqual("absent", result["journal"])
         self.assertEqual([], list(self.root.iterdir()))
+
+    def test_missing_workspace_fails_instead_of_passing_or_creating(self):
+        missing = self.root / "typo-ws" / "deep"
+        for command, data in (("check", None), ("list", None), ("record", self.record)):
+            with self.assertRaises(ValueError, msg=command):
+                execute(command, workspace=missing, project="Example", payload=data)
+        self.assertFalse((self.root / "typo-ws").exists())
+
+    def test_unknown_identity_beside_existing_journal_is_not_a_pass(self):
+        self.call("record", self.record, project="Harbor")
+        result = self.call("check", project="Harbour")
+        self.assertEqual("NO_JOURNAL", result["status"])
+        self.assertEqual(["Harbor"], result["known_projects"])
+        self.assertEqual(["Harbor"], self.call("list", project="Harbour")["known_projects"])
+        self.assertEqual("BLOCKED", self.call("check", project="Harbor")["status"])
+        cli = subprocess.run([sys.executable, str(ROOT / "skill/snowe-ui-skill/scripts/corrections.py"), "check",
+            "--workspace", str(self.root), "--project", "Harbour"], capture_output=True, text=True, timeout=60)
+        self.assertEqual(4, cli.returncode, cli.stderr)
+
+    def test_dot_prefixed_owner_scope_selects_the_same_record(self):
+        self.call("record", self.record)
+        active = {"owners": ["./src/page.css"], "routes": [], "states": []}
+        self.assertEqual(["type-role"], self.call("check", active)["applicable"])
 
     def test_lifecycle_stale_source_and_lost_artifact(self):
         proof = self.prepare()
@@ -205,7 +230,8 @@ class CorrectionTests(unittest.TestCase):
         with self.assertRaises(ValueError): self.call("record", other)
         unrelated = {"owners": ["other.css"], "routes": ["/elsewhere"], "states": ["default"]}
         self.assertEqual("PASS", self.call("check", unrelated)["status"])
-        self.assertEqual("PASS", self.call("check", project="Other project")["status"])
+        # An identity without a journal beside a recorded one is reported, not passed.
+        self.assertEqual("NO_JOURNAL", self.call("check", project="Other project")["status"])
 
     def test_supersession_remains_applicable_after_replacement_scope_edit(self):
         self.call("record", self.record)
