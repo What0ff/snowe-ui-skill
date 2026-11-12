@@ -2,6 +2,59 @@
 
 Use this reference to turn an accepted architecture and art direction into a coherent visual system. Foundations are role contracts, not universal recipes. Existing verified systems remain the baseline in evolution work; new work derives tokens from real content, platform, perception, and behavior.
 
+## Starting Points
+
+These are defaults to start from and then beat, not rules. Deviate when content, brand, platform or an accepted system gives a reason, and record the reason. An existing system's values come first.
+
+**Typography**
+- Body text 16 px on the web (14–15 px in dense apps). Line height 1.4–1.6 for body, 1.1–1.25 for headings.
+- Measure 45–75 characters (`max-width: 65ch` for reading text).
+- Scale ratio about 1.2–1.25 between steps in apps, 1.25–1.5 in editorial and marketing work.
+- Two weights (regular plus semibold or bold) usually carry the hierarchy.
+- Tighten large display type slightly (−0.01 to −0.03em). Loosen small all-caps labels (+0.04 to +0.08em).
+- `text-wrap: balance` on headings, `text-wrap: pretty` on paragraphs. `font-display: swap`, preload the critical face, and match fallback metrics with `size-adjust` to limit shift.
+
+**Spacing and layout**
+- One base unit (4 or 8 px) and a short scale built from it.
+- Space inside a group is smaller than space between groups, so proximity shows what belongs together.
+- Reading columns cap near 65ch. App work areas use the available width, while forms cap near 640 px.
+- Few alignment axes; break one only to create a deliberate focal point.
+
+**Color**
+- Tint neutrals slightly toward the brand hue instead of pure gray.
+- Build ramps in OKLCH so steps look evenly spaced.
+- One accent for primary actions and selection. Status colors (success, warning, danger, info) are separate from the accent.
+- Keep the accent's area small unless the brand leads the page. Check text on the accent for 4.5:1.
+
+**Dark theme**
+- Base surface off-black (roughly 6–10% lightness), with elevated surfaces lighter rather than shadowed.
+- Body text softened from pure white. Accents slightly less saturated than in light mode.
+- Recheck every contrast pair; do not just invert the light palette.
+
+**Elevation and edges**
+- Two or three elevation levels: base, raised, overlay.
+- Shadows are layered (a small sharp one plus a large soft one) at low opacity.
+- Nested radius equals the outer radius minus the padding.
+- In dense interfaces, separate with 1 px low-contrast borders or tone steps rather than shadows.
+
+**States and focus**
+- Hover is a subtle tint; pressed is a step darker.
+- `:focus-visible` shows a 2 px outline with a 2 px offset at 3:1 or better against its surroundings.
+- Disabled has reduced but legible contrast. Selected changes fill or weight, and sets the ARIA state.
+
+**Forms**
+- Labels above fields, one column, field width hinting at the expected length.
+- Mark whichever of required or optional is the minority.
+- Validate on blur and on submit, not on every keystroke. Put the error text under its field with an icon, and add a summary at the top of long forms.
+- Use `autocomplete`, `inputmode` and the correct `type`. Keep entered data after an error.
+- The primary action sits at the end, aligned with the fields.
+
+**Data tables**
+- Numbers right-aligned with tabular figures; text left-aligned; each header aligned like its column.
+- Units in the header rather than every cell; consistent decimal places.
+- Rows of roughly 36–44 px when dense, 48–56 px when comfortable. Sticky header on long tables.
+- Truncate only secondary columns, with a way to read the full value. Use zebra stripes or dividers, not both.
+
 ## Composition and Hierarchy
 
 - Define the attention order for each important viewport and state.

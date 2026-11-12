@@ -117,6 +117,8 @@ There is no database, long-running product process, shared runtime cache, teleme
 
 `references/failure-patterns.md` owns the generic-output diagnostics (symptom, usual cause, check, constructive replacement, legitimate exception) used before accepting an original visual design; it is an inspection list with explicit exceptions, not a style ban or a substitute for a positive direction.
 
+`references/design-foundations.md#starting-points` owns explicit default craft values (typography, spacing, color, dark theme, elevation, states and focus, forms, data tables) framed as starting points to beat with a recorded reason; an accepted system's values take precedence, and local catalogs still never choose style, palette or typography.
+
 Visible ordinals are part of that copy/relationship audit. The entrypoint rejects automatic `01/02` landing-section/benefit/service prefixes, while the focused reference and quality gate preserve actual process order, useful navigation/references, factual data and explicitly supplied identity. Open numbering treatments use same-content comparison; no keyword classifier, numeric quota or runtime taste verdict selects the outcome.
 
 ## Explicit visual review contract
