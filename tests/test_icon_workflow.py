@@ -771,6 +771,25 @@ class SolidAndDuotoneValidatorTests(SvgFixtureMixin, unittest.TestCase):
         )
         self.assert_rejected(filled_only, "draws no stroke", stroke_without_strokes)
 
+    def test_public_fill_and_duotone_examples_match_the_validator(self):
+        reference = (ROOT / "skill" / "snowe-ui-skill" / "references" / "cli-reference.md").read_text(encoding="utf-8")
+        languages = {
+            block["drawing_language"]["mode"]: block["drawing_language"]
+            for block in (
+                json.loads("{" + text + "}")
+                for text in re.findall(r'```json\s*("drawing_language": \{.*?\})\s*```', reference, re.DOTALL)
+            )
+        }
+        self.assertEqual({"fill", "duotone"}, set(languages))
+        duotone_svg = re.search(r"```xml\s*(<svg.*?</svg>)\s*```", reference, re.DOTALL)
+        self.assertIsNotNone(duotone_svg, "CLI reference must contain the duotone SVG example")
+        duotone_source = re.sub(r">\s+<", "><", duotone_svg.group(1).strip())
+
+        def declare(language, grid):
+            return chain(grid_language(grid), lambda value: value.update({"drawing_language": copy.deepcopy(language)}))
+        self.assert_valid(duotone_source, declare(languages["duotone"], 256))
+        self.assert_valid(HEROICONS_SOLID_CHECK_CIRCLE, declare(languages["fill"], 24))
+
     def test_unpainted_rect_that_does_not_cover_the_viewbox_still_fails(self):
         source = PHOSPHOR_FILL_HEART.replace('<rect width="256" height="256" fill="none"/>', '<rect width="200" height="256" fill="none"/>')
         self.assert_rejected(source, "has no visible fill or stroke", chain(grid_language(256), fill_language))

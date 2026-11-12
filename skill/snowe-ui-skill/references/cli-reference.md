@@ -138,12 +138,18 @@ Every stack response includes the same top-level evidence boundary as domain ret
 
 ## Validate Custom SVG Structure
 
-Prepare an SVG and adjacent JSON metadata, then run:
+Start from the SVG: write the metadata skeleton, replace its placeholders, then bind evidence digests and validate.
 
 ```text
+python <skill-directory>/scripts/asset_quality.py path/to/icon.svg --init-metadata
+python <skill-directory>/scripts/asset_quality.py \
+  path/to/icon.svg --metadata path/to/icon.metadata.json --rehash
 python <skill-directory>/scripts/asset_quality.py \
   path/to/icon.svg --metadata path/to/icon.metadata.json
 ```
+
+- `--init-metadata` writes `<svg-stem>.metadata.json` beside the SVG (or at `--metadata`) and never overwrites an existing file. It computes the name, grid, a full-grid live area, the drawing language it observes (mode, stroke width, caps, joins, duotone tone) and the exact SVG digest. Everything that needs judgment stays a `<...>` placeholder, and placeholders fail validation until a person replaces them. The default skeleton is original artwork with a project-owned license; `--provenance external` starts an imported-asset skeleton instead (unverified external source plus a retained license file).
+- `--rehash` is for an intentional edit. It recomputes the original-provenance digest and the digests of local evidence files already named in the metadata, prints every changed, unchanged and skipped field, then validates. When a digest changes it rewrites the file atomically as two-space-indented JSON. It never rebinds external or brand-mark artwork digests: restore the upstream bytes, or re-import and review them. Nothing is written when a named evidence path is unsafe or unreadable.
 
 Use `--json` for machine-readable output.
 
@@ -197,11 +203,69 @@ Required metadata fields:
 
 Declare unique positive targets for the real implemented slots. The validator checks geometry at the smallest declared size; the comparison manifest requires every context size to be covered. Do not invent 16/20/24 usage when the owner is actually 18 px. Specific source/license/accessibility declarations, exact grid/live area, drawing-language consistency, SVG provenance digest and structured safe local evidence bindings remain required. External source truth remains explicitly unverified; evidence paths are never inferred from prose.
 
-The default `interface-icon` subset rejects event handlers; document/entity/stylesheet declarations; nested SVG viewports; executable, linked, animated, text, embedded, styled, external, unknown, or namespaced content; all URI and local-fragment references; transforms, masks, filters, and clipping; unsupported attributes; malformed or clipped geometry; collapsed/conflicting root dimensions; non-`currentColor` paint; SVG-level muted opacity; and drawing-language contradictions. Round/bevel joins are supported; miter geometry (and `arcs`, which browsers render as miter) is rejected because the current deterministic bounds proof cannot certify its spike extent. Square caps are bounded by their diagonal corner reach. A structural `PASS` cannot prove source/license truth, recognition, silhouette, optical balance, metaphor, or family/UI fit.
+`grid` matches the viewBox width and height. `live_area` is measured from the viewBox origin, so a Material Symbols `viewBox="0 -960 960 960"` declares its full grid as `{"min_x": 0, "min_y": 0, "max_x": 960, "max_y": 960}`. Original artwork may declare `evidence.license` as exactly `{"kind": "project-owned"}` instead of a `{path, sha256}` file binding; external sources still bind a retained license file.
+
+Choose the drawing mode per role. `stroke` draws outlines only, `fill` draws solid shapes only, `mixed` is one tone that needs both fill and stroke geometry, and `duotone` layers a full-strength primary over a lighter secondary. A solid icon declares no stroke language:
+
+```json
+"drawing_language": {
+  "mode": "fill",
+  "stroke_width": 0,
+  "linecap": "not applicable",
+  "linejoin": "not applicable",
+  "corner_language": "soft rounded silhouette",
+  "detail_budget": "one solid shape and one evenodd counter at 16 px"
+}
+```
+
+A duotone icon marks each painted element, or a `<g>` around it, with `data-icon-layer`, keeps all paint `currentColor`, and declares its one secondary tone:
+
+```xml
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true">
+  <rect width="256" height="256" fill="none"/>
+  <path data-icon-layer="secondary" opacity="0.2" d="M40 40h176v176H40z"/>
+  <path data-icon-layer="primary" d="M24 24h208v16H24z"/>
+</svg>
+```
+
+```json
+"drawing_language": {
+  "mode": "duotone",
+  "stroke_width": 0,
+  "linecap": "not applicable",
+  "linejoin": "not applicable",
+  "tones": {"secondary_opacity": 0.2},
+  "corner_language": "square tile with a solid header bar",
+  "detail_budget": "one tinted field and one solid bar at 16 px"
+}
+```
+
+Every painted duotone element resolves to `primary` or `secondary`, and a primary layer is required. The secondary layer renders at exactly `tones.secondary_opacity`, a finite number from 0.12 to 0.6: its `opacity`, `fill-opacity` and `stroke-opacity` values multiply to that tone. The root and the primary layer stay at opacity 1. Undeclared tones, unknown layer values, a layer that changes inside another layer, a secondary layer without a primary, `tones` outside duotone, and layers in any other mode fail. Duotone may combine fill and stroke: when a layer is stroked, declare its positive `stroke_width` and concrete linecap/linejoin; otherwise declare 0 and `not applicable`.
+
+The default `interface-icon` subset accepts `svg`, `g`, `title`, `desc`, `path`, `circle`, `ellipse`, `rect`, `line`, `polyline` and `polygon` with their geometry attributes, `currentColor`/`none`/`transparent` paint, stroke, opacity, `display` and `visibility`, plus these inert or fixed-value attributes:
+
+| Attribute | Accepted values | Where |
+|---|---|---|
+| `fill-rule`, `clip-rule` | `nonzero`, `evenodd` | any element |
+| `aria-hidden` | `true` | any element |
+| `focusable` | `false` | any element |
+| `role` | `img` | root `<svg>` only |
+| `data-slot` | one name token | any element |
+| `class` | whitespace-separated name tokens; never changes validation | any element |
+| `pathLength` | positive number | drawing elements |
+| `vector-effect` | `none`, `non-scaling-stroke` (stroke bounded at the smallest target) | any element |
+| `shape-rendering` | `auto`, `geometricPrecision` | any element |
+| `data-icon-layer` | `primary`, `secondary` (duotone only) | drawing elements, `<g>` |
+
+Root `width`/`height` are optional unitless or px lengths; any size that keeps the viewBox aspect ratio is accepted. An unpainted `<rect>` or `<path>` that exactly covers the viewBox, the spacer Phosphor and Tabler export, is ignored. Arc flags may be compact, as SVGO writes them (`a8 8 0 0116 0`). Path data must begin with a moveto.
+
+The subset rejects event handlers; document/entity/stylesheet declarations; nested SVG viewports; executable, linked, animated, text, embedded, styled, external, unknown, or namespaced content; `id` and all URI and local-fragment references; transforms, masks, filters, and clipping; other attributes and values; malformed or clipped geometry; collapsed root dimensions or a contradictory aspect ratio; non-`currentColor` paint; SVG-level muted opacity outside the duotone secondary layer; and drawing-language contradictions. Round/bevel joins are supported; miter geometry (and `arcs`, which browsers render as miter) is rejected because the current deterministic bounds proof cannot certify its spike extent. Square caps are bounded by their diagonal corner reach.
+
+Two checks warn instead of failing. Under `fill-rule` `nonzero`, an inner subpath inside an outer one with the same winding direction renders solid, so a drawn hole disappears; reverse the inner subpath or declare `evenodd`. In `fill` and `duotone` modes, a filled subpath whose shorter bounding-box side renders below 1 CSS px at the smallest target can close up or vanish. A structural `PASS` cannot prove source/license truth, recognition, silhouette, optical balance, metaphor, or family/UI fit.
 
 For unchanged imported brand SVGs, explicitly declare `asset_type:"brand-mark"` and add `brand:{schema:"1.0",identity:<exact identity>,variant:<supplied variant>,artwork:{path,sha256},usage:{path,sha256}}`. Other metadata fields remain required; drawing-language fields describe the supplied artwork rather than prescribe a redesign. Provenance must be `external` with a canonical HTTPS source URL; `evidence.source` remains `{kind:"external",verification:"unverified"}`. `artwork` binds a retained upstream copy whose digest must also match the delivered SVG; `usage` binds a local reviewed usage record. Both paths use the same metadata-relative regular-file/path/digest checks as license evidence. The brand profile permits opaque `#RGB`, `#RRGGBB`, black and white paint in addition to the existing paint tokens. All other self-contained checks remain in force. It does not support gradients/masks/styles or certify an external asset's officialness, licensing or acceptable context. Use another suitable official variant or the host's asset proof for unsupported originals; do not trace, recolor or flatten an external identity to make it pass. Missing or stale records fail; changing both self-authored records is not prevented by hashes and still requires primary-source review.
 
-The imported profile uses actual quadratic/cubic extrema instead of the default conservative control-point hull, including reflected smooth controls. Curve arithmetic uses the existing 1,000,000-coordinate safety envelope. Its containment comparison allows only 1e-7 of the smaller viewBox dimension for decimal source rounding (below 0.000003 CSS px at a 24px slot), not visually meaningful clipping. The `interface-icon` profile retains its existing bounds behavior. Actual host clipping and appearance still require rendered inspection.
+Both profiles bound quadratic/cubic curves by their actual extrema, including reflected smooth controls, rather than the control-point hull, so a rounded solid shape whose control points leave the grid is not reported as clipped. Curve arithmetic uses the existing 1,000,000-coordinate safety envelope. The imported profile's containment comparison allows only 1e-7 of the smaller viewBox dimension for decimal source rounding (below 0.000003 CSS px at a 24px slot), not visually meaningful clipping. The `interface-icon` profile keeps its absolute 1e-7 tolerance, so a curve that really overshoots the grid still fails, however small the overshoot. Actual host clipping and appearance still require rendered inspection.
 
 Imported artwork and usage bindings each have a 1,000,000-byte evidence budget; they must resolve to local regular files. This does not make an external URL a verified source or authorize remote references inside the SVG.
 
@@ -215,6 +279,33 @@ python <skill-directory>/scripts/icon_review.py \
 ```
 
 The manifest binds every SVG candidate to its validated metadata name, provenance kind, explicit asset SHA-256, metadata provenance digest, and every context target size. It rejects duplicate SVG bytes masquerading as different candidates, custom candidates without original provenance, unsafe local host routes, malformed/deep/extreme-number JSON or Unicode scalar inputs, uninspectable paths, invalid selection/verdict combinations, and repository-derived contexts whose source file is absent. Repository-derived host proof must select a candidate; use `representative` evidence for unresolved `REJECT`/`UNKNOWN` contexts. Its explicit `host_proof.state_map` must cover every declared comparison state exactly once with the canonical same-name host state, except `high-contrast`, which maps to the exercised browser `forced-colors` state. A button-clone no-icon candidate must use the exact visible label of its owning control. It renders the same labels and declared states for existing, custom, and no-icon alternatives. A no-icon alternative renders visible UI truth once rather than a blank icon-sized cell.
+
+To decide a drawing style for one role, a schema-`1.2` interface context can set `"comparison_axis": "style"` instead of the default `"kind"`. Candidates may then share a kind (two custom drawings, or two variants of one library glyph), but at least two SVG candidates are required, and each must differ from every other in declared drawing style (mode, stroke width, caps, joins, duotone tone) in at least one state. A candidate may add `state_assets`, keyed by declared non-default comparison states, to show different artwork per state, for example outline by default and solid when selected:
+
+```json
+{
+  "id": "heart-outline-selected-solid",
+  "name": "Outline, solid when selected",
+  "kind": "custom",
+  "asset": "heart-outline.svg",
+  "asset_sha256": "<exact SHA-256 of heart-outline.svg>",
+  "metadata": "heart-outline.metadata.json",
+  "state_assets": {
+    "selected": {
+      "asset": "heart-solid.svg",
+      "asset_sha256": "<exact SHA-256 of heart-solid.svg>",
+      "metadata": "heart-solid.metadata.json"
+    }
+  },
+  "source": "repository-owned favorite drawings",
+  "license": "project-owned",
+  "rationale": "Solid only marks the saved state."
+}
+```
+
+Each state asset is validated, digest-bound and size-checked like the default asset, must differ from it, and is listed on the card with its own name, digest, source and license. A candidate with state assets names a combination, so its `id` need not equal one asset name, but it cannot borrow another asset's name. Duplicate candidates are detected on the exact bytes shown in every state. Brand contexts accept neither field.
+
+Repository-derived host proof may also exercise a `selected` host state (comparison `selected` maps to host `selected`). It must declare `selected_attribute` (`aria-pressed`, `aria-current` or `aria-selected`) and may declare `select_selector`, a control to click first. Browser smoke requires that attribute to report selection on the host target, never a style alone, keeps the same accessible-label check as every other state, and renders each candidate's state artwork in the host.
 
 The sheet is representative comparison evidence, not a pixel-identical host render and not an automatic decision. Inspect it in a browser at wide and narrow viewports, then render any claimed winner and the closest rejected alternative inside the actual owning component beside real neighbors. Record optical and semantic selection/rejection as human visual judgment. See the checked operational proof in `evals/icon-decisions/` in the source repository.
 
