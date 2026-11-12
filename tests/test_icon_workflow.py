@@ -24,7 +24,7 @@ EVIDENCE = ROOT / "evals" / "icon-decisions"
 MANIFEST = EVIDENCE / "manifest.json"
 
 
-class SvgStructuralHardeningTests(unittest.TestCase):
+class SvgFixtureMixin:
     def metadata(self, source: str) -> dict:
         source_record = b"Local source record for the structural probe.\n"
         license_record = b"Local license record for the structural probe.\n"
@@ -86,6 +86,8 @@ class SvgStructuralHardeningTests(unittest.TestCase):
         self.assertFalse(result["valid"], result)
         self.assertIn(fragment, " ".join(result["errors"]))
 
+
+class SvgStructuralHardeningTests(SvgFixtureMixin, unittest.TestCase):
     def test_rejects_nested_or_collapsed_viewports_and_miter_geometry(self):
         nested = (
             '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
@@ -101,12 +103,24 @@ class SvgStructuralHardeningTests(unittest.TestCase):
         )
         self.assert_rejected(collapsed, "positive unitless or px")
 
-        scaled = (
-            '<svg xmlns="http://www.w3.org/2000/svg" width="1" height="1" viewBox="0 0 24 24" '
+        distorted = (
+            '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="12" viewBox="0 0 24 24" '
             'fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'
             '<path d="M4 12h16"/></svg>'
         )
-        self.assert_rejected(scaled, "must match the corresponding viewBox")
+        self.assert_rejected(distorted, "aspect ratio contradicts the viewBox")
+
+        # Library exports declare a default render size; only the aspect ratio
+        # can contradict the viewBox.
+        for width, height in (("48", "48"), ("1", "1"), ("20px", "20px")):
+            scaled = (
+                f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 24 24" '
+                'fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'
+                '<path d="M4 12h16"/></svg>'
+            )
+            with self.subTest(width=width):
+                result = self.validate(scaled)
+                self.assertTrue(result["valid"], result["errors"])
 
         miter = (
             '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
@@ -481,6 +495,314 @@ class SvgStructuralHardeningTests(unittest.TestCase):
             companion.write_text(json.dumps(metadata), encoding="utf-8")
             result = validate_svg_asset(svg, companion)
         self.assertTrue(result["valid"], result)
+
+
+SVG_OPEN = '<svg xmlns="http://www.w3.org/2000/svg"'
+HEROICONS_SOLID_CHECK_CIRCLE = (
+    SVG_OPEN + ' viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" data-slot="icon">'
+    '<path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 '
+    '17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 '
+    '0 0 0 1.14-.094l3.75-5.25Z" clip-rule="evenodd"/></svg>'
+)
+PHOSPHOR_HEART_SECONDARY = (
+    'd="M232,102c0,66-104,122-104,122S24,168,24,102A54,54,0,0,1,78,48c22.59,0,41.94,12.31,50,32,'
+    '8.06-19.69,27.41-32,50-32A54,54,0,0,1,232,102Z"'
+)
+PHOSPHOR_HEART_PRIMARY = (
+    'd="M178,40c-20.65,0-38.73,8.88-50,23.89C116.73,48.88,98.65,40,78,40a62.07,62.07,0,0,0-62,62c0,70,103.79,'
+    '126.66,108.21,129a8,8,0,0,0,7.58,0C136.21,228.66,240,172,240,102A62.07,62.07,0,0,0,178,40ZM128,214.8C109.74,'
+    '204.16,32,155.69,32,102A46.06,46.06,0,0,1,78,56c19.45,0,35.78,10.36,42.6,27a8,8,0,0,0,14.8,0c6.82-16.67,23.15-27,'
+    '42.6-27a46.06,46.06,0,0,1,46,46C224,155.61,146.24,204.15,128,214.8Z"'
+)
+PHOSPHOR_DUOTONE_HEART = (
+    SVG_OPEN + ' viewBox="0 0 256 256" fill="currentColor"><rect width="256" height="256" fill="none"/>'
+    f'<path data-icon-layer="secondary" {PHOSPHOR_HEART_SECONDARY} opacity="0.2"/>'
+    f'<path data-icon-layer="primary" {PHOSPHOR_HEART_PRIMARY}/></svg>'
+)
+PHOSPHOR_FILL_HEART = (
+    SVG_OPEN + ' viewBox="0 0 256 256" fill="currentColor"><rect width="256" height="256" fill="none"/>'
+    '<path d="M240,102c0,70-103.79,126.66-108.21,129a8,8,0,0,1-7.58,0C119.79,228.66,16,172,16,102A62.07,62.07,0,0,1,'
+    '78,40c20.65,0,38.73,8.88,50,23.89C139.27,48.88,157.35,40,178,40A62.07,62.07,0,0,1,240,102Z"/></svg>'
+)
+TABLER_FILLED_HEART = (
+    SVG_OPEN + ' width="24" height="24" viewBox="0 0 24 24" fill="currentColor" '
+    'class="icon icon-tabler icons-tabler-filled icon-tabler-heart">'
+    '<path stroke="none" d="M0 0h24v24H0z" fill="none"/>'
+    '<path d="M6.979 3.074a6 6 0 0 1 4.988 1.425l.037 .033l.034 -.03a6 6 0 0 1 4.733 -1.44l.246 .036a6 6 0 0 1 3.364 '
+    '10.008l-.18 .185l-.048 .041l-7.45 7.379a1 1 0 0 1 -1.313 .082l-.094 -.082l-7.493 -7.422a6 6 0 0 1 3.176 -10.215z" />'
+    '</svg>'
+)
+MATERIAL_SYMBOLS_FAVORITE = (
+    SVG_OPEN + ' height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor">'
+    '<path d="m480-120-58-52q-101-91-167-157T150-447.5Q111-500 95.5-544T80-634q0-94 63-157t157-63q52 0 99 22t81 62q34-40 '
+    '81-62t99-22q94 0 157 63t63 157q0 46-15.5 90T810-447.5Q771-395 705-329T538-172l-58 52Z"/></svg>'
+)
+# Bootstrap's heart-fill curve, nudged inside the grid: its Bezier control
+# points reach -7.5..23.5, while the drawn curve stays within 0..16.
+BOOTSTRAP_LIKE_HEART_FILL = (
+    SVG_OPEN + ' width="16" height="16" fill="currentColor" class="bi bi-heart-fill" viewBox="0 0 16 16">'
+    '<path fill-rule="evenodd" d="M8 1.324C12.438-3.238 23.534 4.745 8 15.01-7.534 4.746 3.562-3.238 8 1.324"/></svg>'
+)
+
+
+def fill_language(value: dict) -> None:
+    value["drawing_language"].update(
+        {"mode": "fill", "stroke_width": 0, "linecap": "not applicable", "linejoin": "not applicable"}
+    )
+
+
+def duotone_language(value: dict, tone: float = 0.2) -> None:
+    value["drawing_language"].update(
+        {
+            "mode": "duotone",
+            "stroke_width": 0,
+            "linecap": "not applicable",
+            "linejoin": "not applicable",
+            "tones": {"secondary_opacity": tone},
+        }
+    )
+
+
+def grid_language(grid, live_area=None, sizes=None):
+    def mutate(value: dict) -> None:
+        value["grid"] = grid
+        value["live_area"] = live_area or {"min_x": 0, "min_y": 0, "max_x": grid, "max_y": grid}
+        if sizes is not None:
+            value["target_sizes"] = sizes
+    return mutate
+
+
+def chain(*mutations):
+    def mutate(value: dict) -> None:
+        for mutation in mutations:
+            mutation(value)
+    return mutate
+
+
+class SolidAndDuotoneValidatorTests(SvgFixtureMixin, unittest.TestCase):
+    """Library-shaped solid and duotone output under the interface-icon profile."""
+
+    def assert_valid(self, source: str, mutate=None) -> dict:
+        result = self.validate(source, mutate)
+        self.assertTrue(result["valid"], result["errors"])
+        return result
+
+    def test_heroicons_solid_with_evenodd_and_inert_markup_passes(self):
+        result = self.assert_valid(HEROICONS_SOLID_CHECK_CIRCLE, fill_language)
+        self.assertFalse([warning for warning in result["warnings"] if "winding" in warning])
+
+    def test_phosphor_duotone_with_declared_tone_passes(self):
+        result = self.assert_valid(PHOSPHOR_DUOTONE_HEART, chain(grid_language(256), duotone_language))
+        self.assertFalse([warning for warning in result["warnings"] if "winding" in warning], result["warnings"])
+
+    def test_phosphor_fill_with_spacer_rect_passes(self):
+        self.assert_valid(PHOSPHOR_FILL_HEART, chain(grid_language(256), fill_language))
+
+    def test_tabler_filled_with_class_and_spacer_path_passes(self):
+        self.assert_valid(TABLER_FILLED_HEART, fill_language)
+
+    def test_material_symbols_viewbox_origin_and_relative_live_area_pass(self):
+        live_area = {"min_x": 40, "min_y": 40, "max_x": 920, "max_y": 920}
+        self.assert_valid(MATERIAL_SYMBOLS_FAVORITE, chain(grid_language(960, live_area, [20, 24]), fill_language))
+        # live_area is relative to the viewBox origin, so geometry outside the
+        # declared offset still fails.
+        tight = {"min_x": 40, "min_y": 200, "max_x": 920, "max_y": 920}
+        self.assert_rejected(
+            MATERIAL_SYMBOLS_FAVORITE,
+            "contradicts metadata live_area",
+            chain(grid_language(960, tight, [20, 24]), fill_language),
+        )
+
+    def test_rounded_solid_uses_exact_curve_extents_near_the_edge(self):
+        self.assert_valid(BOOTSTRAP_LIKE_HEART_FILL, chain(grid_language(16, sizes=[16]), fill_language))
+
+    def test_compact_svgo_arc_flags_parse_like_spaced_flags(self):
+        for path in ("M4 15a8 8 0 0116 0", "M4 15a8 8 0 0 1 16 0", "M4 15A8 8 0 0120 15"):
+            source = (
+                SVG_OPEN + ' viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" '
+                f'stroke-linecap="round" stroke-linejoin="round"><path d="{path}"/></svg>'
+            )
+            with self.subTest(path=path):
+                self.assert_valid(source)
+        clipped = (
+            SVG_OPEN + ' viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" '
+            'stroke-linecap="round" stroke-linejoin="round"><path d="M0.5 15a11.5 11.5 0 0123 0"/></svg>'
+        )
+        self.assert_rejected(clipped, "extends outside the viewBox")
+
+    def test_inert_presentation_attributes_pass_with_fixed_values(self):
+        source = (
+            SVG_OPEN + ' viewBox="0 0 24 24" role="img" focusable="false" aria-hidden="true" class="icon icon--close" '
+            'data-slot="icon" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" '
+            'stroke-linejoin="round" shape-rendering="geometricPrecision">'
+            '<path pathLength="1" vector-effect="non-scaling-stroke" fill-rule="nonzero" clip-rule="evenodd" '
+            'd="M6 6l12 12M18 6L6 18"/></svg>'
+        )
+        self.assert_valid(source)
+
+    def test_inert_attributes_reject_values_that_change_meaning(self):
+        base = (
+            SVG_OPEN + ' viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" '
+            'stroke-linecap="round" stroke-linejoin="round"{root}><path{child} d="M6 6l12 12"/></svg>'
+        )
+        for root, child, fragment in (
+            ("", ' role="img"', "Unsupported attribute"),
+            (' role="presentation"', "", "role"),
+            (' aria-hidden="false"', "", "aria-hidden"),
+            (' focusable="true"', "", "focusable"),
+            (' shape-rendering="crispEdges"', "", "shape-rendering"),
+            ("", ' vector-effect="non-scaling-size"', "vector-effect"),
+            ("", ' fill-rule="inherit-ish"', "fill-rule"),
+            (' class="icon{color:red}"', "", "class"),
+            (' data-slot="two words"', "", "data-slot"),
+            ("", ' pathLength="-1"', "pathLength"),
+            ("", ' id="shape"', "id is not allowed"),
+            ("", ' data-icon-layer="primary"', "duotone"),
+        ):
+            with self.subTest(root=root, child=child):
+                self.assert_rejected(base.format(root=root, child=child), fragment)
+
+    def test_non_scaling_strokes_are_bounded_at_the_smallest_target(self):
+        # At 12 px a 2-unit non-scaling stroke spans 2 CSS px, i.e. 4 grid units.
+        source = (
+            SVG_OPEN + ' viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" '
+            'stroke-linecap="round" stroke-linejoin="round"><path vector-effect="non-scaling-stroke" d="M1.5 12h21"/></svg>'
+        )
+        self.assert_valid(source.replace('vector-effect="non-scaling-stroke" ', ""))
+        self.assert_rejected(source, "can clip", lambda value: value.update({"target_sizes": [12, 24]}))
+
+    def test_duotone_layer_and_tone_failures(self):
+        language = chain(grid_language(256), duotone_language)
+        undeclared = PHOSPHOR_DUOTONE_HEART.replace('opacity="0.2"', 'opacity="0.3"')
+        self.assert_rejected(undeclared, "declared tones.secondary_opacity", language)
+
+        secondary_only = (
+            SVG_OPEN + ' viewBox="0 0 256 256" fill="currentColor">'
+            f'<path data-icon-layer="secondary" {PHOSPHOR_HEART_SECONDARY} opacity="0.2"/></svg>'
+        )
+        self.assert_rejected(secondary_only, "without a primary layer", language)
+
+        bad_layer = PHOSPHOR_DUOTONE_HEART.replace('data-icon-layer="primary"', 'data-icon-layer="tertiary"')
+        self.assert_rejected(bad_layer, "data-icon-layer", language)
+
+        unlayered = PHOSPHOR_DUOTONE_HEART.replace(' data-icon-layer="primary"', "")
+        self.assert_rejected(unlayered, "must resolve to data-icon-layer", language)
+
+        clipped = PHOSPHOR_DUOTONE_HEART.replace('data-icon-layer="primary"', 'data-icon-layer="primary" clip-path="url(#c)"')
+        self.assert_rejected(clipped, "clip-path", language)
+        masked = PHOSPHOR_DUOTONE_HEART.replace("</svg>", '<mask><rect width="256" height="256"/></mask></svg>')
+        self.assert_rejected(masked, "<mask>", language)
+
+        root_opacity = PHOSPHOR_DUOTONE_HEART.replace('fill="currentColor">', 'fill="currentColor" opacity="0.5">', 1)
+        self.assert_rejected(root_opacity, "must be 1 outside the duotone secondary layer", language)
+
+        colored = PHOSPHOR_DUOTONE_HEART.replace('opacity="0.2"', 'opacity="0.2" fill="#000000"')
+        self.assert_rejected(colored, "currentColor", language)
+
+        out_of_range = PHOSPHOR_DUOTONE_HEART.replace('opacity="0.2"', 'opacity="0.8"')
+        self.assert_rejected(
+            out_of_range,
+            "secondary_opacity must be a finite number from 0.12 to 0.6",
+            chain(grid_language(256), lambda value: duotone_language(value, 0.8)),
+        )
+
+        stacked = PHOSPHOR_DUOTONE_HEART.replace('opacity="0.2"', 'opacity="0.2" fill-opacity="0.2"')
+        self.assert_rejected(stacked, "renders at alpha", language)
+
+        full_alpha_secondary = PHOSPHOR_DUOTONE_HEART.replace(' opacity="0.2"', "")
+        self.assert_rejected(full_alpha_secondary, "renders at alpha", language)
+
+        conflicting = (
+            SVG_OPEN + ' viewBox="0 0 256 256" fill="currentColor"><g data-icon-layer="secondary" opacity="0.2">'
+            f'<path data-icon-layer="primary" {PHOSPHOR_HEART_PRIMARY}/></g></svg>'
+        )
+        self.assert_rejected(conflicting, "cannot change inside", language)
+
+        on_root = PHOSPHOR_DUOTONE_HEART.replace('fill="currentColor">', 'fill="currentColor" data-icon-layer="primary">', 1)
+        self.assert_rejected(on_root, "data-icon-layer", language)
+
+    def test_duotone_metadata_requires_declared_tones_and_keeps_other_modes_strict(self):
+        def without_tones(value):
+            duotone_language(value)
+            del value["drawing_language"]["tones"]
+        self.assert_rejected(PHOSPHOR_DUOTONE_HEART, "tones", chain(grid_language(256), without_tones))
+
+        def undeclared_key(value):
+            duotone_language(value)
+            value["drawing_language"]["tones"]["primary_opacity"] = 1
+        self.assert_rejected(PHOSPHOR_DUOTONE_HEART, "tones", chain(grid_language(256), undeclared_key))
+
+        for tone in (True, "0.2", 0.05):
+            with self.subTest(tone=tone):
+                self.assert_rejected(
+                    PHOSPHOR_DUOTONE_HEART,
+                    "secondary_opacity",
+                    chain(grid_language(256), lambda value, tone=tone: duotone_language(value, tone)),
+                )
+
+        def tones_on_fill(value):
+            fill_language(value)
+            value["drawing_language"]["tones"] = {"secondary_opacity": 0.2}
+        self.assert_rejected(PHOSPHOR_FILL_HEART, "applies only to duotone", chain(grid_language(256), tones_on_fill))
+
+        # Muted SVG-level opacity remains rejected outside duotone mode.
+        muted_fill = PHOSPHOR_FILL_HEART.replace("<path ", '<path opacity="0.2" ')
+        self.assert_rejected(muted_fill, "apply disabled or muted opacity", chain(grid_language(256), fill_language))
+
+    def test_duotone_may_combine_fill_and_stroke_with_declared_stroke_language(self):
+        source = (
+            SVG_OPEN + ' viewBox="0 0 24 24">'
+            '<rect data-icon-layer="secondary" x="4" y="4" width="16" height="16" rx="3" fill="currentColor" opacity="0.25"/>'
+            '<path data-icon-layer="primary" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" '
+            'stroke-linejoin="round" d="M8 12l3 3 5-6"/></svg>'
+        )
+
+        def stroked(value):
+            duotone_language(value, 0.25)
+            value["drawing_language"].update({"stroke_width": 2, "linecap": "round", "linejoin": "round"})
+        self.assert_valid(source, stroked)
+        self.assert_rejected(source, "stroke", lambda value: duotone_language(value, 0.25))
+
+        def stroke_without_strokes(value):
+            stroked(value)
+        filled_only = source.replace(
+            'fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M8 12l3 3 5-6"',
+            'fill="currentColor" d="M8 11h8v2H8z"',
+        )
+        self.assert_rejected(filled_only, "draws no stroke", stroke_without_strokes)
+
+    def test_unpainted_rect_that_does_not_cover_the_viewbox_still_fails(self):
+        source = PHOSPHOR_FILL_HEART.replace('<rect width="256" height="256" fill="none"/>', '<rect width="200" height="256" fill="none"/>')
+        self.assert_rejected(source, "has no visible fill or stroke", chain(grid_language(256), fill_language))
+
+    def test_same_winding_inner_subpath_warns_but_does_not_fail(self):
+        def winding_warnings(source):
+            result = self.validate(source, fill_language)
+            self.assertTrue(result["valid"], result["errors"])
+            return [warning for warning in result["warnings"] if "winding" in warning]
+
+        same = SVG_OPEN + ' viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h16v16H4zM8 8h8v8H8z"/></svg>'
+        self.assertEqual(1, len(winding_warnings(same)))
+        reversed_hole = SVG_OPEN + ' viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h16v16H4zM8 8v8h8V8z"/></svg>'
+        self.assertEqual([], winding_warnings(reversed_hole))
+        evenodd = same.replace("<path ", '<path fill-rule="evenodd" ')
+        self.assertEqual([], winding_warnings(evenodd))
+        island_in_hole = (
+            SVG_OPEN + ' viewBox="0 0 24 24" fill="currentColor">'
+            '<path d="M2 2h20v20H2zM5 5v14h14V5zM10 10h4v4h-4z"/></svg>'
+        )
+        self.assertEqual([], winding_warnings(island_in_hole))
+
+    def test_fill_details_below_one_css_pixel_warn_at_the_smallest_target(self):
+        source = (
+            SVG_OPEN + ' viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" '
+            'd="M4 4h16v16H4zM11.6 11.6h0.8v0.8h-0.8z"/></svg>'
+        )
+        result = self.validate(source, fill_language)
+        self.assertTrue(result["valid"], result["errors"])
+        self.assertTrue(any("below 1 CSS px" in warning for warning in result["warnings"]), result["warnings"])
+        result = self.validate(source, chain(fill_language, lambda value: value.update({"target_sizes": [48]})))
+        self.assertFalse(any("below 1 CSS px" in warning for warning in result["warnings"]), result["warnings"])
 
 
 class IconDecisionWorkflowTests(unittest.TestCase):
