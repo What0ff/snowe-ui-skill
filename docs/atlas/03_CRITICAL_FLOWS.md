@@ -57,7 +57,7 @@ The CLI excludes domain/packet mode. `core.search_stack` loads one configured st
 2. A printable, non-Windows-reserved explicit project identity is slugged beneath the requested output root; on Windows, 8.3 names are expanded to their long lexical spelling without resolving reparse targets, both spellings are rechecked, and lexical containment prevents false escapes; external shared-file targets are rejected.
 3. A per-project OS lock serializes identity claims, torn-manifest recovery, and subsequent writes.
 4. Existing project and requested-page identities are preflighted before any replaceable inquiry write. `PROJECT.json` atomically claims the slug; exact identity can resume, while distinct identities that collapse to the same slug fail without modifying existing files.
-5. `BRIEF.md` is atomically regenerated and `DECISIONS.md` is exclusive-created; an existing ledger is reported as preserved byte-for-byte.
+5. `BRIEF.md` is atomically regenerated (with `--page`, it is exclusive-created and an existing project brief is preserved) and `DECISIONS.md` is exclusive-created; an existing ledger is reported as preserved byte-for-byte.
 6. A requested page inquiry is exclusive-claimed on first write, identity-checked on update, and atomically replaced beneath a parent revalidated after formatting and immediately before publication; a collision or competing claim fails without overwrite.
 
 **End state:** identity-bound replaceable inquiry plus durable accepted decisions. Individual file transitions are atomic and races are rejected; there is deliberately no database or multi-file transaction.

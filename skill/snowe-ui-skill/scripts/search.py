@@ -160,7 +160,8 @@ if __name__ == "__main__":
             print("\n" + "=" * 60, file=confirmation)
             print(f"Design intelligence persisted to design-intelligence/{project_slug}/", file=confirmation)
             print(f"   design-intelligence/{project_slug}/PROJECT.json (Stable identity manifest)", file=confirmation)
-            print(f"   design-intelligence/{project_slug}/BRIEF.md (Regenerated decision packet)", file=confirmation)
+            brief_note = "Project brief; created only if absent when adding a page" if args.page else "Regenerated decision packet"
+            print(f"   design-intelligence/{project_slug}/BRIEF.md ({brief_note})", file=confirmation)
             print(f"   design-intelligence/{project_slug}/DECISIONS.md (Durable accepted decisions; preserved on regeneration)", file=confirmation)
             if args.page:
                 page_filename = slugify_name(args.page, "page")

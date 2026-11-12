@@ -438,6 +438,30 @@ class PersistenceTests(unittest.TestCase):
             self.assertIn("does not prescribe a page type or section order", text)
             self.assertIn("pressure/intermediate", text)
 
+    def test_page_inquiry_preserves_existing_project_brief(self):
+        generator = DecisionPacketGenerator()
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            project = persist_decision_packet(
+                generator.generate("Bicycle retailer for urban riders", "City Cycles"),
+                output_dir=temporary_directory,
+            )
+            brief = Path(project["design_intelligence_dir"]) / "BRIEF.md"
+            original = brief.read_bytes()
+            page_packet = generator.generate("Product selection and fit evidence", "City Cycles")
+            result = persist_decision_packet(
+                page_packet, page="find-a-bike", page_brief=page_packet["brief"], output_dir=temporary_directory
+            )
+            self.assertEqual(original, brief.read_bytes())
+            self.assertIn(str(brief), result["preserved_files"])
+            page = Path(result["design_intelligence_dir"]) / "pages" / "find-a-bike.md"
+            self.assertIn("Product selection and fit evidence", page.read_text(encoding="utf-8"))
+
+    def test_first_page_inquiry_still_creates_project_brief(self):
+        packet = DecisionPacketGenerator().generate("Product selection", "Fresh Project")
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            result = persist_decision_packet(packet, page="catalog", output_dir=temporary_directory)
+            self.assertTrue((Path(result["design_intelligence_dir"]) / "BRIEF.md").is_file())
+
     def test_slugged_project_and_page_paths_stay_under_output_root(self):
         packet = DecisionPacketGenerator().generate("Test", "../../outside")
         with tempfile.TemporaryDirectory() as temporary_directory:

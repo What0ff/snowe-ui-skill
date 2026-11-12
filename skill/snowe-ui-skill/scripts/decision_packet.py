@@ -1175,8 +1175,18 @@ def persist_decision_packet(
         preserved.extend(str(path) for path in recovered_manifests)
 
         brief_path = project_dir / "BRIEF.md"
-        _atomic_write_text(brief_path, brief_content)
-        created_or_updated.append(str(brief_path))
+        if page:
+            # A page inquiry carries the page brief; it must not replace the
+            # project's own brief. Create the project brief only when absent.
+            if _atomic_create_text(brief_path, brief_content):
+                created_or_updated.append(str(brief_path))
+            else:
+                if _shared_regular_file(brief_path):
+                    raise ValueError(f"BRIEF.md must not be a shared hardlink/inode: {brief_path}")
+                preserved.append(str(brief_path))
+        else:
+            _atomic_write_text(brief_path, brief_content)
+            created_or_updated.append(str(brief_path))
 
         decisions_path = project_dir / "DECISIONS.md"
         if _atomic_create_text(decisions_path, decisions_content):
