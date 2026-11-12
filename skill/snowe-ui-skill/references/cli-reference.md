@@ -101,7 +101,7 @@ Every result reports a **source role** and **use boundary**. Rows from catalogs 
 | Domain | Evidence role |
 |---|---|
 | `product` | Product analogs and concern prompts; never project identity |
-| `google-fonts` | Bundled font metadata snapshot; verify current official files and license |
+| `google-fonts` | Slim Google Fonts metadata index (snapshot 2026-11-12): category, stroke, subsets, primary script, axis ranges, styles, designers, license; no mood or construction terms, so search by family, category, script, or designer |
 | `ux` | Issue prompts and heuristics to verify in the actual flow |
 | `mobile` | iOS, Android, and React Native app-interface/accessibility prompts (`app-interface.csv`); not web or browser guidance |
 | `web` | Compatibility alias of `mobile` (same catalog and results); the rows are mobile-app guidance despite the name |

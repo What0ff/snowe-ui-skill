@@ -238,6 +238,39 @@ class UxCatalogTests(unittest.TestCase):
             self.assertNotIn(removed, {row["No"] for row in rows})
 
 
+class FontIndexTests(unittest.TestCase):
+    def rows(self):
+        with (DATA_DIR / "google-fonts.csv").open(encoding="utf-8", newline="") as handle:
+            return list(csv.DictReader(handle))
+
+    def test_font_index_is_slim_dated_and_mood_free(self):
+        header = read_rows(DATA_DIR / "google-fonts.csv")[0]
+        for removed in ("Keywords", "Popularity Rank", "Trending Rank", "Variable Axes"):
+            self.assertNotIn(removed, header)
+        for required in ("Family", "Category", "Subsets", "Axes", "License", "Last Modified"):
+            self.assertIn(required, header)
+        text = (DATA_DIR / "google-fonts.csv").read_text(encoding="utf-8").casefold()
+        for mood in ("luxury", "elegant", "premium", "corporate", "playful", "friendly", "humanist"):
+            self.assertNotIn(mood, text)
+        self.assertIn("snapshot 2026-11-12", DOMAIN_SOURCE_ROLES["google-fonts"][0])
+        self.assertIn("geometric", DOMAIN_SOURCE_ROLES["google-fonts"][1])
+
+    def test_axes_ranges_and_licenses_are_recorded(self):
+        rows = {row["Family"]: row for row in self.rows()}
+        plex = rows["IBM Plex Sans"]
+        self.assertEqual("wdth 75\u2013100; wght 100\u2013700", plex["Axes"])
+        self.assertEqual("OFL-1.1", plex["License"])
+        self.assertRegex(plex["Last Modified"], r"^\d{4}-\d{2}-\d{2}$")
+        self.assertNotIn("menu", plex["Subsets"])
+        self.assertLessEqual({row["License"] for row in rows.values()}, {"OFL-1.1", "Apache-2.0", "UFL-1.0", "unresolved"})
+        axis = re.compile(r"^[A-Za-z0-9]{4} -?[\d.]+\u2013-?[\d.]+$")
+        malformed = [
+            name for name, row in rows.items()
+            if row["Axes"] and not all(axis.match(part) for part in row["Axes"].split("; "))
+        ]
+        self.assertEqual([], malformed, "every axis records its numeric range")
+
+
 class NativeStackTests(unittest.TestCase):
     """Recommended columns must not teach APIs the platform has superseded."""
 

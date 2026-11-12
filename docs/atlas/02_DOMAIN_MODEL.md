@@ -97,7 +97,7 @@ Live configuration, not directory presence, defines runtime inputs. `data/CATALO
 | Catalog | Rows | Role |
 |---|---:|---|
 | `products.csv` | 192 | Caller-requested lexical product analog terms only. |
-| `google-fonts.csv` | 1,923 | Font metadata snapshot, not a font decision. |
+| `google-fonts.csv` | 1,961 | Slim metadata index dated 2026-11-12 (category, stroke, subsets, primary script, axis ranges, styles, designers, license, last modified); no keywords, mood words, or popularity. Not a font decision. |
 | `ux-guidelines.csv` | 91 | General UX prompts with contextual verification boundary; row ids are stable (merged duplicates leave gaps). |
 | `app-interface.csv` | 30 | iOS/Android/React Native app-interface prompts via `mobile` (alias `web`); not browser guidance. |
 | `react-performance.csv` | 44 | React performance prompts requiring version/current-doc verification. |

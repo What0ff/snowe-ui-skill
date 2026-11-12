@@ -13,7 +13,7 @@ Most catalogs derive from the MIT-licensed [UI UX Pro Max skill](https://github.
 | Catalog | Rows | Source | Imported | Edited | License / notice |
 |---|---:|---|---|---|---|
 | `products.csv` | 192 | UI UX Pro Max `products.csv`; reduced to `Product Type` and `Keywords` | 2026-08-10 | 2026-11-12 | MIT, Next Level Builder (notice below) |
-| `google-fonts.csv` | 1923 | UI UX Pro Max `google-fonts.csv` (Google Fonts metadata with generated keywords) | 2026-08-10 | 2026-08-10 | MIT, Next Level Builder (notice below); font families carry their own licenses |
+| `google-fonts.csv` | 1961 | Rebuilt from the public Google Fonts metadata endpoint (`https://fonts.google.com/metadata/fonts`, fetched 2026-11-12, latest family update 2026-11-11); `License` from the google/fonts repository directory (`ofl`, `apache`, `ufl`) at tree `910961aa534362dcbdab88b83bd093bf978a6f44`, `unresolved` for 6 families whose directory names differ. Replaces the UI UX Pro Max keyword snapshot | 2026-08-10 | 2026-11-12 | Factual metadata; each family's own license is in its `License` column |
 | `ux-guidelines.csv` | 91 | UI UX Pro Max `ux-guidelines.csv`; rows rewritten against WCAG 2.2 and platform guidance where cited; row 100 added from Nielsen Norman Group (2022) | 2026-08-10 | 2026-11-12 | MIT, Next Level Builder (notice below) |
 | `app-interface.csv` | 30 | UI UX Pro Max `app-interface.csv` (iOS, Android, React Native) | 2026-08-10 | 2026-11-12 | MIT, Next Level Builder (notice below) |
 | `react-performance.csv` | 44 | UI UX Pro Max `react-performance.csv`; upstream's own sources are not recorded | 2026-08-10 | 2026-08-10 | MIT, Next Level Builder (notice below) |

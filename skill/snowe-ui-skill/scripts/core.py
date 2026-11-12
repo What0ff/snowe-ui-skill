@@ -108,10 +108,12 @@ CSV_CONFIG = {
     # for callers of the original domain name.
     "mobile": _MOBILE_APP_INTERFACE,
     "web": _MOBILE_APP_INTERFACE,
+    # A slim, dated metadata index: no generated keywords, mood words, or
+    # popularity ranks, which acted as an adjective-to-font mapping.
     "google-fonts": {
         "file": "google-fonts.csv",
-        "search_cols": ["Family", "Category", "Stroke", "Classifications", "Keywords", "Subsets", "Designers"],
-        "output_cols": ["Family", "Category", "Stroke", "Classifications", "Styles", "Variable Axes", "Subsets", "Designers", "Popularity Rank", "Google Fonts URL"]
+        "search_cols": ["Family", "Category", "Stroke", "Classifications", "Subsets", "Primary Script", "Designers"],
+        "output_cols": ["Family", "Category", "Stroke", "Classifications", "Subsets", "Primary Script", "Axes", "Styles", "Designers", "License", "Last Modified", "Google Fonts URL"]
     }
 }
 
@@ -124,8 +126,12 @@ DOMAIN_SOURCE_ROLES = {
         "Treat matches as unverified analogs: each row is only a product-category label and lexical terms. Use a match to widen questions about the real product; do not inherit product identity, layout, style, palette, or landing recipe.",
     ),
     "google-fonts": (
-        "font catalog snapshot",
-        "Confirm current official metadata and actual files before choosing or loading a family.",
+        "font metadata index (Google Fonts public metadata, snapshot 2026-11-12)",
+        "Facts only: family, category, stroke, subsets, primary script, variable-axis ranges, styles, designers, license, and last-modified date. "
+        "Category and stroke cannot express construction or mood, so terms such as geometric, humanist, grotesque, elegant, or friendly match nothing here; "
+        "judge them from specimens with representative content. "
+        "License comes from the google/fonts repository directory at snapshot time. "
+        "Confirm current official metadata, the license file, and the actual font files before choosing or loading a family.",
     ),
     "icon-families": (
         "icon-source discovery snapshot",
