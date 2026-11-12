@@ -41,10 +41,19 @@ def current(root, value, *, max_bytes=1_000_000):
     return read_json(root / value["path"], max_bytes=max_bytes)
 
 
+VIEWPORT = re.compile(r"([1-9]\d{1,4})x([1-9]\d{1,4})@([1-4](?:\.\d{1,2})?)")
+
+
+def viewport_metrics(value):
+    """CSS width, height and device pixel ratio; "@1" and "@1.0" are the same ratio."""
+    match = VIEWPORT.fullmatch(value) if isinstance(value, str) else None
+    if not match: raise ValueError("Viewport must identify width x height @ pixel ratio")
+    return int(match[1]), int(match[2]), float(match[3])
+
+
 def combination(case):
     for field in DIMENSIONS: text(case.get(field), field)
-    if not re.fullmatch(r"[1-9]\d{1,4}x[1-9]\d{1,4}@[1-4](?:\.\d{1,2})?", case["viewport"]):
-        raise ValueError("Viewport must identify width x height @ pixel ratio")
+    viewport_metrics(case["viewport"])
     if case["theme"] not in {"light", "dark"} or case["input"] not in {"pointer", "touch", "keyboard"} or case["motion"] not in {"normal", "reduced"}:
         raise ValueError("Unsupported browser emulation")
     return tuple(case[field] for field in DIMENSIONS)
@@ -168,8 +177,10 @@ def inspect_capture(root, receipt_binding, plan_binding):
             raise ValueError("Browser dimensions/DPR must be bounded real numbers, not flags")
         if type(actual["touch"]) is not bool or any(type(actual[k]) not in {int,float} or not math.isfinite(actual[k]) for k in ("scrollX","scrollY")):
             raise ValueError("Invalid browser input or scroll metadata")
-        viewport = f"{actual['width']}x{actual['height']}@{actual['dpr']:g}"
-        if viewport != row["viewport"] or actual["theme"] != row["theme"] or actual["touch"] != (row["input"] == "touch") or actual["motion"] != row["motion"] or actual["route"] != case["route"]:
+        width, height, dpr = viewport_metrics(row["viewport"])
+        # Compare the ratio numerically: the plan may spell it "1.0" while the browser reports 1,
+        # and Chromium stores fractional ratios as float32 (1.1 reads back as 1.1000000238...).
+        if (actual["width"], actual["height"]) != (width, height) or not math.isclose(actual["dpr"], dpr, rel_tol=1e-6) or actual["theme"] != row["theme"] or actual["touch"] != (row["input"] == "touch") or actual["motion"] != row["motion"] or actual["route"] != case["route"]:
             raise ValueError("Actual browser environment disagrees with capture metadata")
         if actual["fonts"] != "loaded" or actual["settled"] is not True: raise ValueError("Unsettled fonts/layout capture")
         bound(row["viewportRender"])

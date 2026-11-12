@@ -78,6 +78,19 @@ class ObservationIntegrityTests(unittest.TestCase):
                 self.edit("receipt.json", lambda r:r["observations"][0]["actual"].update(**{field:value})); self.rebind(receipt=True)
                 self.assertEqual("REVIEW_REQUIRED", self.check()["status"])
 
+    def test_device_pixel_ratio_is_compared_as_a_number_not_its_spelling(self):
+        # Browsers report devicePixelRatio as a number: a planned "@1.0" captures as 1.
+        for planned, reported, status in (("390x844@1.0", 1, "PASS"), ("390x844@1.50", 1.5, "PASS"),
+                                          ("390x844@1.1", 1.100000023841858, "PASS"), ("390x844@1.0", 1.25, "REVIEW_REQUIRED")):
+            with self.subTest(planned=planned, reported=reported):
+                with tempfile.TemporaryDirectory() as directory:
+                    self.root = Path(directory)
+                    (self.root / "page.css").write_text("main{font-weight:400}")
+                    self.report = make_review(self.root, viewport=planned)
+                    self.edit("receipt.json", lambda r:r["observations"][0]["actual"].update(dpr=reported)); self.rebind(receipt=True)
+                    result = self.check()
+                    self.assertEqual(status, result["status"], result["issues"])
+
     def test_detail_evidence_cannot_be_dropped_unassessed_or_rescaled(self):
         self.edit("receipt.json", lambda r:r["observations"][0].update(details=[])); self.rebind(receipt=True)
         self.assertEqual("REVIEW_REQUIRED", self.check()["status"])
