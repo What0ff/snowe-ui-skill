@@ -1,6 +1,6 @@
 ---
 name: snowe-ui-skill
-description: "Design and build high-quality web, product, and brand experiences. Use for bounded UI corrections through open site/product architecture, information architecture, UX, art direction, visual systems, typography, color/material, imagery, illustration, custom graphics and icons, motion, interaction, responsive behavior, implementation, and rendered critique. Snowe calibrates process depth from observed consequence, owners, consumers, and material uncertainty: narrow accepted-system work stays local, shared or unresolved work widens only as evidence requires, and no image, custom asset, animation, redesign, or workshop is always a valid outcome."
+description: "Design and build high-quality web, product, and brand experiences. Use for bounded UI corrections through open site/product architecture, information architecture, UX, art direction, visual systems, typography, color/material, imagery, illustration, custom graphics and icons, motion, interaction, responsive behavior, implementation, and rendered critique. Snowe calibrates process depth from observed consequence, owners, consumers, and material uncertainty: narrow accepted-system work stays local, shared or unresolved work widens only as evidence requires, and omitting imagery, custom assets, animation, a redesign, or a workshop is always a valid outcome."
 ---
 
 # Snowe UI Skill

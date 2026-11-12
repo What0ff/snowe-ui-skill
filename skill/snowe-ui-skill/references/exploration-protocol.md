@@ -207,7 +207,7 @@ Do not preserve a weak premise because it has already produced code or polished 
 
 ## 9. Stop
 
-Direct stops when the affected invariant is proved; Focused stops when the affected decision and sibling-system proof are closed; Portfolio stops when its whole-journey uncertainty and required proof slices are closed. Do not continue a narrower route until it satisfies Portfolio-style candidate, journal, or whole-journey obligations.
+Direct stops when the affected invariant is proved; Focused stops when the affected decision and sibling-system proof are closed; Portfolio stops when its whole-journey uncertainty and required proof slices are closed. A narrower route never has to satisfy Portfolio-style candidate, journal, or whole-journey obligations before it stops.
 
 The expansion checks below are Portfolio-oriented. Direct and Focused use only the checks that can change their affected proof; they do not need a representative candidate for every unrelated trade-off.
 
