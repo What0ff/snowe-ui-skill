@@ -59,7 +59,7 @@ This writes:
 ```
 
 - `PROJECT.json` binds the exact explicit project identity to its slug. A different identity that normalizes to the same slug is refused, as is a shared-hardlink/inode manifest.
-- `BRIEF.md` is atomically regenerated from the current inquiry. Adding a page with `--page` preserves an existing project brief and creates one only when absent; the page brief goes into the page inquiry.
+- `BRIEF.md` is atomically regenerated from the current inquiry. Adding a page with `--page` preserves an existing project brief and creates one only when absent; the page brief goes into the page inquiry. The brief is stored verbatim, so keep credentials, personal data and internal hosts out of it; persistence warns on stderr (and returns `sensitive_content`) when it sees likely secrets, emails or private hosts, and never redacts them silently.
 - `DECISIONS.md` is created only when absent and then preserved byte-for-byte. A shared-hardlink/inode ledger is refused so preserving it cannot mutate another file. Record accepted causal decisions, scope, evidence, risk, and revisit trigger there; do not turn hypotheses into facts.
 
 Add an unresolved page inquiry:

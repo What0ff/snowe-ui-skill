@@ -735,6 +735,28 @@ def format_packet_json(packet: dict[str, Any]) -> str:
     return json.dumps(packet, indent=2, ensure_ascii=False) + "\n"
 
 
+SENSITIVE_PATTERNS: tuple[tuple[str, re.Pattern[str]], ...] = (
+    ("email address", re.compile(r"[\w.+-]+@[\w-]+(?:\.[\w-]+)+")),
+    ("API key or access token", re.compile(
+        r"\b(?:sk|pk|rk)[-_](?:live|test|proj)?[-_]?[A-Za-z0-9]{6,}|\bgh[pousr]_[A-Za-z0-9]{20,}"
+        r"|\bAKIA[0-9A-Z]{16}\b|\bxox[abprs]-[A-Za-z0-9-]{10,}|\beyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}"
+    )),
+    ("private key block", re.compile(r"-----BEGIN [A-Z ]*PRIVATE KEY-----")),
+    ("password or secret assignment", re.compile(r"(?i)\b(?:password|passwd|secret|token|api[_ -]?key)\s*[:=]\s*\S+")),
+    ("internal host or private address", re.compile(
+        r"(?i)\b[\w-]+(?:\.[\w-]+)*\.(?:internal|local|corp|lan|intranet)\b|\blocalhost:\d+"
+        r"|\b(?:10|127)\.\d{1,3}\.\d{1,3}\.\d{1,3}\b|\b192\.168\.\d{1,3}\.\d{1,3}\b|\b172\.(?:1[6-9]|2\d|3[01])\.\d{1,3}\.\d{1,3}\b"
+    )),
+)
+
+
+def sensitive_markers(text: str | None) -> list[str]:
+    """Name likely secrets/personal data in caller text; persistence keeps the brief verbatim."""
+    if not isinstance(text, str):
+        return []
+    return [label for label, pattern in SENSITIVE_PATTERNS if pattern.search(text)]
+
+
 def slugify_name(value: str, fallback: str = "default") -> str:
     normalized = re.sub(r"[^\w]+", "-", str(value or "").casefold(), flags=re.UNICODE)
     normalized = re.sub(r"_+", "-", normalized)
@@ -1224,6 +1246,7 @@ def persist_decision_packet(
             "design_intelligence_dir": str(project_dir),
             "created_or_updated_files": created_or_updated,
             "preserved_files": preserved,
+            "sensitive_content": sorted(set(sensitive_markers(packet.get("brief")) + sensitive_markers(page_brief))),
         }
 
 

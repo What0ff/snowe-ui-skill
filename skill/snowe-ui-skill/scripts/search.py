@@ -28,7 +28,7 @@ import argparse
 import sys
 import io
 from core import CSV_CONFIG, AVAILABLE_STACKS, MAX_RESULTS, search, search_stack
-from decision_packet import generate_decision_packet, slugify_name
+from decision_packet import generate_decision_packet, sensitive_markers, slugify_name
 
 # Force UTF-8 for stdout/stderr to handle emojis on Windows (cp1252 default)
 if sys.stdout.encoding and sys.stdout.encoding.lower() != 'utf-8':
@@ -169,6 +169,14 @@ if __name__ == "__main__":
             print("", file=confirmation)
             print("Usage: Read accepted decisions, then the brief and any relevant page inquiry.", file=confirmation)
             print("=" * 60, file=confirmation)
+            markers = sensitive_markers(args.query)
+            if markers:
+                print(
+                    "WARNING: the brief is stored verbatim and appears to contain: "
+                    + ", ".join(markers)
+                    + ". Remove those values from design-intelligence/ files, or keep that directory out of version control.",
+                    file=sys.stderr,
+                )
     # Stack search
     elif args.stack:
         result = search_stack(args.query, args.stack, args.max_results or MAX_RESULTS)

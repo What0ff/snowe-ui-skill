@@ -456,6 +456,37 @@ class PersistenceTests(unittest.TestCase):
             page = Path(result["design_intelligence_dir"]) / "pages" / "find-a-bike.md"
             self.assertIn("Product selection and fit evidence", page.read_text(encoding="utf-8"))
 
+    def test_sensitive_markers_flag_secrets_without_flagging_ordinary_briefs(self):
+        from decision_packet import sensitive_markers
+
+        flagged = sensitive_markers(
+            "Contact jane.doe@acme.com; staging https://staging.acme.internal; key sk-test-1234567; "
+            "password: hunter2; ghp_abcdefghijklmnopqrstuvwxyz0123; host 192.168.1.10"
+        )
+        self.assertEqual(
+            ["email address", "API key or access token", "password or secret assignment", "internal host or private address"],
+            flagged,
+        )
+        self.assertEqual([], sensitive_markers("Bicycle retailer for urban riders; three bikes from EUR 1,290; free test rides"))
+
+    def test_persistence_reports_and_warns_about_sensitive_brief_content(self):
+        brief = "Landing for Acme CRM. Contact jane.doe@acme.com, API key sk-test-1234567"
+        packet = DecisionPacketGenerator().generate(brief, "Acme CRM")
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            result = persist_decision_packet(packet, output_dir=temporary_directory)
+            self.assertEqual(["API key or access token", "email address"], result["sensitive_content"])
+            # The packet invariant keeps the brief verbatim; the caller is warned instead.
+            self.assertIn("jane.doe@acme.com", (Path(result["design_intelligence_dir"]) / "BRIEF.md").read_text(encoding="utf-8"))
+            cli = subprocess.run(
+                [sys.executable, str(SCRIPTS / "search.py"), brief, "--decision-packet", "--persist",
+                 "--project-name", "Acme CLI", "--output-dir", temporary_directory],
+                capture_output=True, text=True, encoding="utf-8", timeout=60,
+            )
+            self.assertEqual(0, cli.returncode, cli.stderr)
+            self.assertIn("WARNING: the brief is stored verbatim", cli.stderr)
+            self.assertIn("email address", cli.stderr)
+            self.assertNotIn("WARNING", cli.stdout)
+
     def test_first_page_inquiry_still_creates_project_brief(self):
         packet = DecisionPacketGenerator().generate("Product selection", "Fresh Project")
         with tempfile.TemporaryDirectory() as temporary_directory:
