@@ -38,7 +38,7 @@ def identifier(value):
 
 
 def scope(value):
-    object_fields(value, {"owners", "routes", "states"})
+    object_fields(value, {"owners", "routes", "states"}, name="scope")
     for key, items in value.items():
         if not isinstance(items, list) or len(items) != len(set(map(str, items))):
             raise ValueError("Scope values must be distinct arrays")
@@ -57,7 +57,7 @@ def criteria(value):
         raise ValueError("At least one criterion is required")
     ids = []
     for item in value:
-        object_fields(item, {"id", "kind", "requirement"})
+        object_fields(item, {"id", "kind", "requirement"}, name="criterion")
         ids.append(identifier(item["id"]))
         if item["kind"] not in {"technical", "behavior", "visual"}: raise ValueError("Unknown criterion kind")
         text(item["requirement"], "criterion requirement")
@@ -65,7 +65,7 @@ def criteria(value):
 
 
 def base_record(value):
-    object_fields(value, BASE_FIELDS)
+    object_fields(value, BASE_FIELDS, name="correction record")
     identifier(value["id"])
     text(value["source"], "source")
     text(value["requirement"], "requirement")
@@ -80,7 +80,7 @@ def event(entry, status, note):
 
 
 def review_fields(review):
-    object_fields(review, {"reviewer", "finding", "viewport", "state"}, {"method", "verdict", "report"})
+    object_fields(review, {"reviewer", "finding", "viewport", "state"}, {"method", "verdict", "report"}, name="criterion review")
     for field, value in review.items(): text(value, field)
     if "method" in review and review["method"] not in METHODS: raise ValueError("Unknown visual review method")
     if "verdict" in review and review["verdict"] not in VERDICTS: raise ValueError("Unknown visual verdict")
@@ -90,12 +90,12 @@ def review_fields(review):
 
 def validate_proof_shape(proof):
     """Validate receipt structure without treating it as confirmation of a definition."""
-    object_fields(proof, {"sources", "artifacts", "results"})
+    object_fields(proof, {"sources", "artifacts", "results"}, name="proof")
     paths = set()
     for key in ("sources", "artifacts"):
         if not isinstance(proof[key], list) or not proof[key]: raise ValueError(f"Proof needs {key}")
         for item in proof[key]:
-            object_fields(item, {"path", "sha256"})
+            object_fields(item, {"path", "sha256"}, name="proof binding")
             text(item["path"], "path")
             if not isinstance(item["sha256"], str) or not re.fullmatch(r"[a-f0-9]{64}", item["sha256"]): raise ValueError("Expected SHA-256")
             if item["path"] in paths: raise ValueError("Duplicate source/artifact path")
@@ -103,7 +103,7 @@ def validate_proof_shape(proof):
     if not isinstance(proof["results"], list) or not proof["results"]:
         raise ValueError("Proof needs criterion results")
     for result in proof["results"]:
-        object_fields(result, {"criterion", "status", "artifacts"}, {"review"})
+        object_fields(result, {"criterion", "status", "artifacts"}, {"review"}, name="criterion result")
         identifier(result["criterion"])
         if result["status"] != "PASS": raise ValueError("Only passing results can be submitted for verification")
         if not isinstance(result["artifacts"], list) or not result["artifacts"]: raise ValueError("Result needs artifact paths")
@@ -131,7 +131,7 @@ def validate_proof(entry, proof, *, new=False):
     reviewed_states = set()
     artifacts = {item["path"] for item in proof["artifacts"]}
     for result in proof["results"]:
-        object_fields(result, {"criterion", "status", "artifacts"}, {"review"})
+        object_fields(result, {"criterion", "status", "artifacts"}, {"review"}, name="criterion result")
         key = result["criterion"]
         if key not in expected or key in seen or result["status"] != "PASS": raise ValueError("Each criterion needs one passing result")
         seen.add(key)
@@ -181,23 +181,23 @@ def load_journal(path, identity):
     if not path.exists(): return {"schema_version": VERSION, "project_identity": identity, "records": []}
     if _shared_regular_file(path): raise ValueError("Correction journal must not be a shared hardlink")
     journal = read_json(path)
-    object_fields(journal, {"schema_version", "project_identity", "records"})
+    object_fields(journal, {"schema_version", "project_identity", "records"}, name="correction journal")
     if journal["schema_version"] != VERSION or journal["project_identity"] != identity: raise ValueError("Journal schema/project mismatch")
     if not isinstance(journal["records"], list): raise ValueError("Records must be an array")
     ids = set()
     for entry in journal["records"]:
-        object_fields(entry, BASE_FIELDS | {"status", "history"}, {"proof", "replacement"})
+        object_fields(entry, BASE_FIELDS | {"status", "history"}, {"proof", "replacement"}, name="journal record")
         base_record({key: entry[key] for key in BASE_FIELDS})
         if entry["id"] in ids: raise ValueError("Duplicate correction ID")
         ids.add(entry["id"])
         if entry["status"] not in STATUSES or not isinstance(entry["history"], list) or not entry["history"]: raise ValueError("Invalid record state/history")
         for item in entry["history"]:
-            object_fields(item, {"at", "status", "note"}, {"snapshot"})
+            object_fields(item, {"at", "status", "note"}, {"snapshot"}, name="history event")
             text(item["at"], "timestamp"); text(item["note"], "note")
             if item["status"] not in STATUSES: raise ValueError("Invalid history status")
             if "snapshot" in item:
                 snapshot = item["snapshot"]
-                object_fields(snapshot, BASE_FIELDS | {"status"}, {"proof", "replacement"})
+                object_fields(snapshot, BASE_FIELDS | {"status"}, {"proof", "replacement"}, name="history snapshot")
                 base_record({key: snapshot[key] for key in BASE_FIELDS})
                 if snapshot["id"] != entry["id"] or snapshot["status"] != item["status"]: raise ValueError("History snapshot mismatch")
                 if snapshot["status"] == "verified": validate_proof(snapshot, snapshot.get("proof"))
@@ -301,12 +301,12 @@ def execute(command, *, workspace, project, payload=None):
             event(entry, "requested", "Correction recorded")
             entries.append(entry)
         else:
-            object_fields(data, {"id"}, {"status", "note", "requirement", "scope", "criteria", "proof", "replacement"})
+            object_fields(data, {"id"}, {"status", "note", "requirement", "scope", "criteria", "proof", "replacement"}, name="transition input")
             entry = next((e for e in entries if e["id"] == data["id"]), None)
             if entry is None: raise ValueError("Unknown correction ID")
             if entry["status"] == "superseded": raise ValueError("A superseded record is immutable")
             if command == "update":
-                object_fields(data, {"id", "note"}, {"status", "requirement", "scope", "criteria"})
+                object_fields(data, {"id", "note"}, {"status", "requirement", "scope", "criteria"}, name="update input")
                 changed = any(k in data and data[k] != entry[k] for k in ("requirement", "scope", "criteria"))
                 for k in ("requirement", "scope", "criteria"):
                     if k in data: entry[k] = data[k]
@@ -316,7 +316,7 @@ def execute(command, *, workspace, project, payload=None):
                 entry.pop("proof", None)
                 event(entry, target, data["note"])
             elif command == "verify":
-                object_fields(data, {"id", "proof"})
+                object_fields(data, {"id", "proof"}, name="verify input")
                 if entry["status"] not in {"implemented", "verified"}: raise ValueError("Implement before verification")
                 validate_proof(entry, data["proof"], new=True)
                 issues = proof_current(root, data["proof"], entry)
@@ -324,7 +324,7 @@ def execute(command, *, workspace, project, payload=None):
                 entry["proof"] = data["proof"]
                 event(entry, "verified", "Bound criterion results and current evidence verified")
             else:
-                object_fields(data, {"id", "replacement", "note"})
+                object_fields(data, {"id", "replacement", "note"}, name="supersede input")
                 replacement = next((e for e in entries if e["id"] == data["replacement"]), None)
                 if replacement is None or replacement is entry or replacement["status"] == "superseded": raise ValueError("Replacement must be a different active correction")
                 if any(not set(entry["scope"][k]) <= set(replacement["scope"][k]) for k in ("owners", "routes")) or (not entry["scope"]["states"] and replacement["scope"]["states"]) or (entry["scope"]["states"] and replacement["scope"]["states"] and not set(entry["scope"]["states"]) <= set(replacement["scope"]["states"])):

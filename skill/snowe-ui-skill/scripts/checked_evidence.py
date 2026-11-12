@@ -16,20 +16,63 @@ def text(value, field):
     return value
 
 
-def object_fields(value, required, optional=()):
-    if not isinstance(value, dict) or not set(required) <= value.keys() or set(value) - set(required) - set(optional):
-        raise ValueError(f"Expected fields {sorted(required)} with optional {sorted(optional)}")
+def object_fields(value, required, optional=(), *, name="object"):
+    """Require exactly the declared fields; errors name the object, missing and unexpected keys."""
+    label = name[:1].upper() + name[1:]
+    expected = f"expected {sorted(required)}" + (f" with optional {sorted(optional)}" if optional else "")
+    if not isinstance(value, dict):
+        raise ValueError(f"{label} must be a JSON object, not {type(value).__name__}; {expected}")
+    missing = set(required) - value.keys()
+    extra = value.keys() - set(required) - set(optional)
+    if missing or extra:
+        identity = value.get("id")
+        if isinstance(identity, str) and identity.strip():
+            label += f" {identity[:80]!r}"
+        problems = ([f"is missing {sorted(missing)}"] if missing else []) + ([f"has unexpected {sorted(map(str, extra))}"] if extra else [])
+        raise ValueError(f"{label} {' and '.join(problems)}; {expected}")
+
+
+def _reject_nonfinite(constant):
+    raise ValueError(f"nonfinite number {constant} is not valid JSON")
 
 
 def read_json(path, *, max_bytes=1_000_000):
+    """Read bounded UTF-8 JSON (a UTF-8 BOM is accepted); errors name the file."""
     path = Path(path)
     _reject_reparse_chain(path, "JSON input")
-    if not path.is_file() or path.stat().st_size > max_bytes:
-        raise ValueError(f"JSON input must be a regular file of at most {max_bytes} bytes")
     try:
-        value = json.loads(path.read_text(encoding="utf-8"), parse_constant=lambda _: (_ for _ in ()).throw(ValueError("Nonfinite JSON")))
-    except (RecursionError, UnicodeError) as error:
-        raise ValueError("Invalid or excessive JSON") from error
+        information = path.stat()
+    except FileNotFoundError:
+        raise ValueError(f"JSON input does not exist: {path}") from None
+    except OSError as error:
+        raise ValueError(f"JSON input cannot be inspected: {path} ({error.strerror or error})") from None
+    if not stat.S_ISREG(information.st_mode):
+        raise ValueError(f"JSON input must be a regular file: {path}")
+    if information.st_size > max_bytes:
+        raise ValueError(f"JSON input exceeds {max_bytes} bytes: {path} ({information.st_size} bytes)")
+    with path.open("rb") as handle:
+        raw = handle.read(max_bytes + 1)
+    if len(raw) > max_bytes:
+        raise ValueError(f"JSON input exceeds {max_bytes} bytes: {path}")
+    # UTF-8 JSON never contains NUL bytes; UTF-16/32 text (Windows PowerShell 5.1's default
+    # for > and Out-File) does, with or without a byte-order mark.
+    if raw.startswith((b"\xff\xfe", b"\xfe\xff")) or b"\x00" in raw:
+        raise ValueError(
+            f"JSON input must be UTF-8 text, but {path} looks like UTF-16 or UTF-32; "
+            "re-save it as UTF-8 (for example Out-File -Encoding utf8, or Set-Content -Encoding utf8)"
+        )
+    try:
+        decoded = raw.decode("utf-8-sig")
+    except UnicodeDecodeError as error:
+        raise ValueError(
+            f"JSON input must be UTF-8 text: {path} has a byte that is not UTF-8 at offset {error.start}"
+        ) from None
+    try:
+        value = json.loads(decoded, parse_constant=_reject_nonfinite)
+    except RecursionError:
+        raise ValueError(f"Invalid JSON in {path}: nesting is too deep") from None
+    except ValueError as error:
+        raise ValueError(f"Invalid JSON in {path}: {error}") from None
     def bounded(node, depth=0):
         if depth > 32:
             raise ValueError("JSON nesting exceeds 32")

@@ -44,7 +44,7 @@ def strings(value, field, allow_empty=False):
 
 def binding(value, render=False):
     object_fields(value, {"path", "sha256"} | ({"state", "viewport"} if render else set()),
-                  {"id", "theme", "input", "motion", "context"} if render else set())
+                  {"id", "theme", "input", "motion", "context"} if render else set(), name="render binding" if render else "evidence binding")
     relative_path(value["path"])
     if not isinstance(value["sha256"], str) or not re.fullmatch(r"[a-f0-9]{64}", value["sha256"]):
         raise ValueError("Expected SHA-256 evidence binding")
@@ -70,7 +70,7 @@ def inspect_review(workspace, report_path):
         return {"status": "REVIEW_REQUIRED", "integrity": "UNCONFIRMED", "visual_verdict": "UNKNOWN",
                 "user_acceptance": "UNCONFIRMED", "issues": ["Legacy report has no checked explicit verdict; review it again without rewriting its history"], "boundary": BOUNDARY}
     object_fields(report, {"schema", "scope", "method", "reviewer", "contract", "sources", "renders", "visualAssessment", "userAcceptance"},
-                  {"date", "evidence", "inspectedCaptures", "notes", "capture"})
+                  {"date", "evidence", "inspectedCaptures", "notes", "capture"}, name="visual review")
     if report["schema"] not in {"2.0", "3.0"}: raise ValueError("Unsupported visual review schema")
     modern = report["schema"] == "3.0"
     if modern: binding(report.get("capture"))
@@ -84,7 +84,7 @@ def inspect_review(workspace, report_path):
     bindings = [report["contract"], *report["sources"], *report["renders"], *([report["capture"]] if modern else [])]
     if len({item["path"] for item in bindings}) != len(bindings): raise ValueError("Duplicate evidence path")
     assessment = report["visualAssessment"]
-    object_fields(assessment, {"finding", "assessments", "findings"}, {"verdict"})
+    object_fields(assessment, {"finding", "assessments", "findings"}, {"verdict"}, name="visual assessment")
     text(assessment["finding"], "visual finding")
     overall = verdict(assessment["verdict"]) if "verdict" in assessment else "UNKNOWN"
     issues = []
@@ -97,7 +97,7 @@ def inspect_review(workspace, report_path):
     negative = set()
     unknown = set()
     for item in assessment["assessments"]:
-        object_fields(item, {"state", "renders", "observedAttention", "finding", "verdict"})
+        object_fields(item, {"state", "renders", "observedAttention", "finding", "verdict"}, name="state assessment")
         text(item["state"], "assessment state"); text(item["finding"], "state finding")
         value = verdict(item["verdict"])
         strings(item["observedAttention"], "observed attention", allow_empty=value == "UNKNOWN")
@@ -113,7 +113,7 @@ def inspect_review(workspace, report_path):
     if not isinstance(assessment["findings"], list): raise ValueError("Findings must be an array")
     ids, blocking, explained = set(), [], set()
     for item in assessment["findings"]:
-        object_fields(item, {"id", "states", "owner", "observation", "consequence", "blocking", "status", "renders"}, {"resolution"})
+        object_fields(item, {"id", "states", "owner", "observation", "consequence", "blocking", "status", "renders"}, {"resolution"}, name="finding")
         for field in ("id", "owner", "observation", "consequence"): text(item[field], field)
         if item["id"] in ids: raise ValueError("Duplicate finding ID")
         ids.add(item["id"])
@@ -138,12 +138,12 @@ def inspect_review(workspace, report_path):
     expected_states = set()
     if not freshness:
         contract = read_json(root / report["contract"]["path"])
-        object_fields(contract, {"schema", "scope", "states"}, {"plan", "system"})
+        object_fields(contract, {"schema", "scope", "states"}, {"plan", "system"}, name="attention contract")
         if contract["schema"] != ("2.0" if modern else "1.0") or contract["scope"] != report["scope"]:
             raise ValueError("Review and attention contract disagree on scope/version")
         if not isinstance(contract["states"], list) or not contract["states"]: raise ValueError("Attention contract needs states")
         for item in contract["states"]:
-            object_fields(item, {"id", "question", "priority", "cues", "competing"})
+            object_fields(item, {"id", "question", "priority", "cues", "competing"}, name="attention state")
             text(item["id"], "state"); text(item["question"], "state question")
             strings(item["priority"], "expected attention"); strings(item["cues"], "intended cues")
             strings(item["competing"], "competing elements", allow_empty=True)

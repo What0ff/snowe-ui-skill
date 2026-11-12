@@ -23,7 +23,7 @@ def finite_number(value, field):
 
 def geometry_value(match, property_name):
     bounds = match.get("bounds")
-    object_fields(bounds, {"x", "y", "width", "height"})
+    object_fields(bounds, {"x", "y", "width", "height"}, name="measured bounds")
     for name, value in bounds.items():
         finite_number(value, f"bounds.{name}")
     if bounds["width"] <= 0 or bounds["height"] <= 0:
@@ -42,7 +42,7 @@ def texts(values, field, empty=False):
 
 def inspect_system(root, binding, plan, receipt):
     system = current(root, binding)
-    object_fields(system, {"schema", "revision", "scope", "depth", "direction", "tokens", "components", "relations", "exceptions", "hypotheses"}, {"previous"})
+    object_fields(system, {"schema", "revision", "scope", "depth", "direction", "tokens", "components", "relations", "exceptions", "hypotheses"}, {"previous"}, name="visual system")
     if system["schema"] not in ("1.0", "1.1") or type(system["revision"]) is not int or system["revision"] < 1 or system["scope"] != plan["scope"]:
         raise ValueError("Invalid visual system revision/scope")
     if system["depth"] not in {"Direct", "Focused", "Portfolio"}: raise ValueError("Unknown system scope depth")
@@ -50,7 +50,7 @@ def inspect_system(root, binding, plan, receipt):
         previous = current(root, system.get("previous"))
         if previous["revision"] != system["revision"] - 1 or previous["scope"] != system["scope"]: raise ValueError("Broken visual contract history")
     direction = system["direction"]
-    object_fields(direction, {"status", "thesis", "axes", "revisit"})
+    object_fields(direction, {"status", "thesis", "axes", "revisit"}, name="direction")
     if direction["status"] not in {"proposed", "selected", "user-specified"}: raise ValueError("Direction is separate from implementation and user acceptance")
     text(direction["thesis"], "visual thesis"); texts(direction["revisit"], "revisit conditions")
     if not isinstance(direction["axes"], dict) or not direction["axes"] or not direction["axes"].keys() <= AXES: raise ValueError("Unknown/missing direction axes")
@@ -60,12 +60,12 @@ def inspect_system(root, binding, plan, receipt):
     cases = {case["id"]: case for case in plan["cases"]}
     tokens, components = {}, {}
     for token in system["tokens"]:
-        object_fields(token, {"id", "owner", "property", "value"})
+        object_fields(token, {"id", "owner", "property", "value"}, name="token")
         for field in token: text(token[field], field)
         if token["id"] in tokens or relative(token["owner"]) not in sources: raise ValueError("Duplicate token or unbound token owner")
         tokens[token["id"]] = token
     for component in system["components"]:
-        object_fields(component, {"id", "role", "owner", "selector", "tokens", "states", "consumers", "layers"})
+        object_fields(component, {"id", "role", "owner", "selector", "tokens", "states", "consumers", "layers"}, name="component")
         for field in ("id", "role", "owner", "selector"): text(component[field], field)
         if component["id"] in components or relative(component["owner"]) not in sources: raise ValueError("Duplicate component or unbound owner")
         texts(component["tokens"], "component tokens", empty=True)
@@ -74,12 +74,12 @@ def inspect_system(root, binding, plan, receipt):
         if not isinstance(component["consumers"], list) or not component["consumers"] or not isinstance(component["layers"], list) or not component["layers"]:
             raise ValueError("Components need consumers and real layers")
         for consumer in component["consumers"]:
-            object_fields(consumer, {"case", "selector"})
+            object_fields(consumer, {"case", "selector"}, name="consumer")
             case = cases.get(consumer["case"])
             if case is None or case["state"] not in component["states"]: raise ValueError("Consumer missing from state plan")
             if {"selector": consumer["selector"], "pseudo": ""} not in case["probes"]: raise ValueError("Consumer is not measured")
         for layer in component["layers"]:
-            object_fields(layer, {"kind", "selector", "pseudo", "sources", "cases"})
+            object_fields(layer, {"kind", "selector", "pseudo", "sources", "cases"}, name="layer")
             if layer["kind"] not in LAYERS: raise ValueError("Unknown visual layer")
             texts(layer["sources"], "layer sources", empty=True); texts(layer["cases"], "layer cases")
             if not set(layer["sources"]) <= sources: raise ValueError("Unbound visual dependency")
@@ -91,19 +91,19 @@ def inspect_system(root, binding, plan, receipt):
     issues, check_ids, exception_ids = [], set(), set()
     if not isinstance(system["exceptions"], list) or not isinstance(system["relations"], list): raise ValueError("Relations/exceptions must be arrays")
     for exception in system["exceptions"]:
-        object_fields(exception, {"check", "reason", "revisit"})
+        object_fields(exception, {"check", "reason", "revisit"}, name="exception")
         for value in exception.values(): text(value, "exception")
         if exception["check"] in exception_ids: raise ValueError("Duplicate exception")
         exception_ids.add(exception["check"])
     for relation in system["relations"]:
-        object_fields(relation, {"id", "members", "intent", "checks"})
+        object_fields(relation, {"id", "members", "intent", "checks"}, name="relation")
         text(relation["id"], "relation ID"); text(relation["intent"], "relationship intent")
         texts(relation["members"], "related components")
         if not set(relation["members"]) <= components.keys(): raise ValueError("Unknown relationship member")
         if not isinstance(relation["checks"], list) or not relation["checks"]: raise ValueError("Relationship needs observable checks")
         for check in relation["checks"]:
             optional = {"equals", "sameAs", "tolerance"} if system["schema"] == "1.1" else {"equals", "sameAs"}
-            object_fields(check, {"id", "case", "selector", "pseudo", "property"}, optional)
+            object_fields(check, {"id", "case", "selector", "pseudo", "property"}, optional, name="relation check")
             if check["id"] in check_ids or ("equals" in check) == ("sameAs" in check): raise ValueError("Duplicate or ambiguous relationship check")
             check_ids.add(check["id"])
             text(check["property"], "relationship property")
@@ -112,7 +112,7 @@ def inspect_system(root, binding, plan, receipt):
             if geometry:
                 if system["schema"] != "1.1" or check["property"][7:] not in GEOMETRY or check["pseudo"]:
                     raise ValueError("Geometry requires schema 1.1 and a measured element axis, not pseudo-element bounds")
-                object_fields(check.get("tolerance"), {"cssPixels", "reason"})
+                object_fields(check.get("tolerance"), {"cssPixels", "reason"}, name="geometry tolerance")
                 tolerance = finite_number(check["tolerance"]["cssPixels"], "geometry tolerance")
                 if tolerance < 0: raise ValueError("Geometry tolerance cannot be negative")
                 text(check["tolerance"]["reason"], "tolerance reason")
@@ -135,7 +135,7 @@ def inspect_system(root, binding, plan, receipt):
                 return result
             actual = values(check["selector"], check["pseudo"])
             if "sameAs" in check:
-                object_fields(check["sameAs"], {"selector", "pseudo"})
+                object_fields(check["sameAs"], {"selector", "pseudo"}, name="sameAs reference")
                 expected = values(check["sameAs"]["selector"], check["sameAs"]["pseudo"])
             else: expected = [check["equals"]]
             if geometry:
@@ -149,7 +149,7 @@ def inspect_system(root, binding, plan, receipt):
     if not exception_ids <= check_ids: raise ValueError("Exception does not name a real check")
     if not isinstance(system["hypotheses"], list): raise ValueError("Hypotheses must be an array")
     for hypothesis in system["hypotheses"]:
-        object_fields(hypothesis, {"id", "observation", "cause", "change", "prediction", "outcome", "evidence", "applicability", "counterexamples", "reason"})
+        object_fields(hypothesis, {"id", "observation", "cause", "change", "prediction", "outcome", "evidence", "applicability", "counterexamples", "reason"}, name="hypothesis")
         for field in ("id", "observation", "cause", "change", "prediction", "applicability", "reason"): text(hypothesis[field], field)
         if hypothesis["outcome"] not in {"untested", "supported", "rejected", "inconclusive"}: raise ValueError("Unknown hypothesis outcome")
         texts(hypothesis["counterexamples"], "counterexamples")

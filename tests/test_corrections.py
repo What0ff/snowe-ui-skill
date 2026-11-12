@@ -290,4 +290,79 @@ class CorrectionTests(unittest.TestCase):
         self.assertEqual("BLOCKED", json.loads(result.stdout)["status"])
 
 
+class CheckedEvidenceMessageTests(unittest.TestCase):
+    """Input diagnostics name the file, the encoding problem, the object and its fields."""
+
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name)
+        self.script = ROOT / "skill/snowe-ui-skill/scripts/corrections.py"
+        self.record = {"id": "type-role", "source": "User request", "requirement": "Keep body role coherent",
+            "scope": {"owners": ["src/page.css"], "routes": ["/page"], "states": ["default"]},
+            "criteria": [{"id": "render", "kind": "visual", "requirement": "Review page typography"}]}
+
+    def record_cli(self, input_path):
+        return subprocess.run([sys.executable, str(self.script), "record", "--workspace", str(self.root),
+            "--project", "Example", "--input", str(input_path)], capture_output=True, text=True, encoding="utf-8", timeout=60)
+
+    def test_missing_directory_and_oversized_inputs_name_their_path(self):
+        from checked_evidence import read_json
+        missing = self.root / "absent.json"
+        with self.assertRaisesRegex(ValueError, "does not exist") as raised: read_json(missing)
+        self.assertIn(str(missing), str(raised.exception))
+        with self.assertRaisesRegex(ValueError, "regular file") as raised: read_json(self.root)
+        self.assertIn(str(self.root), str(raised.exception))
+        large = self.root / "large.json"
+        large.write_text(json.dumps("x" * 2000), encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "exceeds 1000 bytes") as raised: read_json(large, max_bytes=1000)
+        self.assertIn(str(large), str(raised.exception))
+
+    def test_utf8_bom_is_accepted_and_utf16_is_named_as_an_encoding_problem(self):
+        bom = self.root / "bom.json"
+        bom.write_bytes(b"\xef\xbb\xbf" + json.dumps(self.record).encode("utf-8"))
+        accepted = self.record_cli(bom)
+        self.assertEqual(0, accepted.returncode, accepted.stderr)
+        self.assertTrue(json.loads(accepted.stdout)["changed"])
+        # Windows PowerShell 5.1 redirection and Out-File write UTF-16LE with a BOM.
+        for name, payload in (("utf16-bom.json", json.dumps(self.record).encode("utf-16")),
+                              ("utf16-plain.json", json.dumps(self.record).encode("utf-16-le"))):
+            with self.subTest(name=name):
+                path = self.root / name
+                path.write_bytes(payload)
+                rejected = self.record_cli(path)
+                self.assertEqual(1, rejected.returncode)
+                error = json.loads(rejected.stderr)["error"]
+                self.assertIn("UTF-8", error)
+                self.assertIn("UTF-16", error)
+                self.assertIn(str(path), error)
+        latin = self.root / "latin.json"
+        latin.write_bytes(json.dumps({"note": "café"}, ensure_ascii=False).encode("latin-1"))
+        from checked_evidence import read_json
+        with self.assertRaisesRegex(ValueError, "must be UTF-8") as raised: read_json(latin)
+        self.assertIn(str(latin), str(raised.exception))
+
+    def test_invalid_json_names_path_and_position(self):
+        from checked_evidence import read_json
+        broken = self.root / "broken.json"
+        broken.write_text('{"id": "x",}', encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, r"Invalid JSON in .*broken\.json.*line 1"): read_json(broken)
+        nonfinite = self.root / "nonfinite.json"
+        nonfinite.write_text('{"ratio": NaN}', encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, r"nonfinite\.json.*NaN"): read_json(nonfinite)
+
+    def test_object_field_errors_name_the_object_and_the_missing_and_extra_keys(self):
+        from checked_evidence import object_fields
+        with self.assertRaises(ValueError) as raised:
+            object_fields({"id": "hero", "actoin": "click"}, {"id", "action"}, {"key"}, name="Replay step")
+        message = str(raised.exception)
+        for expected in ("Replay step 'hero'", "is missing ['action']", "has unexpected ['actoin']", "optional ['key']"):
+            self.assertIn(expected, message)
+        with self.assertRaisesRegex(ValueError, "Scope must be a JSON object, not list"):
+            object_fields([], {"owners"}, name="scope")
+        record = deepcopy(self.record); record["scope"] = {"owners": ["a.css"], "routes": []}
+        with self.assertRaisesRegex(ValueError, r"Scope is missing \['states'\]"):
+            execute("record", workspace=self.root, project="Example", payload=record)
+
+
 if __name__ == "__main__": unittest.main()

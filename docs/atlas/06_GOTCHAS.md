@@ -12,6 +12,7 @@
 
 - Product scripts use bare sibling imports; this is not an installed Python package. The entry scripts (`search.py`, `corrections.py`, `visual_review.py`, `icon_review.py`) add their own directory to `sys.path`, so they also run under `python -I` / `PYTHONSAFEPATH`. Library modules imported directly (as tests do) still need the scripts directory on `sys.path`.
 - UTF-8 console normalization exists in `search.py`; direct module callers do not inherit it.
+- `checked_evidence.read_json` accepts UTF-8 with or without a BOM and rejects UTF-16/32 (Windows PowerShell 5.1's default for `>` and `Out-File`) with a message naming the file. Keep `object_fields(..., name=...)` labels on new call sites so field errors name the object.
 - JSON mode reserves stdout for one valid JSON document; persistence summaries go to stderr. Packet-only and search-only flags are rejected outside their owning mode rather than silently ignored.
 
 ## Deterministic framing has deliberately low authority

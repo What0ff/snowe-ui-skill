@@ -29,7 +29,7 @@ def relative(value):
 
 
 def bound(value):
-    object_fields(value, {"path", "sha256"})
+    object_fields(value, {"path", "sha256"}, name="evidence binding")
     relative(value["path"])
     if not isinstance(value["sha256"], str) or not re.fullmatch("[a-f0-9]{64}", value["sha256"]):
         raise ValueError("Expected SHA-256 binding")
@@ -84,7 +84,7 @@ def inventory(root, roots):
 
 
 def validate_plan(plan):
-    object_fields(plan, {"schema", "scope", "sourceRoots", "cases"})
+    object_fields(plan, {"schema", "scope", "sourceRoots", "cases"}, name="observation plan")
     if plan["schema"] != "1.0": raise ValueError("Unsupported observation plan")
     text(plan["scope"], "scope")
     if not isinstance(plan["sourceRoots"], list) or not plan["sourceRoots"]: raise ValueError("Missing source roots")
@@ -92,14 +92,14 @@ def validate_plan(plan):
     if not isinstance(plan["cases"], list) or not plan["cases"]: raise ValueError("Missing observation cases")
     ids, combinations = set(), set()
     for case in plan["cases"]:
-        object_fields(case, {"id", *DIMENSIONS, "route", "steps", "probes", "details", "expect"}, {"sequence"})
+        object_fields(case, {"id", *DIMENSIONS, "route", "steps", "probes", "details", "expect"}, {"sequence"}, name="observation case")
         text(case["id"], "case ID")
         key = combination(case)
         if case["id"] in ids or key in combinations: raise ValueError("Duplicate observation ID or combination")
         ids.add(case["id"]); combinations.add(key)
         if not isinstance(case["expect"], list) or not case["expect"]: raise ValueError("Plan observable state postconditions")
         for condition in case["expect"]:
-            object_fields(condition, {"selector", "property"}, {"equals", "includes"})
+            object_fields(condition, {"selector", "property"}, {"equals", "includes"}, name="state postcondition")
             text(condition["selector"], "state selector"); text(condition["property"], "state property")
             if ("equals" in condition) == ("includes" in condition): raise ValueError("State condition needs one expected result")
             if "includes" in condition: text(condition["includes"], "expected state text")
@@ -108,14 +108,14 @@ def validate_plan(plan):
         if not isinstance(case["steps"], list) or not isinstance(case["probes"], list) or not case["probes"]:
             raise ValueError("Cases need steps and affected-layer probes")
         for step in case["steps"]:
-            object_fields(step, {"action"}, {"selector", "value", "key"})
+            object_fields(step, {"action"}, {"selector", "value", "key"}, name="replay step")
             if step["action"] not in {"click", "fill", "key", "wait", "scroll", "script"}: raise ValueError("Unknown replay action")
             if step["action"] == "key" and step.get("key") not in REPLAY_KEYS:
                 raise ValueError(f"Replay key must be one of {', '.join(REPLAY_KEYS)}")
             for field, value in step.items(): text(value, field)
         seen = set()
         for probe in case["probes"]:
-            object_fields(probe, {"selector", "pseudo"})
+            object_fields(probe, {"selector", "pseudo"}, name="probe")
             text(probe["selector"], "probe selector")
             if probe["pseudo"] not in {"", "::before", "::after", "::backdrop"}: raise ValueError("Unknown pseudo layer")
             key = (probe["selector"], probe["pseudo"])
@@ -124,7 +124,7 @@ def validate_plan(plan):
         if not isinstance(case["details"], list) or not case["details"]: raise ValueError("Plan native-size detail evidence for the affected owner")
         detail_ids = set()
         for detail in case["details"]:
-            object_fields(detail, {"id", "selector", "padding", "scale"}, {"space"})
+            object_fields(detail, {"id", "selector", "padding", "scale"}, {"space"}, name="detail")
             text(detail["id"], "detail ID")
             if detail["id"] in detail_ids or (detail["selector"], "") not in seen: raise ValueError("Detail must name a unique ID and measured owner")
             detail_ids.add(detail["id"])
@@ -132,13 +132,13 @@ def validate_plan(plan):
             if detail.get("space","document") not in {"document","viewport"}: raise ValueError("Unknown detail coordinate space")
         if "sequence" in case:
             sequence = case["sequence"]
-            object_fields(sequence, {"fps", "durationMs", "start", "events"})
+            object_fields(sequence, {"fps", "durationMs", "start", "events"}, name="sequence")
             if type(sequence["fps"]) is not int or not 1 <= sequence["fps"] <= 30 or type(sequence["durationMs"]) is not int or not 1 <= sequence["durationMs"] <= 10000:
                 raise ValueError("Sequence needs bounded fps/duration")
             if not isinstance(sequence["start"], list) or not isinstance(sequence["events"], list): raise ValueError("Sequence needs replay steps/events")
             last = -1
             for event in sequence["events"]:
-                object_fields(event, {"atMs", "steps"})
+                object_fields(event, {"atMs", "steps"}, name="sequence event")
                 if type(event["atMs"]) is not int or not last < event["atMs"] < sequence["durationMs"] or not isinstance(event["steps"], list): raise ValueError("Invalid sequence event")
                 last = event["atMs"]
             # Reuse the same strict replay shape for temporal actions.
@@ -153,11 +153,11 @@ def inspect_capture(root, receipt_binding, plan_binding):
     # Measured families and temporal/detail matrices legitimately exceed a tiny manifest.
     receipt = current(root, receipt_binding, max_bytes=8_000_000)
     plan = validate_plan(current(root, plan_binding))
-    object_fields(receipt, {"schema", "plan", "observer", "browser", "sources", "observations"})
+    object_fields(receipt, {"schema", "plan", "observer", "browser", "sources", "observations"}, name="capture receipt")
     if receipt["schema"] != "1.0" or receipt["plan"] != plan_binding: raise ValueError("Capture plan binding mismatch")
     observer = Path(__file__).with_name("observe.mjs")
     if receipt["observer"] != hashlib.sha256(observer.read_bytes()).hexdigest(): raise ValueError("Observer revision changed")
-    object_fields(receipt["browser"], {"product", "userAgent", "jsVersion", "protocolVersion"})
+    object_fields(receipt["browser"], {"product", "userAgent", "jsVersion", "protocolVersion"}, name="receipt browser")
     for field, value in receipt["browser"].items(): text(value, field)
     expected_sources = inventory(root, plan["sourceRoots"])
     if receipt["sources"] != expected_sources: raise ValueError("Source inventory changed or is incomplete")
@@ -166,7 +166,7 @@ def inspect_capture(root, receipt_binding, plan_binding):
     cases = {item["id"]: item for item in plan["cases"]}
     observed = {}
     for row in receipt["observations"]:
-        object_fields(row, {"id", *DIMENSIONS, "render", "viewportRender", "actual", "image", "resources", "probes", "diagnostics", "details", "stateProof"}, {"sequence"})
+        object_fields(row, {"id", *DIMENSIONS, "render", "viewportRender", "actual", "image", "resources", "probes", "diagnostics", "details", "stateProof"}, {"sequence"}, name="captured observation")
         if row["id"] not in cases or row["id"] in observed: raise ValueError("Unplanned or duplicate capture")
         case = cases[row["id"]]
         if combination(row) != combination(case): raise ValueError("Capture does not match planned combination")
@@ -176,7 +176,7 @@ def inspect_capture(root, receipt_binding, plan_binding):
             if "equals" in expected and proof["actual"] != expected["equals"]: raise ValueError("Claimed application state was not reproduced")
             if "includes" in expected and (not isinstance(proof["actual"], str) or expected["includes"] not in proof["actual"]): raise ValueError("Required state result is missing")
         actual = row["actual"]
-        object_fields(actual, {"width", "height", "dpr", "theme", "touch", "motion", "route", "fonts", "settled", "scrollX", "scrollY"})
+        object_fields(actual, {"width", "height", "dpr", "theme", "touch", "motion", "route", "fonts", "settled", "scrollX", "scrollY"}, name="actual browser environment")
         if any(type(actual[k]) is not int or not 0<actual[k]<=99999 for k in ("width","height")) or type(actual["dpr"]) not in {int,float} or not math.isfinite(actual["dpr"]) or not 1<=actual["dpr"]<=4:
             raise ValueError("Browser dimensions/DPR must be bounded real numbers, not flags")
         if type(actual["touch"]) is not bool or any(type(actual[k]) not in {int,float} or not math.isfinite(actual[k]) for k in ("scrollX","scrollY")):
@@ -205,13 +205,13 @@ def inspect_capture(root, receipt_binding, plan_binding):
         if row["diagnostics"] != []: raise ValueError("Capture has browser/network diagnostics")
         if not isinstance(row["resources"], list) or not row["resources"]: raise ValueError("Missing browser resource closure")
         for resource in row["resources"]:
-            object_fields(resource, {"path", "sha256"})
+            object_fields(resource, {"path", "sha256"}, name="loaded resource")
             if sources.get(resource["path"]) != resource["sha256"]: raise ValueError("Loaded dependency is outside bound source inventory")
         requested = {(p["selector"], p["pseudo"]) for p in case["probes"]}
         if not isinstance(row["probes"], list): raise ValueError("Missing layer measurements")
         found = set()
         for probe in row["probes"]:
-            object_fields(probe, {"selector", "pseudo", "matches"})
+            object_fields(probe, {"selector", "pseudo", "matches"}, name="measured probe")
             key = (probe["selector"], probe["pseudo"])
             if key in found or not isinstance(probe["matches"], list) or not probe["matches"]: raise ValueError("Missing or duplicate measured layer")
             found.add(key)
@@ -219,17 +219,17 @@ def inspect_capture(root, receipt_binding, plan_binding):
         if not isinstance(row["details"], list) or len(row["details"]) != len(case["details"]): raise ValueError("Missing required detail crops")
         detail_ids = set()
         for detail in row["details"]:
-            object_fields(detail, {"id", "selector", "render", "clip", "image"}, {"space","parent","pixels"})
+            object_fields(detail, {"id", "selector", "render", "clip", "image"}, {"space","parent","pixels"}, name="captured detail")
             expected = next((d for d in case["details"] if d["id"] == detail["id"]), None)
             if expected is None or detail["id"] in detail_ids or expected["selector"] != detail["selector"]: raise ValueError("Unplanned or duplicate detail")
             detail_ids.add(detail["id"])
             clip = detail["clip"]
-            object_fields(clip, {"x", "y", "width", "height", "scale"})
+            object_fields(clip, {"x", "y", "width", "height", "scale"}, name="detail clip")
             if clip["scale"] != expected["scale"] or any(type(clip[k]) not in {int,float} or not math.isfinite(clip[k]) or clip[k] < 0 for k in ("x", "y", "width", "height")):
                 raise ValueError("Invalid detail clip")
             owner = next(p for p in row["probes"] if p["selector"] == detail["selector"] and not p["pseudo"])["matches"][0]
             box = owner.get("bounds")
-            object_fields(box, {"x", "y", "width", "height"})
+            object_fields(box, {"x", "y", "width", "height"}, name="owner bounds")
             space=expected.get("space","document")
             if detail.get("space","document") != space: raise ValueError("Detail coordinate space differs from plan")
             offset_x,offset_y=(0,0) if space=="viewport" else (actual["scrollX"],actual["scrollY"])
@@ -261,7 +261,7 @@ def inspect_capture(root, receipt_binding, plan_binding):
             if not isinstance(frames, list) or len(frames) != count: raise ValueError("Incomplete temporal evidence")
             last = -1
             for frame in frames:
-                object_fields(frame, {"atMs", "render", "environment"})
+                object_fields(frame, {"atMs", "render", "environment"}, name="sequence frame")
                 if type(frame["atMs"]) not in {int, float} or not math.isfinite(frame["atMs"]) or frame["atMs"] <= last: raise ValueError("Frame times must increase")
                 last = frame["atMs"]
                 bound(frame["render"])
