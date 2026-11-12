@@ -721,6 +721,94 @@ class PersistenceIdentityTests(unittest.TestCase):
                         pass
 
 
+class SelectedRootResolutionTests(unittest.TestCase):
+    """A redirected ancestor of the selected root (macOS /tmp, /var/folders) is resolved once.
+
+    Every symlink, junction or reparse point at or below the resolved root is still refused.
+    """
+
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.base = Path(self.temp.name)
+        self.real = self.base / "real"
+        self.real.mkdir()
+        self.outside = self.base / "outside"
+        self.outside.mkdir()
+        self.link = self.base / "link"
+        self.link_is_junction = create_directory_redirect(self.link, self.real)
+        # Cleanups run last-in first-out: remove the redirect before the temporary tree.
+        self.addCleanup(self.remove_redirect, self.link, self.link_is_junction)
+
+    @staticmethod
+    def remove_redirect(path: Path, is_junction: bool) -> None:
+        if path.exists() or path.is_symlink():
+            remove_directory_redirect(path, is_junction)
+
+    def redirect_inside(self, link: Path, target: Path) -> None:
+        kind = create_directory_redirect(link, target)
+        self.addCleanup(self.remove_redirect, link, kind)
+
+    def test_persistence_under_a_redirected_ancestor_writes_inside_the_real_root(self):
+        packet = DecisionPacketGenerator().generate("Brief", "North Star")
+        result = persist_decision_packet(packet, output_dir=self.link / "workspace")
+        project = self.real / "workspace" / "design-intelligence" / "north-star"
+        self.assertTrue((project / "DECISIONS.md").is_file())
+        self.assertTrue(Path(result["design_intelligence_dir"]).is_relative_to(Path(os.path.realpath(self.real))))
+        self.assertTrue(all(Path(path).is_relative_to(Path(os.path.realpath(self.real)))
+                            for path in result["created_or_updated_files"]))
+        # Naming the redirect itself is the same caller choice, resolved once.
+        persist_decision_packet(DecisionPacketGenerator().generate("Brief", "Second"), output_dir=self.link)
+        self.assertTrue((self.real / "design-intelligence" / "second" / "PROJECT.json").is_file())
+
+    def test_persistence_still_refuses_a_redirect_below_the_resolved_root(self):
+        workspace = self.real / "workspace"
+        workspace.mkdir()
+        self.redirect_inside(workspace / "design-intelligence", self.outside)
+        with self.assertRaisesRegex(ValueError, "symlink|junction|reparse"):
+            persist_decision_packet(DecisionPacketGenerator().generate("Brief", "North Star"),
+                                    output_dir=self.link / "workspace")
+        self.assertEqual([], list(self.outside.iterdir()))
+
+    def test_corrections_and_input_file_under_a_redirected_ancestor(self):
+        from corrections import execute
+
+        record = {"id": "type-role", "source": "User request", "requirement": "Keep body role coherent",
+                  "scope": {"owners": ["src/page.css"], "routes": ["/page"], "states": ["default"]},
+                  "criteria": [{"id": "render", "kind": "visual", "requirement": "Review page typography"}]}
+        (self.real / "workspace").mkdir()
+        self.assertTrue(execute("record", workspace=self.link / "workspace", project="Example", payload=record)["changed"])
+        self.assertEqual("BLOCKED", execute("check", workspace=self.link / "workspace", project="Example")["status"])
+        (self.real / "input.json").write_text(json.dumps({**record, "id": "second"}), encoding="utf-8")
+        cli = subprocess.run(
+            [sys.executable, str(SKILL_SCRIPTS / "corrections.py"), "record", "--workspace", str(self.link / "workspace"),
+             "--project", "Example", "--input", str(self.link / "input.json")],
+            capture_output=True, text=True, encoding="utf-8", timeout=60,
+        )
+        self.assertEqual(0, cli.returncode, cli.stderr)
+        # The journal directory itself must not be a redirect below the resolved root.
+        journal_dir = self.real / "workspace" / "design-intelligence" / "example"
+        moved = journal_dir.with_name("example-real")
+        journal_dir.rename(moved)
+        self.redirect_inside(journal_dir, moved)
+        with self.assertRaisesRegex(ValueError, "symlink|junction|reparse"):
+            execute("check", workspace=self.link / "workspace", project="Example")
+
+    def test_visual_review_under_a_redirected_ancestor_and_redirected_evidence(self):
+        sys.path.insert(0, str(ROOT))
+        from tests.evidence_factory import make_review
+        from visual_review import inspect_review
+
+        workspace = self.real / "workspace"
+        workspace.mkdir()
+        (workspace / "page.css").write_text("main{font-weight:400}", encoding="utf-8")
+        make_review(workspace)
+        self.assertEqual("PASS", inspect_review(self.link / "workspace", "review.json")["status"])
+        self.redirect_inside(workspace / "mirror", workspace)
+        with self.assertRaisesRegex(ValueError, "symlink|junction|reparse"):
+            inspect_review(self.link / "workspace", "mirror/review.json")
+
+
 class RetrievalLimitTests(unittest.TestCase):
     def test_public_apis_reject_bool_non_int_and_non_positive_limits(self):
         for invalid in (True, False, 0, -1, 1.5, "5", None):

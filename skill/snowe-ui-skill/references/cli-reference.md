@@ -77,7 +77,7 @@ This adds:
 <project-directory>/design-intelligence/city-cycles/pages/find-a-bike.md
 ```
 
-The file asks for the page job, content/objects, entry/exit, candidate architectures, responsive transformations, states, and proof. It does not classify the page or prescribe sections. `--page` and `--output-dir` require `--persist`; persistence requires a decision packet and an explicit `--project-name`. One per-project lock serializes manifest, brief, ledger, and page publication. Project, brief, ledger, and page publication use complete atomic writes; page identity and parent-directory checks run before BRIEF publication and again immediately before page publication; accepted ledger bytes are never regenerated. Windows short names are expanded to a shared long lexical spelling without resolving redirects, and both spellings are rechecked before locking or writing. Project/page slug collisions, Windows-reserved identities, malformed identity manifests without a safe recovery basis, and symlink/junction/reparse paths are refused rather than followed or overwritten.
+The file asks for the page job, content/objects, entry/exit, candidate architectures, responsive transformations, states, and proof. It does not classify the page or prescribe sections. `--page` and `--output-dir` require `--persist`; persistence requires a decision packet and an explicit `--project-name`. One per-project lock serializes manifest, brief, ledger, and page publication. Project, brief, ledger, and page publication use complete atomic writes; page identity and parent-directory checks run before BRIEF publication and again immediately before page publication; accepted ledger bytes are never regenerated. The selected `--output-dir` (default: the current directory) is resolved once to its real path, so a directory under a redirected ancestor such as macOS `/tmp` or `/var/folders` works; Windows short names are expanded to the long spelling, and the resolved path is rechecked before locking or writing. Project/page slug collisions, Windows-reserved identities, malformed identity manifests without a safe recovery basis, and any symlink, junction or reparse point at or below the resolved directory are refused rather than followed or overwritten.
 
 Use this precedence:
 
@@ -321,7 +321,7 @@ For a material visual decision whose review must be reused or handed off:
 python <skill-directory>/scripts/visual_review.py design/REVIEW.json --workspace .
 ```
 
-This read-only command checks a caller-authored report. It does not inspect pixels, infer attention from CSS, assign a taste score or convert self-review into user approval. Keep ordinary Direct corrections in the existing short record; a JSON report is not mandatory for every correction.
+This read-only command checks a caller-authored report. `--workspace` is resolved once to its real path, like the persistence root; evidence paths inside it must not run through a symlink, junction or reparse point. It does not inspect pixels, infer attention from CSS, assign a taste score or convert self-review into user approval. Keep ordinary Direct corrections in the existing short record; a JSON report is not mandatory for every correction.
 
 The separate attention contract is authored before evaluation:
 

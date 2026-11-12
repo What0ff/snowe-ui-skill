@@ -19,10 +19,10 @@ if _SCRIPT_DIR not in sys.path:
 
 from decision_packet import (
     locked_project_state, _atomic_write_text, _reject_reparse_chain,
-    _normalize_lexical_aliases, _shared_regular_file,
+    _resolve_selected_root, _shared_regular_file,
 )
 
-from checked_evidence import file_digest, object_fields, read_json, text
+from checked_evidence import file_digest, object_fields, read_json, read_selected_json, text
 from visual_review import inspect_review, METHODS, VERDICTS
 
 
@@ -242,8 +242,7 @@ def known_journal_identities(root):
 
 
 def execute(command, *, workspace, project, payload=None):
-    root = _normalize_lexical_aliases(Path(os.path.abspath(workspace)), "Workspace")
-    _reject_reparse_chain(root, "Workspace")
+    root = _resolve_selected_root(workspace, "Workspace")
     if not root.is_dir(): raise ValueError(f"Workspace is not an existing directory: {root}")
     identity = text(project, "project").strip()
     data = deepcopy(payload)
@@ -348,7 +347,7 @@ def main():
     args = parser.parse_args()
     try:
         if args.command not in {"list", "check"} and not args.input: raise ValueError("This command requires --input")
-        result = execute(args.command, workspace=args.workspace, project=args.project, payload=read_json(args.input) if args.input else None)
+        result = execute(args.command, workspace=args.workspace, project=args.project, payload=read_selected_json(args.input) if args.input else None)
         print(json.dumps(result, ensure_ascii=False, indent=2))
         return {"PASS": 0, "BLOCKED": 2, "REVIEW_REQUIRED": 3, "NO_JOURNAL": 4}.get(result.get("status"), 0)
     except (ValueError, OSError, RuntimeError, TypeError, KeyError) as error:

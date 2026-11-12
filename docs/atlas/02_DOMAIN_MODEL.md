@@ -86,7 +86,7 @@ Persistence requires an explicit printable, non-Windows-reserved project identit
 | `DECISIONS.md` | Exclusive-create only; existing bytes are preserved. |
 | `pages/<page-slug>.md` | Atomically identity-claimed/updated as an open inquiry with no prescribed page type or section order; a colliding or racing page identity is rejected. |
 
-`slugify_name` case-folds Unicode, converts non-word runs/underscores to collapsed dashes, trims to 80 characters, and applies a fallback. Identity manifests prevent distinct printable names from silently sharing that slug. Page identity is preflighted before `BRIEF.md` can change and its parent is revalidated immediately before publication. Tests verify traversal-like and reserved names fail safely, redirected path chains/shared-file targets are refused, corrupt-manifest recovery is serialized, and competing page claims cannot overwrite each other.
+`slugify_name` case-folds Unicode, converts non-word runs/underscores to collapsed dashes, trims to 80 characters, and applies a fallback. Identity manifests prevent distinct printable names from silently sharing that slug. Page identity is preflighted before `BRIEF.md` can change and its parent is revalidated immediately before publication. Tests verify traversal-like and reserved names fail safely, redirects at or below the resolved selected root and shared-file targets are refused while a redirected ancestor of the selected root is accepted, corrupt-manifest recovery is serialized, and competing page claims cannot overwrite each other.
 
 Decision-ledger statuses are `PROPOSED`, `ACCEPTED`, and `SUPERSEDED`. Packet status `OPEN` and rendered `KEEP | REVISE | REJECT | UNKNOWN` are separate contracts.
 

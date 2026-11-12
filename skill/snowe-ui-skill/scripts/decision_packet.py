@@ -113,6 +113,34 @@ def _normalize_lexical_aliases(path: Path, label: str) -> Path:
     return normalized.joinpath(*reversed(suffix))
 
 
+def _resolve_selected_root(path: str | Path, label: str) -> Path:
+    """Resolve a caller-selected directory once, then guard its real path.
+
+    The caller's own path may run through redirects the environment owns, such
+    as macOS ``/tmp`` and ``/var/folders``; ``realpath`` resolves them here,
+    once. Every later ``_reject_reparse_chain`` call walks the resolved path to
+    the drive root, so a symlink, junction or reparse point that appears at or
+    below it afterwards is still refused. All derived paths come from the
+    returned root, never from the caller's spelling.
+    """
+    lexical = _absolute_lexical_path(path)
+    try:
+        resolved = Path(os.path.realpath(lexical))
+    except (OSError, ValueError) as error:
+        raise ValueError(f"{label} cannot be resolved safely: {lexical}") from error
+    root = _normalize_lexical_aliases(resolved, label)
+    # Alias expansion must never erase a redirect inserted during inspection.
+    _reject_reparse_chain(resolved, label)
+    _reject_reparse_chain(root, label)
+    return root
+
+
+def _resolve_selected_file(path: str | Path, label: str) -> Path:
+    """Resolve a caller-selected file's directory; the file itself must not be a redirect."""
+    lexical = _absolute_lexical_path(path)
+    return _resolve_selected_root(lexical.parent, label) / lexical.name
+
+
 def _stat_identity(information: os.stat_result) -> tuple[int, int] | None:
     try:
         device = int(information.st_dev)
@@ -1118,10 +1146,7 @@ def _validate_pages_parent(project_dir: Path, pages_dir: Path) -> None:
 @contextmanager
 def locked_project_state(output_dir: str | Path, project_identity: str, *, create: bool = False):
     """Share the existing identity/locking contract without generating an inquiry."""
-    lexical = _absolute_lexical_path(output_dir)
-    _reject_reparse_chain(lexical, "Selected output directory")
-    root = _normalize_lexical_aliases(lexical, "Selected output directory")
-    _reject_reparse_chain(root, "Selected output directory")
+    root = _resolve_selected_root(output_dir, "Selected output directory")
     identity = _project_identity({}, project_identity)
     slug = _persisted_slug(identity, "project", "Project")
     project = root / "design-intelligence" / slug
@@ -1145,12 +1170,7 @@ def persist_decision_packet(
     page_brief: str | None = None,
     project_identity: str | None = None,
 ) -> dict[str, Any]:
-    root_lexical = _absolute_lexical_path(output_dir or ".")
-    _reject_reparse_chain(root_lexical, "Selected output directory")
-    root = _normalize_lexical_aliases(root_lexical, "Selected output directory")
-    # Alias expansion must never erase a redirect inserted during inspection.
-    _reject_reparse_chain(root_lexical, "Selected output directory")
-    _reject_reparse_chain(root, "Selected output directory")
+    root = _resolve_selected_root(output_dir or ".", "Selected output directory")
     identity = _project_identity(packet, project_identity)
     project_slug = _persisted_slug(identity, "default", "Project")
     page_slug = _persisted_slug(page, "page", "Page") if page else None

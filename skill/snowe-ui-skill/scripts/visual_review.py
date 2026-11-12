@@ -16,7 +16,7 @@ if _SCRIPT_DIR not in sys.path:
     sys.path.insert(0, _SCRIPT_DIR)
 
 from checked_evidence import file_digest, object_fields, read_json, text
-from decision_packet import _normalize_lexical_aliases, _reject_reparse_chain
+from decision_packet import _resolve_selected_root
 from observation import inspect_capture
 from visual_system import inspect_system
 
@@ -61,8 +61,7 @@ def verdict(value):
 
 def inspect_review(workspace, report_path):
     """Read-only check; PASS closes a current recorded judgment, never grades pixels."""
-    root = _normalize_lexical_aliases(Path(os.path.abspath(workspace)), "Review workspace")
-    _reject_reparse_chain(root, "Review workspace")
+    root = _resolve_selected_root(workspace, "Review workspace")
     report_path = relative_path(str(report_path))
     report = read_json(root / report_path)
     if not isinstance(report, dict): raise ValueError("Expected a review object")

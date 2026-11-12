@@ -44,7 +44,7 @@
 ## Persistence and paths
 
 - Re-running persistence atomically replaces `BRIEF.md` and a matching requested page inquiry but preserves `DECISIONS.md` via exclusive creation.
-- Project/page names are identities as well as path inputs. `PROJECT.json` and embedded page identity prevent distinct printable values from silently sharing a normalized slug; nonprintable or Windows-reserved identities, redirected path chains, external hardlink targets, and competing slug claims are rejected before replaceable inquiry writes. Expand Windows 8.3 aliases to their long lexical spelling without resolving redirect targets, recheck both spellings after expansion, and keep containment lexical.
+- Project/page names are identities as well as path inputs. `PROJECT.json` and embedded page identity prevent distinct printable values from silently sharing a normalized slug; nonprintable or Windows-reserved identities, redirects at or below the selected root, external hardlink targets, and competing slug claims are rejected before replaceable inquiry writes. Resolve only the caller-selected root (`_resolve_selected_root`: `--output-dir`, `--workspace`; `_resolve_selected_file` resolves the directory of an `--input` file), once, so macOS `/tmp` and `/var/folders` work; never resolve a path below it. Expand Windows 8.3 aliases on the resolved root, recheck both spellings to the drive root after expansion, and keep containment lexical beneath the resolved root.
 - A bounded torn-manifest recovery path must never infer identity from a slug alone. Keep the per-project lock, page preflight, and immediate parent revalidation: there is no database or multi-file transaction, so these serialize known races while preserving per-file atomicity.
 
 ## Validators

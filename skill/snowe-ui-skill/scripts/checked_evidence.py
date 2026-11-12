@@ -7,7 +7,7 @@ import os
 from pathlib import Path
 import stat
 
-from decision_packet import _reject_reparse_chain
+from decision_packet import _reject_reparse_chain, _resolve_selected_file
 
 
 def text(value, field):
@@ -82,6 +82,15 @@ def read_json(path, *, max_bytes=1_000_000):
             for child in node: bounded(child, depth + 1)
     bounded(value)
     return value
+
+
+def read_selected_json(path, *, max_bytes=1_000_000):
+    """Read a caller-named JSON file (a CLI argument), resolving its directory once.
+
+    Redirected ancestors such as macOS /tmp are resolved; the file itself must
+    still be a regular file, not a symlink, junction or reparse point.
+    """
+    return read_json(_resolve_selected_file(path, "JSON input"), max_bytes=max_bytes)
 
 
 def file_digest(root, relative):
