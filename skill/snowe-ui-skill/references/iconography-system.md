@@ -69,6 +69,37 @@ Test the metaphor in its full label, neighboring actions, state, and user vocabu
 
 Only then compare exact glyphs. Local `icon-concepts` results can prompt metaphor alternatives; `icon-families` and `icon-candidates` are discovery snapshots, not current package or quality truth.
 
+## Choose the Family Style
+
+Decide outline, solid or duotone once per family and role, then apply that choice consistently. An accepted system or platform convention comes first: SF Symbols use `.fill` for the selected tab item; Material uses outlined icons at rest and filled icons for the selected navigation item; Fluent pairs Regular with Filled. When the style is open, start from these defaults:
+
+| Role | Default style | Reason |
+|---|---|---|
+| Dense controls and icons beside text, 16–20 px | Outline, with stroke weight matched to the text's stems | Sits with type; a row of many stays calm |
+| Selected, active or on state (current tab, favorite, toggle) | Solid version of the same glyph, plus the ARIA state | A change in mass signals state without a new metaphor |
+| Very small (12–16 px), on photos or colored fills, status markers | Solid | Thin strokes break up or vanish |
+| Feature, category and empty-state pictograms, 32 px and up | Solid or duotone | Mass reads as finished and owned at that size |
+| Expressive or brand-led products where icons carry identity | Solid or duotone family | Matches the weight of display type and imagery |
+
+Rules:
+- Peers in one row share a style. A mixed row reads as a state difference, so mix styles only to express state.
+- Solid glyphs look larger and heavier than outline ones. Draw them on a slightly smaller live area, or use the library's smaller optical size (Heroicons mini and micro, the Material `opsz` axis).
+- In duotone, the primary layer alone carries the meaning; the secondary tone adds volume, never information. Use one secondary tone per family.
+- A user's stated style preference is a requirement. "Looks premium" alone is not a reason; compare instead.
+- When the style is open, render four unlike glyphs (simple, round, diagonal, dense) in outline, solid and duotone at real size, in default and selected states, then choose and record why. `icon_review.py` builds that sheet with `comparison_axis: "style"` and per-state assets ([cli-reference.md](cli-reference.md#compare-existing-custom-and-no-icon-candidates)).
+
+Library variants to check against the installed package and version:
+- Phosphor: thin to bold weights, fill, duotone.
+- Material Symbols: variable `FILL` 0/1, `wght`, `GRAD` and `opsz` axes.
+- Heroicons: 24 outline, 24 solid, 20 mini and 16 micro (solid).
+- Tabler: outline plus many `…Filled` glyphs.
+- Remix Icon: line and fill.
+- Fluent UI System Icons: Regular and Filled at several sizes.
+- SF Symbols: `.fill` variants with hierarchical and palette rendering.
+- Lucide: outline only. Pair it with a solid family or custom solids when selected states need mass.
+
+Validate custom solid and duotone SVG in `fill` or `duotone` mode; build their forms with [icon-craft.md](icon-craft.md#build-solid-and-duotone-forms).
+
 ## Select an Existing Source
 
 Rank exact candidates on:
@@ -133,7 +164,7 @@ Write a family specification before drawing paths:
 family role and semantic range
 coordinate grid, live area, key lines, and optical overshoot
 target sizes and smallest detail
-stroke / fill / hybrid mode and weight variants
+stroke / fill / mixed / duotone mode, secondary tone and weight variants
 cap, join, terminal, corner, and taper behavior
 primitive shapes, curvature, diagonals, and perspective
 positive / negative-space rhythm and counters

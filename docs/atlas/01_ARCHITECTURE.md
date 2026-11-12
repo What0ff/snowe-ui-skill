@@ -127,6 +127,8 @@ Color selection guidance assigns the agent the reversible palette decision befor
 
 The iconography reference owns autonomous control label-mode selection (icon-only, text-only or combined) by action recognition, context, density and input, with scoped in-control comparison only for unresolved choices. Icon-only controls retain accessible naming and hover/focus help; ambiguous or consequential actions retain needed visible wording. Design foundations and quality gates route to that section without reopening icon sourcing for a bounded caption change. Passive service/data/form labels are outside that removal scope.
 
+The iconography reference also owns the family style decision (outline, solid or duotone per family and role, platform conventions first, solid for selected state and very small or on-image glyphs, a rendered style comparison when open) and the library-variant inventory; `icon-craft.md` owns outline stroke craft and solid/duotone mass construction (cut-outs, optical size, outline/solid pairs, secondary tone that never carries meaning).
+
 ## Portable observation and regenerated Doppler
 
 `observe.mjs` is a self-contained optional Node/CDP adapter: capability discovery, isolated loopback static serving, state replay, measured layers/rendered fonts, complete scoped source/resource closure, immutable whole/detail captures, bounded temporal sequences and a paired comparison viewer. It uses only Node built-ins and a system browser. Headless native scrollbar paint is hidden for stable capture geometry; native scrollbar behavior, application-server builds, external resources, closed shadow content and independent visual judgment remain host responsibilities. Python remains standard-library-only.

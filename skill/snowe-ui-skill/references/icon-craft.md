@@ -20,6 +20,17 @@ Inspect positive and negative shapes together. A recognizable outline can still 
 
 Move the visible mass, not the hit target, for optical correction. Compare the proposed offset against the zero-offset baseline in the actual button with its real label; align to the appropriate visible center or text baseline. Never use a blanket `translateY(1px)` for every glyph or distort aspect ratios to force equivalent viewBoxes. Exact centering and path count are construction facts, not finish.
 
+## Build solid and duotone forms
+
+The stroke advice above applies to outline glyphs. Solid and duotone forms are built from masses:
+
+- Start from the silhouette as one filled shape. Express inner detail as cut-outs (counters) using `fill-rule="evenodd"` or opposite winding, not as strokes laid over a fill.
+- Keep cut-out widths consistent across the family, and no narrower than one device pixel at the smallest target size. Leave gaps between separate parts at least as wide as a cut-out, or they merge at 16 px.
+- A solid glyph reads larger than its outline peer. Shrink its live area slightly, then compare both in the same row until their apparent size matches.
+- Corner radius is more visible on a mass than on a stroke. Keep one family radius, and round outer corners slightly more than inner cut-outs.
+- For an outline/solid pair, keep the same skeleton: the solid version fills the outline's interior and turns inner strokes into cut-outs. Switching between them must not shift the glyph's position.
+- Duotone: the secondary tone is one filled area behind or inside the primary silhouette. Hide the secondary layer and the glyph must still read. Check forced-colors mode, where both layers may render at full strength.
+
 ## Review at three scales
 
 1. **Full composition:** can people distinguish actions, objects and status? Does this icon family belong to the product rather than a collage of individual drawings? Does any custom detail pull more attention than its label or primary task?

@@ -102,7 +102,7 @@ Live configuration, not directory presence, defines runtime inputs:
 | `app-interface.csv` | 30 | Web implementation/accessibility prompts. |
 | `react-performance.csv` | 44 | React performance prompts requiring version/current-doc verification. |
 | `charts.csv` | 25 | Encoding alternatives, limitations, and accessibility prompts. |
-| `icons.csv` | 105 | Legacy familiar-action lookup after style/guideline filtering. |
+| `icons.csv` | 104 | Legacy familiar-action lookup after style/guideline filtering; no third-party brand marks (those come from official artwork). |
 | `icon-families.csv` | 10 | Source discovery snapshot. |
 | `icon-concepts.csv` | 21 | Role/metaphor questions. |
 | `icon-candidates.csv` | 70 | Exact known exports with family/source constraints. |
