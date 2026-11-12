@@ -22,7 +22,7 @@
 
 1. `search.py` rejects missing or conflicting modes; no automatic domain fallback exists.
 2. `CSV_CONFIG` resolves the exact caller-selected file/search/output headers.
-3. `_load_csv` reads UTF-8 CSV and `_search_csv` builds/ranks an in-memory BM25 corpus.
+3. `_load_csv` reads UTF-8 CSV and `_search_csv` builds an in-memory weighted-field BM25 corpus over normalized terms, applies matched-term coverage and the incidental-match floor, ranks exact/prefix/overlap name matches first, and records `unmatched_terms`.
 4. Icon-family/subject constraints and legacy icon-row filtering run where applicable.
 5. The result receives `source_role` and `warning`, then prints as bounded text or JSON.
 

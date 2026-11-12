@@ -272,7 +272,7 @@ python skill/snowe-ui-skill/scripts/search.py \
   "bicycle fit comparison" --domain product --max-results 5
 ```
 
-`--domain` is required for catalog retrieval. Current domains are `chart`, `product`, `ux`, `icons`, `icon-families`, `icon-concepts`, `icon-candidates`, `react`, `web`, and `google-fonts`; stack guidance uses the separate `--stack` option.
+`--domain` is required for catalog retrieval. Current domains are `chart`, `product`, `ux`, `icons`, `icon-families`, `icon-concepts`, `icon-candidates`, `react`, `mobile` (alias `web`), and `google-fonts`; stack guidance uses the separate `--stack` option.
 
 For a Portfolio/open-inquiry task, open a decision packet without selecting a layout, style, palette, font, image, or motion recipe. Direct corrections skip this packet, and ordinary Focused work uses a compact affected-decision record:
 
@@ -323,7 +323,7 @@ The [checked icon decision proof](evals/icon-decisions/README.md) demonstrates a
 
 ## Optional local evidence
 
-The remaining optional local evidence catalogs include caller-requested product analog terms, Google Fonts metadata, UX and web implementation guidance, chart guidance, stack-specific references, icon families/concepts, and curated icon candidates.
+The remaining optional local evidence catalogs include caller-requested product analog terms, Google Fonts metadata, UX guidance, mobile app-interface guidance, chart guidance, stack-specific references, icon families/concepts, and curated icon candidates.
 
 These records can expand vocabulary, reveal alternatives, provide counterexamples, or route current research. They are not product classification, current market truth, conversion proof, or an authoritative list of allowable designs. Chart retrieval intentionally withholds the bundled snapshot's unsupported exact volume thresholds, threshold-bearing use/avoid prose, palette values, accessibility grades, library recommendations, and interaction prescriptions; returned encoding and accessibility notes remain unsourced prompts until verified against representative data, the target implementation, and primary sources.
 

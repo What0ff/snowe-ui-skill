@@ -8,8 +8,8 @@ Usage: python search.py "<query>" --domain <domain> [--max-results 3]
        python search.py "<brief>" --decision-packet --declared-context context.json
        python search.py "<brief>" --decision-packet --persist -p "Project Name" [--page "catalog"]
 
-Domains: chart, product, ux, icons, icon-families, icon-concepts, icon-candidates, react, web, google-fonts
-Stacks: react, nextjs, vue, svelte, astro, swiftui, react-native, flutter, nuxtjs, nuxt-ui, html-tailwind, shadcn, jetpack-compose, threejs, angular, laravel, javafx, wpf, winui, avalonia, uno, uwp
+Domains: chart, product, ux, icons, icon-families, icon-concepts, icon-candidates, react, mobile (alias: web), google-fonts
+Stacks: react, nextjs, vue, svelte, astro, swiftui, react-native, flutter, nuxtjs, nuxt-ui, html-tailwind, shadcn, jetpack-compose, threejs, angular, laravel, javafx, wpf, winui, avalonia, uno (uwp is retired; use winui)
 
 Decision packets are explicit Portfolio/open-inquiry workbenches; bounded
 Direct corrections and ordinary Focused work skip them. They preserve the

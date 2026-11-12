@@ -27,7 +27,7 @@ For repository behavior: source/configuration wins over tests, tests over `docs/
 - **Location:** `skill/snowe-ui-skill/data/`.
 - **Consumer:** `core.py`; `decision_packet.py` calls only the product domain when an explicit analog query exists.
 - **Written by runtime:** never.
-- **Authority:** `CSV_CONFIG`/`STACK_CONFIG` and exact headers define live inputs; directory presence does not.
+- **Authority:** `CSV_CONFIG`/`STACK_CONFIG` and exact headers define live inputs; directory presence does not. `data/CATALOGS.md` is the shipped provenance record (source, dates, row count, license notice) and must change with any catalog file or row count.
 - **Boundary:** explicit caller activation, lexical rank, source role, and warning are mandatory. Results cannot establish current truth or select design.
 
 Each invocation reloads one selected CSV. BM25 tokens, scores, rows, packets, and formatted strings are ephemeral and discarded at process exit.

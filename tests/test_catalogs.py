@@ -1,0 +1,428 @@
+"""Bundled evidence-catalog hygiene and recipe-leakage regressions.
+
+The catalogs are subordinate lexical evidence.  These tests keep them
+well-formed and stop solution-shaped values (exact colors, motion durations,
+color utilities, numbered layout templates, frame-rate claims) from
+re-entering any shipped CSV cell, including columns that retrieval does not
+return: an installed file is readable by any agent regardless of
+``CSV_CONFIG``.
+"""
+
+from __future__ import annotations
+
+import csv
+import io
+import json
+import re
+import subprocess
+import sys
+import unittest
+from pathlib import Path
+
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+SKILL_ROOT = REPO_ROOT / "skill" / "snowe-ui-skill"
+DATA_DIR = SKILL_ROOT / "data"
+sys.path.insert(0, str(SKILL_ROOT / "scripts"))
+
+from core import AVAILABLE_STACKS, CSV_CONFIG, DOMAIN_SOURCE_ROLES, STACK_CONFIG, _STACK_COLS, search, search_stack  # noqa: E402
+
+
+RECIPE_PATTERNS = {
+    "hex color": re.compile(r"(?<![\w&])#(?:[0-9A-Fa-f]{8}|[0-9A-Fa-f]{6}|[0-9A-Fa-f]{3,4})\b"),
+    "millisecond duration": re.compile(
+        r"\b\d+(?:\.\d+)?\s*(?:[-–]\s*\d+(?:\.\d+)?\s*)?(?:ms|milliseconds?)\b",
+        re.IGNORECASE,
+    ),
+    "Tailwind color utility": re.compile(
+        r"\b(?:[a-z0-9-]+:)*"
+        r"(?:bg|text|from|via|to|border(?:-[trblxy])?|ring(?:-offset)?|fill|stroke|outline|decoration|shadow|accent|caret|divide|placeholder)-"
+        r"(?:slate|gray|grey|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose|white|black)"
+        r"(?:-\d{2,3})?(?:/\d{1,3})?\b"
+    ),
+    "numbered template prescription": re.compile(
+        r"\b(?:dashboard|sidebar|login|signup|otp|calendar|hero|pricing|features?|footer|header|navbar|cta|"
+        r"testimonials?|blog|contact|faq|stats|team|landing|auth)-\d{2}\b",
+        re.IGNORECASE,
+    ),
+    "frame-rate claim": re.compile(r"\b\d+\s*fps\b|\bframes per second\b", re.IGNORECASE),
+}
+
+# Exact, temporary exceptions (file, row id, pattern, matched text). Every
+# bundled catalog is clean, so the set is empty; a new occurrence fails, and a
+# stale entry fails ``test_pending_allowlist_entries_still_match``.
+PENDING_OUTSIDE_THIS_CLEANUP: set[tuple[str, str, str, str]] = set()
+
+
+def bundled_csv_paths():
+    return sorted(DATA_DIR.rglob("*.csv"))
+
+
+def read_rows(path):
+    with path.open(encoding="utf-8", newline="") as handle:
+        return list(csv.reader(handle))
+
+
+def scan_recipe_values():
+    findings = set()
+    for path in bundled_csv_paths():
+        rows = read_rows(path)
+        header, body = rows[0], rows[1:]
+        has_id = bool(header) and header[0] == "No"
+        relative = path.relative_to(DATA_DIR).as_posix()
+        for offset, row in enumerate(body, start=2):
+            row_id = row[0] if has_id else f"line {offset}"
+            for cell in row:
+                for kind, pattern in RECIPE_PATTERNS.items():
+                    for match in pattern.finditer(cell):
+                        findings.add((relative, row_id, kind, match.group(0)))
+    return findings
+
+
+def configured_catalogs():
+    for domain, config in CSV_CONFIG.items():
+        yield domain, config["file"], config["search_cols"], config["output_cols"]
+    for stack, config in STACK_CONFIG.items():
+        yield f"stack:{stack}", config["file"], _STACK_COLS["search_cols"], _STACK_COLS["output_cols"]
+
+
+class CatalogHygieneTests(unittest.TestCase):
+    def test_every_bundled_csv_is_strict_utf8_lf_and_rectangular(self):
+        for path in bundled_csv_paths():
+            relative = path.relative_to(DATA_DIR).as_posix()
+            with self.subTest(catalog=relative):
+                raw = path.read_bytes()
+                self.assertFalse(raw.startswith(b"\xef\xbb\xbf"), "UTF-8 BOM")
+                self.assertNotIn(b"\r", raw, "CR or CRLF line ending")
+                self.assertTrue(raw.endswith(b"\n"), "missing final newline")
+                text = raw.decode("utf-8")
+                rows = list(csv.reader(io.StringIO(text, newline="")))
+                header = rows[0]
+                self.assertTrue(all(name.strip() == name and name for name in header), header)
+                self.assertEqual(len(header), len(set(header)), "duplicate header")
+                widths = {len(row) for row in rows}
+                self.assertEqual({len(header)}, widths, "ragged rows")
+                if header[0] == "No":
+                    ids = [row[0] for row in rows[1:]]
+                    self.assertEqual(len(ids), len(set(ids)), "duplicate row id")
+
+    def test_quotes_use_csv_doubling_not_backslash_escapes(self):
+        # A backslash-escaped quote silently truncates code examples on read.
+        offenders = [path.relative_to(DATA_DIR).as_posix() for path in bundled_csv_paths()
+                     if '\\"' in path.read_text(encoding="utf-8")]
+        self.assertEqual([], offenders)
+
+    def test_configured_columns_exist_in_catalog_headers(self):
+        for name, filename, search_cols, output_cols in configured_catalogs():
+            path = DATA_DIR / filename
+            with self.subTest(catalog=name):
+                self.assertTrue(path.is_file(), filename)
+                header = set(read_rows(path)[0])
+                # A row id is returned wherever the schema has one; it is not
+                # required of catalogs that identify rows by a name column.
+                required = (set(search_cols) | set(output_cols)) - {"No"}
+                self.assertLessEqual(required, header, f"{filename} lacks {sorted(required - header)}")
+
+
+class RecipeLeakageTests(unittest.TestCase):
+    def test_bundled_csvs_contain_no_recipe_values(self):
+        unexpected = sorted(scan_recipe_values() - PENDING_OUTSIDE_THIS_CLEANUP)
+        self.assertEqual([], unexpected)
+
+    def test_pending_allowlist_entries_still_match(self):
+        stale = sorted(PENDING_OUTSIDE_THIS_CLEANUP - scan_recipe_values())
+        self.assertEqual([], stale, "remove cleaned rows from PENDING_OUTSIDE_THIS_CLEANUP")
+
+    def test_patterns_detect_each_recipe_shape(self):
+        samples = {
+            "hex color": "Primary: #0080FF",
+            "millisecond duration": "Use 150-300ms for micro-interactions",
+            "Tailwind color utility": "bg-gradient-to-r from-blue-500 to-purple-500",
+            "numbered template prescription": "npx shadcn add dashboard-01",
+            "frame-rate claim": "smooth at 60fps",
+        }
+        for kind, sample in samples.items():
+            with self.subTest(kind=kind):
+                self.assertRegex(sample, RECIPE_PATTERNS[kind])
+        for harmless in ("C# and F#", "#section anchor", "WCAG 2.2 SC 2.5.8", "h-20 spacing", "utf-8"):
+            with self.subTest(harmless=harmless):
+                self.assertFalse(any(p.search(harmless) for p in RECIPE_PATTERNS.values()))
+
+
+class ChartCatalogTests(unittest.TestCase):
+    def test_chart_catalog_holds_only_returned_columns(self):
+        header = read_rows(DATA_DIR / "charts.csv")[0]
+        returned = set(CSV_CONFIG["chart"]["output_cols"]) | {"No"}
+        self.assertEqual(returned, set(header))
+        for withheld in (
+            "When to Use",
+            "When NOT to Use",
+            "Data Volume Threshold",
+            "Color Guidance",
+            "Accessibility Grade",
+            "Library Recommendation",
+            "Interactive Level",
+        ):
+            self.assertNotIn(withheld, header)
+
+    def test_accessibility_notes_do_not_misstate_wcag(self):
+        text = (DATA_DIR / "charts.csv").read_text(encoding="utf-8")
+        # WCAG has no chart-type rule: color-only meaning is SC 1.4.1.
+        self.assertNotRegex(text, re.compile(r"\bfails?\s+WCAG\b", re.IGNORECASE))
+        self.assertNotIn("Limit axes to", text)
+        self.assertIn("SC 1.4.1", text)
+
+
+class UxCatalogTests(unittest.TestCase):
+    def rows(self, filename):
+        with (DATA_DIR / filename).open(encoding="utf-8", newline="") as handle:
+            return list(csv.DictReader(handle))
+
+    def test_target_size_separates_wcag_minimum_from_platform_guidance(self):
+        row = next(item for item in self.rows("ux-guidelines.csv") if item["Issue"] == "Touch Target Size")
+        self.assertIn("2.5.8", row["Description"])
+        self.assertIn("24 by 24 CSS pixels", row["Description"])
+        self.assertIn("44 by 44 pt", row["Description"])
+        self.assertIn("48 by 48 dp", row["Description"])
+
+    def test_obsolete_duplicate_and_preset_rows_are_gone(self):
+        rows = self.rows("ux-guidelines.csv")
+        text = (DATA_DIR / "ux-guidelines.csv").read_text(encoding="utf-8").casefold()
+        self.assertNotIn("fastclick", text)
+        self.assertNotIn("glass material", text)
+        self.assertNotIn("key elements per view maximum", text)
+        self.assertNotIn("ease-out for entering", text)
+        issues = [row["Issue"].casefold() for row in rows]
+        self.assertEqual(len(issues), len(set(issues)), "duplicate issue names")
+        for removed in ("25", "54", "73", "75", "76", "78", "83", "99"):
+            self.assertNotIn(removed, {row["No"] for row in rows})
+
+
+class FontIndexTests(unittest.TestCase):
+    def rows(self):
+        with (DATA_DIR / "google-fonts.csv").open(encoding="utf-8", newline="") as handle:
+            return list(csv.DictReader(handle))
+
+    def test_font_index_is_slim_dated_and_mood_free(self):
+        header = read_rows(DATA_DIR / "google-fonts.csv")[0]
+        for removed in ("Keywords", "Popularity Rank", "Trending Rank", "Variable Axes"):
+            self.assertNotIn(removed, header)
+        for required in ("Family", "Category", "Subsets", "Axes", "License", "Last Modified"):
+            self.assertIn(required, header)
+        text = (DATA_DIR / "google-fonts.csv").read_text(encoding="utf-8").casefold()
+        for mood in ("luxury", "elegant", "premium", "corporate", "playful", "friendly", "humanist"):
+            self.assertNotIn(mood, text)
+        self.assertIn("snapshot 2026-11-12", DOMAIN_SOURCE_ROLES["google-fonts"][0])
+        self.assertIn("geometric", DOMAIN_SOURCE_ROLES["google-fonts"][1])
+
+    def test_axes_ranges_and_licenses_are_recorded(self):
+        rows = {row["Family"]: row for row in self.rows()}
+        plex = rows["IBM Plex Sans"]
+        self.assertEqual("wdth 75\u2013100; wght 100\u2013700", plex["Axes"])
+        self.assertEqual("OFL-1.1", plex["License"])
+        self.assertRegex(plex["Last Modified"], r"^\d{4}-\d{2}-\d{2}$")
+        self.assertNotIn("menu", plex["Subsets"])
+        self.assertLessEqual({row["License"] for row in rows.values()}, {"OFL-1.1", "Apache-2.0", "UFL-1.0", "unresolved"})
+        axis = re.compile(r"^[A-Za-z0-9]{4} -?[\d.]+\u2013-?[\d.]+$")
+        malformed = [
+            name for name, row in rows.items()
+            if row["Axes"] and not all(axis.match(part) for part in row["Axes"].split("; "))
+        ]
+        self.assertEqual([], malformed, "every axis records its numeric range")
+
+
+class NativeStackTests(unittest.TestCase):
+    """Recommended columns must not teach APIs the platform has superseded."""
+
+    RECOMMENDING = ("Guideline", "Do", "Code Good")
+
+    def rows(self, stack):
+        with (DATA_DIR / STACK_CONFIG[stack]["file"]).open(encoding="utf-8", newline="") as handle:
+            return list(csv.DictReader(handle))
+
+    def recommended_text(self, stack):
+        return [
+            (row["No"], " ".join(row[column] for column in self.RECOMMENDING))
+            for row in self.rows(stack)
+        ]
+
+    def assert_not_recommended(self, stack, pattern):
+        offenders = [number for number, text in self.recommended_text(stack) if re.search(pattern, text)]
+        self.assertEqual([], offenders, f"{stack} recommends {pattern!r}")
+
+    def test_flutter_recommends_current_apis(self):
+        for superseded in (
+            r"\btextScaleFactor\b",
+            r"\bonPopInvoked\b(?!WithResult)",
+            r"\bWillPopScope\b",
+            r"\bpushNamed\b",
+            r"\bprimaryColor\b",
+            r"FutureBuilder\(future:\s*\w+\(",
+        ):
+            self.assert_not_recommended("flutter", superseded)
+        text = " ".join(" ".join(row.values()) for row in self.rows("flutter"))
+        self.assertIn("onPopInvokedWithResult", text)
+        self.assertIn("textScalerOf", text)
+
+    def test_swiftui_recommends_current_apis_and_observation(self):
+        for superseded in (
+            r"\.animation\(\.[A-Za-z]+(?:\([^)]*\))?\)",
+            r"\bforegroundColor\(",
+            r"\bcornerRadius\(",
+            r"\bNavigationView\b(?! in new code)",
+            r"\bpresentationMode\b",
+        ):
+            self.assert_not_recommended("swiftui", superseded)
+        high = [row for row in self.rows("swiftui") if row["Severity"] == "High"]
+        self.assertFalse(
+            [row["No"] for row in high if "ObservableObject" in row["Do"] and "@Observable" not in row["Do"]],
+            "a High-severity row makes ObservableObject the default",
+        )
+        modifier_order = next(row for row in self.rows("swiftui") if row["Guideline"] == "Order modifiers correctly")
+        self.assertIn("padding before background", modifier_order["Do"])
+        self.assertTrue(modifier_order["Code Good"].startswith(".padding().background"))
+
+    def test_compose_rows_carry_code_and_current_guidance(self):
+        rows = self.rows("jetpack-compose")
+        self.assertFalse([row["No"] for row in rows if " ? " in " ".join(row.values())], "mangled arrows")
+        codeish = re.compile(r"[(){}=:]")
+        self.assertFalse(
+            # Tooling rows (Layout Inspector) describe a procedure, not code.
+            [row["No"] for row in rows if row["Category"] != "Debug" and not codeish.search(row["Code Good"])],
+            "Code Good must contain code, not a slogan",
+        )
+        self.assert_not_recommended("jetpack-compose", r"\bChannel\b|receiveAsFlow")
+        self.assert_not_recommended("jetpack-compose", r"collectAsState\(\)")
+        self.assertTrue(all(row["Docs URL"].startswith("https://") for row in rows if row["Docs URL"]))
+
+
+class ProvenanceManifestTests(unittest.TestCase):
+    MANIFEST = DATA_DIR / "CATALOGS.md"
+    ROW = re.compile(
+        r"^\| `([^`]+\.csv)` \| (\d+) \| (.+?) \| (\d{4}-\d{2}-\d{2}) \| (\d{4}-\d{2}-\d{2}) \| (.+) \|$"
+    )
+
+    def manifest_rows(self):
+        rows = {}
+        for line in self.MANIFEST.read_text(encoding="utf-8").splitlines():
+            match = self.ROW.match(line)
+            if match:
+                rows[match.group(1)] = match.groups()[1:]
+        return rows
+
+    def test_manifest_lists_every_bundled_catalog_with_its_row_count(self):
+        listed = self.manifest_rows()
+        actual = {
+            path.relative_to(DATA_DIR).as_posix(): len(read_rows(path)) - 1
+            for path in bundled_csv_paths()
+        }
+        self.assertEqual(sorted(actual), sorted(listed), "manifest catalogs differ from bundled CSVs")
+        mismatched = {
+            name: (int(listed[name][0]), count)
+            for name, count in actual.items()
+            if int(listed[name][0]) != count
+        }
+        self.assertEqual({}, mismatched, "update Rows in data/CATALOGS.md (listed, actual)")
+        for name, (_, source, imported, edited, notice) in listed.items():
+            with self.subTest(catalog=name):
+                self.assertTrue(source.strip() and notice.strip())
+                self.assertLessEqual(imported, edited)
+
+    def test_manifest_keeps_the_upstream_mit_notice(self):
+        text = self.MANIFEST.read_text(encoding="utf-8")
+        self.assertIn("Copyright (c) 2024 Next Level Builder", text)
+        self.assertIn("Permission is hereby granted, free of charge", text)
+        self.assertIn('THE SOFTWARE IS PROVIDED "AS IS"', text)
+
+
+class DomainContractTests(unittest.TestCase):
+    def test_results_lead_with_the_row_id_where_the_schema_has_one(self):
+        queries = {
+            "chart": "trend over time",
+            "product": "cycling route",
+            "ux": "touch target",
+            "icons": "delete trash",
+            "react": "barrel imports",
+            "mobile": "touch target",
+        }
+        for domain, query in queries.items():
+            with self.subTest(domain=domain):
+                header = read_rows(DATA_DIR / CSV_CONFIG[domain]["file"])[0]
+                self.assertEqual("No", header[0])
+                result = search(query, domain, 2)
+                self.assertTrue(result["results"])
+                self.assertTrue(
+                    all(next(iter(item)) == "No" and item["No"].isdigit() for item in result["results"])
+                )
+        stack = search_stack("accessibility", "flutter", 2)
+        self.assertTrue(stack["results"])
+        self.assertTrue(all(next(iter(item)) == "No" for item in stack["results"]))
+
+    def test_mobile_names_the_app_interface_catalog_and_web_stays_an_alias(self):
+        self.assertIs(CSV_CONFIG["mobile"], CSV_CONFIG["web"])
+        mobile = search("touch target size", "mobile", 3)
+        legacy = search("touch target size", "web", 3)
+        self.assertEqual(mobile["results"], legacy["results"])
+        self.assertEqual("web", legacy["domain"])
+        self.assertIn("mobile", DOMAIN_SOURCE_ROLES["mobile"][0])
+        self.assertIn("alias of `mobile`", legacy["warning"])
+        self.assertNotIn("browser support", mobile["warning"])
+        with (DATA_DIR / "app-interface.csv").open(encoding="utf-8", newline="") as handle:
+            platforms = {row["Platform"] for row in csv.DictReader(handle)}
+        self.assertEqual({"iOS/Android/React Native"}, platforms)
+
+    def test_product_warning_matches_the_lexical_schema(self):
+        warning = search("cycling", "product", 1)["warning"]
+        self.assertNotIn("concerns", warning)
+        self.assertIn("product-category label and lexical terms", warning)
+
+    def test_documented_analog_example_returns_analogs(self):
+        reference = (SKILL_ROOT / "references" / "cli-reference.md").read_text(encoding="utf-8")
+        queries = re.findall(r'--analog-query "([^"]+)"', reference)
+        self.assertTrue(queries)
+        for query in queries:
+            with self.subTest(query=query):
+                self.assertTrue(search(query, "product", 3)["results"], "documented analog example returns []")
+
+
+class RetiredStackTests(unittest.TestCase):
+    def test_uwp_catalog_is_gone_and_winui_carries_migration_rows(self):
+        self.assertFalse((DATA_DIR / "stacks" / "uwp.csv").exists())
+        self.assertNotIn("uwp", STACK_CONFIG)
+        self.assertNotIn("uwp", list(AVAILABLE_STACKS))
+        with (DATA_DIR / "stacks" / "winui.csv").open(encoding="utf-8", newline="") as handle:
+            guidelines = {row["Guideline"] for row in csv.DictReader(handle)}
+        self.assertIn("Migrate UWP code by feature area", guidelines)
+        self.assertIn("Choose WinUI 3 for new native Windows XAML apps", guidelines)
+
+    def test_retired_stack_lookup_names_the_replacement(self):
+        result = search_stack("dialog", "uwp")
+        self.assertEqual("winui", result["replacement"])
+        self.assertIn("retired", result["error"])
+        self.assertIn("--stack winui", result["error"])
+        self.assertNotIn("results", result)
+
+    def test_cli_reports_the_retirement_instead_of_a_generic_choice_error(self):
+        completed = subprocess.run(
+            [sys.executable, str(SKILL_ROOT / "scripts" / "search.py"), "dialog", "--stack", "uwp", "--json"],
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            check=False,
+        )
+        self.assertNotIn("invalid choice", completed.stderr)
+        payload = json.loads(completed.stdout)
+        self.assertEqual("winui", payload["replacement"])
+        self.assertIn("--stack winui", payload["error"])
+        help_text = subprocess.run(
+            [sys.executable, str(SKILL_ROOT / "scripts" / "search.py"), "--help"],
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            check=False,
+        ).stdout
+        self.assertNotIn("uwp", help_text)
+
+
+if __name__ == "__main__":
+    unittest.main()

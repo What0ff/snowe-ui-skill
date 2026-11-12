@@ -535,7 +535,7 @@ class RetrievalTests(unittest.TestCase):
         result = search("bicycle cycling route", "product", 3)
         self.assertIn("analogy", result["source_role"])
         self.assertTrue(result["results"])
-        self.assertTrue(all(set(item) == {"Product Type", "Keywords"} for item in result["results"]))
+        self.assertTrue(all(set(item) == {"No", "Product Type", "Keywords"} for item in result["results"]))
 
     def test_chart_results_withhold_unsupported_precision(self):
         result = search("trend over time", "chart", 3)
@@ -551,7 +551,7 @@ class RetrievalTests(unittest.TestCase):
         self.assertTrue(result["results"])
         self.assertTrue(all(withheld.isdisjoint(item) for item in result["results"]))
         self.assertIn("unsourced", result["source_role"])
-        self.assertIn("intentionally not returned", result["warning"])
+        self.assertIn("intentionally not part of the bundled catalog", result["warning"])
         self.assertIn("primary sources", result["warning"])
 
     def test_every_stack_exposes_role_boundary_and_documentation_coverage(self):

@@ -23,7 +23,7 @@ Icon comparison schema `1.2` requires context `lang`, `dir` (`ltr | rtl | auto`)
 
 ## Retrieval contract
 
-`core.py` exposes 10 general domains and 22 stacks. Each configuration declares a CSV filename and exact searchable/output headers. BM25 tokenizes configured text, ranks rows in memory, and returns positive scores only. There is no persisted index, embedding/semantic model, automatic domain detector, remote service, or cache.
+`core.py` exposes 11 general domain names (`mobile` and its compatibility alias `web` share one catalog) and 21 stacks. Each configuration declares a CSV filename, exact searchable/output headers, and the `name_cols` that name a row. `_search_csv` normalizes query and rows identically (stopwords, light English stemming, hyphen compounds split and joined), weights fields (name ×3, `Keywords`/`Category` ×2, others ×1), multiplies BM25 by matched-term coverage, ranks exact > prefix > phrase-overlap name matches first, drops rows matching fewer than half the best row's distinct terms, and returns positive scores only. There is no persisted index, embedding/semantic model, automatic domain detector, remote service, or cache.
 
 `search(query, domain, max_results)` requires `domain` and returns:
 
@@ -31,13 +31,14 @@ Icon comparison schema `1.2` requires context `lang`, `dir` (`ltr | rtl | auto`)
 {
   domain, query, file,
   source_role, warning,
-  count, results
+  count, results,
+  unmatched_terms
 }
 ```
 
-Every live domain has an epistemic role and use boundary. Product output is only `Product Type` plus `Keywords`. Icon lookup removes legacy style/guideline rows. `icon-candidates` additionally requires exactly one named supported family and a real subject.
+`unmatched_terms` lists query words absent from every searched column (they cannot affect ranking); a non-empty list is also named in `warning`. Each `results` item maps catalog column names to values; catalogs with a `No` column return that stable row id first (removed rows leave gaps). Every live domain has an epistemic role and use boundary. Product output is only `No`, `Product Type`, and `Keywords`. Icon lookup removes legacy style/guideline rows. `icon-candidates` additionally requires exactly one named supported family and a real subject.
 
-Chart retrieval is a visualization-discovery snapshot. Output deliberately withholds unsupported exact data-volume thresholds, color prescriptions, accessibility grades, library recommendations, and interaction levels rather than presenting catalog fields as measured authority.
+Chart retrieval is a visualization-discovery snapshot. `charts.csv` holds only the returned columns: unsupported exact data-volume thresholds, use/avoid prose, color prescriptions, accessibility grades, library recommendations, and interaction levels were deleted from the shipped file, not merely hidden from output.
 
 `search_stack(query, stack, max_results)` returns:
 
@@ -48,7 +49,8 @@ Chart retrieval is a visualization-discovery snapshot. Output deliberately withh
   documentation_coverage: {
     returned_rows, docs_urls_present, docs_urls_missing
   },
-  count, results
+  count, results,
+  unmatched_terms
 }
 ```
 
@@ -92,21 +94,21 @@ Decision-ledger statuses are `PROPOSED`, `ACCEPTED`, and `SUPERSEDED`. Packet st
 
 ## Evidence datasets
 
-Live configuration, not directory presence, defines runtime inputs:
+Live configuration, not directory presence, defines runtime inputs. `data/CATALOGS.md` is the shipped provenance manifest (source, import/edit dates, row count, license notice, including the MIT notice for catalogs derived from UI UX Pro Max); `tests/test_catalogs.py` keeps its file list and row counts exact.
 
 | Catalog | Rows | Role |
 |---|---:|---|
 | `products.csv` | 192 | Caller-requested lexical product analog terms only. |
-| `google-fonts.csv` | 1,923 | Font metadata snapshot, not a font decision. |
-| `ux-guidelines.csv` | 99 | General UX prompts with contextual verification boundary. |
-| `app-interface.csv` | 30 | Web implementation/accessibility prompts. |
+| `google-fonts.csv` | 1,961 | Slim metadata index dated 2026-11-12 (category, stroke, subsets, primary script, axis ranges, styles, designers, license, last modified); no keywords, mood words, or popularity. Not a font decision. |
+| `ux-guidelines.csv` | 91 | General UX prompts with contextual verification boundary; row ids are stable (merged duplicates leave gaps). |
+| `app-interface.csv` | 30 | iOS/Android/React Native app-interface prompts via `mobile` (alias `web`); not browser guidance. |
 | `react-performance.csv` | 44 | React performance prompts requiring version/current-doc verification. |
-| `charts.csv` | 25 | Encoding alternatives, limitations, and accessibility prompts. |
+| `charts.csv` | 25 | Encoding alternatives, limitations, and accessibility prompts (seven columns; nothing withheld remains in the file). |
 | `icons.csv` | 104 | Legacy familiar-action lookup after style/guideline filtering; no third-party brand marks (those come from official artwork). |
 | `icon-families.csv` | 10 | Source discovery snapshot. |
 | `icon-concepts.csv` | 21 | Role/metaphor questions. |
 | `icon-candidates.csv` | 70 | Exact known exports with family/source constraints. |
-| `data/stacks/*.csv` | 22 files | Explicit stack guidance. |
+| `data/stacks/*.csv` | 21 files | Explicit stack guidance. `uwp.csv` was retired (2026-11-12); `RETIRED_STACKS` makes `--stack uwp` return an error naming `winui`. |
 
 `landing.csv`, `styles.csv`, `colors.csv`, `typography.csv`, and `motion.csv` were deleted because they contained solution-shaped recipes or unsupported suitability/conversion claims. `products.csv` was reduced to lexical taxonomy. `evals/designer-behavior/EVIDENCE-AUDIT.md` records field-level rationale.
 

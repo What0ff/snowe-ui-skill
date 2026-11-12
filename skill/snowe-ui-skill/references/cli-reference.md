@@ -32,7 +32,7 @@ Local analogs are also off by default. Add a caller-chosen lexical query only wh
 ```text
 python <skill-directory>/scripts/search.py \
   "Городской магазин велосипедов; уверенность в посадке до покупки" \
-  --decision-packet --analog-query "bicycle retailer fit"
+  --decision-packet --analog-query "cycling retail shop"
 ```
 
 `--analog-query` ranks at most three subordinate product-catalog matches. It is not semantic confidence, does not expand the brief, and changes no situation or architecture field when results are absent.
@@ -119,15 +119,24 @@ python <skill-directory>/scripts/search.py "query" --domain <domain> --max-resul
 python <skill-directory>/scripts/search.py "query" --domain <domain> --json
 ```
 
-Every result reports a **source role** and **use boundary**. Ranking is English-oriented lexical BM25 over a bundled snapshot. A top row is not semantic classification, current external truth, or a design selection.
+Every result reports a **source role** and **use boundary**. Rows from catalogs that number them start with `No`, a stable row id within the named source file (removed rows leave gaps), so a finding can cite, for example, `charts.csv` row 3. `data/CATALOGS.md` records each catalog's source, dates, row count, and license notice. A top row is not semantic classification, current external truth, or a design selection.
+
+Ranking is English-oriented lexical BM25 over a bundled snapshot:
+
+- The query and rows share one normalization: case folding, a small English stopword list (`for`, `the`, `vs`, ...), light suffix stemming (`rerenders`, `rerendering` → `rerender`; `lists` → `list`), and hyphen compounds indexed both split and joined (`re-render` also matches `rerender`). Non-English words pass through unstemmed. This is normalization, not a synonym table or query expansion.
+- Fields are weighted: the row's name column (`Issue`, `Product Type`, `Family`, `Guideline`, ...) counts three times, `Keywords` and `Category` twice, other searched columns once. UX, React, and mobile lookups also search the `Do` column.
+- A row whose name equals the query ranks first, then rows whose name starts with it (`IBM Plex Sans` before `IBM Plex Sans Condensed`), then rows whose name and query overlap as a phrase.
+- Scores are multiplied by the share of distinct query terms a row matches. When some row matches several terms, rows matching fewer than half as many are dropped as incidental, so fewer than `--max-results` rows can return.
+- `unmatched_terms` (JSON) lists query words that occur nowhere in the searched columns; when it is not empty, the use boundary also names them. They did not affect ranking: for example, `geometric` cannot match the font index, which has no construction or mood vocabulary.
 
 | Domain | Evidence role |
 |---|---|
 | `product` | Product analogs and concern prompts; never project identity |
-| `google-fonts` | Bundled font metadata snapshot; verify current official files and license |
+| `google-fonts` | Slim Google Fonts metadata index (snapshot 2026-11-12): category, stroke, subsets, primary script, axis ranges, styles, designers, license; no mood or construction terms, so search by family, category, script, or designer |
 | `ux` | Issue prompts and heuristics to verify in the actual flow |
-| `web` | App-interface/accessibility prompts; verify platform applicability |
-| `chart` | Unsourced encoding/accessibility prompts; unsupported exact thresholds, threshold-bearing use/avoid prose, palettes, grades, libraries, and interaction prescriptions are withheld |
+| `mobile` | iOS, Android, and React Native app-interface/accessibility prompts (`app-interface.csv`); not web or browser guidance |
+| `web` | Compatibility alias of `mobile` (same catalog and results); the rows are mobile-app guidance despite the name |
+| `chart` | Unsourced encoding/accessibility prompts; unsupported exact thresholds, threshold-bearing use/avoid prose, palettes, grades, libraries, and interaction prescriptions are absent from the bundled catalog |
 | `react` | React/Next performance prompts; verify current repository/version |
 | `icon-concepts` | Role-first metaphor prompts and ambiguity warnings |
 | `icon-families` | Source discovery snapshot; verify current official source/license |
@@ -152,12 +161,14 @@ Supported stack datasets:
 ```text
 react, nextjs, vue, svelte, astro, swiftui, react-native, flutter,
 nuxtjs, nuxt-ui, html-tailwind, shadcn, jetpack-compose, threejs,
-angular, laravel, javafx, wpf, winui, avalonia, uno, uwp
+angular, laravel, javafx, wpf, winui, avalonia, uno
 ```
+
+The `uwp` catalog was retired on 2026-11-12: it targeted UWP and retired device families such as Windows 10 Mobile. `--stack uwp` now returns an error that names `winui`, whose catalog includes rows on choosing WinUI 3 and migrating UWP code.
 
 Use the repository's actual stack. Stack rows are bundled implementation guidance, not proof of current API behavior; check current official documentation when versions, platform behavior, or dependencies can have changed.
 
-Every stack response includes the same top-level evidence boundary as domain retrieval plus `documentation_coverage` counts for returned rows with and without a `Docs URL`. A URL is only a discovery pointer; it does not prove that the source is primary or current. When any returned row has no URL, both text and JSON output say that the row remains unsourced bundled guidance until independently verified.
+Stack rows also start with their `No` row id where the file has one. Every stack response includes the same top-level evidence boundary as domain retrieval plus `documentation_coverage` counts for returned rows with and without a `Docs URL`. A URL is only a discovery pointer; it does not prove that the source is primary or current. When any returned row has no URL, both text and JSON output say that the row remains unsourced bundled guidance until independently verified.
 
 ## Validate Custom SVG Structure
 
@@ -381,7 +392,7 @@ Exit status is `0` PASS, `1` FAIL (the exact pair is below the minimum) and `2` 
 
 - `source_role` explains what a dataset can contribute; `warning` states what it cannot decide.
 - Empty or low-quality lexical results mean the local snapshot has little evidence, not that the design space is empty.
-- Retrieved numeric claims are unverified until traced to a credible current source; unsupported chart thresholds, threshold-bearing use/avoid prose, grades, palette values, library advice, and interaction prescriptions are not returned at all.
+- Retrieved numeric claims are unverified until traced to a credible current source; unsupported chart thresholds, threshold-bearing use/avoid prose, grades, palette values, library advice, and interaction prescriptions are not in the bundled catalog at all.
 - A contrast calculation applies only to its exact solid rendered pair; imagery, gradients, transparency, effects, and states require contextual measurement.
 - A font remains `UNKNOWN` until actual files/dependency, script coverage, license, metrics, representative content, fallbacks, and rendering are checked.
 - An SVG `PASS` is structural only; an icon-comparison sheet proves only that the declared contexts rendered technically, not that the selected glyph is optically or semantically best.

@@ -137,11 +137,11 @@ The generated map itself is excluded from the counts.
 | Extension | Files |
 | --- | --- |
 | `.png` | 478 |
-| `.md` | 83 |
+| `.md` | 84 |
 | `.json` | 72 |
 | `.jpg` | 52 |
-| `.py` | 39 |
-| `.csv` | 32 |
+| `.py` | 41 |
+| `.csv` | 31 |
 | `.svg` | 22 |
 | `.html` | 16 |
 | `.css` | 8 |
