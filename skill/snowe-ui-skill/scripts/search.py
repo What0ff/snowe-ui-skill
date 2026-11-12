@@ -5,6 +5,7 @@ Snowe UI Skill Search - local evidence retrieval and design decision packets
 Usage: python search.py "<query>" --domain <domain> [--max-results 3]
        python search.py "<brief>" --decision-packet [-p "Project Name"]
        python search.py "<brief>" --decision-packet --analog-query "<explicit lexical query>"
+       python search.py "<brief>" --decision-packet --declared-context context.json
        python search.py "<brief>" --decision-packet --persist -p "Project Name" [--page "catalog"]
 
 Domains: chart, product, ux, icons, icon-families, icon-concepts, icon-candidates, react, web, google-fonts
@@ -37,6 +38,7 @@ if _SCRIPT_DIR not in sys.path:
 
 import json
 
+from checked_evidence import read_selected_json
 from core import CSV_CONFIG, AVAILABLE_STACKS, MAX_RESULTS, search, search_stack
 from decision_packet import generate_decision_packet_with_persistence
 
@@ -137,6 +139,27 @@ def print_persistence_summary(persisted, stream):
         )
 
 
+def load_declared_context(path):
+    """Read caller declarations; the runtime never derives them from the brief.
+
+    Known fields are type-checked so a malformed file fails instead of being
+    coerced. Other keys pass through to situation.other_declared_context.
+    """
+    value = read_selected_json(path)
+    if not isinstance(value, dict):
+        raise ValueError(f"must be a JSON object, not {type(value).__name__}")
+    work_mode = value.get("work_mode")
+    if "work_mode" in value and (not isinstance(work_mode, str) or not work_mode.strip()):
+        raise ValueError("work_mode must be nonempty text")
+    for field in ("platforms", "facts", "pressures"):
+        items = value.get(field)
+        if field in value and (
+            not isinstance(items, list) or any(not isinstance(item, str) or not item.strip() for item in items)
+        ):
+            raise ValueError(f"{field} must be an array of nonempty strings")
+    return value
+
+
 def build_parser():
     parser = argparse.ArgumentParser(prog="search.py", description="Snowe UI Skill Search")
     parser.add_argument("query", help="Search query")
@@ -163,6 +186,12 @@ def build_parser():
         default=None,
         help="Optional caller-chosen lexical query for subordinate product analogs; the brief is never expanded or classified automatically",
     )
+    parser.add_argument(
+        "--declared-context",
+        metavar="FILE.json",
+        default=None,
+        help="UTF-8 JSON object of caller-declared work_mode, platforms, facts, pressures and other context for the packet; never inferred from the brief",
+    )
     # Persistence (Brief + durable decisions + page inquiries)
     parser.add_argument("--persist", action="store_true", help="Create identity-bound PROJECT.json/BRIEF.md and initialize a durable non-overwritten DECISIONS.md")
     parser.add_argument("--page", type=str, default=None, help="Create a page inquiry without prescribing a page type or section order")
@@ -181,6 +210,8 @@ def main(argv=None):
         parser.error("--decision-packet cannot be combined with --domain or --stack")
     if args.analog_query and not args.decision_packet:
         parser.error("--analog-query requires --decision-packet")
+    if args.declared_context and not args.decision_packet:
+        parser.error("--declared-context requires --decision-packet")
     if args.page and not args.persist:
         parser.error("--page requires --persist")
     if args.output_dir and not args.persist:
@@ -200,6 +231,12 @@ def main(argv=None):
     # Decision packet takes priority
     if args.decision_packet:
         packet_format = args.format or "markdown"
+        declared_context = None
+        if args.declared_context:
+            try:
+                declared_context = load_declared_context(args.declared_context)
+            except (OSError, ValueError) as error:
+                parser.error(f"--declared-context {args.declared_context}: {error}")
         try:
             result, persisted = generate_decision_packet_with_persistence(
                 args.query,
@@ -209,6 +246,7 @@ def main(argv=None):
                 page=args.page,
                 output_dir=args.output_dir,
                 page_brief=args.query if args.page else None,
+                declared_context=declared_context,
                 analog_query=args.analog_query,
             )
         except (OSError, ValueError) as error:

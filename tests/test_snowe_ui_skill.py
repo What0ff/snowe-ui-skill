@@ -1050,6 +1050,57 @@ class CliTests(unittest.TestCase):
             for line in ("preserved  BRIEF.md", "preserved  DECISIONS.md", f"written    {Path('pages/find-a-bike.md')}"):
                 self.assertIn(line, page.stderr)
 
+    def test_declared_context_file_reaches_the_packet_situation(self):
+        pressure = "Protect a seasonal hand-off ritual that has no established software category."
+        context = {"work_mode": "evolution", "platforms": ["shared kiosk", "printed fallback"],
+                   "facts": ["The existing visual system is coherent and must be preserved."],
+                   "pressures": [pressure], "domain_owner": "field coordinator"}
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            path = Path(temporary_directory) / "context.json"
+            path.write_text(json.dumps(context), encoding="utf-8")
+            result = self.run_cli("Mixed-language brief", "--decision-packet", "--format", "json",
+                                  "--declared-context", str(path))
+            self.assertEqual(0, result.returncode, result.stderr)
+            situation = json.loads(result.stdout)["situation"]
+            self.assertEqual("PARTIALLY_DECLARED", situation["framing_status"])
+            self.assertEqual("evolution", situation["mode"])
+            self.assertEqual(["shared kiosk", "printed fallback"], situation["platforms"])
+            self.assertEqual(context["facts"], situation["declared_facts"])
+            self.assertEqual([pressure], situation["design_pressures"])
+            self.assertEqual({"domain_owner": "field coordinator"}, situation["other_declared_context"])
+            markdown = self.run_cli("Mixed-language brief", "--decision-packet", "--declared-context", str(path),
+                                    "--persist", "--project-name", "Hand-off", "--output-dir", temporary_directory)
+            self.assertEqual(0, markdown.returncode, markdown.stderr)
+            self.assertIn(pressure, markdown.stdout)
+            brief = Path(temporary_directory) / "design-intelligence" / "hand-off" / "BRIEF.md"
+            self.assertIn(pressure, brief.read_text(encoding="utf-8"))
+
+    def test_declared_context_is_validated_and_packet_only(self):
+        invalid = {
+            "list.json": ["evolution"],
+            "platforms-string.json": {"platforms": "web"},
+            "fact-number.json": {"facts": [3]},
+            "pressure-empty.json": {"pressures": ["  "]},
+            "mode-list.json": {"work_mode": ["evolution"]},
+        }
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            root = Path(temporary_directory)
+            for name, value in invalid.items():
+                with self.subTest(name=name):
+                    (root / name).write_text(json.dumps(value), encoding="utf-8")
+                    result = self.run_cli("Brief", "--decision-packet", "--declared-context", str(root / name))
+                    self.assertEqual(2, result.returncode, result.stdout)
+                    self.assertIn(f"--declared-context {root / name}:", result.stderr)
+                    self.assertNotIn("unrecognized arguments", result.stderr)
+                    self.assertNotIn("Traceback", result.stderr)
+            missing = self.run_cli("Brief", "--decision-packet", "--declared-context", str(root / "absent.json"))
+            self.assertEqual(2, missing.returncode)
+            self.assertIn("absent.json", missing.stderr)
+            (root / "ok.json").write_text("{}", encoding="utf-8")
+            search_only = self.run_cli("Brief", "--domain", "ux", "--declared-context", str(root / "ok.json"))
+            self.assertEqual(2, search_only.returncode)
+            self.assertIn("--declared-context requires --decision-packet", search_only.stderr)
+
     def test_local_search_requires_explicit_domain(self):
         result = self.run_cli("platform audit history")
         self.assertNotEqual(0, result.returncode)

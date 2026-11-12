@@ -37,6 +37,25 @@ python <skill-directory>/scripts/search.py \
 
 `--analog-query` ranks at most three subordinate product-catalog matches. It is not semantic confidence, does not expand the brief, and changes no situation or architecture field when results are absent.
 
+When the caller already knows the work mode, platforms, facts or pressures, declare them in a file; the runtime never derives them from the brief:
+
+```text
+python <skill-directory>/scripts/search.py \
+  "Seasonal hand-off for field crews" \
+  --decision-packet --declared-context context.json
+```
+
+```json
+{
+  "work_mode": "evolution",
+  "platforms": ["shared kiosk", "printed fallback"],
+  "facts": ["The existing visual system is coherent and must be preserved."],
+  "pressures": ["Protect the seasonal hand-off ritual crews already rely on."]
+}
+```
+
+The file must be a UTF-8 JSON object. `work_mode` is nonempty text; `platforms`, `facts` and `pressures` are arrays of nonempty strings; any other key passes through to JSON `situation.other_declared_context`. Declarations mark framing `PARTIALLY_DECLARED` and appear in the packet and a persisted `BRIEF.md`; they are caller claims, so verify their provenance like any other evidence.
+
 Use `--format json` for structured evaluation or tooling. When combined with `--persist`, stdout remains one valid packet JSON document and the human persistence confirmation is written to stderr. `--json` belongs to domain/stack search and cannot be combined with a decision packet.
 
 The historical `--design-system` / `-ds` spelling is a compatibility alias for the same open packet. It does not invoke the old recipe generator. New documentation and tooling should use `--decision-packet`.

@@ -12,7 +12,7 @@ Icon comparison schema `1.2` requires context `lang`, `dir` (`ltr | rtl | auto`)
 | Evidence domain | Caller-selected CSV category such as `product`, `chart`, or `icon-candidates`; never an inferred product domain. | `core.py:CSV_CONFIG` |
 | Stack | Caller-selected implementation-guidance catalog such as `react`, `swiftui`, or `wpf`. | `core.py:STACK_CONFIG` |
 | Decision packet | Schema-3.0 unresolved workbench preserving the brief, caller declarations, research questions, candidate contracts, and proof obligations. | `decision_packet.py` |
-| Declared context | Caller-supplied work mode, platforms, facts, free-form pressures, and other fields passed through without a controlled vocabulary. | `decision_packet.py:_normalize_declared_context` |
+| Declared context | Caller-supplied work mode, platforms, facts, free-form pressures, and other fields passed through without a controlled vocabulary. | `decision_packet.py:_normalize_declared_context`; CLI `search.py --declared-context` (`load_declared_context`) |
 | Pressure inquiry | Generic prompt to discover consequential pressures; not a keyword-derived answer. | packet `situation.pressure_inquiry` |
 | Local analog | At most three caller-requested product rows labelled `UNVERIFIED_ANALOG`; lexical evidence, not classification. | packet `local_evidence` |
 | Causal decision | `driver → design move → expected consequence → evidence → risk → revisit trigger`. | `SKILL.md`, packet `decision_graph` |

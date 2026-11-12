@@ -41,7 +41,7 @@ The CLI excludes domain/packet mode. `core.search_stack` loads one configured st
 **Trigger:** `--decision-packet` (or compatibility alias `--design-system`) or `generate_decision_packet`.
 
 1. Preserve the brief exactly; do not detect language, translate, classify vocabulary, infer work mode/platform, or derive pressures.
-2. Normalize only caller-supplied declarations and pass through free-form fields/pressures.
+2. Normalize only caller-supplied declarations and pass through free-form fields/pressures. From the CLI they come only from `--declared-context <file.json>`, a UTF-8 JSON object whose `work_mode` (text) and `platforms`/`facts`/`pressures` (arrays of nonempty strings) are type-checked before generation; other keys pass through.
 3. Emit generic pressure questions and unknowns, explicitly favoring unresolved framing over false confidence.
 4. Emit research triggers with activation questions and stop conditions; brief terms do not activate them automatically.
 5. If and only if the caller supplies `analog_query`, run lexical product retrieval, limit results to three, label each `UNVERIFIED_ANALOG`, and keep absence non-consequential.
