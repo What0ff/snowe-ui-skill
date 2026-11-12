@@ -68,6 +68,7 @@ Load only the references whose decision is active. Do not preload the library, a
 - Read [icon-craft.md](references/icon-craft.md) when drawing, extending or repairing a custom glyph inside its real control; an unchanged library glyph does not need it.
 - Read [motion-and-interaction.md](references/motion-and-interaction.md) only when motion carries information or character, or when an existing transition is failing. Static work does not need a motion exploration.
 - Read [research-and-evidence.md](references/research-and-evidence.md) when current external evidence can change a high-leverage decision; skip saturated or already verified questions.
+- Read [failure-patterns.md](references/failure-patterns.md) before accepting an original visual design, or when a result looks generic, templated or machine-made.
 - Read [quality-gates.md](references/quality-gates.md) for implementation validation, accessibility/content/responsive stress, states, performance, or rendered critique. Do not use it as a substitute for product framing.
 - Read [visual-system-and-observation.md](references/visual-system-and-observation.md) for affected shared owners/layers, versioned visual contracts or portable checked browser evidence. Keep its scope proportional to the live decision.
 - Read [visual-reasoning.md](references/visual-reasoning.md) for open visual relationships, impression-to-decision translation, image comparisons or a repair whose perceptual cause is uncertain.

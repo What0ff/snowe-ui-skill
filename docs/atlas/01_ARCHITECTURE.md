@@ -115,6 +115,8 @@ There is no database, long-running product process, shared runtime cache, teleme
 
 `references/surfaces-and-disclosure.md` owns where each group or secondary task lives (main surface, side panel, dialog, popover, tabs, in-place disclosure or route), the balance between overloaded and over-hidden screens, context retention and the narrow-width transformation; the page map records the chosen `surface`. `references/design-foundations.md#stable-geometry-across-states` owns the frame-stability contract (frames and controls keep their size across loading, selection, validation, saving and live updates), and quality gates compare frame geometry across those transitions. SKILL.md requires every visible string to be data, state, an action label or useful guidance, and fixes the user-facing reply order (what changed, how to verify, what remains open).
 
+`references/failure-patterns.md` owns the generic-output diagnostics (symptom, usual cause, check, constructive replacement, legitimate exception) used before accepting an original visual design; it is an inspection list with explicit exceptions, not a style ban or a substitute for a positive direction.
+
 Visible ordinals are part of that copy/relationship audit. The entrypoint rejects automatic `01/02` landing-section/benefit/service prefixes, while the focused reference and quality gate preserve actual process order, useful navigation/references, factual data and explicitly supplied identity. Open numbering treatments use same-content comparison; no keyword classifier, numeric quota or runtime taste verdict selects the outcome.
 
 ## Explicit visual review contract
