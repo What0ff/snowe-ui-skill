@@ -63,6 +63,9 @@ snowe-ui-skill/
 │   │   ├── captures-v3/
 │   │   ├── host-captures/
 │   │   └── upstream/
+│   ├── skill-outcome/
+│   │   └── seeds/
+│   │       └── settings-fix/
 │   ├── titlebot-hierarchy/
 │   │   ├── assets/
 │   │   │   └── fonts/
@@ -134,13 +137,13 @@ The generated map itself is excluded from the counts.
 | Extension | Files |
 | --- | --- |
 | `.png` | 478 |
-| `.md` | 78 |
-| `.json` | 71 |
+| `.md` | 79 |
+| `.json` | 72 |
 | `.jpg` | 52 |
 | `.py` | 39 |
 | `.csv` | 32 |
 | `.svg` | 22 |
-| `.html` | 15 |
+| `.html` | 16 |
 | `.css` | 8 |
 | `.woff2` | 8 |
 | `.js` | 7 |
@@ -170,6 +173,7 @@ The generated map itself is excluded from the counts.
 | Change a runtime dataset or schema (verify configured headers) | `skill/snowe-ui-skill/scripts/core.py` |
 | Change process-depth contracts or inspect bounded observed-host probes | `evals/designer-behavior/` |
 | Run or inspect repeated creative-search generation evidence | `evals/creative-search/` |
+| Run or inspect the no-skill / before / after outcome comparison | `evals/skill-outcome/` |
 | Change the operational icon decision proof | `evals/icon-decisions/` |
 | Change or inspect the isolated Title Bot hierarchy pilot | `evals/titlebot-hierarchy/` |
 | Change required-content visibility or declared action identity checks | `scripts/ui-proof.mjs` |

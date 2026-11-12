@@ -77,6 +77,7 @@ ROUTER = (
     ("Change a runtime dataset or schema (verify configured headers)", "skill/snowe-ui-skill/scripts/core.py"),
     ("Change process-depth contracts or inspect bounded observed-host probes", "evals/designer-behavior/"),
     ("Run or inspect repeated creative-search generation evidence", "evals/creative-search/"),
+    ("Run or inspect the no-skill / before / after outcome comparison", "evals/skill-outcome/"),
     ("Change the operational icon decision proof", "evals/icon-decisions/"),
     ("Change or inspect the isolated Title Bot hierarchy pilot", "evals/titlebot-hierarchy/"),
     ("Change required-content visibility or declared action identity checks", "scripts/ui-proof.mjs"),

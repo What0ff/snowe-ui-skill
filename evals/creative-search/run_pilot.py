@@ -14,6 +14,8 @@ import time
 
 ROOT = Path(__file__).resolve().parents[2]
 BRIEFS = Path(__file__).with_name("briefs.json")
+SKILL_NAME = "snowe-ui-skill"
+CONDITIONS = {"skill", "no-skill"}
 
 
 def digest(path: Path) -> str:
@@ -40,29 +42,81 @@ def fresh(path: Path) -> Path:
     return path
 
 
-def snapshot(destination: Path) -> None:
-    if destination.resolve().is_relative_to((ROOT / "skill/snowe-ui-skill").resolve()):
+def snapshot(destination: Path, source: Path | None = None, briefs: Path | None = None,
+             no_skill: bool = False) -> None:
+    """Freeze one condition: a skill copy (default: this product) or no skill at all."""
+    product = ROOT / "skill/snowe-ui-skill"
+    if destination.resolve().is_relative_to(product.resolve()):
         raise ValueError("Snapshot destination must stay outside the installed product")
+    if no_skill and source is not None:
+        raise ValueError("A no-skill snapshot cannot also select a skill source")
+    source = (source or product).resolve()
+    briefs = (briefs or BRIEFS).resolve()
+    if not no_skill and not (source / "SKILL.md").is_file():
+        raise ValueError(f"Skill source has no SKILL.md: {source}")
     destination = fresh(destination)
-    shutil.copytree(ROOT / "skill/snowe-ui-skill", destination / "snowe",
-                    ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
-    shutil.copy2(BRIEFS, destination / "briefs.json")
-    write(destination / "snapshot.json", {
-        "schema": "1.0", "files": inventory(destination / "snowe"),
+    if not no_skill:
+        shutil.copytree(source, destination / "snowe", ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
+    shutil.copy2(briefs, destination / "briefs.json")
+    record = {
+        "schema": "1.1", "condition": "no-skill" if no_skill else "skill",
+        "files": [] if no_skill else inventory(destination / "snowe"),
         "briefs_sha256": digest(destination / "briefs.json"),
-    })
+    }
+    seeds = briefs.parent / "seeds"
+    if seeds.is_dir():
+        shutil.copytree(seeds, destination / "seeds")
+        record["seeds"] = inventory(destination / "seeds")
+    write(destination / "snapshot.json", record)
 
 
 def validate_snapshot(root: Path) -> dict:
     record = json.loads((root / "snapshot.json").read_text(encoding="utf-8"))
-    if inventory(root / "snowe") != record["files"]:
+    condition = record.get("condition", "skill")
+    if condition not in CONDITIONS:
+        raise ValueError("Unknown snapshot condition")
+    if condition == "no-skill":
+        if (root / "snowe").exists() or record["files"]:
+            raise ValueError("Skill snapshot changed")
+    elif inventory(root / "snowe") != record["files"]:
         raise ValueError("Skill snapshot changed")
     if digest(root / "briefs.json") != record["briefs_sha256"]:
         raise ValueError("Frozen briefs changed")
+    if "seeds" in record and inventory(root / "seeds") != record["seeds"]:
+        raise ValueError("Frozen seeds changed")
     return record
 
 
-def prompt_for(case: dict) -> str:
+def global_skill_installations(home: Path | None = None) -> list[str]:
+    """Installed Snowe copies a host could discover outside the subject workspace."""
+    home = home or Path.home()
+    roots = [home / ".agents/skills", home / ".codex/skills"]
+    if os.environ.get("CODEX_HOME"):
+        roots.append(Path(os.environ["CODEX_HOME"]) / "skills")
+    found = []
+    for base in roots:
+        if not base.is_dir():
+            continue
+        for skill in sorted(base.iterdir()):
+            manifest = skill / "SKILL.md"
+            if manifest.is_file() and f"name: {SKILL_NAME}" in manifest.read_text(encoding="utf-8", errors="replace"):
+                found.append(str(skill))
+    return found
+
+
+REQUIREMENTS = """Implement the finished page under site/index.html, with main, a meaningful h1 and native labelled buttons. You may use additional local files under site/. All visible interface text is English. Assets must be self-contained or local; do not fetch external assets, install packages, or use external services. Do not expose internal design/evaluation notes in the page."""
+
+
+def prompt_for(case: dict, condition: str = "skill") -> str:
+    if condition == "no-skill":
+        return f"""Work only in this workspace; do not inspect other projects, benchmarks, evaluations or previous runs. Do not use installed skills. Do not delegate or spawn agents.
+
+{case['brief']}
+
+{REQUIREMENTS}
+
+Retain your concise working decisions under notes/. Do not ask the user to select reversible design details. Inspect the rendered output with any local tools available; record precisely what you actually inspected and any unavailable proof. Create the real artifact, not just a plan. Finish with paths, the selected design and material evidence limitations.
+"""
     return f"""Use the explicitly selected local Snowe skill: read snowe/SKILL.md and only its relevant references. Use that copy rather than any installed version. Work only in this workspace; do not inspect other projects, benchmarks, evaluations or previous runs. Do not delegate or spawn agents.
 
 {case['brief']}
@@ -95,23 +149,33 @@ def generate(snapshot_root: Path, case_id: str, repeat: int, destination: Path,
     case = next((item for item in cases if item["id"] == case_id), None)
     if case is None or repeat < 1:
         raise ValueError("Select an existing case and positive repetition")
+    condition = frozen.get("condition", "skill")
+    global_copies = global_skill_installations()
+    if condition == "no-skill" and global_copies:
+        raise ValueError("A globally installed Snowe copy is discoverable; move it aside for no-skill runs: "
+                         + ", ".join(global_copies))
     command = shutil.which("codex.cmd" if os.name == "nt" else "codex")
     if not command:
         raise ValueError("Codex CLI unavailable; no model evidence was collected")
     destination = fresh(destination)
-    prompt = prompt_for(case)
+    prompt = prompt_for(case, condition)
     (destination / "prompt.txt").write_text(prompt, encoding="utf-8")
     # Each subject receives a neutral workspace with no condition label or ancestor repo.
     with tempfile.TemporaryDirectory(prefix="snowe-subject-") as directory:
         workspace = Path(directory).resolve()
         if workspace.parent != Path(tempfile.gettempdir()).resolve():
             raise ValueError("Unexpected temporary workspace parent")
-        shutil.copytree(snapshot_root / "snowe", workspace / "snowe")
+        if condition == "skill":
+            shutil.copytree(snapshot_root / "snowe", workspace / "snowe")
         (workspace / "site").mkdir()
+        if case.get("seed"):
+            # A seeded case starts from existing code the subject must change.
+            shutil.copytree(snapshot_root / "seeds" / case["seed"], workspace / "site", dirs_exist_ok=True)
         (workspace / "notes").mkdir()
+        selected = ("The user explicitly selected snowe/SKILL.md for this task. Use only that local skill copy. "
+                    if condition == "skill" else "")
         (workspace / "AGENTS.md").write_text(
-            "The user explicitly selected snowe/SKILL.md for this task. Use only that local skill copy. "
-            "Keep all writes inside this workspace. Do not read another run or delegate work.\n",
+            selected + "Keep all writes inside this workspace. Do not read another run or delegate work.\n",
             encoding="utf-8")
         arguments = [command, "exec", "--ephemeral", "--skip-git-repo-check", "--json",
                      "--color", "never", "--cd", str(workspace),
@@ -130,9 +194,13 @@ def generate(snapshot_root: Path, case_id: str, repeat: int, destination: Path,
             shutil.copytree(workspace / name, destination / name)
         if (workspace / "FINAL.md").is_file():
             shutil.copy2(workspace / "FINAL.md", destination / "FINAL.md")
-        changed_skill = inventory(workspace / "snowe") != frozen["files"]
+        if condition == "skill":
+            changed_skill = inventory(workspace / "snowe") != frozen["files"]
+        else:
+            changed_skill = (workspace / "snowe").exists()
     record = {
-        "schema": "1.0", "case": case_id, "repeat": repeat,
+        "schema": "1.1", "condition": condition, "global_skill_copies": global_copies,
+        "case": case_id, "repeat": repeat,
         "snapshot": str(snapshot_root), "snapshot_sha256": digest(snapshot_root / "snapshot.json"),
         "briefs_sha256": frozen["briefs_sha256"], "prompt_sha256": digest(destination / "prompt.txt"),
         "exit_code": exit_code, "timed_out": timed_out, "elapsed_seconds": round(elapsed, 3),
@@ -180,6 +248,8 @@ def capture(root: Path) -> None:
         })
     write(root / "plan.json", plan)
     observer = frozen / "snowe/scripts/observe.mjs"
+    if not observer.is_file():  # no-skill snapshots carry no observer of their own
+        observer = ROOT / "skill/snowe-ui-skill/scripts/observe.mjs"
     result = subprocess.run(["node", str(observer), "capture", str(root), "plan.json", "captures"],
                             capture_output=True, text=True, encoding="utf-8", timeout=120, check=False)
     (root / "capture-log.txt").write_text(result.stdout + result.stderr, encoding="utf-8")
@@ -192,6 +262,9 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True)
     freeze = sub.add_parser("snapshot"); freeze.add_argument("destination", type=Path)
+    freeze.add_argument("--source", type=Path, help="skill directory to freeze (default: this product)")
+    freeze.add_argument("--briefs", type=Path, help="briefs.json to freeze (default: creative-search briefs)")
+    freeze.add_argument("--no-skill", action="store_true", help="freeze a control condition without any skill")
     run = sub.add_parser("generate")
     run.add_argument("snapshot", type=Path); run.add_argument("case")
     run.add_argument("repeat", type=int); run.add_argument("destination", type=Path)
@@ -200,7 +273,7 @@ def main() -> int:
     check = sub.add_parser("check"); check.add_argument("run", type=Path)
     args = parser.parse_args()
     try:
-        if args.command == "snapshot": snapshot(args.destination)
+        if args.command == "snapshot": snapshot(args.destination, args.source, args.briefs, args.no_skill)
         elif args.command == "generate": generate(args.snapshot, args.case, args.repeat, args.destination, args.timeout)
         elif args.command == "capture": capture(args.run)
         else: print(json.dumps(validate_run(args.run), indent=2))

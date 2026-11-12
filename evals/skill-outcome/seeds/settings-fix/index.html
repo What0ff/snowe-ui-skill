@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Settings · Inkwell</title>
+<style>
+  :root {
+    --ink: #1d2433;
+    --muted: #5d6676;
+    --line: #dfe3ea;
+    --paper: #f6f7f9;
+    --card: #ffffff;
+    --accent: #2f5bd3;
+    --accent-ink: #ffffff;
+    --danger: #b3261e;
+    --radius: 14px;
+    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--paper); color: var(--ink); }
+  header.top { display: flex; align-items: center; gap: 12px; padding: 16px 32px; border-bottom: 1px solid var(--line); background: var(--card); }
+  header.top strong { font-size: 18px; letter-spacing: -0.01em; }
+  header.top nav { margin-left: auto; display: flex; gap: 20px; font-size: 14px; }
+  header.top nav a { color: var(--muted); text-decoration: none; }
+  header.top nav a[aria-current="page"] { color: var(--ink); font-weight: 600; }
+  main { max-width: 720px; margin: 40px auto; padding: 0 24px; }
+  h1 { font-size: 28px; margin: 0 0 6px; letter-spacing: -0.02em; }
+  .lede { margin: 0 0 28px; color: var(--muted); }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+  .card + .card { margin-top: 20px; }
+  .card h2 { font-size: 16px; margin: 0; padding: 18px 24px; border-bottom: 1px solid var(--line); }
+  .row { display: grid; grid-template-columns: 200px 1fr; gap: 16px; align-items: center; padding: 16px 24px; }
+  .row + .row { border-top: 1px solid var(--line); }
+  label, .label { font-size: 14px; font-weight: 600; }
+  .hint { display: block; font-weight: 400; color: var(--muted); font-size: 13px; margin-top: 2px; }
+  input[type="email"], input[type="text"] { width: 100%; font: inherit; padding: 9px 12px; border: 1px solid var(--line); border-radius: 8px; }
+  input:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .select { position: relative; }
+  .select-trigger { width: 100%; display: flex; justify-content: space-between; align-items: center; font: inherit; padding: 9px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--card); color: var(--ink); cursor: pointer; }
+  .select-trigger::after { content: ""; width: 8px; height: 8px; border-right: 2px solid var(--muted); border-bottom: 2px solid var(--muted); transform: rotate(45deg) translateY(-3px); }
+  .select-menu { position: absolute; left: 0; right: 0; top: calc(100% + 6px); margin: 0; padding: 6px; list-style: none; background: var(--card); border: 1px solid var(--line); border-radius: 10px; box-shadow: 0 12px 28px rgba(29, 36, 51, 0.14); z-index: 10; }
+  .select-menu[hidden] { display: none; }
+  .select-menu li { padding: 9px 10px; border-radius: 6px; cursor: pointer; font-size: 14px; }
+  .select-menu li[aria-selected="true"] { background: #eef2fc; font-weight: 600; }
+  .select-menu li:hover { background: var(--paper); }
+  .switch { display: flex; align-items: center; gap: 10px; font-size: 14px; }
+  .actions { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; margin-top: 24px; }
+  .error { margin: 0; color: var(--danger); font-size: 14px; }
+  .error[hidden] { display: none; }
+  .actions button { font: inherit; font-weight: 600; padding: 10px 18px; border: 0; border-radius: 8px; background: var(--accent); color: var(--accent-ink); cursor: pointer; }
+  .saved { font-size: 14px; color: var(--muted); }
+  @media (max-width: 600px) { .row { grid-template-columns: 1fr; gap: 8px; } main { margin-top: 24px; } header.top { padding: 14px 16px; } }
+</style>
+</head>
+<body>
+<header class="top">
+  <strong>Inkwell</strong>
+  <nav aria-label="Account">
+    <a href="#">Issues</a>
+    <a href="#">Subscribers</a>
+    <a href="#" aria-current="page">Settings</a>
+  </nav>
+</header>
+<main>
+  <h1>Settings</h1>
+  <p class="lede">Manage how your newsletter is sent and how readers can reach you.</p>
+  <form id="settings" novalidate>
+    <section class="card" aria-labelledby="sending">
+      <h2 id="sending">Sending</h2>
+      <div class="row">
+        <label for="sender">Sender name</label>
+        <input id="sender" type="text" value="The Field Notes">
+      </div>
+      <div class="row">
+        <label for="reply">Reply-to address<span class="hint">Readers' replies go here.</span></label>
+        <input id="reply" type="email" value="hello@fieldnotes" autocomplete="email">
+      </div>
+      <div class="row">
+        <span class="label" id="freq-label">Digest frequency<span class="hint">How often subscribers get a roundup.</span></span>
+        <div class="select">
+          <button type="button" class="select-trigger" id="freq" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="freq-label freq">Weekly</button>
+          <ul class="select-menu" id="freq-menu" role="listbox" aria-labelledby="freq-label" hidden>
+            <li role="option" aria-selected="false">Daily</li>
+            <li role="option" aria-selected="true">Weekly</li>
+            <li role="option" aria-selected="false">Every two weeks</li>
+            <li role="option" aria-selected="false">Monthly</li>
+            <li role="option" aria-selected="false">Never</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+    <section class="card" aria-labelledby="privacy">
+      <h2 id="privacy">Privacy</h2>
+      <div class="row">
+        <span class="label">Open tracking</span>
+        <label class="switch"><input type="checkbox" checked> Count email opens</label>
+      </div>
+    </section>
+    <div class="actions">
+      <p class="error" id="error" role="alert" hidden>Enter a complete reply-to address, like name@example.com.</p>
+      <button type="submit" id="save">Save changes</button>
+      <span class="saved" id="saved" hidden>All changes saved</span>
+    </div>
+  </form>
+</main>
+<script>
+  const trigger = document.getElementById("freq");
+  const menu = document.getElementById("freq-menu");
+  trigger.addEventListener("click", () => {
+    const open = menu.hidden;
+    menu.hidden = !open;
+    trigger.setAttribute("aria-expanded", String(open));
+  });
+  menu.addEventListener("click", (event) => {
+    const option = event.target.closest("li");
+    if (!option) return;
+    menu.querySelectorAll("li").forEach((item) => item.setAttribute("aria-selected", String(item === option)));
+    trigger.textContent = option.textContent;
+    menu.hidden = true;
+    trigger.setAttribute("aria-expanded", "false");
+  });
+  const form = document.getElementById("settings");
+  const email = document.getElementById("reply");
+  const error = document.getElementById("error");
+  const save = document.getElementById("save");
+  const saved = document.getElementById("saved");
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    saved.hidden = true;
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email.value)) {
+      error.hidden = false;
+      email.setAttribute("aria-invalid", "true");
+      return;
+    }
+    error.hidden = true;
+    email.removeAttribute("aria-invalid");
+    save.textContent = "Saving…";
+    save.disabled = true;
+    setTimeout(() => {
+      save.textContent = "Save changes";
+      save.disabled = false;
+      saved.hidden = false;
+    }, 1200);
+  });
+</script>
+</body>
+</html>

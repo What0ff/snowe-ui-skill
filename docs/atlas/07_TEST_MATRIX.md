@@ -71,6 +71,8 @@ Current inspected result: **18 `KEEP` findings**, no `REVISE`/`REJECT`. Coverage
 
 `python -m unittest discover -s tests -p test_creative_pilot.py -v` tests changed snapshots/briefs/prompts/artifacts, added resources, incomplete runs, raw completed-turn usage and refusal to overwrite evidence without invoking a model. Default captures use 1440/820/390 and reduced motion; important interaction, normal-motion, accessibility and aesthetic claims require separately recorded actual proof. Offline assets and small repetitions bound the pilot.
 
+`evals/skill-outcome/README.md` reuses the same runner for a three-condition comparison (no skill, the skill before the 2026-11-12 audit, the current skill) over five frozen cases, including one seeded bounded correction. Unit tests cover no-skill snapshots, selected skill sources, seed binding, the skill-free prompt and the global-installation refusal without invoking a model.
+
 ### Benchmark JavaScript and browser smoke
 
 ```powershell

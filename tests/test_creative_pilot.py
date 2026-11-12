@@ -81,6 +81,73 @@ class CreativePilotTests(unittest.TestCase):
         with self.assertRaises(FileExistsError):
             pilot.fresh(self.snapshot)
 
+    def test_no_skill_snapshot_has_no_skill_and_rejects_one_added_later(self):
+        briefs = self.root / "outcome/briefs.json"
+        briefs.parent.mkdir()
+        pilot.write(briefs, {"cases": [{"id": "fix", "name": "Fix", "brief": "Fix it", "seed": "fix"}]})
+        (briefs.parent / "seeds/fix").mkdir(parents=True)
+        (briefs.parent / "seeds/fix/index.html").write_text("<main>Seed</main>", encoding="utf-8")
+        control = self.root / "control"
+        pilot.snapshot(control, briefs=briefs, no_skill=True)
+        record = pilot.validate_snapshot(control)
+        self.assertEqual("no-skill", record["condition"])
+        self.assertFalse((control / "snowe").exists())
+        self.assertEqual(["fix/index.html"], [item["path"] for item in record["seeds"]])
+        (control / "seeds/fix/index.html").write_text("<main>Edited</main>", encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "Frozen seeds changed"):
+            pilot.validate_snapshot(control)
+        (control / "seeds/fix/index.html").write_text("<main>Seed</main>", encoding="utf-8")
+        (control / "snowe").mkdir()
+        with self.assertRaisesRegex(ValueError, "Skill snapshot changed"):
+            pilot.validate_snapshot(control)
+
+    def test_snapshot_freezes_a_selected_skill_source(self):
+        source = self.root / "old-skill"
+        source.mkdir()
+        (source / "SKILL.md").write_text("---\nname: snowe-ui-skill\n---\nOld", encoding="utf-8")
+        frozen = self.root / "old"
+        pilot.snapshot(frozen, source=source)
+        self.assertEqual("skill", pilot.validate_snapshot(frozen)["condition"])
+        self.assertEqual("---\nname: snowe-ui-skill\n---\nOld", (frozen / "snowe/SKILL.md").read_text(encoding="utf-8"))
+        with self.assertRaisesRegex(ValueError, "no SKILL.md"):
+            pilot.snapshot(self.root / "bad", source=self.root)
+        with self.assertRaisesRegex(ValueError, "cannot also select"):
+            pilot.snapshot(self.root / "mixed", source=source, no_skill=True)
+
+    def test_no_skill_prompt_never_mentions_the_skill(self):
+        case = {"brief": "Fixed facts"}
+        self.assertNotIn("snowe", pilot.prompt_for(case, "no-skill").lower())
+        self.assertIn("Use the explicitly selected local Snowe skill", pilot.prompt_for(case))
+        self.assertIn(pilot.REQUIREMENTS, pilot.prompt_for(case, "no-skill"))
+        self.assertIn(pilot.REQUIREMENTS, pilot.prompt_for(case))
+
+    def test_global_install_blocks_no_skill_generation_before_any_evidence(self):
+        home = self.root / "home"
+        installed = home / ".agents/skills/snowe-ui-skill"
+        installed.mkdir(parents=True)
+        (installed / "SKILL.md").write_text("---\nname: snowe-ui-skill\n---\n", encoding="utf-8")
+        (home / ".agents/skills/other").mkdir()
+        self.assertEqual([str(installed)], pilot.global_skill_installations(home))
+        control = self.root / "control"
+        pilot.snapshot(control, no_skill=True)
+        destination = self.root / "run-blocked"
+        with patch.object(pilot, "global_skill_installations", return_value=[str(installed)]):
+            with self.assertRaisesRegex(ValueError, "move it aside"):
+                pilot.generate(control, "radio-workshop", 1, destination)
+        self.assertFalse(destination.exists())
+
+    def test_outcome_briefs_are_complete_and_seeds_exist(self):
+        outcome = ROOT / "evals/skill-outcome"
+        cases = json.loads((outcome / "briefs.json").read_text(encoding="utf-8"))["cases"]
+        ids = [case["id"] for case in cases]
+        self.assertEqual(len(ids), len(set(ids)))
+        for case in cases:
+            self.assertTrue(case["name"] and case["brief"], case["id"])
+            if "seed" in case:
+                self.assertTrue((outcome / "seeds" / case["seed"] / "index.html").is_file(), case["id"])
+        legacy = {case["id"]: case for case in json.loads((ROOT / "evals/creative-search/briefs.json").read_text(encoding="utf-8"))["cases"]}
+        self.assertEqual(legacy["radio-workshop"], next(case for case in cases if case["id"] == "radio-workshop"))
+
     def test_snapshot_cannot_recursively_copy_into_the_product(self):
         product = self.root / "skill/snowe-ui-skill"
         product.mkdir(parents=True)

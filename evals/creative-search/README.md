@@ -29,7 +29,7 @@ python evals/creative-search/run_pilot.py capture work/creative-search-pilot/run
 python evals/creative-search/run_pilot.py check work/creative-search-pilot/runs/b-radio-1
 ```
 
-`snapshot.json` binds all skill files and frozen briefs. `run.json` retains status, exact prompt/source bindings, elapsed time and usage actually exposed by completed-turn events. Raw CLI output, notes, the final response and the unchanged site are retained locally. Capture failures preserve the log; post-run artifact changes invalidate checking. Technical capture integrity never implies a visual verdict. Raw host context and generated artifacts stay under ignored `work/`; durable summarized evidence and its limitations belong in this directory.
+`snapshot` also accepts `--source <skill-dir>` (freeze another skill copy), `--briefs <file>` (freeze another case set, plus its sibling `seeds/` directory) and `--no-skill` (a control with no skill copy and a skill-free prompt; `generate` refuses it while a global Snowe installation is discoverable). [../skill-outcome](../skill-outcome/README.md) uses these for the no-skill / before / after comparison. `snapshot.json` binds all skill files and frozen briefs. `run.json` retains status, exact prompt/source bindings, elapsed time and usage actually exposed by completed-turn events. Raw CLI output, notes, the final response and the unchanged site are retained locally. Capture failures preserve the log; post-run artifact changes invalidate checking. Technical capture integrity never implies a visual verdict. Raw host context and generated artifacts stay under ignored `work/`; durable summarized evidence and its limitations belong in this directory.
 
 Unit checks: `python -m unittest discover -s tests -p test_creative_pilot.py -v`.
 
