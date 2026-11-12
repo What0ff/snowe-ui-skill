@@ -30,6 +30,8 @@
 - `icon-candidates` requires exactly one supported family and a real subject; compare sources through separate auditable lookups.
 - `AVAILABLE_STACKS` iterates only live stacks, but its membership test also admits `RETIRED_STACKS` names so `search.py`'s argparse `choices` lets `--stack uwp` reach `search_stack`, which returns an explicit retirement error naming `winui`. Code that needs live stacks only should test `STACK_CONFIG`.
 - `CSV_CONFIG`/`STACK_CONFIG` headers are exact contracts; malformed quoting or renamed columns can silently empty fields. `tests/test_catalogs.py` requires every bundled CSV to be BOM-free UTF-8 with LF endings, a final newline, a rectangular shape, unique `No` ids, and every configured column present.
+- Changing a bundled CSV's row count, or adding or removing one, requires updating `data/CATALOGS.md`; the manifest test compares every listed count with the file. Keep the upstream MIT notice there while any derived catalog ships.
+- `web` is a compatibility alias of `mobile` (the same `CSV_CONFIG` object). Do not give `web` browser-guidance wording: every `app-interface.csv` row is iOS/Android/React Native.
 - Filtering a column out of output does not remove it from the installed file. `tests/test_catalogs.py` scans every cell of every bundled CSV for hex colors, millisecond durations, Tailwind color utilities, numbered template prescriptions (`dashboard-01`), and frame-rate claims. Its `PENDING_OUTSIDE_THIS_CLEANUP` list names exact file/row/match findings in stack catalogs owned by a separate cleanup; a stale entry fails, so delete each entry when its row is cleaned.
 
 ## Open-decision and progressive-disclosure contracts

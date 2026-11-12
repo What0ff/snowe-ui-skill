@@ -534,7 +534,7 @@ class RetrievalTests(unittest.TestCase):
         result = search("bicycle cycling route", "product", 3)
         self.assertIn("analogy", result["source_role"])
         self.assertTrue(result["results"])
-        self.assertTrue(all(set(item) == {"Product Type", "Keywords"} for item in result["results"]))
+        self.assertTrue(all(set(item) == {"No", "Product Type", "Keywords"} for item in result["results"]))
 
     def test_chart_results_withhold_unsupported_precision(self):
         result = search("trend over time", "chart", 3)

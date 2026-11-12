@@ -25,6 +25,13 @@ def validate_max_results(value):
         raise ValueError("max_results must be a positive integer")
     return value
 
+# Result dictionaries map catalog column names to cell values.  Catalogs that
+# number their rows return that id as the first key, ``No``; deleted rows leave
+# gaps so an id cited earlier keeps pointing at the same guidance.  Catalogs
+# without a ``No`` column (fonts, icon families/concepts/candidates) identify
+# rows by their name column.
+ROW_ID_COL = "No"
+
 ICON_CANDIDATE_FAMILY_ALIASES = {
     "lucide": "Lucide",
     "tabler": "Tabler Icons",
@@ -33,6 +40,12 @@ ICON_CANDIDATE_FAMILY_ALIASES = {
     "radix": "Radix Icons",
     "remix": "Remix Icon",
     "hugeicons": "Hugeicons Free",
+}
+
+_MOBILE_APP_INTERFACE = {
+    "file": "app-interface.csv",
+    "search_cols": ["Category", "Issue", "Keywords", "Description"],
+    "output_cols": ["No", "Category", "Issue", "Platform", "Description", "Do", "Don't", "Code Example Good", "Code Example Bad", "Severity"],
 }
 
 CSV_CONFIG = {
@@ -46,6 +59,7 @@ CSV_CONFIG = {
         # hidden): none of those time-sensitive or context-dependent claims
         # carried a primary-source citation.
         "output_cols": [
+            "No",
             "Data Type",
             "Keywords",
             "Best Chart Type",
@@ -57,17 +71,17 @@ CSV_CONFIG = {
     "product": {
         "file": "products.csv",
         "search_cols": ["Product Type", "Keywords"],
-        "output_cols": ["Product Type", "Keywords"]
+        "output_cols": ["No", "Product Type", "Keywords"]
     },
     "ux": {
         "file": "ux-guidelines.csv",
         "search_cols": ["Category", "Issue", "Description", "Platform"],
-        "output_cols": ["Category", "Issue", "Platform", "Description", "Do", "Don't", "Code Example Good", "Code Example Bad", "Severity"]
+        "output_cols": ["No", "Category", "Issue", "Platform", "Description", "Do", "Don't", "Code Example Good", "Code Example Bad", "Severity"]
     },
     "icons": {
         "file": "icons.csv",
         "search_cols": ["Category", "Icon Name", "Keywords", "Best For"],
-        "output_cols": ["Category", "Icon Name", "Keywords", "Library", "Import Code", "Usage", "Best For", "Style"]
+        "output_cols": ["No", "Category", "Icon Name", "Keywords", "Library", "Import Code", "Usage", "Best For", "Style"]
     },
     "icon-families": {
         "file": "icon-families.csv",
@@ -87,13 +101,13 @@ CSV_CONFIG = {
     "react": {
         "file": "react-performance.csv",
         "search_cols": ["Category", "Issue", "Keywords", "Description"],
-        "output_cols": ["Category", "Issue", "Platform", "Description", "Do", "Don't", "Code Example Good", "Code Example Bad", "Severity"]
+        "output_cols": ["No", "Category", "Issue", "Platform", "Description", "Do", "Don't", "Code Example Good", "Code Example Bad", "Severity"]
     },
-    "web": {
-        "file": "app-interface.csv",
-        "search_cols": ["Category", "Issue", "Keywords", "Description"],
-        "output_cols": ["Category", "Issue", "Platform", "Description", "Do", "Don't", "Code Example Good", "Code Example Bad", "Severity"]
-    },
+    # Every app-interface row targets iOS, Android, or React Native apps.
+    # ``mobile`` is the accurate name; ``web`` is kept as a compatibility alias
+    # for callers of the original domain name.
+    "mobile": _MOBILE_APP_INTERFACE,
+    "web": _MOBILE_APP_INTERFACE,
     "google-fonts": {
         "file": "google-fonts.csv",
         "search_cols": ["Family", "Category", "Stroke", "Classifications", "Keywords", "Subsets", "Designers"],
@@ -107,7 +121,7 @@ CSV_CONFIG = {
 DOMAIN_SOURCE_ROLES = {
     "product": (
         "analogy evidence",
-        "Treat matches as unverified analogs. Reuse relevant concerns only; do not inherit product identity, layout, style, palette, or landing recipe.",
+        "Treat matches as unverified analogs: each row is only a product-category label and lexical terms. Use a match to widen questions about the real product; do not inherit product identity, layout, style, palette, or landing recipe.",
     ),
     "google-fonts": (
         "font catalog snapshot",
@@ -139,9 +153,17 @@ DOMAIN_SOURCE_ROLES = {
         "general UX guidance",
         "Reconcile with the real journey, current standards, repository behavior, and user evidence.",
     ),
+    "mobile": (
+        "mobile app-interface guidance (iOS, Android, React Native)",
+        "Every row targets native mobile apps or React Native, not web or browser behavior. "
+        "Reconcile with current platform guidance (Apple Human Interface Guidelines, Material Design), "
+        "the repository's framework version, and its actual semantics and behavior.",
+    ),
     "web": (
-        "web implementation guidance",
-        "Reconcile with current standards, browser support, and the repository's actual semantics and behavior.",
+        "mobile app-interface guidance (legacy domain name)",
+        "`web` is a compatibility alias of `mobile`: every row targets iOS, Android, or React Native apps, not web or browser behavior. "
+        "Reconcile with current platform guidance (Apple Human Interface Guidelines, Material Design), "
+        "the repository's framework version, and its actual semantics and behavior.",
     ),
     "react": (
         "React performance guidance",
@@ -190,7 +212,7 @@ RETIRED_STACKS = {
 # Common columns for all stacks
 _STACK_COLS = {
     "search_cols": ["Category", "Guideline", "Description", "Do", "Don't"],
-    "output_cols": ["Category", "Guideline", "Description", "Do", "Don't", "Code Good", "Code Bad", "Severity", "Docs URL"]
+    "output_cols": ["No", "Category", "Guideline", "Description", "Do", "Don't", "Code Good", "Code Bad", "Severity", "Docs URL"]
 }
 
 class _StackChoices(list):

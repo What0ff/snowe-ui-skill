@@ -30,7 +30,7 @@ Local analogs are also off by default. Add a caller-chosen lexical query only wh
 ```text
 python <skill-directory>/scripts/search.py \
   "Городской магазин велосипедов; уверенность в посадке до покупки" \
-  --decision-packet --analog-query "bicycle retailer fit"
+  --decision-packet --analog-query "cycling retail shop"
 ```
 
 `--analog-query` ranks at most three subordinate product-catalog matches. It is not semantic confidence, does not expand the brief, and changes no situation or architecture field when results are absent.
@@ -96,14 +96,15 @@ python <skill-directory>/scripts/search.py "query" --domain <domain> --max-resul
 python <skill-directory>/scripts/search.py "query" --domain <domain> --json
 ```
 
-Every result reports a **source role** and **use boundary**. Ranking is English-oriented lexical BM25 over a bundled snapshot. A top row is not semantic classification, current external truth, or a design selection.
+Every result reports a **source role** and **use boundary**. Rows from catalogs that number them start with `No`, a stable row id within the named source file (removed rows leave gaps), so a finding can cite, for example, `charts.csv` row 3. `data/CATALOGS.md` records each catalog's source, dates, row count, and license notice. Ranking is English-oriented lexical BM25 over a bundled snapshot. A top row is not semantic classification, current external truth, or a design selection.
 
 | Domain | Evidence role |
 |---|---|
 | `product` | Product analogs and concern prompts; never project identity |
 | `google-fonts` | Bundled font metadata snapshot; verify current official files and license |
 | `ux` | Issue prompts and heuristics to verify in the actual flow |
-| `web` | App-interface/accessibility prompts; verify platform applicability |
+| `mobile` | iOS, Android, and React Native app-interface/accessibility prompts (`app-interface.csv`); not web or browser guidance |
+| `web` | Compatibility alias of `mobile` (same catalog and results); the rows are mobile-app guidance despite the name |
 | `chart` | Unsourced encoding/accessibility prompts; unsupported exact thresholds, threshold-bearing use/avoid prose, palettes, grades, libraries, and interaction prescriptions are absent from the bundled catalog |
 | `react` | React/Next performance prompts; verify current repository/version |
 | `icon-concepts` | Role-first metaphor prompts and ambiguity warnings |
@@ -136,7 +137,7 @@ The `uwp` catalog was retired on 2026-11-12: it targeted UWP and retired device 
 
 Use the repository's actual stack. Stack rows are bundled implementation guidance, not proof of current API behavior; check current official documentation when versions, platform behavior, or dependencies can have changed.
 
-Every stack response includes the same top-level evidence boundary as domain retrieval plus `documentation_coverage` counts for returned rows with and without a `Docs URL`. A URL is only a discovery pointer; it does not prove that the source is primary or current. When any returned row has no URL, both text and JSON output say that the row remains unsourced bundled guidance until independently verified.
+Stack rows also start with their `No` row id where the file has one. Every stack response includes the same top-level evidence boundary as domain retrieval plus `documentation_coverage` counts for returned rows with and without a `Docs URL`. A URL is only a discovery pointer; it does not prove that the source is primary or current. When any returned row has no URL, both text and JSON output say that the row remains unsourced bundled guidance until independently verified.
 
 ## Validate Custom SVG Structure
 

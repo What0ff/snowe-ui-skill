@@ -23,7 +23,7 @@ Icon comparison schema `1.2` requires context `lang`, `dir` (`ltr | rtl | auto`)
 
 ## Retrieval contract
 
-`core.py` exposes 10 general domains and 21 stacks. Each configuration declares a CSV filename and exact searchable/output headers. BM25 tokenizes configured text, ranks rows in memory, and returns positive scores only. There is no persisted index, embedding/semantic model, automatic domain detector, remote service, or cache.
+`core.py` exposes 11 general domain names (`mobile` and its compatibility alias `web` share one catalog) and 21 stacks. Each configuration declares a CSV filename and exact searchable/output headers. BM25 tokenizes configured text, ranks rows in memory, and returns positive scores only. There is no persisted index, embedding/semantic model, automatic domain detector, remote service, or cache.
 
 `search(query, domain, max_results)` requires `domain` and returns:
 
@@ -35,7 +35,7 @@ Icon comparison schema `1.2` requires context `lang`, `dir` (`ltr | rtl | auto`)
 }
 ```
 
-Every live domain has an epistemic role and use boundary. Product output is only `Product Type` plus `Keywords`. Icon lookup removes legacy style/guideline rows. `icon-candidates` additionally requires exactly one named supported family and a real subject.
+Each `results` item maps catalog column names to values; catalogs with a `No` column return that stable row id first (removed rows leave gaps). Every live domain has an epistemic role and use boundary. Product output is only `No`, `Product Type`, and `Keywords`. Icon lookup removes legacy style/guideline rows. `icon-candidates` additionally requires exactly one named supported family and a real subject.
 
 Chart retrieval is a visualization-discovery snapshot. `charts.csv` holds only the returned columns: unsupported exact data-volume thresholds, use/avoid prose, color prescriptions, accessibility grades, library recommendations, and interaction levels were deleted from the shipped file, not merely hidden from output.
 
@@ -92,14 +92,14 @@ Decision-ledger statuses are `PROPOSED`, `ACCEPTED`, and `SUPERSEDED`. Packet st
 
 ## Evidence datasets
 
-Live configuration, not directory presence, defines runtime inputs:
+Live configuration, not directory presence, defines runtime inputs. `data/CATALOGS.md` is the shipped provenance manifest (source, import/edit dates, row count, license notice, including the MIT notice for catalogs derived from UI UX Pro Max); `tests/test_catalogs.py` keeps its file list and row counts exact.
 
 | Catalog | Rows | Role |
 |---|---:|---|
 | `products.csv` | 192 | Caller-requested lexical product analog terms only. |
 | `google-fonts.csv` | 1,923 | Font metadata snapshot, not a font decision. |
 | `ux-guidelines.csv` | 91 | General UX prompts with contextual verification boundary; row ids are stable (merged duplicates leave gaps). |
-| `app-interface.csv` | 30 | Web implementation/accessibility prompts. |
+| `app-interface.csv` | 30 | iOS/Android/React Native app-interface prompts via `mobile` (alias `web`); not browser guidance. |
 | `react-performance.csv` | 44 | React performance prompts requiring version/current-doc verification. |
 | `charts.csv` | 25 | Encoding alternatives, limitations, and accessibility prompts (seven columns; nothing withheld remains in the file). |
 | `icons.csv` | 104 | Legacy familiar-action lookup after style/guideline filtering; no third-party brand marks (those come from official artwork). |

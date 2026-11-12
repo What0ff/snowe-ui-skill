@@ -25,7 +25,7 @@ SKILL_ROOT = REPO_ROOT / "skill" / "snowe-ui-skill"
 DATA_DIR = SKILL_ROOT / "data"
 sys.path.insert(0, str(SKILL_ROOT / "scripts"))
 
-from core import AVAILABLE_STACKS, CSV_CONFIG, STACK_CONFIG, _STACK_COLS, search_stack  # noqa: E402
+from core import AVAILABLE_STACKS, CSV_CONFIG, DOMAIN_SOURCE_ROLES, STACK_CONFIG, _STACK_COLS, search, search_stack  # noqa: E402
 
 
 RECIPE_PATTERNS = {
@@ -301,6 +301,95 @@ class NativeStackTests(unittest.TestCase):
         self.assert_not_recommended("jetpack-compose", r"\bChannel\b|receiveAsFlow")
         self.assert_not_recommended("jetpack-compose", r"collectAsState\(\)")
         self.assertTrue(all(row["Docs URL"].startswith("https://") for row in rows if row["Docs URL"]))
+
+
+class ProvenanceManifestTests(unittest.TestCase):
+    MANIFEST = DATA_DIR / "CATALOGS.md"
+    ROW = re.compile(
+        r"^\| `([^`]+\.csv)` \| (\d+) \| (.+?) \| (\d{4}-\d{2}-\d{2}) \| (\d{4}-\d{2}-\d{2}) \| (.+) \|$"
+    )
+
+    def manifest_rows(self):
+        rows = {}
+        for line in self.MANIFEST.read_text(encoding="utf-8").splitlines():
+            match = self.ROW.match(line)
+            if match:
+                rows[match.group(1)] = match.groups()[1:]
+        return rows
+
+    def test_manifest_lists_every_bundled_catalog_with_its_row_count(self):
+        listed = self.manifest_rows()
+        actual = {
+            path.relative_to(DATA_DIR).as_posix(): len(read_rows(path)) - 1
+            for path in bundled_csv_paths()
+        }
+        self.assertEqual(sorted(actual), sorted(listed), "manifest catalogs differ from bundled CSVs")
+        mismatched = {
+            name: (int(listed[name][0]), count)
+            for name, count in actual.items()
+            if int(listed[name][0]) != count
+        }
+        self.assertEqual({}, mismatched, "update Rows in data/CATALOGS.md (listed, actual)")
+        for name, (_, source, imported, edited, notice) in listed.items():
+            with self.subTest(catalog=name):
+                self.assertTrue(source.strip() and notice.strip())
+                self.assertLessEqual(imported, edited)
+
+    def test_manifest_keeps_the_upstream_mit_notice(self):
+        text = self.MANIFEST.read_text(encoding="utf-8")
+        self.assertIn("Copyright (c) 2024 Next Level Builder", text)
+        self.assertIn("Permission is hereby granted, free of charge", text)
+        self.assertIn('THE SOFTWARE IS PROVIDED "AS IS"', text)
+
+
+class DomainContractTests(unittest.TestCase):
+    def test_results_lead_with_the_row_id_where_the_schema_has_one(self):
+        queries = {
+            "chart": "trend over time",
+            "product": "cycling route",
+            "ux": "touch target",
+            "icons": "delete trash",
+            "react": "barrel imports",
+            "mobile": "touch target",
+        }
+        for domain, query in queries.items():
+            with self.subTest(domain=domain):
+                header = read_rows(DATA_DIR / CSV_CONFIG[domain]["file"])[0]
+                self.assertEqual("No", header[0])
+                result = search(query, domain, 2)
+                self.assertTrue(result["results"])
+                self.assertTrue(
+                    all(next(iter(item)) == "No" and item["No"].isdigit() for item in result["results"])
+                )
+        stack = search_stack("accessibility", "flutter", 2)
+        self.assertTrue(stack["results"])
+        self.assertTrue(all(next(iter(item)) == "No" for item in stack["results"]))
+
+    def test_mobile_names_the_app_interface_catalog_and_web_stays_an_alias(self):
+        self.assertIs(CSV_CONFIG["mobile"], CSV_CONFIG["web"])
+        mobile = search("touch target size", "mobile", 3)
+        legacy = search("touch target size", "web", 3)
+        self.assertEqual(mobile["results"], legacy["results"])
+        self.assertEqual("web", legacy["domain"])
+        self.assertIn("mobile", DOMAIN_SOURCE_ROLES["mobile"][0])
+        self.assertIn("alias of `mobile`", legacy["warning"])
+        self.assertNotIn("browser support", mobile["warning"])
+        with (DATA_DIR / "app-interface.csv").open(encoding="utf-8", newline="") as handle:
+            platforms = {row["Platform"] for row in csv.DictReader(handle)}
+        self.assertEqual({"iOS/Android/React Native"}, platforms)
+
+    def test_product_warning_matches_the_lexical_schema(self):
+        warning = search("cycling", "product", 1)["warning"]
+        self.assertNotIn("concerns", warning)
+        self.assertIn("product-category label and lexical terms", warning)
+
+    def test_documented_analog_example_returns_analogs(self):
+        reference = (SKILL_ROOT / "references" / "cli-reference.md").read_text(encoding="utf-8")
+        queries = re.findall(r'--analog-query "([^"]+)"', reference)
+        self.assertTrue(queries)
+        for query in queries:
+            with self.subTest(query=query):
+                self.assertTrue(search(query, "product", 3)["results"], "documented analog example returns []")
 
 
 class RetiredStackTests(unittest.TestCase):

@@ -32,7 +32,8 @@ The deleted layouts were not moved into an “archive” inside the installable 
 | icon family/concept/candidate catalogs | Source discovery, exact known exports, role/metaphor questions, license/version URLs. | One named family for exact candidates; verify current source and rendered optical fit; custom and no-icon outcomes remain available. |
 | `icons.csv` | Legacy lookup for familiar system actions. | Style/guideline rows are filtered; product-specific symbols require the broader icon process. |
 | chart guidance | Encoding alternatives, failure cases, accessibility notes, and fallback prompts. | Caller selects the domain; the real analytical question and representative data determine the encoding. |
-| UX, web, React, and stack guidance | Scoped implementation heuristics, failure modes, and code examples. | Explicit domain/stack only; reconcile with current official documentation, repository versions, platform behavior, and measured runtime. |
+| `ux-guidelines.csv`, `react-performance.csv`, and stack guidance | Scoped implementation heuristics, failure modes, and code examples. | Explicit domain/stack only; reconcile with current official documentation, repository versions, platform behavior, and measured runtime. |
+| `app-interface.csv` (`mobile`, alias `web`) | iOS, Android, and React Native app-interface and accessibility prompts. | Mobile only, despite the legacy `web` name; reconcile with current platform guidance and the repository's framework version. |
 
 ## Regression boundary
 
@@ -46,5 +47,7 @@ Automated coverage protects the following facts:
 - no bundled CSV cell contains a hex color, millisecond duration, Tailwind color utility, numbered template prescription, or frame-rate claim, except exact pending findings in stack catalogs owned by a separate cleanup (`tests/test_catalogs.py`);
 - every bundled CSV is BOM-free UTF-8 with LF endings and rectangular rows, and every configured column exists;
 - deleting or perturbing local analog retrieval does not change situation framing or architecture inquiry.
+
+`skill/snowe-ui-skill/data/CATALOGS.md` records each retained catalog's source, import and edit dates, row count, and license notice. Most catalogs derive from the MIT-licensed UI UX Pro Max skill (Next Level Builder); its notice ships with the data.
 
 This audit classifies evidence quality; it does not claim that a retained row is current truth. Every retrieved result still carries a source role and a use boundary.
