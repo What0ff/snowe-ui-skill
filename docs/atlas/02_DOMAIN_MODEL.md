@@ -23,7 +23,7 @@ Icon comparison schema `1.2` requires context `lang`, `dir` (`ltr | rtl | auto`)
 
 ## Retrieval contract
 
-`core.py` exposes 10 general domains and 22 stacks. Each configuration declares a CSV filename and exact searchable/output headers. BM25 tokenizes configured text, ranks rows in memory, and returns positive scores only. There is no persisted index, embedding/semantic model, automatic domain detector, remote service, or cache.
+`core.py` exposes 10 general domains and 21 stacks. Each configuration declares a CSV filename and exact searchable/output headers. BM25 tokenizes configured text, ranks rows in memory, and returns positive scores only. There is no persisted index, embedding/semantic model, automatic domain detector, remote service, or cache.
 
 `search(query, domain, max_results)` requires `domain` and returns:
 
@@ -106,7 +106,7 @@ Live configuration, not directory presence, defines runtime inputs:
 | `icon-families.csv` | 10 | Source discovery snapshot. |
 | `icon-concepts.csv` | 21 | Role/metaphor questions. |
 | `icon-candidates.csv` | 70 | Exact known exports with family/source constraints. |
-| `data/stacks/*.csv` | 22 files | Explicit stack guidance. |
+| `data/stacks/*.csv` | 21 files | Explicit stack guidance. `uwp.csv` was retired (2026-11-12); `RETIRED_STACKS` makes `--stack uwp` return an error naming `winui`. |
 
 `landing.csv`, `styles.csv`, `colors.csv`, `typography.csv`, and `motion.csv` were deleted because they contained solution-shaped recipes or unsupported suitability/conversion claims. `products.csv` was reduced to lexical taxonomy. `evals/designer-behavior/EVIDENCE-AUDIT.md` records field-level rationale.
 

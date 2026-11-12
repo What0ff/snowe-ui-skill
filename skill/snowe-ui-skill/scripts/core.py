@@ -171,7 +171,20 @@ STACK_CONFIG = {
     "winui":            {"file": "stacks/winui.csv"},
     "avalonia":         {"file": "stacks/avalonia.csv"},
     "uno":              {"file": "stacks/uno.csv"},
-    "uwp":              {"file": "stacks/uwp.csv"},
+}
+
+# Stacks whose bundled catalogs were removed.  A lookup by a retired name
+# returns an explicit error that names the replacement instead of silently
+# falling back to it.
+RETIRED_STACKS = {
+    "uwp": {
+        "replacement": "winui",
+        "reason": (
+            "its guidance targeted UWP (Windows.UI.Xaml) and retired device families such as Windows 10 Mobile; "
+            "WinUI 3 on the Windows App SDK is Microsoft's current native XAML framework, and the winui catalog "
+            "includes rows on migrating UWP code"
+        ),
+    },
 }
 
 # Common columns for all stacks
@@ -180,7 +193,20 @@ _STACK_COLS = {
     "output_cols": ["Category", "Guideline", "Description", "Do", "Don't", "Code Good", "Code Bad", "Severity", "Docs URL"]
 }
 
-AVAILABLE_STACKS = list(STACK_CONFIG.keys())
+class _StackChoices(list):
+    """Live stack names in configuration order.
+
+    Iteration (help text, listings) yields only live stacks.  Membership also
+    admits retired names so an ``argparse`` ``choices`` check lets them through
+    to ``search_stack``, which answers with an explicit retirement error naming
+    the replacement instead of a generic invalid-choice listing.
+    """
+
+    def __contains__(self, name):
+        return list.__contains__(self, name) or name in RETIRED_STACKS
+
+
+AVAILABLE_STACKS = _StackChoices(STACK_CONFIG)
 STACK_SOURCE_ROLE = "caller-selected bundled stack implementation-guidance snapshot"
 STACK_WARNING = (
     "Treat results as advisory prompts, not current platform or API truth. "
@@ -389,6 +415,17 @@ def search(query, domain=None, max_results=MAX_RESULTS):
 def search_stack(query, stack, max_results=MAX_RESULTS):
     """Search stack-specific guidelines"""
     validate_max_results(max_results)
+    if stack in RETIRED_STACKS:
+        retired = RETIRED_STACKS[stack]
+        replacement = retired["replacement"]
+        return {
+            "error": (
+                f"The {stack} stack catalog was retired: {retired['reason']}. "
+                f"Use --stack {replacement} instead."
+            ),
+            "stack": stack,
+            "replacement": replacement,
+        }
     if stack not in STACK_CONFIG:
         return {"error": f"Unknown stack: {stack}. Available: {', '.join(AVAILABLE_STACKS)}"}
 

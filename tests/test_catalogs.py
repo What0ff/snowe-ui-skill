@@ -12,7 +12,9 @@ from __future__ import annotations
 
 import csv
 import io
+import json
 import re
+import subprocess
 import sys
 import unittest
 from pathlib import Path
@@ -23,7 +25,7 @@ SKILL_ROOT = REPO_ROOT / "skill" / "snowe-ui-skill"
 DATA_DIR = SKILL_ROOT / "data"
 sys.path.insert(0, str(SKILL_ROOT / "scripts"))
 
-from core import CSV_CONFIG, STACK_CONFIG, _STACK_COLS  # noqa: E402
+from core import AVAILABLE_STACKS, CSV_CONFIG, STACK_CONFIG, _STACK_COLS, search_stack  # noqa: E402
 
 
 RECIPE_PATTERNS = {
@@ -91,9 +93,6 @@ PENDING_OUTSIDE_THIS_CLEANUP = {
     ("stacks/threejs.csv", "line 45", "frame-rate claim", "60fps"),
     ("stacks/threejs.csv", "line 45", "frame-rate claim", "8fps"),
     ("stacks/uno.csv", "21", "hex color", "#FFFFFF"),
-    # Retired with the file itself in the uwp-removal change.
-    ("stacks/uwp.csv", "12", "hex color", "#000000"),
-    ("stacks/uwp.csv", "41", "hex color", "#444444"),
     ("stacks/uno.csv", "56", "hex color", "#005A9E"),
     ("stacks/uno.csv", "56", "hex color", "#3A96DD"),
     ("stacks/wpf.csv", "18", "hex color", "#0078D4"),
@@ -302,6 +301,45 @@ class NativeStackTests(unittest.TestCase):
         self.assert_not_recommended("jetpack-compose", r"\bChannel\b|receiveAsFlow")
         self.assert_not_recommended("jetpack-compose", r"collectAsState\(\)")
         self.assertTrue(all(row["Docs URL"].startswith("https://") for row in rows if row["Docs URL"]))
+
+
+class RetiredStackTests(unittest.TestCase):
+    def test_uwp_catalog_is_gone_and_winui_carries_migration_rows(self):
+        self.assertFalse((DATA_DIR / "stacks" / "uwp.csv").exists())
+        self.assertNotIn("uwp", STACK_CONFIG)
+        self.assertNotIn("uwp", list(AVAILABLE_STACKS))
+        with (DATA_DIR / "stacks" / "winui.csv").open(encoding="utf-8", newline="") as handle:
+            guidelines = {row["Guideline"] for row in csv.DictReader(handle)}
+        self.assertIn("Migrate UWP code by feature area", guidelines)
+        self.assertIn("Choose WinUI 3 for new native Windows XAML apps", guidelines)
+
+    def test_retired_stack_lookup_names_the_replacement(self):
+        result = search_stack("dialog", "uwp")
+        self.assertEqual("winui", result["replacement"])
+        self.assertIn("retired", result["error"])
+        self.assertIn("--stack winui", result["error"])
+        self.assertNotIn("results", result)
+
+    def test_cli_reports_the_retirement_instead_of_a_generic_choice_error(self):
+        completed = subprocess.run(
+            [sys.executable, str(SKILL_ROOT / "scripts" / "search.py"), "dialog", "--stack", "uwp", "--json"],
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            check=False,
+        )
+        self.assertNotIn("invalid choice", completed.stderr)
+        payload = json.loads(completed.stdout)
+        self.assertEqual("winui", payload["replacement"])
+        self.assertIn("--stack winui", payload["error"])
+        help_text = subprocess.run(
+            [sys.executable, str(SKILL_ROOT / "scripts" / "search.py"), "--help"],
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            check=False,
+        ).stdout
+        self.assertNotIn("uwp", help_text)
 
 
 if __name__ == "__main__":

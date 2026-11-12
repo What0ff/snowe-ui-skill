@@ -129,8 +129,10 @@ Supported stack datasets:
 ```text
 react, nextjs, vue, svelte, astro, swiftui, react-native, flutter,
 nuxtjs, nuxt-ui, html-tailwind, shadcn, jetpack-compose, threejs,
-angular, laravel, javafx, wpf, winui, avalonia, uno, uwp
+angular, laravel, javafx, wpf, winui, avalonia, uno
 ```
+
+The `uwp` catalog was retired on 2026-11-12: it targeted UWP and retired device families such as Windows 10 Mobile. `--stack uwp` now returns an error that names `winui`, whose catalog includes rows on choosing WinUI 3 and migrating UWP code.
 
 Use the repository's actual stack. Stack rows are bundled implementation guidance, not proof of current API behavior; check current official documentation when versions, platform behavior, or dependencies can have changed.
 
