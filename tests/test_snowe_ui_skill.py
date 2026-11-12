@@ -175,10 +175,14 @@ class SkillPackageTests(unittest.TestCase):
         hash_match = re.search(r"committed methodology SHA-256 was `([0-9a-f]{64})`", host_probes)
         self.assertIsNotNone(commit_match)
         self.assertIsNotNone(hash_match)
-        committed = subprocess.check_output(
-            ["git", "show", f"{commit_match.group(1)}:skill/snowe-ui-skill/SKILL.md"],
-            cwd=REPO_ROOT,
-        )
+        try:
+            committed = subprocess.check_output(
+                ["git", "show", f"{commit_match.group(1)}:skill/snowe-ui-skill/SKILL.md"],
+                cwd=REPO_ROOT,
+                stderr=subprocess.DEVNULL,
+            )
+        except (subprocess.CalledProcessError, OSError):
+            self.skipTest("full git history is unavailable (shallow clone or source archive)")
         self.assertEqual(hash_match.group(1), hashlib.sha256(committed).hexdigest())
 
 

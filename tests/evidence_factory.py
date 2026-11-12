@@ -13,7 +13,13 @@ HISTORICAL_REVISION = "92eeb724fcfa889cafe8cb47c219b7e80a8e2635"
 
 @lru_cache(maxsize=1)
 def historical_browser_digest(root):
-    raw = subprocess.check_output(["git", "show", HISTORICAL_REVISION+":scripts/browser-smoke.mjs"], cwd=root)
+    try:
+        raw = subprocess.check_output(["git", "show", HISTORICAL_REVISION+":scripts/browser-smoke.mjs"],
+                                      cwd=root, stderr=subprocess.DEVNULL)
+    except (subprocess.CalledProcessError, OSError):
+        # Shallow clones and source archives lack the historical revision.
+        import unittest
+        raise unittest.SkipTest(f"git history with {HISTORICAL_REVISION[:7]} is unavailable")
     return hashlib.sha256(raw).hexdigest()
 
 

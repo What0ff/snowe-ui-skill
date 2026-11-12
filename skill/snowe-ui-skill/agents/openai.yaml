@@ -1,4 +1,4 @@
 interface:
   display_name: "Snowe UI Skill"
   short_description: "Design distinct, evidence-led product interfaces"
-  default_prompt: "Use $snowe-ui-skill to calibrate the smallest responsible process from the real change surface, then design, implement, and render only the evidence the task consequence requires."
+  default_prompt: "Use $snowe-ui-skill to improve this interface: inspect the current UI, fix the most important design and UX problems, and verify the rendered result."

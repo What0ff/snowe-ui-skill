@@ -21,7 +21,11 @@ PRODUCT_NAME = "snowe-ui-skill"
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_SOURCE = REPOSITORY_ROOT / "skill" / PRODUCT_NAME
 DEFAULT_DESTINATION = Path.home() / ".agents" / "skills" / PRODUCT_NAME
-COPY_IGNORE = shutil.ignore_patterns("__pycache__", "*.pyc", "*.pyo", ".DS_Store")
+# Local caches, secrets, logs and project state never belong in an installation.
+COPY_IGNORE = shutil.ignore_patterns(
+    "__pycache__", "*.pyc", "*.pyo", ".DS_Store", "Thumbs.db",
+    ".env", ".env.*", "*.log", "design-intelligence", "node_modules", ".git",
+)
 INSTALLER_STATE_VERSION = "1"
 FRONTMATTER_LINE_LIMIT = 128
 

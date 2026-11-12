@@ -24,7 +24,7 @@ Checks installable Python syntax/import compilation. It does not validate Markdo
 python -m unittest discover -s tests -v
 ```
 
-Current inspected result: **250 tests run successfully, with one Windows directory-symlink capability skip**.
+Current inspected result: **320 tests run successfully, with one Windows directory-symlink capability skip**. A shallow clone or source archive additionally skips the three tests that read historical git revisions.
 
 - `tests/test_snowe_ui_skill.py`: package routing/docs, schema-3 unresolved framing, multilingual/ambiguity/unknown behavior, opt-in analogs, persistence/path safety, evidence deletion/schemas/claims, icon constraints, contrast, SVG, and CLI.
 - `tests/test_bicycle_benchmark.py`: Goodturn commercial content, local/provenanced assets, semantics, interactions, responsive/reduced motion, design trace, and screenshot coverage.
@@ -284,7 +284,7 @@ node scripts/doppler-detail-probe.mjs
 node scripts/browser-smoke.mjs --smoke --scenario soda-campaign
 ```
 
-The paired integrity control loads the exact previous validators from commit `92eeb724fcfa889cafe8cb47c219b7e80a8e2635`; it reproduces mobile removal, viewport relabelling, changed-CSS omission and implicit visual KEEP, then checks current refusal. It measures integrity, never quality. Full Git history is required only for that explicit control.
+The paired integrity control loads the exact previous validators from commit `92eeb724fcfa889cafe8cb47c219b7e80a8e2635`; it reproduces mobile removal, viewport relabelling, changed-CSS omission and implicit visual KEEP, then checks current refusal. It measures integrity, never quality. Full Git history is required for that explicit control and two historical-digest tests; without it they skip rather than fail.
 
 `test_observation` covers required combinations, browser/PNG dimensions, dependency additions, missing layers/details, crop rescaling/assessment omission, relationship drift, justified exceptions, proposed direction, conditional memory and missing temporal proof. Synthetic unit bytes have no aesthetic meaning.
 

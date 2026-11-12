@@ -52,6 +52,22 @@ class InstallationTests(unittest.TestCase):
             self.assertFalse((destination.parent / ".snowe-ui-skill.installing").exists())
             self.assertFalse((destination.parent / ".snowe-ui-skill.previous").exists())
 
+    def test_local_secrets_logs_and_project_state_are_not_installed(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            root = Path(temporary_directory)
+            source = self.make_source(root)
+            (source / ".env").write_text("API_KEY=secret\n", encoding="utf-8")
+            (source / ".env.local").write_text("TOKEN=secret\n", encoding="utf-8")
+            (source / "scripts" / "debug.log").write_text("trace\n", encoding="utf-8")
+            (source / "design-intelligence" / "probe").mkdir(parents=True)
+            (source / "design-intelligence" / "probe" / "BRIEF.md").write_text("brief\n", encoding="utf-8")
+            (source / "node_modules" / "pkg").mkdir(parents=True)
+            (source / "node_modules" / "pkg" / "index.js").write_text("x\n", encoding="utf-8")
+            destination = root / "skills" / "snowe-ui-skill"
+            INSTALLER.install_skill(source, destination)
+            installed = sorted(path.relative_to(destination).as_posix() for path in destination.rglob("*"))
+            self.assertEqual(["SKILL.md", "scripts", "scripts/tool.py"], installed)
+
     def test_interrupted_previous_swap_is_recovered_before_update(self):
         with tempfile.TemporaryDirectory() as temporary_directory:
             root = Path(temporary_directory)

@@ -66,7 +66,7 @@ Symbol source choice precedes custom exploration: third-party identities retain 
 
 ### Repository installer
 
-`scripts/install_skill.py` is repository tooling, not part of the copied product. It acquires an OS-backed destination lock, validates lexical/physical containment and a regular self-contained source tree, claims per-run transient slots without treating forgeable stale markers as ownership, preserves a recognizable interrupted previous tree until staging succeeds, stages and revalidates an exact copy immediately before activation, revalidates the activated object, safely restores the current or recovered prior destination on failure, removes obsolete files on update, and accepts an explicit final destination for compatible hosts.
+`scripts/install_skill.py` is repository tooling, not part of the copied product. Its copy ignores caches, `.env*`, `*.log`, `node_modules`, `.git` and local `design-intelligence/` state, so stray local files never ship. The default destination is `~/.agents/skills`; README documents `--destination ~/.claude/skills/snowe-ui-skill` for Claude Code. It acquires an OS-backed destination lock, validates lexical/physical containment and a regular self-contained source tree, claims per-run transient slots without treating forgeable stale markers as ownership, preserves a recognizable interrupted previous tree until staging succeeds, stages and revalidates an exact copy immediately before activation, revalidates the activated object, safely restores the current or recovered prior destination on failure, removes obsolete files on update, and accepts an explicit final destination for compatible hosts.
 
 ## Repository proof layer
 

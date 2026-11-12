@@ -163,8 +163,13 @@ snowe-ui-skill/
 │       ├── decision_packet.py         # Portfolio/open-inquiry packet and persistence
 │       ├── asset_quality.py           # SVG structure/provenance validation
 │       ├── icon_review.py             # Self-contained icon decision comparison
-│       └── contrast.py                # Exact opaque-color contrast checks
+│       ├── contrast.py                # Exact opaque-color contrast checks
+│       ├── corrections.py             # Scoped correction journal and completion check
+│       ├── visual_review.py           # Checked visual verdict reports
+│       ├── observation.py, visual_system.py, checked_evidence.py  # Evidence helpers
+│       └── observe.mjs                # Optional browser capture (Node 22 + Chrome/Edge)
 ├── evals/designer-behavior/           # Deterministic cross-business contracts
+├── evals/skill-outcome/               # No-skill / before / after outcome comparison
 ├── evals/icon-decisions/               # Existing/custom/no-icon operational proof
 ├── benchmarks/bicycle-commerce/       # Rendered Goodturn forward-test
 ├── benchmarks/soda-campaign/           # Expressive Doppler motion benchmark
@@ -190,6 +195,19 @@ Ask the built-in installer:
 ```text
 Use $skill-installer to install skill/snowe-ui-skill from https://github.com/What0ff/snowe-ui-skill.
 ```
+
+### Install for Claude Code
+
+Clone the repository and install into Claude Code's personal skills directory:
+
+```bash
+git clone https://github.com/What0ff/snowe-ui-skill.git
+python3 snowe-ui-skill/scripts/install_skill.py --destination ~/.claude/skills/snowe-ui-skill
+```
+
+On Windows use `python .\snowe-ui-skill\scripts\install_skill.py --destination $HOME\.claude\skills\snowe-ui-skill`. For one project only, install into `<project>/.claude/skills/snowe-ui-skill`. Claude Code loads the skill when a task matches its description; invoke it explicitly with `/snowe-ui-skill`.
+
+The installer never copies caches, `.env` files, logs, `node_modules` or a local `design-intelligence/` directory into an installation.
 
 ### Reproducible clone, install, and update
 
