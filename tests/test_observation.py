@@ -1,7 +1,10 @@
 """Adversarial evidence and relational contracts; synthetic bytes never prove taste."""
 from copy import deepcopy
+from functools import lru_cache
 import json
 from pathlib import Path
+import shutil
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -9,8 +12,31 @@ import unittest
 from tests.evidence_factory import binding, make_review, write
 
 ROOT = Path(__file__).resolve().parents[1]
+OBSERVER = ROOT / "skill/snowe-ui-skill/scripts/observe.mjs"
 sys.path.insert(0, str(ROOT / "skill/snowe-ui-skill/scripts"))
+from observation import inspect_capture, validate_plan
 from visual_review import inspect_review
+
+
+@lru_cache(maxsize=1)
+def node_executable():
+    """Node 22+ for the optional observer, or None when this host cannot run it."""
+    node = shutil.which("node")
+    if not node: return None
+    version = subprocess.run([node, "--version"], capture_output=True, text=True, timeout=30).stdout.strip()
+    try:
+        major = int(version.lstrip("v").split(".")[0])
+    except ValueError:
+        return None
+    return node if major >= 22 else None
+
+
+@lru_cache(maxsize=1)
+def browser_observation_available():
+    node = node_executable()
+    if not node: return False
+    result = subprocess.run([node, str(OBSERVER), "capabilities"], capture_output=True, text=True, timeout=60)
+    return result.returncode == 0 and json.loads(result.stdout)["available"]
 
 
 class ObservationIntegrityTests(unittest.TestCase):
@@ -159,6 +185,58 @@ class ObservationIntegrityTests(unittest.TestCase):
         self.report["contract"] = binding(self.root,"attention.json")
         self.assertEqual("REVIEW_REQUIRED", self.check()["status"])
         self.assertEqual("HISTORICAL", self.check()["integrity"])
+
+
+TOGGLE_PAGE = """<!doctype html><meta charset="utf-8"><title>Toggle</title>
+<main><button id="toggle" type="button" aria-pressed="false">Toggle</button></main>
+<script>
+const toggle = document.querySelector('#toggle');
+toggle.addEventListener('click', () => toggle.setAttribute('aria-pressed', String(toggle.getAttribute('aria-pressed') !== 'true')));
+</script>
+"""
+
+
+class ReplayKeyTests(unittest.TestCase):
+    """Keyboard replay names keys; the documented `space` must survive plan checks and capture."""
+
+    def plan(self, steps):
+        case = {"id": "space", "state": "pressed", "viewport": "390x844@1", "theme": "light", "input": "keyboard",
+                "motion": "reduced", "context": "control", "route": "/page/index.html", "steps": steps,
+                "probes": [{"selector": "#toggle", "pseudo": ""}],
+                "details": [{"id": "toggle", "selector": "#toggle", "padding": 4, "scale": 1}],
+                "expect": [{"selector": "#toggle", "property": "attribute:aria-pressed", "equals": "true"},
+                           {"selector": "#toggle", "property": "focused", "equals": True}]}
+        return {"schema": "1.0", "scope": "Keyboard toggle", "sourceRoots": ["page"], "cases": [case]}
+
+    def test_space_is_a_supported_key_name(self):
+        for key in ("Space", "space", "Tab", "Enter", "Escape", "ArrowDown", "ArrowUp"):
+            with self.subTest(key=key):
+                validate_plan(self.plan([{"action": "key", "key": key}]))
+
+    def test_unsupported_or_missing_keys_fail_plan_validation(self):
+        # A literal " " is not printable text in JSON plans; name the key instead.
+        for step in ({"action": "key", "key": " "}, {"action": "key", "key": "F5"}, {"action": "key"}):
+            with self.subTest(step=step):
+                with self.assertRaisesRegex(ValueError, "key"):
+                    validate_plan(self.plan([step]))
+
+    def test_space_activation_passes_capture_and_receipt_check(self):
+        if not browser_observation_available():
+            self.skipTest("Node 22+ and a system Chrome/Chromium/Edge are unavailable")
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "page").mkdir()
+            (root / "page/index.html").write_text(TOGGLE_PAGE, encoding="utf-8")
+            plan = self.plan([{"action": "key", "key": "Tab"}, {"action": "key", "key": "Space"}])
+            validate_plan(plan)
+            write(root, "plan.json", plan)
+            result = subprocess.run([node_executable(), str(OBSERVER), "capture", str(root), "plan.json", "captures"],
+                                    capture_output=True, text=True, timeout=180)
+            self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+            receipt = json.loads((root / "captures/receipt.json").read_text(encoding="utf-8"))
+            proof = receipt["observations"][0]["stateProof"]
+            self.assertEqual(["true", True], [item["actual"] for item in proof])
+            inspect_capture(root, binding(root, "captures/receipt.json"), binding(root, "plan.json"))
 
 
 if __name__ == "__main__": unittest.main()

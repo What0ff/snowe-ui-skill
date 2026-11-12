@@ -15,6 +15,21 @@ const script = fileURLToPath(import.meta.url);
 const mime = {'.html':'text/html', '.css':'text/css', '.js':'text/javascript', '.mjs':'text/javascript', '.svg':'image/svg+xml', '.png':'image/png', '.jpg':'image/jpeg', '.webp':'image/webp', '.woff2':'font/woff2', '.json':'application/json', '.mp4':'video/mp4'};
 const assert = (condition, message) => { if (!condition) throw new Error(message); };
 
+// Replayable keys. Plans name Space ("Space"/"space"); a literal " " is accepted for older captures.
+const keyEvents = {
+  Tab:{key:'Tab',code:'Tab',keyCode:9},
+  Enter:{key:'Enter',code:'Enter',keyCode:13,text:'\r'},
+  Escape:{key:'Escape',code:'Escape',keyCode:27},
+  ArrowDown:{key:'ArrowDown',code:'ArrowDown',keyCode:40},
+  ArrowUp:{key:'ArrowUp',code:'ArrowUp',keyCode:38},
+  Space:{key:' ',code:'Space',keyCode:32,text:' '},
+};
+const replayKeys = [...Object.keys(keyEvents), 'space'];
+export function keyEvent(name) {
+  const canonical = name === 'space' || name === ' ' ? 'Space' : name;
+  return Object.hasOwn(keyEvents, canonical) ? keyEvents[canonical] : null;
+}
+
 export function capabilities() {
   const candidates = [process.env.CHROME_PATH];
   if (process.platform === 'win32') candidates.push(...['C:/Program Files','C:/Program Files (x86)'].flatMap(p => [p+'/Google/Chrome/Application/chrome.exe', p+'/Microsoft/Edge/Application/msedge.exe']));
@@ -111,9 +126,9 @@ async function replay(client, step, input) {
     return;
   }
   if(step.action==='key') {
-    const codes={Tab:9,Enter:13,Escape:27,ArrowDown:40,ArrowUp:38,' ':32},code=codes[step.key];
-    assert(code,'Unsupported key');
-    for(const type of ['keyDown','keyUp']) await client.send('Input.dispatchKeyEvent',{type,key:step.key,windowsVirtualKeyCode:code,...(type==='keyDown'&&step.key==='Enter'?{text:'\r',unmodifiedText:'\r'}:{})});
+    const event=keyEvent(step.key);
+    assert(event,'Unsupported key '+JSON.stringify(step.key)+'; use '+replayKeys.join(', '));
+    for(const type of ['keyDown','keyUp']) await client.send('Input.dispatchKeyEvent',{type,key:event.key,code:event.code,windowsVirtualKeyCode:event.keyCode,...(type==='keyDown'&&event.text?{text:event.text,unmodifiedText:event.text}:{})});
     return;
   }
   throw new Error('Unknown replay step');

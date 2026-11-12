@@ -11,6 +11,8 @@ from checked_evidence import file_digest, object_fields, read_json, text
 from decision_packet import _reject_reparse_chain
 
 DIMENSIONS = ("state", "viewport", "theme", "input", "motion", "context")
+# Keys observe.mjs can replay. Space is named because a literal " " is not printable plan text.
+REPLAY_KEYS = ("Tab", "Enter", "Escape", "ArrowDown", "ArrowUp", "Space", "space")
 
 
 def pixel_round(value):
@@ -108,6 +110,8 @@ def validate_plan(plan):
         for step in case["steps"]:
             object_fields(step, {"action"}, {"selector", "value", "key"})
             if step["action"] not in {"click", "fill", "key", "wait", "scroll", "script"}: raise ValueError("Unknown replay action")
+            if step["action"] == "key" and step.get("key") not in REPLAY_KEYS:
+                raise ValueError(f"Replay key must be one of {', '.join(REPLAY_KEYS)}")
             for field, value in step.items(): text(value, field)
         seen = set()
         for probe in case["probes"]:
