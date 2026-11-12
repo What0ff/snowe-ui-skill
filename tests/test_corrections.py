@@ -335,7 +335,8 @@ class CheckedEvidenceMessageTests(unittest.TestCase):
                 error = json.loads(rejected.stderr)["error"]
                 self.assertIn("UTF-8", error)
                 self.assertIn("UTF-16", error)
-                self.assertIn(str(path), error)
+                # The CLI reports the expanded path; Windows runners give tests an 8.3 short one.
+                self.assertTrue(str(path) in error or str(path.resolve()) in error, error)
         latin = self.root / "latin.json"
         latin.write_bytes(json.dumps({"note": "café"}, ensure_ascii=False).encode("latin-1"))
         from checked_evidence import read_json
