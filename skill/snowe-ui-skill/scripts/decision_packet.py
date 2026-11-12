@@ -151,7 +151,8 @@ def _require_directory_path(path: Path, label: str) -> None:
             continue
         except OSError as error:
             raise ValueError(f"{label} cannot be inspected: {current} ({error.strerror or error})") from None
-        if not stat.S_ISDIR(information.st_mode):
+        # A redirect here is reported by the reparse check, which names it correctly.
+        if not stat.S_ISDIR(information.st_mode) and not _is_reparse_path(current):
             raise ValueError(f"{label} must be a directory, but {current} is a file")
         return
 
