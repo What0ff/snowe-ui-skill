@@ -23,7 +23,7 @@ Icon comparison schema `1.2` requires context `lang`, `dir` (`ltr | rtl | auto`)
 
 ## Retrieval contract
 
-`core.py` exposes 11 general domain names (`mobile` and its compatibility alias `web` share one catalog) and 21 stacks. Each configuration declares a CSV filename and exact searchable/output headers. BM25 tokenizes configured text, ranks rows in memory, and returns positive scores only. There is no persisted index, embedding/semantic model, automatic domain detector, remote service, or cache.
+`core.py` exposes 11 general domain names (`mobile` and its compatibility alias `web` share one catalog) and 21 stacks. Each configuration declares a CSV filename, exact searchable/output headers, and the `name_cols` that name a row. `_search_csv` normalizes query and rows identically (stopwords, light English stemming, hyphen compounds split and joined), weights fields (name ×3, `Keywords`/`Category` ×2, others ×1), multiplies BM25 by matched-term coverage, ranks exact > prefix > phrase-overlap name matches first, drops rows matching fewer than half the best row's distinct terms, and returns positive scores only. There is no persisted index, embedding/semantic model, automatic domain detector, remote service, or cache.
 
 `search(query, domain, max_results)` requires `domain` and returns:
 
@@ -31,11 +31,12 @@ Icon comparison schema `1.2` requires context `lang`, `dir` (`ltr | rtl | auto`)
 {
   domain, query, file,
   source_role, warning,
-  count, results
+  count, results,
+  unmatched_terms
 }
 ```
 
-Each `results` item maps catalog column names to values; catalogs with a `No` column return that stable row id first (removed rows leave gaps). Every live domain has an epistemic role and use boundary. Product output is only `No`, `Product Type`, and `Keywords`. Icon lookup removes legacy style/guideline rows. `icon-candidates` additionally requires exactly one named supported family and a real subject.
+`unmatched_terms` lists query words absent from every searched column (they cannot affect ranking); a non-empty list is also named in `warning`. Each `results` item maps catalog column names to values; catalogs with a `No` column return that stable row id first (removed rows leave gaps). Every live domain has an epistemic role and use boundary. Product output is only `No`, `Product Type`, and `Keywords`. Icon lookup removes legacy style/guideline rows. `icon-candidates` additionally requires exactly one named supported family and a real subject.
 
 Chart retrieval is a visualization-discovery snapshot. `charts.csv` holds only the returned columns: unsupported exact data-volume thresholds, use/avoid prose, color prescriptions, accessibility grades, library recommendations, and interaction levels were deleted from the shipped file, not merely hidden from output.
 
@@ -48,7 +49,8 @@ Chart retrieval is a visualization-discovery snapshot. `charts.csv` holds only t
   documentation_coverage: {
     returned_rows, docs_urls_present, docs_urls_missing
   },
-  count, results
+  count, results,
+  unmatched_terms
 }
 ```
 

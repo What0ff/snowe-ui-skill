@@ -4,9 +4,9 @@
 
 import csv
 import re
-from pathlib import Path
+from collections import Counter
 from math import log
-from collections import defaultdict
+from pathlib import Path
 
 # ============ CONFIGURATION ============
 DATA_DIR = Path(__file__).parent.parent / "data"
@@ -30,7 +30,10 @@ def validate_max_results(value):
 # gaps so an id cited earlier keeps pointing at the same guidance.  Catalogs
 # without a ``No`` column (fonts, icon families/concepts/candidates) identify
 # rows by their name column.
-ROW_ID_COL = "No"
+#
+# ``name_cols`` are the columns that name a row.  They weigh most in ranking
+# and drive exact/prefix name matching; ``Keywords`` and ``Category`` weigh
+# next; every other searched column counts once.
 
 ICON_CANDIDATE_FAMILY_ALIASES = {
     "lucide": "Lucide",
@@ -44,13 +47,15 @@ ICON_CANDIDATE_FAMILY_ALIASES = {
 
 _MOBILE_APP_INTERFACE = {
     "file": "app-interface.csv",
-    "search_cols": ["Category", "Issue", "Keywords", "Description"],
+    "name_cols": ["Issue"],
+    "search_cols": ["Category", "Issue", "Keywords", "Description", "Do"],
     "output_cols": ["No", "Category", "Issue", "Platform", "Description", "Do", "Don't", "Code Example Good", "Code Example Bad", "Severity"],
 }
 
 CSV_CONFIG = {
     "chart": {
         "file": "charts.csv",
+        "name_cols": ["Data Type", "Best Chart Type"],
         "search_cols": ["Data Type", "Keywords", "Best Chart Type", "Secondary Options", "Accessibility Notes"],
         # The bundled catalog holds only discovery prompts it can support.
         # Exact data-volume thresholds, threshold-bearing use/avoid prose,
@@ -70,37 +75,44 @@ CSV_CONFIG = {
     },
     "product": {
         "file": "products.csv",
+        "name_cols": ["Product Type"],
         "search_cols": ["Product Type", "Keywords"],
         "output_cols": ["No", "Product Type", "Keywords"]
     },
     "ux": {
         "file": "ux-guidelines.csv",
-        "search_cols": ["Category", "Issue", "Description", "Platform"],
+        "name_cols": ["Issue"],
+        "search_cols": ["Category", "Issue", "Description", "Do", "Platform"],
         "output_cols": ["No", "Category", "Issue", "Platform", "Description", "Do", "Don't", "Code Example Good", "Code Example Bad", "Severity"]
     },
     "icons": {
         "file": "icons.csv",
+        "name_cols": ["Icon Name"],
         "search_cols": ["Category", "Icon Name", "Keywords", "Best For"],
         "output_cols": ["No", "Category", "Icon Name", "Keywords", "Library", "Import Code", "Usage", "Best For", "Style"]
     },
     "icon-families": {
         "file": "icon-families.csv",
+        "name_cols": ["Family"],
         "search_cols": ["Family", "Platforms", "Visual Character", "Best For", "Avoid When", "Keywords"],
         "output_cols": ["Family", "Platforms", "Visual Character", "Best For", "Avoid When", "Grid and Modes", "Package Hint", "License", "Official URL"]
     },
     "icon-concepts": {
         "file": "icon-concepts.csv",
+        "name_cols": ["Concept"],
         "search_cols": ["Concept", "Role", "Preferred Mapping", "Candidates to Explore", "Avoid as Default", "Allowed When", "Keywords"],
         "output_cols": ["Concept", "Role", "Preferred Mapping", "Candidates to Explore", "Avoid as Default", "Allowed When", "Label Policy"]
     },
     "icon-candidates": {
         "file": "icon-candidates.csv",
+        "name_cols": ["Icon Name", "Concept"],
         "search_cols": ["Concept", "Role", "Family", "Icon Name", "Metaphor", "Use When", "Avoid When", "Keywords"],
         "output_cols": ["Concept", "Role", "Family", "Icon Name", "Package", "Import Hint", "Metaphor", "Use When", "Avoid When", "Verified Version", "Official URL"]
     },
     "react": {
         "file": "react-performance.csv",
-        "search_cols": ["Category", "Issue", "Keywords", "Description"],
+        "name_cols": ["Issue"],
+        "search_cols": ["Category", "Issue", "Keywords", "Description", "Do"],
         "output_cols": ["No", "Category", "Issue", "Platform", "Description", "Do", "Don't", "Code Example Good", "Code Example Bad", "Severity"]
     },
     # Every app-interface row targets iOS, Android, or React Native apps.
@@ -112,6 +124,7 @@ CSV_CONFIG = {
     # popularity ranks, which acted as an adjective-to-font mapping.
     "google-fonts": {
         "file": "google-fonts.csv",
+        "name_cols": ["Family"],
         "search_cols": ["Family", "Category", "Stroke", "Classifications", "Subsets", "Primary Script", "Designers"],
         "output_cols": ["Family", "Category", "Stroke", "Classifications", "Subsets", "Primary Script", "Axes", "Styles", "Designers", "License", "Last Modified", "Google Fonts URL"]
     }
@@ -217,6 +230,7 @@ RETIRED_STACKS = {
 
 # Common columns for all stacks
 _STACK_COLS = {
+    "name_cols": ["Guideline"],
     "search_cols": ["Category", "Guideline", "Description", "Do", "Don't"],
     "output_cols": ["No", "Category", "Guideline", "Description", "Do", "Don't", "Code Good", "Code Bad", "Severity", "Docs URL"]
 }
@@ -243,78 +257,172 @@ STACK_WARNING = (
 )
 
 
+# ============ LEXICAL NORMALIZATION ============
+# Query and rows pass through the same normalization: case folding, apostrophe
+# removal, hyphen compounds indexed both split and joined (``re-render`` also
+# yields ``rerender``), a small English stopword list, and light suffix
+# stemming.  This is deterministic lexical normalization, not a synonym table,
+# query expansion, or classifier; non-English text passes through unstemmed.
+STOPWORDS = frozenset(
+    """a an and are as at be by can do does for from has have how i in into is it its me my of on or our
+    should so than that the their them then there these this those to us vs versus via was we what when
+    where which while who why will with without you your""".split()
+)
+
+_APOSTROPHE = re.compile(r"(?<=\w)['\u2019](?=\w)")
+_WORD = re.compile(r"[^\W_]+(?:-[^\W_]+)*")
+_NO_DOUBLE_DROP = set("lsz")
+
+
+def stem(token):
+    """Strip common English inflections so plural and verb forms meet."""
+    if len(token) <= 3 or not token.isascii():
+        return token
+    if token.endswith("ies") and len(token) > 4:
+        token = token[:-3] + "y"
+    elif token.endswith(("sses", "shes", "ches", "xes", "zes")):
+        token = token[:-2]
+    elif token.endswith("s") and not token.endswith(("ss", "us", "is")):
+        token = token[:-1]
+    for suffix in ("ing", "ed"):
+        if token.endswith(suffix) and len(token) - len(suffix) >= 4:
+            token = token[: -len(suffix)]
+            if len(token) >= 4 and token[-1] == token[-2] and token[-1] not in _NO_DOUBLE_DROP:
+                token = token[:-1]
+            break
+    if token.endswith("e") and len(token) > 4:
+        token = token[:-1]
+    return token
+
+
+def tokenize(text):
+    """Return normalized index terms for ``text`` in reading order."""
+    text = _APOSTROPHE.sub("", str(text).casefold())
+    terms = []
+    for word in _WORD.findall(text):
+        parts = word.split("-")
+        forms = parts if len(parts) == 1 else [part for part in parts if len(part) >= 3] + ["".join(parts)]
+        for form in forms:
+            if len(form) >= 2 and form not in STOPWORDS:
+                terms.append(stem(form))
+    return terms
+
+
+def _field_weight(column, name_cols):
+    if column in name_cols:
+        return 3
+    if column in ("Keywords", "Category"):
+        return 2
+    return 1
+
+
+def _contains_run(haystack, needle):
+    width = len(needle)
+    return 0 < width <= len(haystack) and any(
+        haystack[index:index + width] == needle for index in range(len(haystack) - width + 1)
+    )
+
+
+def _name_tier(query_terms, row, name_cols):
+    """Rank tier from row names: 3 exact, 2 name starts with the query, 1 overlap run, 0 none.
+
+    A name such as ``Sports Team/Club`` is matched per ``/``-separated part.
+    """
+    best = 0
+    for column in name_cols:
+        for part in re.split(r"\s*/\s*", str(row.get(column, ""))):
+            name_terms = tokenize(part)
+            if not name_terms:
+                continue
+            if name_terms == query_terms:
+                return 3
+            if name_terms[: len(query_terms)] == query_terms:
+                best = max(best, 2)
+            elif _contains_run(name_terms, query_terms) or _contains_run(query_terms, name_terms):
+                best = max(best, 1)
+    return best
+
+
 # ============ BM25 IMPLEMENTATION ============
 class BM25:
-    """BM25 ranking algorithm for text search"""
+    """BM25 ranking over pre-tokenized documents."""
 
     def __init__(self, k1=1.5, b=0.75):
         self.k1 = k1
         self.b = b
         self.corpus = []
+        self.term_freqs = []
         self.doc_lengths = []
         self.avgdl = 0
         self.idf = {}
-        self.doc_freqs = defaultdict(int)
         self.N = 0
 
     def tokenize(self, text):
-        """Lowercase, split, remove punctuation, filter short words"""
-        text = re.sub(r'[^\w\s]', ' ', str(text).lower())
-        return [w for w in text.split() if len(w) >= 2]
+        return tokenize(text)
 
     def fit(self, documents):
-        """Build BM25 index from documents"""
-        self.corpus = [self.tokenize(doc) for doc in documents]
+        """Index documents given as strings or as lists of normalized terms."""
+        self.corpus = [doc if isinstance(doc, list) else tokenize(doc) for doc in documents]
         self.N = len(self.corpus)
         if self.N == 0:
             return
+        self.term_freqs = [Counter(doc) for doc in self.corpus]
         self.doc_lengths = [len(doc) for doc in self.corpus]
-        self.avgdl = sum(self.doc_lengths) / self.N
+        self.avgdl = (sum(self.doc_lengths) / self.N) or 1
+        doc_freqs = Counter()
+        for freqs in self.term_freqs:
+            doc_freqs.update(freqs.keys())
+        self.idf = {term: log((self.N - freq + 0.5) / (freq + 0.5) + 1) for term, freq in doc_freqs.items()}
 
-        for doc in self.corpus:
-            seen = set()
-            for word in doc:
-                if word not in seen:
-                    self.doc_freqs[word] += 1
-                    seen.add(word)
-
-        for word, freq in self.doc_freqs.items():
-            self.idf[word] = log((self.N - freq + 0.5) / (freq + 0.5) + 1)
+    def score_terms(self, query_terms):
+        """Return ``(index, score, matched distinct terms)`` for every document."""
+        terms = [term for term in dict.fromkeys(query_terms) if term in self.idf]
+        scored = []
+        for index, freqs in enumerate(self.term_freqs):
+            score = 0.0
+            matched = 0
+            length_norm = 1 - self.b + self.b * self.doc_lengths[index] / self.avgdl
+            for term in terms:
+                tf = freqs.get(term, 0)
+                if tf:
+                    matched += 1
+                    score += self.idf[term] * tf * (self.k1 + 1) / (tf + self.k1 * length_norm)
+            scored.append((index, score, matched))
+        return scored
 
     def score(self, query):
-        """Score all documents against query"""
-        query_tokens = self.tokenize(query)
-        scores = []
-
-        for idx, doc in enumerate(self.corpus):
-            score = 0
-            doc_len = self.doc_lengths[idx]
-            term_freqs = defaultdict(int)
-            for word in doc:
-                term_freqs[word] += 1
-
-            for token in query_tokens:
-                if token in self.idf:
-                    tf = term_freqs[token]
-                    idf = self.idf[token]
-                    numerator = tf * (self.k1 + 1)
-                    denominator = tf + self.k1 * (1 - self.b + self.b * doc_len / self.avgdl)
-                    score += idf * numerator / denominator
-
-            scores.append((idx, score))
-
-        return sorted(scores, key=lambda x: x[1], reverse=True)
+        """Score all documents against a query string, best first."""
+        ranked = [(index, score) for index, score, _ in self.score_terms(tokenize(query))]
+        return sorted(ranked, key=lambda item: item[1], reverse=True)
 
 
 # ============ SEARCH FUNCTIONS ============
 def _load_csv(filepath):
     """Load CSV and return list of dicts"""
-    with open(filepath, 'r', encoding='utf-8') as f:
+    with open(filepath, 'r', encoding='utf-8', newline='') as f:
         return list(csv.DictReader(f))
 
 
-def _search_csv(filepath, search_cols, output_cols, query, max_results, row_filter=None):
-    """Core search function using BM25"""
+def _unmatched_terms(query, vocabulary):
+    """Query words whose normalized form occurs nowhere in the searched columns."""
+    missing = []
+    for word in _WORD.findall(_APOSTROPHE.sub("", str(query).casefold())):
+        terms = tokenize(word)
+        if terms and not any(term in vocabulary for term in terms) and word not in missing:
+            missing.append(word)
+    return missing
+
+
+def _search_csv(filepath, search_cols, output_cols, query, max_results, row_filter=None, name_cols=(), diagnostics=None):
+    """Rank rows lexically and return output-column dictionaries.
+
+    Ranking: weighted-field BM25 (name columns x3, Keywords/Category x2,
+    others x1), multiplied by the share of distinct query terms a row
+    matches.  Rows whose names equal, start with, or overlap the query rank
+    ahead of others in that order.  When some row matches several query
+    terms, rows matching fewer than half as many distinct terms are dropped
+    as incidental.  Rows that match nothing are never returned.
+    """
     validate_max_results(max_results)
     if not filepath.exists():
         return []
@@ -323,22 +431,50 @@ def _search_csv(filepath, search_cols, output_cols, query, max_results, row_filt
     if row_filter is not None:
         data = [row for row in data if row_filter(row)]
 
-    # Build documents from search columns
-    documents = [" ".join(str(row.get(col, "")) for col in search_cols) for row in data]
+    documents = []
+    for row in data:
+        terms = []
+        for column in search_cols:
+            terms.extend(tokenize(row.get(column, "")) * _field_weight(column, name_cols))
+        documents.append(terms)
 
-    # BM25 search
     bm25 = BM25()
     bm25.fit(documents)
-    ranked = bm25.score(query)
+    query_terms = tokenize(query)
+    present = [term for term in dict.fromkeys(query_terms) if term in bm25.idf]
+    if diagnostics is not None:
+        diagnostics["unmatched_terms"] = _unmatched_terms(query, bm25.idf)
+    if not present:
+        return []
 
-    # Get top results with score > 0
+    candidates = [(index, score, matched) for index, score, matched in bm25.score_terms(query_terms) if score > 0]
+    if not candidates:
+        return []
+    best_matched = max(matched for _, _, matched in candidates)
+    ranked = []
+    for index, score, matched in candidates:
+        if matched * 2 < best_matched:
+            continue
+        tier = _name_tier(query_terms, data[index], name_cols) if name_cols else 0
+        ranked.append((-tier, -(score * matched / len(present)), index))
+    ranked.sort()
+
     results = []
-    for idx, score in ranked[:max_results]:
-        if score > 0:
-            row = data[idx]
-            results.append({col: row.get(col, "") for col in output_cols if col in row})
-
+    for _, _, index in ranked[:max_results]:
+        row = data[index]
+        results.append({col: row.get(col, "") for col in output_cols if col in row})
     return results
+
+
+def _with_unmatched_terms(result, unmatched):
+    result["unmatched_terms"] = unmatched
+    if unmatched:
+        result["warning"] += (
+            " These query terms match no searched column in this catalog and did not affect ranking: "
+            + ", ".join(unmatched)
+            + "."
+        )
+    return result
 
 
 def search(query, domain=None, max_results=MAX_RESULTS):
@@ -406,6 +542,7 @@ def search(query, domain=None, max_results=MAX_RESULTS):
     row_filter = None
     if candidate_family:
         row_filter = lambda row: row.get("Family", "") == candidate_family
+    diagnostics = {}
     results = _search_csv(
         filepath,
         config["search_cols"],
@@ -413,6 +550,8 @@ def search(query, domain=None, max_results=MAX_RESULTS):
         retrieval_query,
         retrieval_limit,
         row_filter=row_filter,
+        name_cols=config.get("name_cols", ()),
+        diagnostics=diagnostics,
     )
 
     if domain == "icons":
@@ -429,7 +568,7 @@ def search(query, domain=None, max_results=MAX_RESULTS):
             "Treat the bundled result as a snapshot and verify current facts and contextual fit before use.",
         ),
     )
-    return {
+    return _with_unmatched_terms({
         "domain": domain,
         "query": query,
         "file": config["file"],
@@ -437,7 +576,7 @@ def search(query, domain=None, max_results=MAX_RESULTS):
         "warning": source_warning,
         "count": len(results),
         "results": results
-    }
+    }, diagnostics.get("unmatched_terms", []))
 
 
 def search_stack(query, stack, max_results=MAX_RESULTS):
@@ -462,7 +601,16 @@ def search_stack(query, stack, max_results=MAX_RESULTS):
     if not filepath.exists():
         return {"error": f"Stack file not found: {filepath}", "stack": stack}
 
-    results = _search_csv(filepath, _STACK_COLS["search_cols"], _STACK_COLS["output_cols"], query, max_results)
+    diagnostics = {}
+    results = _search_csv(
+        filepath,
+        _STACK_COLS["search_cols"],
+        _STACK_COLS["output_cols"],
+        query,
+        max_results,
+        name_cols=_STACK_COLS["name_cols"],
+        diagnostics=diagnostics,
+    )
     docs_urls_present = sum(bool(str(row.get("Docs URL", "")).strip()) for row in results)
     docs_urls_missing = len(results) - docs_urls_present
     warning = STACK_WARNING
@@ -472,7 +620,7 @@ def search_stack(query, stack, max_results=MAX_RESULTS):
             "bundled guidance until independently verified."
         )
 
-    return {
+    return _with_unmatched_terms({
         "domain": "stack",
         "stack": stack,
         "query": query,
@@ -486,4 +634,4 @@ def search_stack(query, stack, max_results=MAX_RESULTS):
         },
         "count": len(results),
         "results": results
-    }
+    }, diagnostics.get("unmatched_terms", []))

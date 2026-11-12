@@ -24,6 +24,7 @@
 ## Retrieval is evidence, not design
 
 - General search requires an explicit domain. BM25 remains lexical and may be English-oriented, but this affects only caller-requested lookup, never packet framing.
+- `core.tokenize` applies the same stopwords, light English stemming, and hyphen joining to query and rows. Keep it normalization: do not grow it into a synonym table or query expansion, and remember that a row field added to `search_cols` changes ranking for every query in that domain. Missing vocabulary belongs in the catalog (with a manifest note), not in code.
 - Product analogs are off by default. `--analog-query` is caller chosen, limited, labelled `UNVERIFIED_ANALOG`, and its absence changes no situation/architecture field.
 - Every domain and stack result retains `source_role` and `warning`. Stack responses also count returned rows with and without `Docs URL`; a present URL is not automatically current/primary, and a missing URL is explicitly unsourced bundled guidance. Removing these boundaries can turn a snapshot into apparent authority.
 - Landing/layout, style bundle, palette, typography pairing, and motion preset catalogs were deleted. Do not reintroduce their solution fields under a new evidence label without provenance and an observed failure that outweighs anchoring.

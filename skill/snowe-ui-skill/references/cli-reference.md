@@ -96,7 +96,15 @@ python <skill-directory>/scripts/search.py "query" --domain <domain> --max-resul
 python <skill-directory>/scripts/search.py "query" --domain <domain> --json
 ```
 
-Every result reports a **source role** and **use boundary**. Rows from catalogs that number them start with `No`, a stable row id within the named source file (removed rows leave gaps), so a finding can cite, for example, `charts.csv` row 3. `data/CATALOGS.md` records each catalog's source, dates, row count, and license notice. Ranking is English-oriented lexical BM25 over a bundled snapshot. A top row is not semantic classification, current external truth, or a design selection.
+Every result reports a **source role** and **use boundary**. Rows from catalogs that number them start with `No`, a stable row id within the named source file (removed rows leave gaps), so a finding can cite, for example, `charts.csv` row 3. `data/CATALOGS.md` records each catalog's source, dates, row count, and license notice. A top row is not semantic classification, current external truth, or a design selection.
+
+Ranking is English-oriented lexical BM25 over a bundled snapshot:
+
+- The query and rows share one normalization: case folding, a small English stopword list (`for`, `the`, `vs`, ...), light suffix stemming (`rerenders`, `rerendering` → `rerender`; `lists` → `list`), and hyphen compounds indexed both split and joined (`re-render` also matches `rerender`). Non-English words pass through unstemmed. This is normalization, not a synonym table or query expansion.
+- Fields are weighted: the row's name column (`Issue`, `Product Type`, `Family`, `Guideline`, ...) counts three times, `Keywords` and `Category` twice, other searched columns once. UX, React, and mobile lookups also search the `Do` column.
+- A row whose name equals the query ranks first, then rows whose name starts with it (`IBM Plex Sans` before `IBM Plex Sans Condensed`), then rows whose name and query overlap as a phrase.
+- Scores are multiplied by the share of distinct query terms a row matches. When some row matches several terms, rows matching fewer than half as many are dropped as incidental, so fewer than `--max-results` rows can return.
+- `unmatched_terms` (JSON) lists query words that occur nowhere in the searched columns; when it is not empty, the use boundary also names them. They did not affect ranking: for example, `geometric` cannot match the font index, which has no construction or mood vocabulary.
 
 | Domain | Evidence role |
 |---|---|
