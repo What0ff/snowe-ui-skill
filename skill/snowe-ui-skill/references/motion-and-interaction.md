@@ -62,6 +62,19 @@ Make timing and movement feel caused by the interface:
 
 Motion coherence means shared mechanics and role logic, not identical duration everywhere.
 
+Starting points to adjust against the rendered result:
+
+| Motion | Starting duration | Easing |
+|---|---|---|
+| Hover, press, toggle, color or state feedback | 100–150 ms | ease-out |
+| Small element entering (tooltip, menu, toast) | 150–200 ms | ease-out (decelerate into place) |
+| Element leaving | about two-thirds of its entrance | ease-in (accelerate away) |
+| Panel, sheet or dialog crossing a large distance | 250–350 ms | ease-in-out or a gentle spring |
+| Page or view transition | 200–300 ms; keep the destination usable immediately | ease-in-out |
+| Stagger between list items | 20–40 ms per item, capped so the whole sequence stays under about 300 ms | — |
+
+Frequent interactions get the shortest timings. Animate `transform` and `opacity` rather than layout properties. The View Transitions API or a FLIP technique preserves object identity across layout changes.
+
 ## Interaction Quality
 
 - Preserve native semantics, keyboard operation, focus order, activation behavior, labels, selection, and error recovery.
@@ -79,7 +92,10 @@ Respect platform and browser motion preferences. Replace or simplify motion acco
 - remove decorative travel, parallax, looping, zoom, spin, and large spatial movement;
 - use an immediate update, short opacity/state transition, or static before/after cue when some feedback remains useful;
 - preserve content, state, focus, and task completion;
-- avoid autoplay movement that cannot be paused when it distracts or affects comprehension.
+- give any movement that starts automatically and lasts more than 5 seconds beside other content a visible way to pause, stop or hide it (WCAG 2.2.2), whether or not it seems distracting;
+- never flash more than three times per second (WCAG 2.3.1).
+
+Implement the variant with `@media (prefers-reduced-motion: reduce)` or the platform equivalent. Treat parallax, zoom, spin and large spatial movement as vestibular triggers.
 
 Do not treat reduced motion as merely setting every duration to zero; that can erase feedback or break event assumptions. Test it as a complete state.
 

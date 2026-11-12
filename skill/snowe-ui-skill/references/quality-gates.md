@@ -162,6 +162,23 @@ Verify the implemented result, not the intent:
 - zoom, text scaling, reflow, orientation, high contrast/forced colors, themes, reduced motion, and relevant assistive technologies;
 - captions, transcripts, alt text, or intentionally empty alternatives according to media purpose.
 
+Thresholds to check (WCAG 2.2 level AA unless the project sets a different target):
+
+| Requirement | Threshold | Criterion |
+|---|---|---|
+| Body text contrast | 4.5:1 | 1.4.3 |
+| Large text contrast (24 px, or 18.66 px bold, and above) | 3:1 | 1.4.3 |
+| UI component boundaries, icons that carry meaning, focus indicators, chart marks | 3:1 against adjacent colors | 1.4.11 |
+| Pointer target size | 24×24 CSS px, or enough spacing around a smaller target | 2.5.8 |
+| Reflow | No two-dimensional scrolling at 320 CSS px width, except tables, maps and similar | 1.4.10 |
+| Text resize | Usable at 200% zoom; `clamp()` type needs a `rem` term so zoom still scales it | 1.4.4 |
+| Text spacing | Survives 1.5 line height, 0.12em letter spacing, 0.16em word spacing, 2em paragraph spacing | 1.4.12 |
+| Focus | Visible, and not hidden behind sticky headers or overlays | 2.4.7, 2.4.11 |
+| Auto-moving content | Pause, stop or hide when it starts automatically and lasts more than 5 seconds beside other content | 2.2.2 |
+| Flashing | Nothing flashes more than three times per second | 2.3.1 |
+
+Use `contrast.py --minimum 4.5` (or `3`) for exact opaque pairs. A `box-shadow`-only focus ring disappears in forced-colors mode; use an `outline` (transparent if needed) so the system color applies.
+
 Automated audits can find structural failures but cannot prove reading order, clarity, useful alternative text, focus behavior, or task completion. Manually exercise the primary path and recovery.
 
 For solid color pairs, use deterministic contrast calculation. For gradients, imagery, transparency, overlays, filters, video, and state changes, measure representative rendered points and test variation; a token-level pass is insufficient.
