@@ -234,7 +234,7 @@ Inspect the generated matrix at wide and narrow viewports, then inspect claimed 
 - current source evidence: official asset bytes, version/revision, and license where external; external URL truth remains unverified until current primary-source review;
 - human visual judgment: recognition, silhouette, optical center, weight, negative space, metaphor, and neighboring fit.
 
-The checked source-repository proof under `evals/icon-decisions/` demonstrates all three legitimate outcomes: an existing glyph wins and custom is rejected, custom wins for a product-specific mechanism, and visible text/no icon wins because an icon would assert the wrong state.
+The [icon-decisions proof](https://github.com/What0ff/snowe-ui-skill/tree/main/evals/icon-decisions) in the source repository (not part of an installed skill) demonstrates all three legitimate outcomes: an existing glyph wins and custom is rejected, custom wins for a product-specific mechanism, and visible text/no icon wins because an icon would assert the wrong state.
 
 ## Recognizability and Optical Review
 
