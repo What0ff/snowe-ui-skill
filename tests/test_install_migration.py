@@ -15,7 +15,9 @@ spec.loader.exec_module(installer)
 class MigrationTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory(); self.addCleanup(self.temp.cleanup)
-        self.root = Path(self.temp.name)
+        # The installer expands Windows 8.3 short names (for example RUNNER~1 on
+        # CI runners); fault injection compares paths, so use the same spelling.
+        self.root = installer._normalize_lexical_aliases(Path(self.temp.name), "Test root")
         self.source = self.root / "source"
         self.source.mkdir()
         (self.source / "SKILL.md").write_text("---\nname: snowe-ui-skill\ndescription: fixture\n---\n")
