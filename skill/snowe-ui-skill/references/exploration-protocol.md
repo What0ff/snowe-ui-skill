@@ -2,66 +2,17 @@
 
 Use this reference when the answer is not already a verified invariant or routine platform convention. It replaces recipe selection with a compact loop that can widen, compare, commit, and reopen decisions as evidence changes.
 
-## 0. Calibrate consequence and change surface first
+## 0. Prerequisite and Evidence by Depth
 
-Do not begin this exploration protocol until a local depth record has been made from observed repository/product evidence. Resolve the requested target before treating it as missing: search exact user-supplied product, feature, route, or visible-label identifiers in file paths and file content, then follow repository manifests, indexes, entrypoints, and rendered routes. A filename miss is not absence evidence. Inspect the actual owner, dependencies, sibling consumers, relevant states and responsive surfaces, and shared tokens/hooks/data/system contracts. Record:
+Start only after the depth record in SKILL.md exists; this protocol does not recalibrate. Resolve the requested target first: search exact user-supplied product, feature, route or visible-label identifiers in file paths and file content, then follow manifests, indexes, entrypoints and rendered routes. A filename miss is not absence evidence.
 
-```text
-request / desired outcome → visible symptom or open decision
-affected invariant → owner(s) → dependencies and sibling consumers
-shared contracts → material uncertainties → consequence if wrong
-depth → references loaded / not loaded → proof → stop condition
-escalation trigger
-```
+| Depth | Use this protocol | Evidence required |
+|---|---|---|
+| Direct | No. Implement, rerender and stop at the affected invariant. Do not open a packet, broad research, candidate set, architecture exercise, asset/motion exploration, or evaluation route. | Repository and rendered context, the affected invariant and state, targeted implementation and rerender |
+| Focused | Sections 2–8 for the one open choice: baseline plus the smallest credible challenger, or several directions for an open visual thesis, inside fixed owners and product contracts | Causal driver and expected consequence; baseline plus credible alternatives; same-content comparison at the affected sizes and states; accepted decision and revisit trigger |
+| Portfolio | The full protocol, for the named uncertainty in goals, topology, journey, content/object relationships, interaction, responsive transformation or system contracts | Whole-journey and content/object model; structurally distinct candidates; proof slices with real content; strongest rejected alternative; implementation contract and rendered learning |
 
-This is an evidence trace, not keyword or semantic classification. A request mentioning one component is not automatically Direct, and a multi-file change is not automatically Portfolio. Start with the high-salience consequence—the user or system failure that matters if the work is wrong—then trace the change surface: the real owner/consumer graph.
-
-- **Direct:** continue with this reference only if the answer is not already a bounded invariant. A coherent owner, no newly affected sibling consumer/shared contract, and known or learned behavior justify local implementation plus rendered QA. Stop at the affected invariant. Do not open a packet, broad research, candidate set, architecture exercise, asset/motion exploration, or evaluation route.
-- **Focused:** use this protocol for one material choice in a known product/flow, including an open page hierarchy or a local symptom with a shared owner. Compare the current baseline with credible challengers in the affected context and representative sibling contexts. A bounded choice normally needs the smallest credible challenger; an open visual thesis may compare several directions while its owners and product contracts stay fixed. Call that a **shared-system proof**, not a whole-product workshop.
-- **Portfolio:** use the complete protocol only when evidence shows material uncertainty in user goals, topology, journey, content/object relationships, interaction, responsive transformation, or system contracts. These concern unresolved page jobs or wider product contracts; composition of known page objects stays Focused. A genuinely new experience/architecture/identity normally exposes one or more of those uncertainties; name the uncertainty before widening. Whole-journey framing and structurally different candidates are then proportionate.
-
-The depth record must state `references loaded`, `references not loaded`, `proof`, `stop`, and `escalation`. Escalate only if proof reveals a new owner/consumer, a failed invariant that cannot be repaired locally, or one of the material Portfolio uncertainties. Stop when the calibrated proof closes the live uncertainty; do not widen merely because more references exist.
-
-## 1. Calibrate the Inquiry
-
-Inquiry depth follows consequence, uncertainty, and reversibility.
-
-### Direct
-
-Use when the change is narrow, the system is coherent, and the answer is learned or accepted after owner/dependency inspection. Examples: repair focus, add a known state, correct a close icon, extend a tokenized component. A one-component symptom with a shared owner belongs in Focused, not Direct.
-
-Evidence required:
-
-- repository and rendered context;
-- the affected invariant and state;
-- targeted implementation and rerender.
-
-### Focused
-
-Use when a material choice inside a known page/flow is unresolved, its internal hierarchy needs rebuilding, or a shared owner needs proof across sibling consumers. Keep the current product as a baseline and introduce challengers only for the decision that can materially improve. Do not promote a shared-system proof into Portfolio unless it exposes a material goal, topology, journey, content, interaction, responsive, or system-contract uncertainty.
-
-Choose search breadth from the open decision, separately from process breadth. A known page job can support distinct visual theses without a whole-journey workshop. State fixed requirements and inventive freedom, then use the affected proof slice to decide whether another direction adds useful evidence. Preserve exact targets and accepted quiet systems; candidate quantity and expressive intensity are not success criteria.
-
-Evidence required:
-
-- causal driver and expected consequence;
-- current baseline plus credible alternatives;
-- same-content comparison at the affected sizes and states;
-- accepted decision and revisit trigger.
-
-### Portfolio
-
-Use for new experiences, whole-product topology, unresolved page jobs, navigation, conversion models, identities, or high-impact unresolved work only when the calibration shows material uncertainty in those contracts. Generate enough candidates to cover the real trade-offs; do not enforce an arbitrary concept count.
-
-Evidence required:
-
-- whole-journey and content/object model;
-- structurally distinct candidates;
-- proof slices using real content;
-- strongest rejected alternative;
-- implementation contract and rendered learning.
-
-Escalate when a supposedly routine answer proves weak, generic, inaccessible, inconsistent, or contradicted by current evidence and the failure reaches a material contract or another owner/consumer. De-escalate when further search is unlikely to change the decision. Record the evidence and the trigger either way.
+Search breadth follows the open decision, not process breadth: a known page job can support distinct visual theses without a whole-journey workshop. Candidate count and expressive intensity are not success criteria. Escalate when a supposedly routine answer proves weak, generic, inaccessible or contradicted and the failure reaches a material contract or another owner or consumer; de-escalate when further search is unlikely to change the decision. Record the trigger either way.
 
 ## 2. Frame a Decision Graph
 
