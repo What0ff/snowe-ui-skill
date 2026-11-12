@@ -114,6 +114,30 @@ class SvgStructuralHardeningTests(unittest.TestCase):
         )
         self.assert_rejected(miter, "not a supported SVG line-join", lambda value: value["drawing_language"].update({"linejoin": "miter"}))
 
+    def test_rejects_arcs_join_that_browsers_render_as_miter(self):
+        # Browsers do not implement "arcs" and fall back to miter, whose spike
+        # this validator cannot bound.
+        arcs = (
+            '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
+            'stroke-width="2" stroke-linecap="round" stroke-linejoin="arcs"><path d="M2 20L12 1.5L22 20"/></svg>'
+        )
+        self.assert_rejected(arcs, "not a supported SVG line-join", lambda value: value["drawing_language"].update({"linejoin": "arcs"}))
+
+    def test_square_caps_on_diagonals_count_their_corner_extent(self):
+        def square(value):
+            value["drawing_language"].update({"linecap": "square"})
+        diagonal = (
+            '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
+            'stroke-width="2" stroke-linecap="square" stroke-linejoin="round"><path d="M1 1L23 23"/></svg>'
+        )
+        self.assert_rejected(diagonal, "can clip", square)
+        inset = (
+            '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
+            'stroke-width="2" stroke-linecap="square" stroke-linejoin="round"><path d="M4 12H20"/></svg>'
+        )
+        result = self.validate(inset, square)
+        self.assertTrue(result["valid"], result["errors"])
+
     def test_rejects_effectively_invisible_or_non_currentcolor_artwork(self):
         partial = (
             '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" '

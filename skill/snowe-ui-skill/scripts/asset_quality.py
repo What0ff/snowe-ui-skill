@@ -47,7 +47,9 @@ PAINT_ATTRIBUTES = {"fill", "stroke", "color", "stop-color", "flood-color", "lig
 SAFE_PAINT = {"none", "currentcolor", "transparent"}
 PLACEHOLDERS = {"", "-", "n/a", "na", "none", "not provided", "tbd", "todo", "unknown", "unspecified"}
 LINECAPS = {"butt", "round", "square", "not applicable"}
-LINEJOINS = {"arcs", "bevel", "round", "not applicable"}
+# "arcs" is excluded: browsers do not implement it and fall back to miter,
+# whose spike extent the bounds proof below cannot certify.
+LINEJOINS = {"bevel", "round", "not applicable"}
 EVENT_HANDLER = re.compile(r"^on[a-z0-9_:-]+$", re.IGNORECASE)
 CSS_URL = re.compile(r"url\(\s*(['\"]?)(.*?)\1\s*\)", re.IGNORECASE)
 UNSAFE_CSS = re.compile(r"(?:@import\b|expression\s*\(|(?:java|vb)script\s*:)", re.IGNORECASE)
@@ -1059,7 +1061,10 @@ def validate_svg_asset(svg_path: str | Path, metadata_path: str | Path | None = 
                         errors.append(f"<{name}> stroke-linecap {style['linecap']!r} contradicts metadata {declared_cap!r}.")
                     if declared_join and style["linejoin"] != declared_join:
                         errors.append(f"<{name}> stroke-linejoin {style['linejoin']!r} contradicts metadata {declared_join!r}.")
-                    bounds = _expand(bounds, style["stroke_width"] / 2)
+                    # A square cap's corner reaches half-width * sqrt(2) on a
+                    # diagonal; round caps/joins and bevels stay within half-width.
+                    reach = style["stroke_width"] / 2 * (math.sqrt(2) if style["linecap"] == "square" else 1)
+                    bounds = _expand(bounds, reach)
                 saw_fill |= fill_visible
                 if not style["hidden"] and (fill_visible or stroke_visible):
                     if viewport and not _intersects(viewport, bounds):
