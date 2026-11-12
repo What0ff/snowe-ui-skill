@@ -52,7 +52,7 @@ Owns CLI argument constraints and dispatch. It requires an explicit evidence dom
 
 ### `core.py`
 
-Owns `CSV_CONFIG`, `STACK_CONFIG`, in-process BM25, exact searchable/output headers, evidence roles/warnings, icon-row exclusion, and exact icon-candidate family constraints. It deliberately has no automatic domain detector or layout/style/palette/type/motion recipe domains.
+Owns `CSV_CONFIG`, `STACK_CONFIG`, `RETIRED_STACKS`, query/row normalization and in-process weighted-field BM25 with name matching, exact searchable/output headers, evidence roles/warnings including unmatched query terms, icon-row exclusion, and exact icon-candidate family constraints. It deliberately has no automatic domain detector or layout/style/palette/type/motion recipe domains.
 
 ### `decision_packet.py`
 
