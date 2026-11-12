@@ -1142,7 +1142,7 @@ async function runSmoke(client, origin) {
     })()`);
   }
 
-  async function inspectIconCandidateBytes(client, candidate) {
+  async function inspectIconCandidateBytes(client, candidate, bindLabel = true) {
     return evaluate(client, `(async () => {
       const candidate = ${JSON.stringify({
         id: candidate.id,
@@ -1152,6 +1152,10 @@ async function runSmoke(client, origin) {
         asset_sha256: candidate.asset_sha256 || "",
         source: candidate.source,
         license: candidate.license,
+        // A candidate with per-state artwork names a combination, and a state
+        // asset carries its own source/license; neither binds the candidate label.
+        bindName: bindLabel && !candidate.state_assets,
+        bindLabel,
       })};
       if (candidate.kind === "none") {
         return { candidate: candidate.id, kind: candidate.kind, valid: true, painted: null, paintError: "" };
@@ -1216,9 +1220,8 @@ async function runSmoke(client, origin) {
       const metadataProvenance = metadata?.provenance || {};
       const metadataMatches = Boolean(
         metadata
-        && metadata.name === candidate.id
-        && metadata.source === candidate.source
-        && metadata.license === candidate.license
+        && (!candidate.bindName || metadata.name === candidate.id)
+        && (!candidate.bindLabel || (metadata.source === candidate.source && metadata.license === candidate.license))
         && metadataProvenance.sha256 === digest
         && metadataProvenance.kind === (candidate.kind === "custom" ? "original" : metadataProvenance.kind)
       );
@@ -1299,9 +1302,33 @@ async function runSmoke(client, origin) {
     })()`);
   }
 
+  async function selectIconHost(client, proof) {
+    // The manifest declares which ARIA attribute exposes selection; styling
+    // alone never proves the selected state.
+    const read = () => evaluate(client, `(() => {
+      const node = document.querySelector(${JSON.stringify(proof.target_selector)});
+      const attribute = ${JSON.stringify(proof.selected_attribute || "")};
+      const value = node?.getAttribute(attribute) ?? null;
+      const selected = attribute === "aria-current"
+        ? value !== null && value !== "" && value !== "false"
+        : value === "true";
+      return { found: Boolean(node), attribute, value, selected };
+    })()`);
+    let selection = await read();
+    if (!selection.selected && proof.select_selector) {
+      await click(client, proof.select_selector);
+      selection = { ...(await read()), clicked: true };
+    }
+    return selection;
+  }
+
   async function renderIconHostCandidate(client, context, candidate, state) {
-    const candidateUrl = candidate.asset
-      ? new URL(candidate.asset, "http://icon-review.invalid/evals/icon-decisions/manifest.json").pathname
+    // Per-state artwork (for example outline by default, solid when selected)
+    // is keyed by comparison state; forced-colors is the high-contrast host.
+    const comparisonState = state === "forced-colors" ? "high-contrast" : state;
+    const asset = candidate.state_assets?.[comparisonState]?.asset || candidate.asset;
+    const candidateUrl = asset
+      ? new URL(asset, "http://icon-review.invalid/evals/icon-decisions/manifest.json").pathname
       : "";
     if (state === "hover") await movePointerToSelector(client, context.host_proof.target_selector);
     return evaluate(client, `(async () => {
@@ -1445,23 +1472,30 @@ async function runSmoke(client, origin) {
       const candidateProof = await inspectIconCandidateBytes(client, candidate);
       check(candidateProof.valid, `Icon review: ${context.id} candidate bytes/metadata/paint proof failed for ${candidate.id} (${JSON.stringify(candidateProof)})`);
       candidateProofs.set(candidate.id, candidateProof);
+      for (const [stateName, binding] of Object.entries(candidate.state_assets || {})) {
+        const stateProof = await inspectIconCandidateBytes(client, { id: `${candidate.id}@${stateName}`, kind: candidate.kind, ...binding }, false);
+        check(stateProof.valid, `Icon review: ${context.id} ${stateName} state asset bytes/metadata/paint proof failed for ${candidate.id} (${JSON.stringify(stateProof)})`);
+      }
     }
     const styleChanged = (before, after) => {
       const keys = ["opacity", "cursor", "color", "backgroundColor", "borderColor", "outlineColor", "filter"];
       return Boolean(before && after && keys.some((key) => before[key] !== after[key]));
     };
     for (const viewport of proof.viewports) {
-      await navigate(client, origin, scenario, { width: viewport.width, height: viewport.height });
-      if (proof.open_selector) {
-        await click(client, proof.open_selector);
-        const serializedTargetSelector = JSON.stringify(proof.target_selector);
-        await waitFor(
-          client,
-          `document.querySelector(${serializedTargetSelector})?.closest("dialog[open]")`,
-          `${context.id} owning host dialog`,
-        );
-        await waitForOwningDialogMotionToSettle(client, proof.target_selector, `${context.id} owning host dialog motion`);
-      }
+      const prepareHost = async () => {
+        await navigate(client, origin, scenario, { width: viewport.width, height: viewport.height });
+        if (proof.open_selector) {
+          await click(client, proof.open_selector);
+          const serializedTargetSelector = JSON.stringify(proof.target_selector);
+          await waitFor(
+            client,
+            `document.querySelector(${serializedTargetSelector})?.closest("dialog[open]")`,
+            `${context.id} owning host dialog`,
+          );
+          await waitForOwningDialogMotionToSettle(client, proof.target_selector, `${context.id} owning host dialog motion`);
+        }
+      };
+      await prepareHost();
       const baseline = await inspectIconHost(client, context);
       check(baseline.found && baseline.label === proof.expected_label, `Icon review: ${context.id} host target/label mismatch at ${viewport.name} (${JSON.stringify(baseline)})`);
       if (proof.strategy === "button-clone") {
@@ -1496,6 +1530,13 @@ async function runSmoke(client, origin) {
         if (state === "disabled") {
           const disabled = await evaluate(client, `(() => { const node = document.querySelector(${JSON.stringify(proof.target_selector)}); if (!(node instanceof HTMLButtonElement)) return false; node.disabled = true; return node.matches(":disabled"); })()`);
           check(disabled, `Icon review: ${context.id} host disabled state is not represented by the owning button at ${viewport.name}`);
+        }
+        let selectionChangedHost = false;
+        if (state === "selected") {
+          const selection = await selectIconHost(client, proof);
+          selectionChangedHost = Boolean(selection.clicked);
+          check(selection.selected,
+            `Icon review: ${context.id} host selected state is not exposed through ${proof.selected_attribute} at ${viewport.name} (${JSON.stringify(selection)})`);
         }
         const stateView = await inspectIconHost(client, context);
         check(stateView.found && stateView.label === proof.expected_label, `Icon review: ${context.id} host ${state} state lost its target/label at ${viewport.name} (${JSON.stringify(stateView)})`);
@@ -1541,6 +1582,8 @@ async function runSmoke(client, origin) {
           await evaluate(client, `(() => { const node = document.querySelector(${JSON.stringify(proof.target_selector)}); if (node instanceof HTMLButtonElement) node.disabled = false; })()`);
         }
         await movePointerAway(client);
+        // Selecting can toggle or navigate; reload the host so later states start unselected.
+        if (selectionChangedHost) await prepareHost();
       }
       await setForcedColors(client, false);
       check(diagnostics.exceptions.length === 0 && diagnostics.consoleErrors.length === 0 && diagnostics.failedRequests.length === 0 && diagnostics.badResponses.length === 0,

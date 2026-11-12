@@ -2,10 +2,13 @@
 """Generate a deterministic, self-contained representative-control icon sheet.
 
 The helper validates every SVG candidate structurally, then renders existing,
-custom, and no-icon alternatives with identical labels, sizes, and states. It
-does not choose a winner or claim optical quality; any recorded decision and
-rationale are explicitly human-review evidence supplied by the manifest. The
-sheet is comparison evidence, not a pixel-identical host-component render.
+custom, and no-icon alternatives with identical labels, sizes, and states. A
+schema-1.2 context may instead compare drawing styles (outline, solid,
+duotone, or per-state artwork such as outline by default and solid when
+selected). It does not choose a winner or claim optical quality; any recorded
+decision and rationale are explicitly human-review evidence supplied by the
+manifest. The sheet is comparison evidence, not a pixel-identical
+host-component render.
 """
 
 from __future__ import annotations
@@ -39,7 +42,10 @@ STATES = {"default", "hover", "focus", "selected", "disabled", "dark", "high-con
 VERDICTS = {"KEEP", "REVISE", "REJECT", "UNKNOWN"}
 CONTEXT_BASES = {"representative", "repository-derived"}
 HOST_PROOF_STRATEGIES = {"icon-owner", "dialog-clone", "service-mask", "button-clone"}
-HOST_PROOF_STATES = {"default", "hover", "dark", "focus", "disabled", "forced-colors"}
+HOST_PROOF_STATES = {"default", "hover", "dark", "focus", "selected", "disabled", "forced-colors"}
+SELECTION_ATTRIBUTES = ("aria-pressed", "aria-current", "aria-selected")
+COMPARISON_AXES = {"kind", "style"}
+STATE_ASSET_FIELDS = {"asset", "asset_sha256", "metadata"}
 MAX_JSON_BYTES = 1_000_000
 MAX_JSON_DEPTH = 128
 LOCAL_ROUTE_RE = re.compile(r"/[A-Za-z0-9._~!$&'()*+,;=:@/-]+")
@@ -226,6 +232,19 @@ def _host_proof(
         raise ManifestError(f"{context_prefix}.host_proof.states must use only: {', '.join(sorted(HOST_PROOF_STATES))}")
     if len(set(states)) != len(states):
         raise ManifestError(f"{context_prefix}.host_proof.states must not contain duplicates")
+    if "selected" in states:
+        # Browser smoke reads this attribute on the target to prove the host
+        # really is in its selected state; it is never inferred from styling.
+        if value.get("selected_attribute") not in SELECTION_ATTRIBUTES:
+            raise ManifestError(
+                f"{context_prefix}.host_proof.selected_attribute must be one of: {', '.join(SELECTION_ATTRIBUTES)}"
+            )
+        if value.get("select_selector") is not None:
+            _text(value.get("select_selector"), f"{context_prefix}.host_proof.select_selector")
+    elif "selected_attribute" in value or "select_selector" in value:
+        raise ManifestError(
+            f"{context_prefix}.host_proof.selected_attribute requires an exercised selected host state"
+        )
     state_map = value.get("state_map")
     if (
         not isinstance(state_map, dict)
@@ -323,6 +342,83 @@ def _paths_alias(left: Path, right: Path) -> bool:
     return False
 
 
+def _bind_svg(root: Path, binding: dict[str, Any], prefix: str) -> dict[str, Any]:
+    """Validate one asset/metadata pair and bind its exact bytes to the manifest digest."""
+    asset = _local_file(root, binding.get("asset"), f"{prefix}.asset")
+    metadata = _local_file(root, binding.get("metadata"), f"{prefix}.metadata")
+    try:
+        result = validate_svg_asset(asset, metadata)
+    except AssetValidationError as error:
+        raise ManifestError(f"{prefix} failed structural SVG validation safely: {error}") from error
+    if not result["valid"]:
+        raise ManifestError(f"{prefix} failed structural SVG validation: " + "; ".join(result["errors"]))
+    svg_bytes = asset.read_bytes()
+    digest = hashlib.sha256(svg_bytes).hexdigest()
+    manifest_digest = _sha256_text(binding.get("asset_sha256"), f"{prefix}.asset_sha256")
+    if manifest_digest != digest:
+        raise ManifestError(f"{prefix}.asset_sha256 does not match the exact asset bytes")
+    return {
+        "asset": asset,
+        "metadata": metadata,
+        "result": result,
+        "svg_bytes": svg_bytes,
+        "digest": digest,
+        "manifest_digest": manifest_digest,
+    }
+
+
+def _read_bound_metadata(metadata: Path, prefix: str) -> dict[str, Any]:
+    try:
+        if metadata.stat().st_size > MAX_JSON_BYTES:
+            raise ManifestError(f"{prefix}.metadata exceeds the deterministic {MAX_JSON_BYTES}-byte safety limit")
+        metadata_value = json.loads(metadata.read_text(encoding="utf-8"))
+    except ManifestError:
+        raise
+    except json.JSONDecodeError as error:
+        raise ManifestError(f"{prefix}.metadata is not valid JSON: {error}") from error
+    except ValueError as error:
+        raise ManifestError(f"{prefix}.metadata JSON cannot be parsed safely: {error}") from error
+    except RecursionError as error:
+        raise ManifestError(
+            f"{prefix}.metadata exceeds the deterministic {MAX_JSON_DEPTH}-level JSON nesting limit"
+        ) from error
+    except (OSError, UnicodeDecodeError) as error:
+        raise ManifestError(f"{prefix}.metadata cannot be read as UTF-8 JSON: {error}") from error
+    metadata_tree_error = _json_tree_error(metadata_value, f"{prefix}.metadata JSON")
+    if metadata_tree_error:
+        raise ManifestError(metadata_tree_error)
+    if not isinstance(metadata_value, dict):
+        raise ManifestError(f"{prefix}.metadata root must be a JSON object")
+    return metadata_value
+
+
+def _covers_sizes(metadata_value: dict[str, Any], sizes: list[float], prefix: str) -> None:
+    declared_sizes = {
+        _safe_float(size, f"{prefix}.metadata.target_sizes")
+        for size in metadata_value.get("target_sizes", [])
+    }
+    missing_sizes = [size for size in sizes if size not in declared_sizes]
+    if missing_sizes:
+        raise ManifestError(
+            f"{prefix} metadata omits context target sizes: "
+            + ", ".join(f"{size:g}" for size in missing_sizes)
+        )
+
+
+def _style_signature(metadata_value: dict[str, Any]) -> tuple[Any, ...]:
+    """Drawing style as declared by validated metadata: mode, weight, caps, joins, tone."""
+    language = metadata_value.get("drawing_language")
+    language = language if isinstance(language, dict) else {}
+    tones = language.get("tones")
+    return (
+        str(language.get("mode", "")).strip().casefold(),
+        float(language.get("stroke_width", 0) or 0),
+        str(language.get("linecap", "")).strip().casefold(),
+        str(language.get("linejoin", "")).strip().casefold(),
+        tones.get("secondary_opacity") if isinstance(tones, dict) else None,
+    )
+
+
 def load_review_manifest(path: str | Path) -> dict[str, Any]:
     manifest_path = _manifest_file(path)
     try:
@@ -371,6 +467,14 @@ def load_review_manifest(path: str | Path) -> dict[str, Any]:
             _text(context.get("brand_identity"), f"{prefix}.brand_identity")
         elif "brand_identity" in context:
             raise ManifestError(f"{prefix}.brand_identity requires a brand-mark role")
+        axis = context.get("comparison_axis", "kind")
+        if "comparison_axis" in context:
+            if manifest["schema_version"] != "1.2":
+                raise ManifestError(f"{prefix}.comparison_axis requires schema 1.2")
+            if not isinstance(axis, str) or axis not in COMPARISON_AXES:
+                raise ManifestError(f"{prefix}.comparison_axis must be kind or style")
+            if brand_context and axis == "style":
+                raise ManifestError(f"{prefix} brand marks cannot run a drawing-style comparison; keep the supplied artwork")
         if manifest["schema_version"] == "1.0":
             context.setdefault("lang", "en")
             context.setdefault("dir", "ltr")
@@ -435,7 +539,12 @@ def load_review_manifest(path: str | Path) -> dict[str, Any]:
             raise ManifestError(f"{prefix} brand marks cannot offer custom substitutes")
         candidate_ids: set[str] = set()
         kinds: set[str] = set()
-        candidate_digests: set[str] = set()
+        # A presentation is the exact SVG digest shown in every declared state.
+        # Without state assets it is one digest repeated, which preserves the
+        # original duplicate-bytes rule.
+        presentations: set[tuple[str, ...]] = set()
+        default_names: dict[str, str] = {}
+        state_asset_names: set[str] = set()
         for candidate_index, candidate in enumerate(candidates):
             candidate_prefix = f"{prefix}.candidates[{candidate_index}]"
             if not isinstance(candidate, dict):
@@ -452,62 +561,26 @@ def load_review_manifest(path: str | Path) -> dict[str, Any]:
             if not isinstance(kind, str) or kind not in KINDS:
                 raise ManifestError(f"{candidate_prefix}.kind must be existing, custom, or none")
             kinds.add(kind)
+            state_assets = candidate.get("state_assets")
             if kind == "none":
-                if candidate.get("asset") or candidate.get("metadata"):
+                if candidate.get("asset") or candidate.get("metadata") or state_assets is not None:
                     raise ManifestError(f"{candidate_prefix} no-icon candidate must not declare asset files")
                 candidate["_svg"] = ""
                 candidate["_validation"] = None
             else:
-                asset = _local_file(root, candidate.get("asset"), f"{candidate_prefix}.asset")
-                metadata = _local_file(root, candidate.get("metadata"), f"{candidate_prefix}.metadata")
-                try:
-                    result = validate_svg_asset(asset, metadata)
-                except AssetValidationError as error:
-                    raise ManifestError(
-                        f"{candidate_prefix} failed structural SVG validation safely: {error}"
-                    ) from error
-                if not result["valid"]:
-                    raise ManifestError(
-                        f"{candidate_prefix} failed structural SVG validation: " + "; ".join(result["errors"])
-                    )
-                svg_bytes = asset.read_bytes()
-                digest = hashlib.sha256(svg_bytes).hexdigest()
-                manifest_digest = _sha256_text(
-                    candidate.get("asset_sha256"), f"{candidate_prefix}.asset_sha256"
-                )
-                if manifest_digest != digest:
-                    raise ManifestError(
-                        f"{candidate_prefix}.asset_sha256 does not match the exact asset bytes"
-                    )
-                if digest in candidate_digests:
-                    raise ManifestError(f"{candidate_prefix} reuses identical SVG bytes under another candidate label")
-                candidate_digests.add(digest)
-                try:
-                    if metadata.stat().st_size > MAX_JSON_BYTES:
-                        raise ManifestError(
-                            f"{candidate_prefix}.metadata exceeds the deterministic {MAX_JSON_BYTES}-byte safety limit"
-                        )
-                    metadata_value = json.loads(metadata.read_text(encoding="utf-8"))
-                except ManifestError:
-                    raise
-                except json.JSONDecodeError as error:
-                    raise ManifestError(f"{candidate_prefix}.metadata is not valid JSON: {error}") from error
-                except ValueError as error:
-                    raise ManifestError(
-                        f"{candidate_prefix}.metadata JSON cannot be parsed safely: {error}"
-                    ) from error
-                except RecursionError as error:
-                    raise ManifestError(
-                        f"{candidate_prefix}.metadata exceeds the deterministic {MAX_JSON_DEPTH}-level JSON nesting limit"
-                    ) from error
-                except (OSError, UnicodeDecodeError) as error:
-                    raise ManifestError(f"{candidate_prefix}.metadata cannot be read as UTF-8 JSON: {error}") from error
-                metadata_tree_error = _json_tree_error(metadata_value, f"{candidate_prefix}.metadata JSON")
-                if metadata_tree_error:
-                    raise ManifestError(metadata_tree_error)
-                if not isinstance(metadata_value, dict):
-                    raise ManifestError(f"{candidate_prefix}.metadata root must be a JSON object")
-                if metadata_value.get("name") != candidate_id:
+                bound = _bind_svg(root, candidate, candidate_prefix)
+                asset, metadata, result = bound["asset"], bound["metadata"], bound["result"]
+                svg_bytes, digest, manifest_digest = bound["svg_bytes"], bound["digest"], bound["manifest_digest"]
+                if state_assets is None:
+                    presentation = (digest,) * len(states)
+                    if presentation in presentations:
+                        raise ManifestError(f"{candidate_prefix} reuses identical SVG bytes under another candidate label")
+                    presentations.add(presentation)
+                metadata_value = _read_bound_metadata(metadata, candidate_prefix)
+                default_names[candidate_id] = str(metadata_value.get("name"))
+                # A candidate with per-state artwork names a combination, so its
+                # id cannot equal one asset name; the card lists every binding.
+                if state_assets is None and metadata_value.get("name") != candidate_id:
                     raise ManifestError(
                         f"{candidate_prefix}.id must exactly match metadata name {metadata_value.get('name')!r}"
                     )
@@ -524,22 +597,71 @@ def load_review_manifest(path: str | Path) -> dict[str, Any]:
                         raise ManifestError(
                             f"{candidate_prefix}.{field} must exactly match validated metadata {field}"
                         )
-                declared_sizes = {
-                    _safe_float(size, f"{candidate_prefix}.metadata.target_sizes")
-                    for size in metadata_value.get("target_sizes", [])
-                }
-                missing_sizes = [size for size in sizes if size not in declared_sizes]
-                if missing_sizes:
-                    raise ManifestError(
-                        f"{candidate_prefix} metadata omits context target sizes: "
-                        + ", ".join(f"{size:g}" for size in missing_sizes)
-                    )
+                _covers_sizes(metadata_value, sizes, candidate_prefix)
                 candidate["_svg"] = svg_bytes.decode("utf-8")
                 candidate["_validation"] = result
                 candidate["_digest"] = digest
                 candidate["_manifest_digest"] = manifest_digest
                 candidate["_asset_file"] = str(asset)
                 candidate["_metadata_file"] = str(metadata)
+                candidate["_style"] = _style_signature(metadata_value)
+                candidate["_state_svgs"] = {}
+                candidate["_state_styles"] = {}
+                candidate["_state_bindings"] = []
+                if state_assets is not None:
+                    if manifest["schema_version"] != "1.2":
+                        raise ManifestError(f"{candidate_prefix}.state_assets requires schema 1.2")
+                    if brand_context:
+                        raise ManifestError(f"{candidate_prefix} brand marks cannot swap artwork per state")
+                    if not isinstance(state_assets, dict) or not state_assets:
+                        raise ManifestError(f"{candidate_prefix}.state_assets must be a non-empty object keyed by comparison state")
+                    if any(not isinstance(state, str) or state == "default" or state not in states for state in state_assets):
+                        raise ManifestError(
+                            f"{candidate_prefix}.state_assets keys must be declared non-default comparison states"
+                        )
+                    state_digests: dict[str, str] = {}
+                    for state in [item for item in states if item in state_assets]:
+                        binding = state_assets[state]
+                        state_prefix = f"{candidate_prefix}.state_assets.{state}"
+                        if not isinstance(binding, dict) or set(binding) != STATE_ASSET_FIELDS:
+                            raise ManifestError(f"{state_prefix} must contain exactly asset, asset_sha256, and metadata")
+                        state_bound = _bind_svg(root, binding, state_prefix)
+                        if state_bound["digest"] == digest:
+                            raise ManifestError(f"{state_prefix} repeats the default asset; omit the state instead")
+                        state_metadata = _read_bound_metadata(state_bound["metadata"], state_prefix)
+                        if state_metadata.get("asset_type") == "brand-mark":
+                            raise ManifestError(f"{state_prefix} brand artwork requires a brand-mark context")
+                        if kind == "custom" and state_metadata.get("provenance", {}).get("kind") != "original":
+                            raise ManifestError(f"{state_prefix} custom candidates require original provenance")
+                        _covers_sizes(state_metadata, sizes, state_prefix)
+                        state_digests[state] = state_bound["digest"]
+                        state_asset_names.add(str(state_metadata.get("name")))
+                        candidate["_state_svgs"][state] = state_bound["svg_bytes"].decode("utf-8")
+                        candidate["_state_styles"][state] = _style_signature(state_metadata)
+                        candidate["_state_bindings"].append({
+                            "state": state,
+                            "name": str(state_metadata.get("name")),
+                            "sha256": state_bound["digest"],
+                            "source": str(state_metadata.get("source")),
+                            "license": str(state_metadata.get("license")),
+                            "asset_file": str(state_bound["asset"]),
+                            "metadata_file": str(state_bound["metadata"]),
+                        })
+                    presentation = tuple(state_digests.get(state, digest) for state in states)
+                    if presentation in presentations:
+                        raise ManifestError(
+                            f"{candidate_prefix} presents identical SVG bytes in every state under another candidate label"
+                        )
+                    presentations.add(presentation)
+        for candidate in candidates:
+            if candidate.get("_state_bindings"):
+                borrowed = (state_asset_names | {
+                    name for other, name in default_names.items() if other != candidate["id"]
+                }) - {default_names[candidate["id"]]}
+                if candidate["id"] in borrowed:
+                    raise ManifestError(
+                        f"{prefix}.candidate {candidate['id']} with state assets must not borrow the name of another asset"
+                    )
         if "_host_proof" in context:
             host_proof = context["_host_proof"]
             challenger_ids = set(host_proof["challenger_ids"])
@@ -561,25 +683,40 @@ def load_review_manifest(path: str | Path) -> dict[str, Any]:
                         f"{prefix}.candidate {candidate['id']}.visible_label must exactly match "
                         f"host_proof.expected_visible_label"
                     )
-        if not brand_context and len(kinds) < 2:
+        if axis == "style":
+            styled = [candidate for candidate in candidates if candidate["kind"] != "none"]
+            if len(styled) < 2:
+                raise ManifestError(f"{prefix} style comparison needs at least two SVG candidates")
+            signatures: dict[str, tuple[Any, ...]] = {}
+            for candidate in styled:
+                signature = tuple(candidate["_state_styles"].get(state, candidate["_style"]) for state in states)
+                for other_id, other_signature in signatures.items():
+                    if other_signature == signature:
+                        raise ManifestError(
+                            f"{prefix} candidates {other_id} and {candidate['id']} have the same drawing style in "
+                            "every state; a style comparison must differ in drawing style"
+                        )
+                signatures[candidate["id"]] = signature
+        elif not brand_context and len(kinds) < 2:
             raise ManifestError(f"{prefix} must compare materially different candidate kinds")
     manifest["_path"] = str(manifest_path)
     return manifest
 
 
-def _candidate_icon(candidate: dict[str, Any], size: float) -> str:
+def _candidate_icon(candidate: dict[str, Any], size: float, state: str) -> str:
     if candidate["kind"] == "none":
         return ""
+    svg = candidate.get("_state_svgs", {}).get(state, candidate["_svg"])
     return (
         f'<span class="icon" aria-hidden="true" style="--icon-size:{size:g}px">'
-        f'{candidate["_svg"]}</span>'
+        f'{svg}</span>'
     )
 
 
 def _component(context: dict[str, Any], candidate: dict[str, Any], size: float, state: str) -> str:
     label = html.escape(context["label"])
     detail = html.escape(str(context.get("detail", "")))
-    icon = _candidate_icon(candidate, size)
+    icon = _candidate_icon(candidate, size, state)
     classes = f"preview preview--{context['component']} state--{state}"
     locale = f' lang="{html.escape(context.get("lang", "en"))}" dir="{context.get("dir", "ltr")}"'
     disabled = " disabled" if state == "disabled" else ""
@@ -616,13 +753,24 @@ def render_review_html(manifest: dict[str, Any]) -> str:
             validation = candidate.get("_validation")
             contract = "not applicable — no SVG" if validation is None else "structural SVG contract: PASS"
             asset_digest = "not applicable — no SVG" if validation is None else candidate["asset_sha256"]
+            state_rows = "".join(
+                f'<dt>State asset: {html.escape(binding["state"])}</dt><dd>{html.escape(binding["name"])} · '
+                f'SHA-256 {html.escape(binding["sha256"])} · {html.escape(binding["source"])} · '
+                f'{html.escape(binding["license"])} · structural SVG contract: PASS</dd>'
+                for binding in candidate.get("_state_bindings", [])
+            )
+            if state_rows:
+                state_rows = (
+                    f'<dt>State assets</dt><dd>Default artwork {html.escape(candidate["asset_sha256"])} '
+                    f'renders in every state not listed below</dd>{state_rows}'
+                )
             cards.append(
                 f'<article class="candidate{" candidate--selected" if selected else ""}" data-candidate="{html.escape(candidate["id"])}">'
                 f'<header><div><span class="kind">{html.escape(candidate["kind"])}</span><h3>{html.escape(candidate["name"])}</h3></div>'
                 f'<span class="decision">{"SELECTED" if selected else "NOT SELECTED"}</span></header>'
                 f'<p>{html.escape(candidate["rationale"])}</p><dl><dt>Source</dt><dd>{html.escape(candidate["source"])}</dd>'
                 f'<dt>License</dt><dd>{html.escape(candidate["license"])}</dd><dt>Asset SHA-256</dt><dd>{html.escape(asset_digest)}</dd>'
-                f'<dt>Deterministic check</dt><dd>{contract}</dd></dl>'
+                f'<dt>Deterministic check</dt><dd>{contract}</dd>{state_rows}</dl>'
                 f'{"".join(matrices)}</article>'
             )
         host_proof = context.get("_host_proof")
@@ -635,6 +783,11 @@ def render_review_html(manifest: dict[str, Any]) -> str:
                 f'{html.escape(", ".join(host_proof["states"]))} · '
                 f'{html.escape(", ".join(item["name"] for item in host_proof["viewports"]))} · '
                 f'selected and rejected candidates rendered in host</p>'
+            )
+        if context.get("comparison_axis") == "style":
+            host_detail += (
+                '<p class="context-source"><strong>Comparison axis:</strong> drawing style · candidates may share a '
+                'kind and differ in outline, solid, duotone, weight, or per-state artwork</p>'
             )
         sections.append(
             f'<section class="context" id="{html.escape(context["id"])}"><div class="context-heading">'
@@ -694,6 +847,9 @@ def generate_review(manifest_path: str | Path, output_path: str | Path) -> dict[
                 inputs.append((f"candidate {candidate['id']} asset", Path(candidate["_asset_file"])))
             if candidate.get("_metadata_file"):
                 inputs.append((f"candidate {candidate['id']} metadata", Path(candidate["_metadata_file"])))
+            for binding in candidate.get("_state_bindings", []):
+                inputs.append((f"candidate {candidate['id']} {binding['state']} asset", Path(binding["asset_file"])))
+                inputs.append((f"candidate {candidate['id']} {binding['state']} metadata", Path(binding["metadata_file"])))
     for label, input_path in inputs:
         if _paths_alias(output, input_path):
             raise ManifestError(f"Output path must not alias {label}: {output}")

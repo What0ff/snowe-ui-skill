@@ -1353,6 +1353,262 @@ class IconDecisionWorkflowTests(unittest.TestCase):
                 generate_review(manifest_path, manifest_path)
             self.assertEqual(before, manifest_path.read_bytes())
 
+    def test_selected_host_state_requires_a_declared_selection_attribute(self):
+        def with_selected_state(manifest: dict) -> dict:
+            context = manifest["contexts"][0]
+            context["states"].append("selected")
+            context["host_proof"]["states"].append("selected")
+            context["host_proof"]["state_map"]["selected"] = "selected"
+            return manifest
+
+        manifest = with_selected_state(self.portable_checked_manifest())
+        self.assert_manifest_rejected(manifest, "selected_attribute")
+
+        manifest = with_selected_state(self.portable_checked_manifest())
+        manifest["contexts"][0]["host_proof"]["selected_attribute"] = "aria-checked"
+        self.assert_manifest_rejected(manifest, "selected_attribute")
+
+        manifest = self.portable_checked_manifest()
+        manifest["contexts"][0]["host_proof"]["selected_attribute"] = "aria-pressed"
+        self.assert_manifest_rejected(manifest, "selected_attribute requires")
+
+        for attribute in ("aria-pressed", "aria-current", "aria-selected"):
+            manifest = with_selected_state(self.portable_checked_manifest())
+            manifest["contexts"][0]["host_proof"]["selected_attribute"] = attribute
+            with tempfile.TemporaryDirectory() as temporary_directory, self.subTest(attribute=attribute):
+                loaded = load_review_manifest(self.write_manifest(Path(temporary_directory), manifest))
+                self.assertIn("selected", loaded["contexts"][0]["_host_proof"]["states"])
+
+
+FAVORITE_OUTLINE = (
+    SVG_OPEN + ' viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" '
+    'stroke-linejoin="round"><path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10z"/></svg>'
+)
+FAVORITE_SOLID = (
+    SVG_OPEN + ' viewBox="0 0 24 24" fill="currentColor">'
+    '<path d="M12 21s-8-5-8-11a5 5 0 0 1 8-4 5 5 0 0 1 8 4c0 6-8 11-8 11z"/></svg>'
+)
+
+
+class StyleComparisonTests(unittest.TestCase):
+    """Outline/solid comparisons and per-state assets in the review sheet."""
+
+    def setUp(self):
+        self.temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temporary.cleanup)
+        self.root = Path(self.temporary.name)
+        self.outline = self.write_asset("heart-outline", FAVORITE_OUTLINE, "stroke")
+        self.solid = self.write_asset("heart-solid", FAVORITE_SOLID, "fill")
+
+    def write_asset(self, name: str, source: str, mode: str) -> dict:
+        svg = self.root / f"{name}.svg"
+        svg.write_text(source, encoding="utf-8")
+        record = self.root / f"{name}.source.md"
+        record.write_bytes(f"# {name}\nDrawn for the style comparison fixture.\n".encode("utf-8"))
+        if mode == "stroke":
+            language = {"mode": "stroke", "stroke_width": 2, "linecap": "round", "linejoin": "round"}
+        else:
+            language = {"mode": "fill", "stroke_width": 0, "linecap": "not applicable", "linejoin": "not applicable"}
+        language.update({"corner_language": "rounded heart lobes", "detail_budget": "one silhouette at 16 px"})
+        digest = hashlib.sha256(svg.read_bytes()).hexdigest()
+        value = {
+            "name": name,
+            "asset_type": "interface-icon",
+            "role": "favorite toggle icon",
+            "grid": 24,
+            "live_area": {"min_x": 0, "min_y": 0, "max_x": 24, "max_y": 24},
+            "drawing_language": language,
+            "target_sizes": [16, 20, 24],
+            "source": "repository-owned favorite drawings",
+            "license": "project-owned",
+            "accessibility_owner": "owning toggle button; SVG decorative",
+            "provenance": {
+                "kind": "original",
+                "creator": "test fixture author",
+                "source_ref": f"{record.name}#{name}",
+                "reviewed": "2026-08-23",
+                "sha256": digest,
+            },
+            "evidence": {
+                "source": {"kind": "local", "path": record.name, "sha256": hashlib.sha256(record.read_bytes()).hexdigest()},
+                "license": {"kind": "project-owned"},
+            },
+        }
+        (self.root / f"{name}.metadata.json").write_text(json.dumps(value), encoding="utf-8")
+        return {"asset": svg.name, "asset_sha256": digest, "metadata": f"{name}.metadata.json"}
+
+    def candidate(self, candidate_id: str, name: str, binding: dict, **extra) -> dict:
+        return {
+            "id": candidate_id,
+            "name": name,
+            "kind": "custom",
+            **binding,
+            "source": "repository-owned favorite drawings",
+            "license": "project-owned",
+            "rationale": f"{name} in the same toggle.",
+            **extra,
+        }
+
+    def manifest(self) -> dict:
+        return {
+            "schema_version": "1.2",
+            "title": "Favorite style probe",
+            "contexts": [
+                {
+                    "id": "favorite-toggle",
+                    "role": "Toggle a saved item",
+                    "component": "icon-button",
+                    "label": "Save",
+                    "lang": "en",
+                    "dir": "ltr",
+                    "symbol_role": "interface-icon",
+                    "comparison_axis": "style",
+                    "sizes": [16, 20, 24],
+                    "states": ["default", "selected"],
+                    "selected": "heart-outline-selected-solid",
+                    "verdict": "KEEP",
+                    "decision_evidence": "The solid selected state reads as saved without making every row heavy.",
+                    "context_evidence": {
+                        "basis": "representative",
+                        "source": "Saved-item toggle convention",
+                        "selector": "favorite toggle button",
+                        "viewport": "16, 20, and 24 px targets",
+                    },
+                    "candidates": [
+                        self.candidate("heart-outline", "Outline heart", self.outline),
+                        self.candidate("heart-solid", "Solid heart", self.solid),
+                        self.candidate(
+                            "heart-outline-selected-solid",
+                            "Outline, solid when selected",
+                            self.outline,
+                            state_assets={"selected": self.solid},
+                        ),
+                    ],
+                }
+            ],
+        }
+
+    def load(self, value: dict) -> dict:
+        path = self.root / "manifest.json"
+        path.write_text(json.dumps(value), encoding="utf-8")
+        return load_review_manifest(path)
+
+    def assert_rejected(self, value: dict, message: str) -> None:
+        with self.assertRaisesRegex(ManifestError, message):
+            self.load(value)
+
+    def test_style_comparison_renders_outline_by_default_and_solid_when_selected(self):
+        rendered = render_review_html(self.load(self.manifest()))
+        card = rendered.split('data-candidate="heart-outline-selected-solid"', 1)[1].split("</article>", 1)[0]
+        cells = card.split('<div class="state-cell state-cell--')[1:]
+        self.assertEqual(6, len(cells))
+        for cell in cells:
+            if cell.startswith("selected"):
+                self.assertIn("M12 21s-8-5", cell)
+                self.assertIn('aria-pressed="true"', cell)
+            else:
+                self.assertIn("M12 20s-7-4.5", cell)
+        self.assertIn("State assets", card)
+        self.assertIn(self.solid["asset_sha256"], card)
+        self.assertIn("drawing style", rendered)
+        outline_card = rendered.split('data-candidate="heart-outline"', 1)[1].split("</article>", 1)[0]
+        self.assertNotIn("M12 21s-8-5", outline_card)
+        self.assertNotIn("State assets", outline_card)
+
+    def test_same_kind_candidates_still_need_the_explicit_style_axis(self):
+        value = self.manifest()
+        del value["contexts"][0]["comparison_axis"]
+        self.assert_rejected(value, "materially different candidate kinds")
+        value = self.manifest()
+        value["contexts"][0]["comparison_axis"] = "palette"
+        self.assert_rejected(value, "comparison_axis")
+        value = self.manifest()
+        value["schema_version"] = "1.1"
+        for field in ("symbol_role",):
+            del value["contexts"][0][field]
+        self.assert_rejected(value, "schema 1.2")
+
+    def test_style_comparison_requires_materially_different_drawing_styles(self):
+        twin = self.write_asset("heart-outline-alt", FAVORITE_OUTLINE.replace("M12 20s", "M12 19.5s"), "stroke")
+        value = self.manifest()
+        value["contexts"][0]["candidates"] = [
+            self.candidate("heart-outline", "Outline heart", self.outline),
+            self.candidate("heart-outline-alt", "Alternative outline heart", twin),
+        ]
+        value["contexts"][0]["selected"] = "heart-outline"
+        self.assert_rejected(value, "same drawing style")
+
+        value = self.manifest()
+        value["contexts"][0]["candidates"] = [
+            self.candidate("heart-outline", "Outline heart", self.outline),
+            {
+                "id": "save-text",
+                "name": "Visible Save text",
+                "kind": "none",
+                "source": "Visible text",
+                "license": "Not applicable",
+                "rationale": "Text can carry the role.",
+            },
+        ]
+        value["contexts"][0]["selected"] = "heart-outline"
+        self.assert_rejected(value, "at least two SVG candidates")
+
+    def test_state_assets_are_bound_like_default_assets(self):
+        value = self.manifest()
+        value["contexts"][0]["candidates"][2]["state_assets"] = {"hover": self.solid}
+        self.assert_rejected(value, "state_assets keys")
+
+        value = self.manifest()
+        value["contexts"][0]["candidates"][2]["state_assets"] = {"default": self.solid}
+        self.assert_rejected(value, "state_assets keys")
+
+        value = self.manifest()
+        value["contexts"][0]["candidates"][2]["state_assets"]["selected"] = {**self.solid, "asset_sha256": "0" * 64}
+        self.assert_rejected(value, "asset_sha256 does not match")
+
+        value = self.manifest()
+        value["contexts"][0]["candidates"][2]["state_assets"]["selected"] = {**self.solid, "extra": True}
+        self.assert_rejected(value, "exactly asset, asset_sha256, and metadata")
+
+        value = self.manifest()
+        value["contexts"][0]["candidates"][2]["state_assets"] = {"selected": self.outline}
+        self.assert_rejected(value, "repeats")
+
+        value = self.manifest()
+        value["contexts"][0]["candidates"].append(
+            {
+                "id": "save-text",
+                "name": "Visible Save text",
+                "kind": "none",
+                "source": "Visible text",
+                "license": "Not applicable",
+                "rationale": "Text can carry the role.",
+                "state_assets": {"selected": self.solid},
+            }
+        )
+        self.assert_rejected(value, "no-icon candidate")
+
+        value = self.manifest()
+        stateful = value["contexts"][0]["candidates"].pop()
+        stateful["id"] = "heart-solid"
+        value["contexts"][0]["candidates"] = [value["contexts"][0]["candidates"][0], stateful]
+        value["contexts"][0]["selected"] = "heart-solid"
+        self.assert_rejected(value, "must not borrow")
+
+        value = self.manifest()
+        value["contexts"][0]["candidates"].append(
+            self.candidate("heart-outline-selected-solid-copy", "Copy", self.outline, state_assets={"selected": self.solid})
+        )
+        self.assert_rejected(value, "identical SVG bytes in every state")
+
+    def test_style_comparison_writes_a_deterministic_sheet(self):
+        path = self.root / "manifest.json"
+        path.write_text(json.dumps(self.manifest()), encoding="utf-8")
+        first, second = self.root / "first.html", self.root / "second.html"
+        generate_review(path, first)
+        generate_review(path, second)
+        self.assertEqual(first.read_bytes(), second.read_bytes())
+
 
 if __name__ == "__main__":
     unittest.main()
