@@ -345,10 +345,14 @@ When closing a visual correction through the journal, require `method`, explicit
 ## Check an Exact Opaque Color Pair
 
 ```text
-python <skill-directory>/scripts/contrast.py "#18201B" "#F4F0E6" --minimum 4.5
+python <skill-directory>/scripts/contrast.py "#18201B" "#F4F0E6"
+python <skill-directory>/scripts/contrast.py "#18201B" "#F4F0E6" --large
+python <skill-directory>/scripts/contrast.py "#5A6B61" "#F4F0E6" --non-text --json
 ```
 
-The helper accepts `#RGB`, `#RRGGBB`, `rgb(r,g,b)`, `black`, and `white`. It uses WCAG relative-luminance contrast math and returns a nonzero exit code when the exact pair fails the requested minimum. It deliberately rejects alpha, gradients, images, and effects because those require rendered contextual measurement.
+The helper accepts `#RGB`, `#RRGGBB`, `rgb(r,g,b)`, `black`, and `white`, and uses WCAG relative-luminance contrast math. The default minimum is 4.5:1 (WCAG 1.4.3 AA normal text). `--large` requires 3:1 for large-scale text (at least 24px, or 18.66px bold); `--non-text` requires 3:1 for UI component boundaries, states and graphical objects (WCAG 1.4.11). `--minimum <ratio>` sets any other finite ratio from 1 to 21 and cannot be combined with a preset. Deciding which criterion applies to the rendered element remains your judgment; output and JSON name the criterion used.
+
+Exit status is `0` PASS, `1` FAIL (the exact pair is below the minimum) and `2` invalid input: an unsupported color, alpha, an out-of-range channel or an invalid minimum prints one error line on stderr. The helper deliberately rejects alpha, gradients, images, and effects because those require rendered contextual measurement.
 
 ## Interpret Output Honestly
 

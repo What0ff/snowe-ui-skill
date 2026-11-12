@@ -10,7 +10,9 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import re
+import sys
 from typing import Iterable
 
 
@@ -90,22 +92,78 @@ def best_foreground(
     return result
 
 
+# WCAG 2.x AA thresholds. Choosing which criterion applies to a rendered
+# element remains the caller's judgment; these presets only name the ratio.
+NORMAL_TEXT = (4.5, "WCAG 1.4.3 AA normal text")
+PRESETS = {
+    "large": (3.0, "WCAG 1.4.3 AA large-scale text (at least 24px, or 18.66px bold)"),
+    "non_text": (3.0, "WCAG 1.4.11 AA non-text UI components and graphical objects"),
+}
+
+
+def _minimum_ratio(value: str) -> float:
+    """argparse converter: a ratio an opaque pair can actually reach."""
+    try:
+        parsed = float(value)
+    except ValueError:
+        raise argparse.ArgumentTypeError(f"expected a number from 1 to 21, got {value!r}") from None
+    if not math.isfinite(parsed) or not 1 <= parsed <= 21:
+        raise argparse.ArgumentTypeError(
+            f"expected a finite ratio from 1 to 21 (contrast ranges from 1:1 to 21:1), got {value!r}"
+        )
+    return parsed
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Measure contrast for one exact opaque foreground/background pair"
+        description="Measure contrast for one exact opaque foreground/background pair",
+        epilog=(
+            "Exit status: 0 PASS, 1 FAIL (the exact pair is below the minimum), "
+            "2 invalid input or arguments."
+        ),
     )
     parser.add_argument("foreground")
     parser.add_argument("background")
-    parser.add_argument("--minimum", type=float, default=4.5)
+    threshold = parser.add_mutually_exclusive_group()
+    threshold.add_argument(
+        "--minimum",
+        type=_minimum_ratio,
+        default=None,
+        help="Required ratio from 1 to 21 (default: 4.5, WCAG AA normal text)",
+    )
+    threshold.add_argument(
+        "--large",
+        dest="preset",
+        action="store_const",
+        const="large",
+        help="Require 3:1 for large-scale text (at least 24px, or 18.66px bold)",
+    )
+    threshold.add_argument(
+        "--non-text",
+        dest="preset",
+        action="store_const",
+        const="non_text",
+        help="Require 3:1 for UI component boundaries, states and graphical objects",
+    )
     parser.add_argument("--json", action="store_true")
     args = parser.parse_args()
-    result = check_contrast(args.foreground, args.background, args.minimum)
+    if args.minimum is not None:
+        minimum, criterion = args.minimum, "caller-specified minimum"
+    else:
+        minimum, criterion = PRESETS.get(args.preset, NORMAL_TEXT)
+    try:
+        result = check_contrast(args.foreground, args.background, minimum)
+    except ValueError as error:
+        # One diagnostic line; exit 2 keeps invalid input distinct from a measured FAIL.
+        print(f"contrast.py: error: {error}", file=sys.stderr)
+        return 2
+    result["criterion"] = criterion
     if args.json:
         print(json.dumps(result, indent=2))
     else:
         print(
             f"{result['status']}: {result['foreground']} on {result['background']} "
-            f"= {result['ratio']}:1 (minimum {result['minimum']}:1; {result['scope']})"
+            f"= {result['ratio']}:1 (minimum {result['minimum']}:1, {criterion}; {result['scope']})"
         )
     return 0 if result["status"] == "PASS" else 1
 

@@ -657,6 +657,62 @@ class ContrastTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             parse_opaque_color("#00000080")
 
+    def run_contrast(self, *arguments):
+        return subprocess.run(
+            [sys.executable, str(SCRIPTS / "contrast.py"), *arguments],
+            capture_output=True, text=True, encoding="utf-8", timeout=60, check=False,
+        )
+
+    def test_cli_exit_codes_separate_pass_fail_and_invalid_input(self):
+        passed = self.run_contrast("#000", "#fff")
+        self.assertEqual(0, passed.returncode, passed.stderr)
+        self.assertTrue(passed.stdout.startswith("PASS"), passed.stdout)
+        failed = self.run_contrast("#777777", "#FFFFFF", "--minimum", "4.5")
+        self.assertEqual(1, failed.returncode, failed.stderr)
+        self.assertTrue(failed.stdout.startswith("FAIL"), failed.stdout)
+        # Invalid input is a usage problem, never the same exit code as a measured FAIL.
+        for invalid in ("rgba(0,0,0,.5)", "red", "rgb(300,0,0)", ""):
+            for arguments in ((invalid, "#fff"), ("#fff", invalid), (invalid, "#fff", "--json")):
+                with self.subTest(arguments=arguments):
+                    result = self.run_contrast(*arguments)
+                    self.assertEqual(2, result.returncode, result.stdout + result.stderr)
+                    self.assertEqual("", result.stdout)
+                    self.assertNotIn("Traceback", result.stderr)
+                    self.assertEqual(1, len(result.stderr.strip().splitlines()), result.stderr)
+                    self.assertIn("contrast.py: error:", result.stderr)
+
+    def test_cli_minimum_must_be_a_finite_reachable_ratio(self):
+        for value in ("nan", "inf", "-inf", "0.5", "0", "-3", "abc", "21.5"):
+            with self.subTest(value=value):
+                result = self.run_contrast("#000", "#fff", "--minimum", value)
+                self.assertEqual(2, result.returncode, result.stdout + result.stderr)
+                self.assertNotIn("Traceback", result.stderr)
+                self.assertIn("--minimum", result.stderr)
+        for value, status in (("1", "PASS"), ("21", "PASS")):
+            with self.subTest(value=value):
+                result = self.run_contrast("#000", "#fff", "--minimum", value, "--json")
+                self.assertEqual(0, result.returncode, result.stderr)
+                self.assertEqual(status, json.loads(result.stdout)["status"])
+
+    def test_cli_large_text_and_non_text_presets_apply_three_to_one(self):
+        # #949494 on white is about 3.03:1: enough for 3:1 criteria, not for body text.
+        default = self.run_contrast("#949494", "#ffffff", "--json")
+        self.assertEqual(1, default.returncode)
+        self.assertEqual(4.5, json.loads(default.stdout)["minimum"])
+        for preset, criterion in (("--large", "large-scale text"), ("--non-text", "non-text")):
+            with self.subTest(preset=preset):
+                result = self.run_contrast("#949494", "#ffffff", preset, "--json")
+                self.assertEqual(0, result.returncode, result.stderr)
+                payload = json.loads(result.stdout)
+                self.assertEqual(3.0, payload["minimum"])
+                self.assertEqual("PASS", payload["status"])
+                self.assertIn(criterion, payload["criterion"])
+                text = self.run_contrast("#949494", "#ffffff", preset)
+                self.assertIn(criterion, text.stdout)
+        conflicting = self.run_contrast("#000", "#fff", "--large", "--minimum", "7")
+        self.assertEqual(2, conflicting.returncode)
+        self.assertIn("not allowed with", conflicting.stderr)
+
 
 class AssetQualityTests(unittest.TestCase):
     VALID_SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 15h18M6 15l2-6h8l2 6"/></svg>'
