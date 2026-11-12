@@ -20,7 +20,7 @@ Before choosing new heights, padding and headline sizes, establish how this surf
 
 Size the content and grouping first, then distribute remaining space. A wider viewport does not automatically justify larger padding, navigation rows or status values. Large minimum heights, repeated section paddings, viewport-sized wrappers and flex/grid stretching accumulate even when every individual number looks reasonable. Measure their combined effect on the first useful decision. Do not scale the whole interface down: small labels and control targets may already be correct while their containers are too large.
 
-Treat empty, sparse and populated content as distinct compositions. An unassigned value or zero count should carry its factual role without acquiring the emphasis of a meaningful result merely because it shares a component. Reserve empty working space only when stable geometry, real-time updates, comparison or another demonstrated task benefits from it. Otherwise let short content use its natural extent and cap long content at the intended scroll owner. Avoid both giant empty wells and layouts that jump excessively when a row arrives.
+Treat empty, sparse and populated content as distinct compositions. An unassigned value or zero count should carry its factual role without acquiring the emphasis of a meaningful result merely because it shares a component. Page-level content such as a document or a list may use its natural extent, capped at the intended scroll owner. The frame around it (app shell, panels, dialogs, tab panels, cards in a grid, toolbars, buttons) keeps its size across states; see [stable geometry](#stable-geometry-across-states). Avoid giant empty wells, and avoid frames that resize when data arrives.
 
 When density remains open on newly composed or materially revised repeated-use surfaces, compare the current density against a credible tighter composition using identical empty, short and long content. Preserve type readability, control hit regions, grouping, keyboard focus, localization and touch behavior. Judge useful information visible together, distance between related facts/actions and repeated scanning effort. A spacious editorial/reference design can remain the correct counterexample. Record why the chosen density fits; neither maximum compression nor a universal 64px row, 28px heading or occupancy percentage defines quality.
 
@@ -31,6 +31,23 @@ Choose the reference frame before aligning: the content column, control, panel, 
 Place actions near the object and decision they affect. Keep related labels, values and controls grouped; repeated peers should use consistent axes. Compare the accepted position with a credible alternative when placement is open. Do not center long reading text, lists or numeric columns by default, and do not preserve an arbitrary offset merely because it avoids centering. If a supplied reference specifies placement, conformance remains the target.
 
 For mixed control rows, separate the visible input/button boxes from label, help and error wrappers. A field's caption can enlarge its wrapper while its input belongs on the same operational axis as adjacent filters/actions. Choose the axis from the intended composition: control center, bottom edge or text baseline are different contracts. Align the actual controls, retaining the caption's relationship to its field; a common controls row with a separate caption or a correctly aligned field wrapper are possible implementations. Inspect CSS flex/grid or Figma Auto Layout at the real owner before changing offsets. Do not compensate with arbitrary per-button translations or force equal heights when different roles are justified. Check settled fonts, long labels/help, wrapping and relevant sibling states; a multiline toolbar may need a deliberate new relationship rather than alignment to the previous row.
+
+### Stable Geometry Across States
+
+A control the user is about to press must not move, and a panel must not change size because its content changed. Size every frame element for the largest state it must hold, or reserve the slot that a state will fill. States to cover: loading, loaded, empty and error; selection and deselection; tab switches; hover, focus and pressed; label changes such as "Save" to "Saving…"; validation messages; live updates; late images and fonts.
+
+Techniques:
+- Dialogs, side panels and inspectors get a fixed width per type. Their content scrolls inside while the header and actions stay put.
+- Tab panels and stepper bodies get a `min-height` taken from their tallest panel, or they share one scroll owner.
+- Reserve the line for a validation or status message (`min-height`), or place the message where its appearance cannot push the submit control.
+- Buttons whose label or icon changes keep their width: give them a `min-width` sized to the longest label, or overlay the spinner without removing the label from layout.
+- Hover, selected and bold states do not change box size. Use color, background or a pseudo-element outline instead of weight or border-width changes that shift neighbors.
+- Skeletons and placeholders match the final geometry: same row count or height, same column widths.
+- Changing numbers use `font-variant-numeric: tabular-nums`, and their containers get a width for the longest expected value.
+- Images and media declare `width` and `height` or `aspect-ratio`. Scrollable regions that can gain a scrollbar use `scrollbar-gutter: stable`.
+- New content appears where it cannot push the user's current focus: below it, in a reserved region, or as an announced update.
+
+Intentional resizing is fine when the user asked for it, for example expanding a disclosure or dragging a splitter. Prove stability by comparing the bounding boxes of the frame regions and the active control in state A and state B at the same viewport. Unrequested movement is a defect.
 
 ### Bounded Lists and Scroll Ownership
 
@@ -132,7 +149,8 @@ Choose components by behavior and platform semantics, then style them within the
 - Preserve native or repository primitives when they meet the task.
 - Custom controls must reproduce keyboard, focus, selected, disabled, validation, text scaling, and assistive-technology behavior.
 - Visible control scale follows density, content, input mode, and brand. The hit target can be larger through transparent non-overlapping space.
-- Full-width, oversized, icon-only, segmented, chip, tab, menu, or drawer patterns need a behavioral reason.
+- Full-width, oversized, icon-only, segmented or chip treatments need a behavioral reason.
+- Choose where each task lives (main surface, panel, dialog, popover, tabs, disclosure or route) with [surfaces-and-disclosure.md](surfaces-and-disclosure.md). Keeping everything on one surface needs a reason just as much as moving something off it.
 
 Choose icon-only, text-only or icon-with-text by the control's recognition and task, not a universal button template. For a known utility, use the [control label-mode rules](iconography-system.md#choose-the-control-label-mode); that focused decision does not require new icon sourcing.
 

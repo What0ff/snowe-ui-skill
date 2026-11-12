@@ -26,6 +26,8 @@ For each material decision, state what evidence could keep, revise, or reject it
 
 When a live selection or input determines an already-visible preview, quote, result or inspector, exercise the dependency-changing transition. The current output must update or visibly invalidate before it can contradict the new selection; verify retained inputs and recovery, dependent counts and state styling as applicable. Correct states viewed separately do not prove this transition. Preserve deliberately historical or accepted snapshots as clearly identified records rather than clearing them as if they were current drafts. Keep the check scoped to the affected dependency, including its relevant narrow/pressure contexts.
 
+For each affected state change (loading to loaded, error, selection, tab switch, save in progress, validation message, live update), compare the frame regions and the control under the pointer before and after at the same viewport. A panel, dialog or control that moves or resizes without the user asking is a material finding; see [stable geometry](design-foundations.md#stable-geometry-across-states). When the work has secondary tasks, walk each one through its surface as described in [surfaces-and-disclosure.md](surfaces-and-disclosure.md#check).
+
 Use one record:
 
 ```text

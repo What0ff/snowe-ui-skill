@@ -7,9 +7,11 @@ Use before component/layout selection for a new page with a known job, a materia
 In the existing working record, state the user task and relevant context. List the content and operations the page actually needs, then assign their roles and relationships:
 
 ```text
-group / purpose / parent or related group / importance / required states
+group / purpose / parent or related group / importance / required states / surface
 what the user must understand or do / what must be seen together
 ```
+
+`surface` is where the group lives: main surface, side panel, dialog, popover, tabs, in-place disclosure or its own route. Choose it with [surfaces-and-disclosure.md](surfaces-and-disclosure.md); keeping a group on the main surface is a choice too.
 
 Possible roles include resource context, page identity, local navigation, selected object, primary work/data, current action, supporting state and reference/help. Extend or omit roles according to the task; these are not mandatory sections. Distinguish a selector from a status summary and a working collection from settings before styling any of them. State the intended reading/task order and which relationships must survive a narrow viewport.
 
