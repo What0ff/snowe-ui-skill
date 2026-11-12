@@ -48,7 +48,7 @@ contrast.py      (standalone exact-color checker)
 
 ### `search.py`
 
-Owns CLI argument constraints and dispatch. It requires an explicit evidence domain, explicit stack, or packet mode. `--design-system` is only a compatibility spelling for `--decision-packet`; `--analog-query` is packet-only and caller chosen. Windows console output is normalized to UTF-8 when required.
+Owns CLI argument constraints and dispatch. It requires an explicit evidence domain, explicit stack, or packet mode. `--design-system` is only a compatibility spelling for `--decision-packet`; `--analog-query` is packet-only and caller chosen. Windows console output is normalized to UTF-8 when required, only when run as a script; `main(argv)` is importable for in-process tests. Lookup errors exit 1 (text on stderr, the JSON error object on stdout with `--json`); lock contention exits 1 without a traceback. The persistence confirmation reports the resolved directory and each file's `written`/`preserved` status from `generate_decision_packet_with_persistence`, which returns the formatted packet plus the `persist_decision_packet` result; `generate_decision_packet` keeps returning only the formatted packet.
 
 ### `core.py`
 

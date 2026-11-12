@@ -35,14 +35,18 @@ _SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 if _SCRIPT_DIR not in sys.path:
     sys.path.insert(0, _SCRIPT_DIR)
 
-from core import CSV_CONFIG, AVAILABLE_STACKS, MAX_RESULTS, search, search_stack
-from decision_packet import generate_decision_packet, sensitive_markers, slugify_name
+import json
 
-# Force UTF-8 for stdout/stderr to handle emojis on Windows (cp1252 default)
-if sys.stdout.encoding and sys.stdout.encoding.lower() != 'utf-8':
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
-if sys.stderr.encoding and sys.stderr.encoding.lower() != 'utf-8':
-    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
+from core import CSV_CONFIG, AVAILABLE_STACKS, MAX_RESULTS, search, search_stack
+from decision_packet import generate_decision_packet_with_persistence
+
+
+def _force_utf8_console():
+    """Force UTF-8 for stdout/stderr to handle emojis on Windows (cp1252 default)."""
+    if sys.stdout.encoding and sys.stdout.encoding.lower() != 'utf-8':
+        sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+    if sys.stderr.encoding and sys.stderr.encoding.lower() != 'utf-8':
+        sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
 
 
 def format_output(result):
@@ -86,8 +90,55 @@ def positive_int(value):
     return parsed
 
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Snowe UI Skill Search")
+# Human labels for files reported by persist_decision_packet.
+_PERSISTED_ROLES = (
+    ("PROJECT.json", "stable identity manifest"),
+    ("BRIEF.md", "project brief"),
+    ("DECISIONS.md", "accepted decisions ledger; never regenerated"),
+)
+
+
+def _persisted_role(path):
+    name = os.path.basename(path)
+    for filename, role in _PERSISTED_ROLES:
+        if name == filename:
+            return role
+    if os.path.basename(os.path.dirname(path)) == "pages" and name.endswith(".md"):
+        return "open page inquiry"
+    if name.startswith("PROJECT.json.corrupt-"):
+        return "quarantined incomplete identity manifest"
+    if name.startswith(".PROJECT.json.tmp-"):
+        return "unpublished manifest from an interrupted run"
+    return "persisted state"
+
+
+def print_persistence_summary(persisted, stream):
+    """Report the files persist_decision_packet actually wrote or preserved."""
+    project_dir = persisted["design_intelligence_dir"]
+    rows = [("written", path) for path in persisted["created_or_updated_files"]]
+    rows += [("preserved", path) for path in persisted["preserved_files"]]
+    print("\n" + "=" * 60, file=stream)
+    print(f"Design intelligence persisted to {project_dir}", file=stream)
+    for status, path in rows:
+        shown = os.path.relpath(path, project_dir)
+        if shown.startswith(".."):
+            shown = path
+        print(f"   {status:<10} {shown} ({_persisted_role(path)})", file=stream)
+    print("", file=stream)
+    print("Usage: Read accepted decisions, then the brief and any relevant page inquiry.", file=stream)
+    print("=" * 60, file=stream)
+    markers = persisted.get("sensitive_content") or []
+    if markers:
+        print(
+            "WARNING: the brief is stored verbatim and appears to contain: "
+            + ", ".join(markers)
+            + f". Remove those values from {project_dir}, or keep that directory out of version control.",
+            file=sys.stderr,
+        )
+
+
+def build_parser():
+    parser = argparse.ArgumentParser(prog="search.py", description="Snowe UI Skill Search")
     parser.add_argument("query", help="Search query")
     parser.add_argument("--domain", "-d", choices=list(CSV_CONFIG.keys()), help="Search domain")
     parser.add_argument("--stack", "-s", choices=AVAILABLE_STACKS, help=f"Stack-specific search. Available: {', '.join(AVAILABLE_STACKS)}")
@@ -116,8 +167,13 @@ if __name__ == "__main__":
     parser.add_argument("--persist", action="store_true", help="Create identity-bound PROJECT.json/BRIEF.md and initialize a durable non-overwritten DECISIONS.md")
     parser.add_argument("--page", type=str, default=None, help="Create a page inquiry without prescribing a page type or section order")
     parser.add_argument("--output-dir", "-o", type=str, default=None, help="Output directory for persisted files (default: current directory)")
+    return parser
 
-    args = parser.parse_args()
+
+def main(argv=None):
+    """Run the CLI and return its exit status; argparse usage errors exit 2 directly."""
+    parser = build_parser()
+    args = parser.parse_args(argv)
 
     if args.domain and args.stack:
         parser.error("--domain and --stack are mutually exclusive")
@@ -145,7 +201,7 @@ if __name__ == "__main__":
     if args.decision_packet:
         packet_format = args.format or "markdown"
         try:
-            result = generate_decision_packet(
+            result, persisted = generate_decision_packet_with_persistence(
                 args.query,
                 args.project_name,
                 packet_format,
@@ -157,49 +213,33 @@ if __name__ == "__main__":
             )
         except (OSError, ValueError) as error:
             parser.error(str(error))
+        except RuntimeError as error:
+            # Lock contention is not a usage error: report it once, without a traceback.
+            parser.exit(1, f"{parser.prog}: error: {error}\n")
         print(result)
 
-        # Print persistence confirmation
-        if args.persist:
-            project_slug = slugify_name(args.project_name or "untitled-design-inquiry")
+        if persisted is not None:
             # Keep documented JSON stdout machine-readable. Human persistence
             # diagnostics belong on stderr in structured mode.
-            confirmation = sys.stderr if packet_format == "json" else sys.stdout
-            print("\n" + "=" * 60, file=confirmation)
-            print(f"Design intelligence persisted to design-intelligence/{project_slug}/", file=confirmation)
-            print(f"   design-intelligence/{project_slug}/PROJECT.json (Stable identity manifest)", file=confirmation)
-            brief_note = "Project brief; created only if absent when adding a page" if args.page else "Regenerated decision packet"
-            print(f"   design-intelligence/{project_slug}/BRIEF.md ({brief_note})", file=confirmation)
-            print(f"   design-intelligence/{project_slug}/DECISIONS.md (Durable accepted decisions; preserved on regeneration)", file=confirmation)
-            if args.page:
-                page_filename = slugify_name(args.page, "page")
-                print(f"   design-intelligence/{project_slug}/pages/{page_filename}.md (Open page inquiry)", file=confirmation)
-            print("", file=confirmation)
-            print("Usage: Read accepted decisions, then the brief and any relevant page inquiry.", file=confirmation)
-            print("=" * 60, file=confirmation)
-            markers = sensitive_markers(args.query)
-            if markers:
-                print(
-                    "WARNING: the brief is stored verbatim and appears to contain: "
-                    + ", ".join(markers)
-                    + ". Remove those values from design-intelligence/ files, or keep that directory out of version control.",
-                    file=sys.stderr,
-                )
-    # Stack search
-    elif args.stack:
+            print_persistence_summary(persisted, sys.stderr if packet_format == "json" else sys.stdout)
+        return 0
+
+    if args.stack:
         result = search_stack(args.query, args.stack, args.max_results or MAX_RESULTS)
-        if args.json:
-            import json
-            print(json.dumps(result, indent=2, ensure_ascii=False))
-        else:
-            print(format_output(result))
-    # Domain search
     else:
         if not args.domain:
             parser.error("--domain is required for local evidence search; automatic semantic domain detection is intentionally unavailable")
         result = search(args.query, args.domain, args.max_results or MAX_RESULTS)
-        if args.json:
-            import json
-            print(json.dumps(result, indent=2, ensure_ascii=False))
-        else:
-            print(format_output(result))
+    if args.json:
+        # JSON stays on stdout, error object included, so tooling can parse it.
+        print(json.dumps(result, indent=2, ensure_ascii=False))
+    elif "error" in result:
+        print(format_output(result), file=sys.stderr)
+    else:
+        print(format_output(result))
+    return 1 if "error" in result else 0
+
+
+if __name__ == "__main__":
+    _force_utf8_console()
+    raise SystemExit(main())

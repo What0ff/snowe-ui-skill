@@ -3,6 +3,7 @@ from __future__ import annotations
 import csv
 import hashlib
 import json
+import os
 import re
 import subprocess
 import sys
@@ -979,6 +980,75 @@ class CliTests(unittest.TestCase):
             self.assertIn("PROJECT.json", result.stderr)
             project = Path(temporary_directory) / "design-intelligence" / "structured-probe"
             self.assertTrue((project / "PROJECT.json").is_file())
+
+    def test_search_errors_exit_nonzero_in_text_and_json_modes(self):
+        text_result = self.run_cli("close x", "--domain", "icon-candidates")
+        self.assertNotEqual(0, text_result.returncode)
+        self.assertEqual("", text_result.stdout)
+        self.assertIn("requires exactly one source family", text_result.stderr)
+        json_result = self.run_cli("close x", "--domain", "icon-candidates", "--json")
+        self.assertNotEqual(0, json_result.returncode)
+        self.assertIn("requires exactly one source family", json.loads(json_result.stdout)["error"])
+
+    def test_persist_lock_contention_is_a_clear_error_not_a_traceback(self):
+        import contextlib
+        import io
+        import search as search_cli
+
+        # Make the real OS lock call fail as contention does (Windows gives up after its retries).
+        if os.name == "nt":
+            import msvcrt
+            contended = patch.object(msvcrt, "locking", side_effect=OSError(36, "Resource deadlock avoided"))
+        else:
+            import fcntl
+            contended = patch.object(fcntl, "flock", side_effect=OSError(11, "Resource temporarily unavailable"))
+        stderr = io.StringIO()
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            with contended:
+                with contextlib.redirect_stderr(stderr), contextlib.redirect_stdout(io.StringIO()):
+                    with self.assertRaises(SystemExit) as exited:
+                        search_cli.main(["Brief", "--decision-packet", "--persist", "--project-name", "Locked",
+                                         "--output-dir", temporary_directory])
+        self.assertEqual(1, exited.exception.code)
+        self.assertIn("Another persistence operation is active for 'locked'", stderr.getvalue())
+        self.assertIn("retry", stderr.getvalue())
+        self.assertNotIn("Traceback", stderr.getvalue())
+
+    def test_output_dir_through_a_file_names_that_file(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            blocker = Path(temporary_directory) / "notes.txt"
+            blocker.write_text("not a directory", encoding="utf-8")
+            for output in (blocker / "sub", blocker):
+                with self.subTest(output=output.name):
+                    result = self.run_cli("Brief", "--decision-packet", "--persist", "--project-name", "Blocked",
+                                          "--output-dir", str(output))
+                    self.assertNotEqual(0, result.returncode)
+                    self.assertIn("notes.txt is a file", result.stderr)
+                    self.assertNotIn("WinError", result.stderr)
+                    self.assertNotIn("Traceback", result.stderr)
+
+    def test_persist_confirmation_reports_actual_paths_and_statuses(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            output = Path(temporary_directory) / "chosen output"
+            arguments = ("Care journey", "--decision-packet", "--persist", "--project-name", "Care Flow",
+                         "--output-dir", str(output))
+            project = Path(os.path.realpath(output)) / "design-intelligence" / "care-flow"
+            first = self.run_cli(*arguments)
+            self.assertEqual(0, first.returncode, first.stderr)
+            self.assertIn(f"Design intelligence persisted to {project}", first.stdout)
+            self.assertNotIn("design-intelligence/care-flow/", first.stdout)
+            for line in ("written    PROJECT.json", "written    BRIEF.md", "written    DECISIONS.md"):
+                self.assertIn(line, first.stdout)
+            second = self.run_cli(*arguments)
+            self.assertEqual(0, second.returncode, second.stderr)
+            for line in ("preserved  PROJECT.json", "written    BRIEF.md", "preserved  DECISIONS.md"):
+                self.assertIn(line, second.stdout)
+            page = self.run_cli(*arguments, "--page", "Find a bike", "--format", "json")
+            self.assertEqual(0, page.returncode, page.stderr)
+            self.assertEqual("Care Flow", json.loads(page.stdout)["project_name"])
+            self.assertIn(f"Design intelligence persisted to {project}", page.stderr)
+            for line in ("preserved  BRIEF.md", "preserved  DECISIONS.md", f"written    {Path('pages/find-a-bike.md')}"):
+                self.assertIn(line, page.stderr)
 
     def test_local_search_requires_explicit_domain(self):
         result = self.run_cli("platform audit history")

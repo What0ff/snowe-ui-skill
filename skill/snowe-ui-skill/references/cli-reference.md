@@ -13,6 +13,8 @@ python <skill-directory>/scripts/contrast.py --help
 
 Use an available Python 3.11+ interpreter; isolated mode (`python -I`) is supported. Do not install or modify system Python merely to run Snowe without user authorization.
 
+`search.py` exits `0` on success, `1` when a lookup reports an error (the message goes to stderr; with `--json` the error object stays on stdout) or another run holds a persistence lock, and `2` for invalid arguments or an unusable `--output-dir`.
+
 ## Open a Decision Packet
 
 Open the packet only for proportionate Portfolio/open-inquiry work or when the caller explicitly requests it. A bounded Direct correction skips it; ordinary Focused work uses a compact record for the affected decision and sibling proof.
@@ -61,6 +63,8 @@ This writes:
 - `PROJECT.json` binds the exact explicit project identity to its slug. A different identity that normalizes to the same slug is refused, as is a shared-hardlink/inode manifest.
 - `BRIEF.md` is atomically regenerated from the current inquiry. Adding a page with `--page` preserves an existing project brief and creates one only when absent; the page brief goes into the page inquiry. The brief is stored verbatim, so keep credentials, personal data and internal hosts out of it; persistence warns on stderr (and returns `sensitive_content`) when it sees likely secrets, emails or private hosts, and never redacts them silently.
 - `DECISIONS.md` is created only when absent and then preserved byte-for-byte. A shared-hardlink/inode ledger is refused so preserving it cannot mutate another file. Record accepted causal decisions, scope, evidence, risk, and revisit trigger there; do not turn hypotheses into facts.
+
+The confirmation prints the resolved project directory and marks each file `written` or `preserved`, as persistence actually did; it goes to stdout, or to stderr with `--format json`. An `--output-dir` that is, or runs through, an existing file is refused with a message naming that file. If another run holds the project's persistence lock (Windows gives up after about ten seconds; POSIX waits), the command exits `1` with `Another persistence operation is active`; retry after it finishes.
 
 Add an unresolved page inquiry:
 

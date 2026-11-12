@@ -128,11 +128,32 @@ def _resolve_selected_root(path: str | Path, label: str) -> Path:
         resolved = Path(os.path.realpath(lexical))
     except (OSError, ValueError) as error:
         raise ValueError(f"{label} cannot be resolved safely: {lexical}") from error
+    _require_directory_path(resolved, label)
     root = _normalize_lexical_aliases(resolved, label)
     # Alias expansion must never erase a redirect inserted during inspection.
     _reject_reparse_chain(resolved, label)
     _reject_reparse_chain(root, label)
     return root
+
+
+def _require_directory_path(path: Path, label: str) -> None:
+    """Name an existing file that blocks a directory path instead of a raw OS error."""
+    current = path
+    while True:
+        try:
+            information = os.lstat(current)
+        except (FileNotFoundError, NotADirectoryError):
+            # Windows reports a path through a file as not found; POSIX as not a directory.
+            parent = current.parent
+            if parent == current:
+                return
+            current = parent
+            continue
+        except OSError as error:
+            raise ValueError(f"{label} cannot be inspected: {current} ({error.strerror or error})") from None
+        if not stat.S_ISDIR(information.st_mode):
+            raise ValueError(f"{label} must be a directory, but {current} is a file")
+        return
 
 
 def _resolve_selected_file(path: str | Path, label: str) -> Path:
@@ -232,14 +253,20 @@ def _persistence_lock(root: Path, project_slug: str):
             try:
                 msvcrt.locking(handle.fileno(), msvcrt.LK_LOCK, 1)
             except OSError as error:
-                raise RuntimeError(f"Another persistence operation is active for {project_slug!r}") from error
+                raise RuntimeError(
+                    f"Another persistence operation is active for {project_slug!r}; "
+                    "wait for it to finish, then retry"
+                ) from error
         else:
             import fcntl
 
             try:
                 fcntl.flock(handle.fileno(), fcntl.LOCK_EX)
             except OSError as error:
-                raise RuntimeError(f"Another persistence operation is active for {project_slug!r}") from error
+                raise RuntimeError(
+                    f"Another persistence operation is active for {project_slug!r}; "
+                    "wait for it to finish, then retry"
+                ) from error
         locked = True
         yield
     finally:
@@ -1270,6 +1297,37 @@ def persist_decision_packet(
         }
 
 
+def generate_decision_packet_with_persistence(
+    brief: str,
+    project_name: str | None = None,
+    output_format: str = "markdown",
+    persist: bool = False,
+    page: str | None = None,
+    output_dir: str | None = None,
+    page_brief: str | None = None,
+    declared_context: dict[str, Any] | None = None,
+    analog_query: str | None = None,
+) -> tuple[str, dict[str, Any] | None]:
+    """Return the formatted packet and, when persisted, ``persist_decision_packet``'s result."""
+    packet = DecisionPacketGenerator().generate(
+        brief,
+        project_name,
+        declared_context=declared_context,
+        analog_query=analog_query,
+    )
+    persisted = None
+    if persist:
+        persisted = persist_decision_packet(
+            packet,
+            page=page,
+            output_dir=output_dir,
+            page_brief=page_brief,
+            project_identity=project_name,
+        )
+    formatted = format_packet_json(packet) if output_format == "json" else format_packet_markdown(packet)
+    return formatted, persisted
+
+
 def generate_decision_packet(
     brief: str,
     project_name: str | None = None,
@@ -1282,20 +1340,15 @@ def generate_decision_packet(
     analog_query: str | None = None,
 ) -> str:
     """Format a schema 3 packet without semantically interpreting ``brief``."""
-    packet = DecisionPacketGenerator().generate(
+    formatted, _persisted = generate_decision_packet_with_persistence(
         brief,
         project_name,
+        output_format,
+        persist=persist,
+        page=page,
+        output_dir=output_dir,
+        page_brief=page_brief,
         declared_context=declared_context,
         analog_query=analog_query,
     )
-    if persist:
-        persist_decision_packet(
-            packet,
-            page=page,
-            output_dir=output_dir,
-            page_brief=page_brief,
-            project_identity=project_name,
-        )
-    if output_format == "json":
-        return format_packet_json(packet)
-    return format_packet_markdown(packet)
+    return formatted
