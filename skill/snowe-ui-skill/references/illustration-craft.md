@@ -11,12 +11,12 @@ A technical illustration must explain a system, flow or mechanism that the reade
 - **One focal object** carries the most detail (a chip with die and pins, a platform with an inset): the thing the page is about. Put it at the front, where it is largest and nothing covers it.
 - **Three to seven satellites** carry less detail and sit along the real flow, in the order that data or work actually moves. A chevron (flow arriving along +x, leaving along −y) keeps the focal object at the front vertex.
 - **Group by role** with shared platforms or spacing, and leave whitespace between groups. Upright cards in a row need about 0.6 grid units between them, or they read as dominoes.
-- **Mind hidden arrows.** Flows toward the viewer enter back faces, so their arrowheads hide behind the target; flows away land on visible faces. Choose sides so the arrows that matter stay visible.
-- **One level per link.** Connect objects that stand on the same surface; route to a platform's side instead of floating a line between heights, and let facing sides overlap so links run straight.
+- **Mind hidden arrows.** Flows toward the viewer enter back faces, where arrowheads hide behind the target. Schema 1.1 reroutes automatic sides to a visible face and refuses a hidden marker on an explicit side; under 1.0, choose sides yourself.
+- **One level per link.** Connect objects that stand on the same surface, or route on the ground and rise to a port on the face (`route: "ground"`, `to_z`). Route to a platform's side instead of floating a line between heights.
 
 ## Keep One System
 
-Per page, keep one projection, one light direction (top lightest, left middle, right darkest), one stroke system (outlines heavier than detail, constant at the rendered size) and one corner language. Mixing isometric with dimetric, perspective mockups or flat icons makes the drawing look assembled. Theme through the `--iso-*` custom properties; dark mode redefines the variables and leaves the geometry alone.
+Per page, keep one projection, one light direction (top lightest, left middle, right darkest), one stroke system (outlines heavier than detail, constant at the rendered size) and one corner language. `style: technical` gives the hairline system: 1 px outlines, finer detail, white tops, soft shadows. Put the page's own icon family (`glyph.py`) on faces with `icon`, so the drawing and the interface share one icon voice. Mixing isometric with dimetric, perspective mockups or flat icons makes the drawing look assembled. Theme through the `--iso-*` custom properties; dark mode redefines the variables and leaves the geometry alone.
 
 ## Accent and Labels
 
@@ -26,7 +26,9 @@ Labels are short nouns of one or two words, set on the faces they name. Keep the
 
 ## Motion
 
-Animate what changes: flow along connectors, one pulse when a state changes, a stagger by `data-order`. Never add idle spinning or looping decoration. Every connector path has `pathLength="1"`, so one dash pattern moves at the same relative speed on every link. Reduced motion keeps a complete static frame that still shows the active path ([motion-and-interaction.md](motion-and-interaction.md#reduced-motion-is-a-design-variant)).
+Animate what changes: flow along connectors, one pulse when a state changes, a stagger by `data-order`. Never add idle spinning or looping decoration. Reduced motion keeps a complete static frame that still shows the active path ([motion-and-interaction.md](motion-and-interaction.md#reduced-motion-is-a-design-variant)), and animation pauses off-screen.
+
+Hook contract: each connector is `g.iso-link` with `data-from`, `data-to`, `data-order` and one `path.iso-path` with `pathLength="1"`, so one dash pattern moves at the same relative speed on every link; append flow dots inside that group so objects in front still cover them. Objects are `g.iso-obj` with `data-role`; `.iso-accent` marks the active path.
 
 ```css
 .iso-link .iso-path { stroke-dasharray: .05 .04; animation: iso-flow 2.4s linear infinite; }

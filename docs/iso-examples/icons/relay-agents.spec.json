@@ -1,0 +1,66 @@
+{
+  "schema": "1.0",
+  "family": "relay-agents",
+  "tokens": {
+    "grid": 24,
+    "padding": 2,
+    "stroke": 1.5,
+    "linecap": "round",
+    "linejoin": "round",
+    "radius": 2,
+    "detail": "medium"
+  },
+  "target_sizes": [16, 20, 24, 32],
+  "variants": ["outline"],
+  "metadata": {
+    "creator": "Snowe iso.py demo (orchestration hub v2, Relay Supply)",
+    "reviewed": "2026-11-14",
+    "license": "project-owned demo family"
+  },
+  "glyphs": [
+    {
+      "name": "intake",
+      "role": "intake agent that sorts incoming orders",
+      "keyline": "landscape",
+      "shapes": [
+        {"type": "path", "id": "tray", "d": "M3 13 L5.75 5.5 H18.25 L21 13 V18.5 H3 Z", "radius": 1.5},
+        {"type": "path", "id": "lip", "d": "M3 13 H8 L9.5 15.5 H14.5 L16 13 H21"}
+      ]
+    },
+    {
+      "name": "billing",
+      "role": "billing agent that issues invoices",
+      "keyline": "portrait",
+      "shapes": [
+        {"type": "path", "id": "receipt", "d": "M5 3 H19 V21 L16.5 19.5 L14 21 L12 19.5 L10 21 L7.5 19.5 L5 21 Z", "radius": 1},
+        {"type": "line", "id": "row-1", "from": [8.5, 8], "to": [15.5, 8]},
+        {"type": "line", "id": "row-2", "from": [8.5, 11.5], "to": [15.5, 11.5]},
+        {"type": "line", "id": "row-3", "from": [8.5, 15], "to": [12.5, 15]}
+      ]
+    },
+    {
+      "name": "dispatch",
+      "role": "dispatch agent that ships orders",
+      "keyline": "circle",
+      "shapes": [
+        {"type": "path", "id": "parcel", "d": "M12 3 L20.25 7.25 V16.75 L12 21 L3.75 16.75 V7.25 Z", "radius": 1},
+        {"type": "path", "id": "seam", "d": "M3.75 7.25 L12 11.5 L20.25 7.25"},
+        {"type": "line", "id": "edge", "from": [12, 11.5], "to": [12, 21]}
+      ]
+    },
+    {
+      "name": "hub",
+      "role": "orchestrator core that routes work between agents",
+      "keyline": "circle",
+      "shapes": [
+        {"type": "circle", "id": "core", "center": [12, 13], "r": 3},
+        {"type": "circle", "id": "node-top", "center": [12, 5], "r": 1.75},
+        {"type": "circle", "id": "node-right", "center": [19, 18], "r": 1.75},
+        {"type": "circle", "id": "node-left", "center": [5, 18], "r": 1.75},
+        {"type": "line", "id": "spoke-top", "from": [12, 6.75], "to": [12, 10]},
+        {"type": "line", "id": "spoke-right", "from": [17.5, 17], "to": [14.5, 14.75]},
+        {"type": "line", "id": "spoke-left", "from": [6.5, 17], "to": [9.5, 14.75]}
+      ]
+    }
+  ]
+}

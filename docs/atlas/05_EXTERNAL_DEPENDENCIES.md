@@ -95,7 +95,7 @@ Before adding a dependency, intentionally revise the standard-library/no-build c
 
 `docs/figures-src/render.mjs` requires Node 22 and a system Chrome only when reference figures are re-rendered. It runs headless Chrome's screenshot mode once per source with a temporary profile and host resolution disabled, uses only Node built-ins, and relies on Windows system fonts for the committed look; other systems substitute fonts.
 
-`docs/iso-examples/render.mjs` likewise needs Node 22, a system Chrome and Python 3.11+ only when the isometric demo captures are re-rendered; it runs `iso.py` under `python -I` and blocks network access. The product `iso.py` itself is standard-library Python and needs no browser.
+`docs/iso-examples/render.mjs` likewise needs Node 22, a system Chrome and Python 3.11+ only when the isometric demo captures are re-rendered; it runs `iso.py` under `python -I`, blocks network access and refreshes the SVG embedded in `animated.html`. The product `iso.py` itself is standard-library Python and needs no browser.
 
 `docs/glyph-examples/render.mjs` likewise needs Node 22 and a system Chrome or Edge (or `CHROME_PATH`) only to re-render the demo sheets; it drives a temporary headless profile over CDP with Node built-ins. `glyph.py` itself is standard-library Python and needs no browser.
 
