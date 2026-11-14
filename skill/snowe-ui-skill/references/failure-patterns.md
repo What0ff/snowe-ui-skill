@@ -26,6 +26,7 @@ Use before accepting an original visual design, and whenever a result looks gene
 | `01 / 02 / 03` on unordered sections | Template polish | Does order carry meaning? | Descriptive headings and grouping ([incident](#section-numbering-added-as-polish)) | Real steps, chapters, references |
 | Dark theme in pure `#000` and `#fff` with neon accents | Inverting a light theme | Do elevated surfaces get lighter, and is chroma reduced? | Off-black base, lighter elevated layers, softened text white, less saturated accents | OLED-specific products that verified the choice |
 | Hover lift or scale on every card | Default interactivity cue | Is the element actually interactive? | Hover only on interactive elements, without shifting layout | — |
+| Every section fades or slides up as it scrolls into view | "Animations everywhere" read as entrances | Does the motion explain anything, and is the content readable before it runs? | Static sections; motion only where it shows a process, state or sequence ([motion](motion-and-interaction.md#interaction-quality)) | A story sequence whose order is the message |
 
 ![Generic landing page for a squad availability app](figures/landing-generic.png)
 

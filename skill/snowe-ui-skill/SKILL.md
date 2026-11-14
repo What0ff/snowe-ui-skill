@@ -69,6 +69,7 @@ Do not preload the library. Load a reference only while its decision is active; 
 - **Components and media:** [overlays-and-selection.md](references/overlays-and-selection.md); [iconography-system.md](references/iconography-system.md), icon source, style, label mode, metaphor; [icon-craft.md](references/icon-craft.md), drawing a custom glyph; [imagery-and-assets.md](references/imagery-and-assets.md), until a no-image decision; [motion-and-interaction.md](references/motion-and-interaction.md), only when motion carries meaning or a transition fails; [data-visualization.md](references/data-visualization.md).
 - **Contexts:** [localization-and-rtl.md](references/localization-and-rtl.md); [html-email.md](references/html-email.md).
 - **Proof and tools:** [quality-gates.md](references/quality-gates.md), verdicts, critique, accessibility, responsive and state checks, conformance, and [audits without code changes](references/quality-gates.md#review-only-and-audits); [correction-memory.md](references/correction-memory.md); [cli-reference.md](references/cli-reference.md), scripts, browser observation and checked visual reports.
+- **Bundled scripts** in `<skill-directory>/scripts/`: `contrast.py` (WCAG ratios), `observe.mjs` (browser captures; Node 22 with Chrome or Edge), `visual_review.py` (checked visual reports), `asset_quality.py` and `icon_review.py` (SVG icon validation and comparison), `search.py` (catalogs and the decision packet), `corrections.py` (the journal). Use them before writing your own tooling.
 
 ## The Design Loop
 

@@ -59,6 +59,7 @@ Frequent interactions get the shortest timings. Animate `transform` and `opacity
 - Keep focus synchronized with modal, route, disclosure and removal transitions, never animating focus into a disappearing node.
 - Give interrupted, cancelled, rapid, repeated and concurrent input a clear result.
 - Scroll-linked motion keeps navigation, reading position, responsiveness and direct control; no scroll hijacking.
+- Content is visible by default. Default: static sections get no entrance animation. When a reveal earns its place, the content's base state is visible; script adds the hidden start state only when it can run the reveal, the reveal plays once, and reduced motion skips it, so anchor jumps, find-in-page, print and captures never meet hidden text.
 
 ## Reduced Motion Is a Design Variant
 
