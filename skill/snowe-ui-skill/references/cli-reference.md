@@ -1,11 +1,12 @@
 # CLI Reference
 
-The bundled scripts give deterministic local evidence: retrieval, a Portfolio decision packet, identity-bound persistence, stack guidance, SVG validation, icon comparison, browser observation, visual-system contracts, checked visual reports and exact contrast. None of them designs or judges the rendered result.
+The bundled scripts give deterministic local evidence: retrieval, a Portfolio decision packet, identity-bound persistence, stack guidance, icon-family building, SVG validation, icon comparison, browser observation, visual-system contracts, checked visual reports and exact contrast. None of them designs or judges the rendered result.
 
 ## Runtime
 
 ```text
 python <skill-directory>/scripts/search.py --help
+python <skill-directory>/scripts/glyph.py --help
 python <skill-directory>/scripts/asset_quality.py --help
 python <skill-directory>/scripts/icon_review.py --help
 python <skill-directory>/scripts/contrast.py --help
@@ -139,6 +140,61 @@ angular, laravel, javafx, wpf, winui, avalonia, uno
 ```
 
 The `uwp` catalog was retired on 2026-11-12 (it targeted retired device families such as Windows 10 Mobile); `--stack uwp` returns an error naming `winui`, which covers choosing WinUI 3 and migrating UWP code. Use the repository's actual stack, and check official documentation when versions or platform behavior may have changed: rows are bundled guidance, not proof of current APIs. Rows start with their `No` id where the file has one, and each response carries the evidence boundary plus `documentation_coverage` counts of rows with and without a `Docs URL`. A URL is a discovery pointer, not proof of a primary or current source; output says when a returned row stays unsourced until verified.
+
+## Build an Icon Family
+
+`glyph.py` builds a custom family from one JSON spec: every glyph in `outline`, `solid` and `duotone`, each with metadata in the [validator's schema](#validate-custom-svg-structure). Nothing is written unless every output passes `asset_quality.py`.
+
+```text
+python <skill-directory>/scripts/glyph.py check family.json
+python <skill-directory>/scripts/glyph.py build family.json -o icons/ --sheet icons/sheet.html
+```
+
+`build` copies the spec to `icons/<family>.spec.json` and writes `icons/<variant>/<glyph>.svg` with `<glyph>.metadata.json` (name `<glyph>-<variant>`, original provenance, source evidence bound to the copied spec, project-owned license). `--sheet` adds a self-contained contact sheet: every glyph and variant at 16, 20, 24 and 32 px in light and dark, label-less and squinted strips, and a tab bar with outline idle and solid selected. Identical input gives byte-identical output. Exit codes: `0` built or checked, `1` spec refused, output failed validation, or I/O error (nothing published), `2` invalid arguments. `--json` reports files, the validated count and warnings.
+
+```json
+{
+  "schema": "1.0",
+  "family": "larder-soft",
+  "tokens": {"grid": 24, "padding": 2, "stroke": 1.5, "linecap": "round", "linejoin": "round",
+             "radius": 3, "detail": "medium", "secondary_opacity": 0.22},
+  "target_sizes": [16, 20, 24, 32],
+  "metadata": {"creator": "product icon author", "reviewed": "2026-11-14"},
+  "sheet": {"tabs": ["home", "search"]},
+  "glyphs": [
+    {"name": "home", "role": "go to the home screen", "keyline": "square", "shapes": [
+      {"type": "path", "d": "M4 11 L12 3.5 L20 11 V20 H14.5 V15 H9.5 V20 H4 Z", "radius": 1.5}]},
+    {"name": "search", "role": "search recipes", "keyline": "square", "shapes": [
+      {"type": "circle", "center": [10.5, 10.5], "r": 6.5},
+      {"type": "line", "from": [15.5, 15.5], "to": [20, 20]},
+      {"type": "arc", "center": [10.5, 10.5], "r": 3.5, "start": 195, "end": 255,
+       "role": "detail", "min_detail": "medium"}]}
+  ]
+}
+```
+
+Tokens: `grid` 16, 20, 24 or 32 (default 24); `padding` (default 1, 2, 2 or 3 by grid); `stroke` in grid units, a multiple of 0.125; `linecap` `round`, `butt` or `square`; `linejoin` `round` or `bevel` (miter cannot be bounded and fails validation); `radius`, the family corner radius; `detail` `low`, `medium` or `high` (default `medium`). Optional: `dot` diameter, `snap` construction grid (0.125, 0.25 by default, 0.5 or 1), `crisp` (default true) and `secondary_opacity` (0.12–0.6), which enables `duotone`. `metadata` requires `creator` and `reviewed` (an ISO date, not in the future) and takes optional `license`, `source` and `accessibility_owner`. Optional `variants` narrows the family, and `target_sizes` defaults to 16, 20, 24 and 32.
+
+Coordinates are grid units on the construction grid, y pointing down; angles are degrees, 0 pointing right and 90 down.
+
+| Type | Fields |
+|---|---|
+| `line` | `from`, `to` |
+| `polyline` | `points`, optional `closed`, `radius` (default: family radius) |
+| `path` | `d` with absolute `M L H V A Z`, circular arcs only; optional `radius` |
+| `arc` | `center`, `r`, `start`, `end` in whole degrees |
+| `circle` | `center` and `r`, or `fit: "circle"` |
+| `ellipse` | `center`, `rx`, `ry` |
+| `rect`, `rounded-rect` | `x`, `y`, `w`, `h`, or `fit` (`square`, `portrait`, `landscape`); optional `radius` (default 0, or the family radius) |
+| `polygon` | `center`, `r`, `sides` (3–12), optional `rotation`, `radius` |
+| `gear` | `center`, `r`, `root`, `teeth` (4–16), optional `tooth` fraction and `radius` |
+| `chevron` | `tip`, `dir` (`up`, `down`, `left`, `right`), `span`, optional `depth`, `radius` |
+| `arrow` | `from`, `to`, optional `head` |
+| `dot` | `at`, optional `d` |
+
+Every shape also takes `id`, `role`, `variants`, `min_detail`, `duotone_fill` and transforms. `role` is `body`, `detail` or `stroke`: closed shapes default to `body`, open ones to `stroke`, dots to `detail`. A body fills in solid and tints in duotone (`duotone_fill`), a detail becomes an even-odd cut-out from the body around it, and a stroke stays a positive mark. Transforms apply in order: `rotate` (multiples of 15°), `repeat` (`{count, step}`), `radial` (copies around `about`) and `mirror` (`x`, `y` or `xy`), with `about` defaulting to the grid center. Keylines on a 24 grid are a 20 circle, an 18 square, a 16 × 20 portrait and a 20 × 16 landscape. With a whole-pixel stroke and `crisp`, authored axis-aligned edges move to the nearest crisp pixel position, ties toward the center.
+
+The builder lists every refusal: unknown fields, primitives or values; duplicate-key, non-finite or malformed JSON; off-grid coordinates; geometry outside the live area (curves need 0.002 units of clearance because SVG arcs are rebuilt from rounded endpoints); a stroke under 0.5 CSS px at the smallest target; solid cut-outs that cross a body's edge, overlap or lie outside every body; and families over 64 glyphs, 24 shapes per glyph, 64 shapes after repeats or 256 KiB. Warnings flag keyline mismatches, gaps under 1 px and slivers at the smallest target. A built family is structurally valid, not yet recognizable or optically right.
 
 ## Validate Custom SVG Structure
 

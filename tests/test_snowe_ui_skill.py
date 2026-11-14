@@ -463,7 +463,7 @@ class PersistenceTests(unittest.TestCase):
 
     def test_entry_scripts_run_under_isolated_python(self):
         # Hosts may run python -I, which drops the script directory from sys.path.
-        for script in ("search.py", "corrections.py", "visual_review.py", "icon_review.py", "asset_quality.py", "contrast.py"):
+        for script in ("search.py", "corrections.py", "visual_review.py", "icon_review.py", "asset_quality.py", "contrast.py", "glyph.py"):
             result = subprocess.run([sys.executable, "-I", str(SCRIPTS / script), "--help"],
                 capture_output=True, text=True, timeout=60)
             self.assertEqual(0, result.returncode, f"{script}: {result.stderr}")
