@@ -1,6 +1,6 @@
 # Data Visualization and Dashboards
 
-Use when choosing, building or reviewing a chart, KPI tile, sparkline or dashboard. Start from the viewer's question; styling comes last. Filters and collections live in [app-patterns.md](app-patterns.md).
+Use when choosing, building or reviewing a chart, KPI tile, sparkline or dashboard. Start from the viewer's question, its scale and the comparison it needs; compare encodings before styling. The bundled `chart` catalog answers only a caller-selected open question. Filters and collections live in [app-patterns.md](app-patterns.md).
 
 ## Choose the Form by the Question
 
@@ -35,6 +35,7 @@ Use 4–6 round ticks and gridlines lighter than the marks.
 - **Sequential**: one hue light to dark, or a perceptually uniform ramp.
 - **Diverging**: two hues around a meaningful midpoint (zero, target, neutral answer).
 - **Highlight**: the message series in the accent, the rest gray. Default when the chart makes one point.
+- A series with more painted area reads as more important; balance color by area, and keep labels and annotations legible at the real data density.
 - A series keeps its color across charts; status colors stay reserved for status.
 - **Never color alone**: add labels, marker shapes, dashes or position, and check a color-vision simulation. Marks that must be told apart need 3:1 against background and neighbors ([WCAG 1.4.11](quality-gates.md#accessibility-and-interaction)).
 - **Dark mode**: re-pick series colors for the dark surface rather than inverting, then recheck 3:1.
@@ -61,7 +62,7 @@ Use 4–6 round ticks and gridlines lighter than the marks.
 
 ## States
 
-Loading shows the frame and axes at final size. Empty names the cause ("No orders in this range") and offers to widen the range. Zero is data: draw the zero bar. Missing data is a gap with a note, never interpolated or drawn as zero. Errors stay in the failing panel, with retry and the last good data marked stale ([collection states](app-patterns.md#states-every-collection-needs)).
+Test low, high, zero, missing and outlier values. Loading shows the frame and axes at final size. Empty names the cause ("No orders in this range") and offers to widen the range. Zero is data: draw the zero bar. Missing data is a gap with a note, never interpolated or drawn as zero. Errors stay in the failing panel, with retry and the last good data marked stale ([collection states](app-patterns.md#states-every-collection-needs)).
 
 ## Interaction and Accessibility
 

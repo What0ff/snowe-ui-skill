@@ -36,11 +36,11 @@ Keep the frame stable across all of these: see [stable geometry](design-foundati
 - **Optimistic updates** fit fast, likely-successful actions, with visible rollback on failure. Wait for confirmation on payments and irreversible operations.
 - **Saving.** Autosave with a visible status ("Saved 14:02") suits documents and frequently edited settings. An explicit Save suits forms with validation or consequences. Warn before leaving with unsaved changes.
 - **Toasts** are brief, non-blocking and one at a time, announced through a live region. They never carry an error that needs action, and never hold the only record of something important.
-- Field errors stay at the field; system conditions go in a page banner.
+- Where feedback appears (inline, toast, banner or dialog) follows the [feedback row](surfaces-and-disclosure.md#allocate-each-group).
 
 ## Flows
 
-- **Create.** A few fields: inline or a dialog. Long: its own page. Use multiple steps only when they are genuinely separate decisions; show progress and allow going back without losing data.
+- **Create.** Place it by length and linkability ([surfaces](surfaces-and-disclosure.md#allocate-each-group)). Use multiple steps only for genuinely separate decisions, with progress and a way back that keeps entered data.
 - **Onboarding.** Deliver value first. Prefer useful empty states and contextual hints over multi-screen tours, and keep any tour skippable.
 - **Settings.** Group by how users think, not by implementation. Offer search when there are many settings. A toggle applies immediately with a clear state; a group with dependencies gets an explicit save.
 - **Destructive flows.** Make them reversible where possible. Reserve typed confirmation for catastrophic actions.

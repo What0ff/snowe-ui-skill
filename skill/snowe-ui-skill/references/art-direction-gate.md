@@ -49,7 +49,7 @@ This is the single home for choosing and pairing families; [design foundations](
 
 **Voice.** Describe the needed type structurally: construction (serif, sans, slab, mono), width, stroke contrast, x-height, terminals, numerals (lining or oldstyle, tabular) and case. Take these from the vernacular: a typed label suggests a mono role, an engraved plate high contrast and small caps, a stencil condensed capitals.
 
-**Roles.** Assign display, text and mono before naming families; UI labels use the text role. Default: one text family. Add a display face only for a role the text family cannot carry at size, and a mono only for code, identifiers or fixed-width data that tabular figures cannot align. Ceiling: two families plus a mono; deviate for a required script or a verified brand face.
+**Roles.** Assign display, text and mono before naming families; UI labels use the text role. Default: one text family. Add a display face only for a role the text family cannot carry at size, and a mono only for code, identifiers or fixed-width data that tabular figures cannot align. Two families plus a mono is the starting ceiling, not an acceptance rule: deviate for a required script or a verified brand face, and judge the result with [typography coherence](quality-gates.md#typography-coherence).
 
 | Strategy | How | Fits | Watch for |
 |---|---|---|---|
@@ -180,7 +180,7 @@ Record in the existing decision record: thesis and perceptual job, subject sourc
 - Subject observations, not adjectives, drive every decision.
 - One signature move with a written boundary survives the subtraction test.
 - One or two loud axes; the rest quiet.
-- At most two families plus a mono, each with a role, checked at real sizes, scripts covered, fallbacks written.
+- Each family has a role, within the two-plus-mono default or with a stated reason, checked at real sizes, scripts covered, fallbacks written.
 - Each accent has one job; neutrals are tinted; proportions match the defaults or a stated reason.
 - A named grid with at most two deliberate breaks per view.
 - Role-named tokens exist before components.
