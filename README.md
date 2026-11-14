@@ -152,6 +152,8 @@ snowe-ui-skill/
 ├── CONTRIBUTING.md                     # Human contribution workflow
 ├── .agents/skills/atlas-maintainer/     # Repository-only context maintenance workflow
 ├── docs/atlas/                         # Durable public architecture and task router
+├── docs/figures-src/                   # HTML sources and renderer for the reference figures
+├── docs/glyph-examples/                # Demo icon family in two voices for glyph.py (repository-only)
 ├── docs/iso-examples/                  # Demo scenes and captures for iso.py (repository-only)
 ├── skill/snowe-ui-skill/             # Installable product
 │   ├── SKILL.md                       # Core workflow and reference router
