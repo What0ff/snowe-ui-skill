@@ -38,7 +38,8 @@ snowe-ui-skill/
 ├── design-intelligence/
 │   └── doppler-regeneration/
 ├── docs/  # public repository documentation and atlas
-│   └── atlas/
+│   ├── atlas/
+│   └── figures-src/
 ├── evals/  # deterministic behavior contracts and bounded operational proofs
 │   ├── acceptance-cases/
 │   │   └── captures/
@@ -136,18 +137,18 @@ The generated map itself is excluded from the counts.
 
 | Extension | Files |
 | --- | --- |
-| `.png` | 478 |
-| `.md` | 87 |
+| `.png` | 486 |
+| `.md` | 88 |
 | `.json` | 72 |
 | `.jpg` | 52 |
 | `.py` | 41 |
 | `.csv` | 31 |
+| `.html` | 29 |
 | `.svg` | 22 |
-| `.html` | 16 |
-| `.css` | 8 |
+| `.css` | 13 |
+| `.js` | 8 |
+| `.mjs` | 8 |
 | `.woff2` | 8 |
-| `.js` | 7 |
-| `.mjs` | 7 |
 | `.txt` | 7 |
 | `[no extension]` | 5 |
 | `.webp` | 4 |

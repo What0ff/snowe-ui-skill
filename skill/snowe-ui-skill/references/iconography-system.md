@@ -88,6 +88,14 @@ Rules:
 - A user's stated style preference is a requirement. "Looks premium" alone is not a reason; compare instead.
 - When the style is open, render four unlike glyphs (simple, round, diagonal, dense) in outline, solid and duotone at real size, in default and selected states, then choose and record why. `icon_review.py` builds that sheet with `comparison_axis: "style"` and per-state assets ([cli-reference.md](cli-reference.md#compare-existing-custom-and-no-icon-candidates)).
 
+![Tab bar whose selected tab differs only by color](figures/icon-style-color-only.png)
+
+**Color only:** every glyph is outline, so in the grayscale copy the selected Saved tab looks the same as its neighbors.
+
+![The same tab bar with a solid selected glyph](figures/icon-style-solid-selected.png)
+
+**Solid selected:** same colors, with a solid Saved bookmark among outline idle glyphs; the change in mass still marks the selection in grayscale. Both bars use 20 px glyphs, rendered at 2×.
+
 Library variants to check against the installed package and version:
 - Phosphor: thin to bold weights, fill, duotone.
 - Material Symbols: variable `FILL` 0/1, `wght`, `GRAD` and `opsz` axes.

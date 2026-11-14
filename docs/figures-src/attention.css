@@ -1,0 +1,83 @@
+/* Shared page for attention-weak, attention-directed and attention-restrained.
+   Only the current-run block differs between the three figures. */
+:root {
+  --bg: #0c0f14;
+  --surface: #141920;
+  --surface-head: #1a2029;
+  --line: #262d38;
+  --line-strong: #343c48;
+  --text: #e8ecf1;
+  --muted: #a3afbf;
+  --meta-blue: #9db4d3;
+  --accent: #eba17b;      /* reserved for the one next action */
+  --on-accent: #22140c;
+  --success: #93c995;     /* "Completed" everywhere */
+  --partial: #dcc562;     /* "Partial": yellow, kept apart from the accent hue */
+  --progress: #93a2b5;    /* neutral corroboration, never the accent */
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--bg); }
+body {
+  width: 900px;
+  height: 1000px;
+  padding: 30px 28px;
+  color: var(--text);
+  font: 14px/1.4 "Segoe UI Variable Text", "Segoe UI", sans-serif;
+}
+.crumb { font-size: 12px; color: var(--muted); }
+.page-head { display: flex; align-items: center; justify-content: space-between; margin-top: 6px; }
+h1 { margin: 0; font: 600 26px/1.2 "Segoe UI Variable Display", "Segoe UI", sans-serif; letter-spacing: -0.01em; }
+.btn {
+  display: inline-flex; align-items: center; height: 38px; padding: 0 14px;
+  border-radius: 8px; font: 500 14px/1 inherit; font-family: inherit;
+  border: 1px solid var(--line-strong); background: var(--surface-head); color: var(--text);
+}
+.btn.fill { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.meta { font-size: 12.5px; color: var(--muted); }
+.ok { color: var(--success); }
+.partial { color: var(--partial); }
+
+/* current run, shared parts */
+.run { margin-top: 26px; }
+.run-head { display: flex; justify-content: space-between; align-items: flex-start; }
+.run-title { font-weight: 600; font-size: 16px; }
+.run-head .meta { margin-top: 4px; }
+.status { font-size: 13px; }
+.run-body { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 26px; }
+.bar { height: 4px; border-radius: 2px; background: var(--line-strong); margin-top: 26px; }
+.bar > i { display: block; height: 100%; width: 100%; border-radius: 2px; background: var(--progress); }
+.pct { font-weight: 600; font-size: 19px; color: var(--progress); margin-right: 12px; }
+.disclosure { font-size: 13px; color: var(--muted); padding-top: 16px; margin-top: 22px; border-top: 1px solid var(--line); }
+.disclosure::before { content: "\25B8"; margin-right: 6px; font-size: 11px; }
+.result-title { margin: 0; font: 600 24px/1.2 "Segoe UI Variable Display", "Segoe UI", sans-serif; }
+.result-meta { margin: 8px 0 18px; }
+
+/* weak: completed process leads, uniform small blue metadata */
+.weak .run { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 24px; }
+.weak .run-title { font-weight: 400; font-size: 14px; color: var(--meta-blue); }
+.weak .meta, .weak .status { color: var(--meta-blue); }
+.weak .pct { font-weight: 400; font-size: 14px; color: var(--meta-blue); margin-right: 10px; }
+.weak .bar { margin-top: 30px; }
+.weak .small-result { font-size: 13px; color: var(--meta-blue); margin: 0 0 6px; }
+.weak .small-result + .meta { margin-bottom: 12px; }
+
+/* directed: result first inside a bounded surface, accent only on its action */
+.directed .run { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 24px; }
+
+/* restrained: same order, no outer surface, rules instead */
+.restrained .run { border-top: 1px solid var(--line); padding-top: 24px; }
+.restrained .disclosure { padding-bottom: 16px; border-bottom: 1px solid var(--line); }
+
+/* schedule line and history: identical in all three figures */
+.schedule { display: flex; gap: 14px; padding: 18px 2px; font-size: 13px; color: var(--muted); border-bottom: 1px solid var(--line); }
+.schedule b { color: var(--text); font-weight: 600; }
+.history-head { display: flex; justify-content: space-between; align-items: baseline; margin: 22px 0 12px; }
+.history-head h2 { margin: 0; font-size: 16px; font-weight: 600; }
+table { width: 100%; border-collapse: separate; border-spacing: 0; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+th { background: var(--surface-head); text-align: left; font-weight: 400; font-size: 12.5px; color: var(--muted); padding: 12px 16px; border-bottom: 1px solid var(--line); }
+td { padding: 12px 16px; border-bottom: 1px solid var(--line); vertical-align: middle; background: var(--surface); }
+tr:last-child td { border-bottom: 0; }
+td b { display: block; font-weight: 600; font-size: 13.5px; }
+td .meta { display: block; margin-top: 2px; }
+td.view { width: 64px; text-align: center; color: var(--muted); }
+td.view svg { display: block; margin: 0 auto; }

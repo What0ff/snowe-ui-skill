@@ -215,6 +215,7 @@ Normal CI does not run manual aesthetic review, lint/format/type/coverage, packa
 | Asset/contrast validators | Focused unit tests plus every affected real asset/pair and rendered optical/contextual review. |
 | Icon lifecycle/comparison | Icon-workflow and asset tests, deterministic comparison regeneration, targeted icon browser scenario, actual host selectors, and human visual inspection. |
 | Imported identities / mixed-control geometry | `tests.test_role_and_alignment`, existing icon/observation suites, `node scripts/identity-alignment-proof.mjs`, and native-size source/context review. |
+| Reference figures | `node docs/figures-src/render.mjs` for the affected sources within the 120 KB per-figure budget, then inspection of every changed PNG against each caption that embeds it. |
 | Behavior scenarios/runner | Runner output review; no expected layout/style encoding. |
 | Goodturn | Bicycle suite, JS check, browser smoke, affected states/screenshots/manual QA. |
 | Doppler | Soda suite, JS check, five-benchmark smoke, affected normal/reduced/transition captures, GIF, QA, and cross-comparison. |

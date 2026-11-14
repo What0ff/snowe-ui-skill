@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="figure" content="landing-authored.png 1200x900@1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self' 'unsafe-inline'; img-src data:">
+<title>Authored landing page</title>
+<style>
+/* Same offer as landing-generic.html. Direction taken from the product:
+   pitch green and chalk, a condensed scoreboard face for display roles,
+   the real availability sheet as the hero image, one orange for the action,
+   and only facts the product can stand behind. */
+:root {
+  --pitch: #1d4a33;
+  --pitch-deep: #173d2a;
+  --chalk: #f2efe6;
+  --chalk-soft: #c8d3c4;
+  --ink: #17221b;
+  --ink-soft: #4f5a52;
+  --rule: #d9d4c6;
+  --kit: #e8622c;
+  --in: #2f7a4f;
+  --out: #b1302b;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--chalk); }
+body { width: 1200px; height: 900px; overflow: hidden; color: var(--ink); font: 16px/1.5 "Segoe UI Variable Text", "Segoe UI", sans-serif; }
+.display { font-family: Bahnschrift, "Segoe UI", sans-serif; font-stretch: 75%; font-weight: 700; text-transform: uppercase; }
+.top { background: var(--pitch); color: var(--chalk); padding: 0 64px 56px; }
+nav { display: flex; align-items: center; justify-content: space-between; height: 76px; border-bottom: 1px solid rgba(242, 239, 230, 0.22); }
+.wordmark { font-size: 24px; letter-spacing: 0.04em; }
+.links { display: flex; gap: 32px; font-size: 15px; color: var(--chalk-soft); }
+.hero { display: grid; grid-template-columns: 1fr 470px; gap: 56px; padding-top: 50px; }
+h1 { margin: 0; font-size: 92px; line-height: 0.9; letter-spacing: 0.005em; }
+.lede { margin: 24px 0 30px; max-width: 470px; font-size: 18px; line-height: 1.5; color: var(--chalk); }
+.cta-row { display: flex; align-items: center; gap: 22px; }
+.cta { display: inline-flex; align-items: center; height: 50px; padding: 0 24px; border-radius: 4px; background: var(--kit); color: #1d0e06; font-weight: 700; font-size: 16px; }
+.price { font-size: 14px; line-height: 1.4; color: var(--chalk-soft); }
+.price b { color: var(--chalk); font-weight: 600; }
+
+.sheet { align-self: start; background: var(--chalk); color: var(--ink); border-radius: 6px; padding: 22px 24px 18px; box-shadow: 0 18px 40px rgba(8, 26, 16, 0.35); }
+.fixture { font-size: 14px; letter-spacing: 0.08em; color: var(--ink-soft); }
+.opponent { margin-top: 2px; font-size: 34px; line-height: 1; }
+.venue { margin-top: 4px; font-size: 14px; color: var(--ink-soft); }
+.tally { display: flex; gap: 26px; margin: 16px 0 10px; padding: 12px 0; border-top: 2px solid var(--ink); border-bottom: 1px solid var(--rule); }
+.tally div { font-size: 13px; color: var(--ink-soft); }
+.tally b { display: block; font-family: Bahnschrift, "Segoe UI", sans-serif; font-stretch: 75%; font-weight: 700; font-size: 34px; line-height: 1; color: var(--ink); }
+.tally .in b { color: var(--in); }
+.player { display: flex; justify-content: space-between; padding: 6px 0; font-size: 14.5px; border-bottom: 1px solid var(--rule); }
+.player .in { color: var(--in); font-weight: 600; }
+.player .out { color: var(--out); font-weight: 600; }
+.player .wait { color: var(--ink-soft); }
+.more { padding-top: 8px; font-size: 13px; color: var(--ink-soft); }
+
+.features { padding: 34px 64px 0; }
+.feature { display: grid; grid-template-columns: 330px 1fr; gap: 40px; padding: 16px 0; border-top: 1px solid var(--rule); }
+.feature h2 { margin: 0; font-size: 26px; line-height: 1.1; }
+.feature p { margin: 0; max-width: 620px; color: var(--ink-soft); }
+</style>
+</head>
+<body>
+<div class="top">
+<nav><span class="wordmark display">Pitchside</span><div class="links"><span>How it works</span><span>Pricing</span><span>Sign in</span></div></nav>
+<div class="hero">
+<div>
+<h1 class="display">Who’s playing Saturday?</h1>
+<p class="lede">Pitchside sends your squad one link. Players tap In or Out with no app to install, and the team sheet is ready before Friday night.</p>
+<div class="cta-row"><span class="cta">Set up your team</span><span class="price"><b>Free for one team.</b><br>€4 a month for each extra team.</span></div>
+</div>
+<div class="sheet">
+<div class="fixture display">Sat 9 Nov · 14:00 · Away</div>
+<div class="opponent display">vs Harbour Rovers</div>
+<div class="venue">Eastfield Rec, pitch 3</div>
+<div class="tally"><div class="in"><b>11</b>in</div><div><b>3</b>out</div><div><b>2</b>no reply</div></div>
+<div class="player"><span>A. Mensah</span><span class="in">In</span></div>
+<div class="player"><span>J. Kowalski</span><span class="out">Out · work</span></div>
+<div class="player"><span>R. Doyle</span><span class="wait">No reply</span></div>
+<div class="player"><span>S. Byrne</span><span class="in">In</span></div>
+<div class="player"><span class="wait">12 more players</span><span></span></div>
+<div class="more">Lifts: 3 cars, 9 seats · Kit wash: S. Byrne</div>
+</div>
+</div>
+</div>
+<section class="features">
+<div class="feature"><h2 class="display">Availability by text link</h2><p>Players answer In or Out from one link. Anyone who hasn’t replied by Thursday gets a reminder.</p></div>
+<div class="feature"><h2 class="display">The season’s fixtures</h2><p>Kick-off, venue and pitch number for every match, in one list the whole squad can open.</p></div>
+<div class="feature"><h2 class="display">Rotas that rotate</h2><p>Kit wash and lifts move through the squad automatically, so the same parents aren’t driving every week.</p></div>
+</section>
+</body>
+</html>

@@ -1,0 +1,29 @@
+/* Shared page for icon-style-color-only and icon-style-solid-selected.
+   Same app, same colors, same selected tab; only the selected glyph's
+   style differs. The lower bar repeats the upper one in grayscale. */
+:root {
+  --paper: #fbfaf7;
+  --ink: #22201d;
+  --muted: #6a6a6a;      /* idle: same grayscale luminance as the accent */
+  --accent: #2f7d5b;
+  --line: #e4e1db;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: #efede8; }
+body {
+  width: 390px; height: 304px; overflow: hidden;
+  color: var(--ink);
+  font: 14px/1.4 "Segoe UI Variable Text", "Segoe UI", sans-serif;
+}
+.screen { background: var(--paper); }
+.content { padding: 16px 20px 6px; }
+h1 { margin: 0 0 6px; font: 600 20px/1.25 "Segoe UI Variable Display", "Segoe UI", sans-serif; }
+.row { display: flex; justify-content: space-between; align-items: baseline; padding: 11px 0; border-top: 1px solid var(--line); }
+.row b { font-weight: 600; font-size: 15px; }
+.row span { font-size: 13px; color: #5d5a55; }
+.tabbar { display: grid; grid-template-columns: repeat(5, 1fr); height: 62px; background: var(--paper); border-top: 1px solid var(--line); }
+.tab { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: var(--muted); font-size: 11px; font-weight: 500; }
+.tab svg { display: block; width: 20px; height: 20px; }
+.tab[aria-selected="true"] { color: var(--accent); }
+.note { padding: 14px 20px 8px; font-size: 12px; color: #5d5a55; }
+.gray { filter: grayscale(1); }

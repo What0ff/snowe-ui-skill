@@ -21,6 +21,7 @@ For repository behavior: source/configuration wins over tests, tests over `docs/
 - **Consumer:** compatible agent host.
 - **Authority:** `SKILL.md` is the core router; specialist references apply only when routed.
 - **Boundary:** prose guides judgment but does not become deterministic Python selection.
+- **Figures:** `references/figures/*.png` ship as rendered images. Every figure except `dialog-resolved.png`, `lid-artifact.png` and `lid-repaired.png` (Doppler benchmark captures) is rendered from `docs/figures-src/*.html` by `docs/figures-src/render.mjs`; edit the source and re-render rather than editing a PNG. Each embedding caption must stay literally true of its image.
 
 ### Configured CSV evidence
 

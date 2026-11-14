@@ -1,0 +1,69 @@
+/* Shared page for surface-crammed and surface-allocated.
+   Same catalog, same tea under edit, same field values; only where the
+   edit form and the add form live differs. */
+:root {
+  --bg: #f6f5f2;
+  --card: #ffffff;
+  --line: #e3e0da;
+  --ink: #1d1c1a;
+  --muted: #6b665e;
+  --accent: #2f5d46;
+  --accent-soft: #eaf1ec;
+  --low: #a2610b;
+  --out: #a33a2c;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--bg); }
+body {
+  width: 1200px; height: 760px; overflow: hidden;
+  color: var(--ink);
+  font: 14px/1.4 "Segoe UI Variable Text", "Segoe UI", sans-serif;
+}
+.topbar { display: flex; align-items: center; gap: 28px; height: 56px; padding: 0 32px; background: var(--card); border-bottom: 1px solid var(--line); }
+.topbar .shop { font-weight: 700; font-size: 15px; margin-right: 12px; }
+.topbar span { color: var(--muted); }
+.topbar span.on { color: var(--ink); font-weight: 600; }
+.layout { display: flex; height: 704px; }
+main { flex: 1; min-width: 0; padding: 26px 32px; }
+.page-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+h1 { display: inline; margin: 0 10px 0 0; font: 600 24px/1.2 "Segoe UI Variable Display", "Segoe UI", sans-serif; }
+.count { color: var(--muted); }
+.btn { display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 14px; border-radius: 7px; font-weight: 600; border: 1px solid var(--line); background: var(--card); white-space: nowrap; }
+.btn.fill { background: var(--accent); border-color: var(--accent); color: #fff; }
+.btn.quiet { border-color: transparent; background: transparent; color: var(--muted); }
+.actions { display: flex; gap: 8px; }
+
+table { width: 100%; border-collapse: separate; border-spacing: 0; background: var(--card); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+th { text-align: left; font-weight: 500; font-size: 12.5px; color: var(--muted); padding: 10px 14px; border-bottom: 1px solid var(--line); background: #fbfaf8; }
+td { padding: 0 14px; height: 48px; border-bottom: 1px solid var(--line); }
+tr:last-child td { border-bottom: 0; }
+td.name { font-weight: 600; }
+td.num { font-variant-numeric: tabular-nums; }
+.low { color: var(--low); }
+.out { color: var(--out); }
+tr.selected td { background: var(--accent-soft); }
+tr.selected td:first-child { box-shadow: inset 3px 0 0 var(--accent); }
+
+.field label { display: block; font-size: 12.5px; color: var(--muted); margin-bottom: 4px; }
+.input { display: flex; align-items: center; height: 36px; padding: 0 10px; border: 1px solid #d6d2ca; border-radius: 6px; background: #fff; }
+.input.empty { color: #8f897f; }
+.input.area { height: auto; min-height: 58px; align-items: flex-start; padding: 8px 10px; }
+.input.select::after { content: ""; margin-left: auto; width: 7px; height: 7px; border-right: 1.5px solid var(--muted); border-bottom: 1.5px solid var(--muted); transform: translateY(-2px) rotate(45deg); }
+.wide { grid-column: span 2; }
+
+/* crammed: a permanently open add form and an edit form inside the list */
+.add-form { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; margin-bottom: 18px; }
+.add-form h2 { margin: 0 0 12px; font-size: 15px; font-weight: 600; }
+.add-grid { display: grid; grid-template-columns: 1.4fr 1.2fr 1fr 1fr 0.8fr auto; gap: 12px; align-items: end; }
+td.editor-cell { height: auto; padding: 16px 18px 18px; background: var(--accent-soft); }
+.editor-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px 14px; }
+.editor-actions { display: flex; gap: 8px; margin-top: 16px; }
+
+/* allocated: a side panel beside the list */
+.panel { width: 400px; flex: none; display: flex; flex-direction: column; background: var(--card); border-left: 1px solid var(--line); box-shadow: -8px 0 24px rgba(29, 28, 26, 0.06); }
+.panel-head { display: flex; align-items: flex-start; justify-content: space-between; padding: 22px 24px 16px; border-bottom: 1px solid var(--line); }
+.panel-head .kicker { font-size: 12.5px; color: var(--muted); }
+.panel-head h2 { margin: 2px 0 0; font-size: 18px; font-weight: 600; }
+.close { width: 32px; height: 32px; display: grid; place-items: center; border-radius: 6px; color: var(--muted); }
+.panel-body { flex: 1; padding: 18px 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-content: start; }
+.panel-foot { display: flex; gap: 8px; padding: 14px 24px; border-top: 1px solid var(--line); }

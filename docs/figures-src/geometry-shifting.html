@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="figure" content="geometry-shifting.png 1040x300@1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self' 'unsafe-inline'; script-src 'self'; img-src data:">
+<title>Hold card whose geometry shifts between states</title>
+<link rel="stylesheet" href="geometry.css">
+</head>
+<body class="shifting">
+<div class="states">
+<section class="state">
+<div class="state-label">Idle</div>
+<div class="card"><div class="title">Tidewrack</div><div class="meta">M. Arden · Paperback</div><div class="avail">2 of 3 copies on loan</div>
+<span class="btn">Place hold</span></div>
+</section>
+<section class="state">
+<div class="state-label">Loading</div>
+<div class="card"><div class="title">Tidewrack</div><div class="meta">M. Arden · Paperback</div><div class="avail">2 of 3 copies on loan</div>
+<span class="btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9" opacity=".35"/><path d="M21 12a9 9 0 0 0-9-9"/></svg>Placing hold…</span></div>
+</section>
+<section class="state">
+<div class="state-label">On hold</div>
+<div class="card"><div class="title">Tidewrack</div><div class="meta">M. Arden · Paperback</div><div class="avail">2 of 3 copies on loan</div>
+<p class="note">3rd in the queue</p>
+<span class="btn on"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>On hold</span></div>
+</section>
+<section class="state">
+<div class="state-label">Error</div>
+<div class="card"><div class="title">Tidewrack</div><div class="meta">M. Arden · Paperback</div><div class="avail">2 of 3 copies on loan</div>
+<p class="note error">Hold limit reached: 5 of 5.</p>
+<span class="btn">Try again</span></div>
+</section>
+</div>
+<div class="legend"><i></i>Idle button top and right edge, idle card bottom</div>
+<script src="geometry.js"></script>
+</body>
+</html>

@@ -27,6 +27,14 @@ Use before accepting an original visual design, and whenever a result looks gene
 | Dark theme in pure `#000` and `#fff` with neon accents | Inverting a light theme | Do elevated surfaces get lighter, and is chroma reduced? | Off-black base, lighter elevated layers, softened text white, less saturated accents | OLED-specific products that verified the choice |
 | Hover lift or scale on every card | Default interactivity cue | Is the element actually interactive? | Hover only on interactive elements, with a change that doesn't shift layout | — |
 
+![Generic landing page for a squad availability app](figures/landing-generic.png)
+
+**Generic:** a purple gradient, one system sans, a centered hero whose copy fits any product, invented metrics, and three identical feature cards with emoji icons.
+
+![Authored landing page for the same offer](figures/landing-authored.png)
+
+**Authored:** the same offer, led by the question it answers, set in a condensed display face on pitch green and chalk, with the real availability sheet as the hero image, the price stated, and orange used only on the action.
+
 ## How to Use
 
 1. Look at the full render first, at thumbnail and actual size, before reading the code or your own rationale.
