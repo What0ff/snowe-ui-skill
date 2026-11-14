@@ -1,0 +1,159 @@
+{
+  "schema": "1.0",
+  "family": "larder-crisp",
+  "tokens": {
+    "grid": 24,
+    "padding": 2,
+    "stroke": 2,
+    "linecap": "butt",
+    "linejoin": "bevel",
+    "radius": 1,
+    "detail": "low",
+    "secondary_opacity": 0.35
+  },
+  "target_sizes": [16, 20, 24, 32],
+  "metadata": {
+    "creator": "Snowe glyph.py demo (Larder recipe and pantry app)",
+    "reviewed": "2026-11-14",
+    "license": "project-owned demo family"
+  },
+  "sheet": {"tabs": ["home", "search", "calendar", "bell", "user"]},
+  "glyphs": [
+    {
+      "name": "home",
+      "role": "go to the Larder home screen",
+      "keyline": "square",
+      "shapes": [
+        {"type": "path", "id": "house", "d": "M4 11 L12 3.5 L20 11 V20 H14 V15 H10 V20 H4 Z"}
+      ]
+    },
+    {
+      "name": "search",
+      "role": "search recipes and pantry items",
+      "keyline": "square",
+      "shapes": [
+        {"type": "circle", "id": "lens", "center": [10, 10], "r": 6},
+        {"type": "line", "id": "handle", "from": [14.5, 14.5], "to": [20.5, 20.5]},
+        {"type": "arc", "id": "glint", "center": [10, 10], "r": 3.5, "start": 195, "end": 255, "role": "detail", "variants": ["solid"]}
+      ]
+    },
+    {
+      "name": "settings",
+      "role": "open app preferences",
+      "keyline": "circle",
+      "shapes": [
+        {"type": "gear", "id": "cog", "center": [12, 12], "r": 9, "root": 6.5, "teeth": 8, "tooth": 0.4, "radius": 0.5},
+        {"type": "circle", "id": "hub", "center": [12, 12], "r": 2.5, "role": "detail"}
+      ]
+    },
+    {
+      "name": "user",
+      "role": "open the cook's profile",
+      "keyline": "square",
+      "shapes": [
+        {"type": "circle", "id": "head", "center": [12, 7], "r": 4},
+        {"type": "polyline", "id": "shoulders", "points": [[5, 20.5], [5, 15], [19, 15], [19, 20.5]], "radius": 2, "role": "body"}
+      ]
+    },
+    {
+      "name": "bell",
+      "role": "show reminders and notifications",
+      "keyline": "square",
+      "shapes": [
+        {"type": "path", "id": "bell", "d": "M4.5 16 L6 14.5 V10 A6 6 0 0 1 18 10 V14.5 L19.5 16 Z"},
+        {"type": "arc", "id": "clapper", "center": [12, 18], "r": 2.5, "start": 40, "end": 140}
+      ]
+    },
+    {
+      "name": "calendar",
+      "role": "plan meals by date",
+      "keyline": "square",
+      "shapes": [
+        {"type": "rounded-rect", "id": "page", "x": 4, "y": 6, "w": 16, "h": 14},
+        {"type": "line", "id": "ring", "from": [8, 3.5], "to": [8, 8], "mirror": "x"},
+        {"type": "line", "id": "header", "from": [4, 11], "to": [20, 11], "role": "detail", "variants": ["outline", "duotone"]},
+        {"type": "line", "id": "header-cut", "from": [7, 11], "to": [17, 11], "role": "detail", "variants": ["solid"]},
+        {"type": "dot", "id": "days", "at": [8, 14.5], "repeat": {"count": 3, "step": [4, 0]}, "min_detail": "medium"}
+      ]
+    },
+    {
+      "name": "chart",
+      "role": "see cooking statistics",
+      "keyline": "square",
+      "shapes": [
+        {"type": "rounded-rect", "id": "frame", "fit": "square"},
+        {"type": "line", "id": "bar-low", "from": [8, 16.5], "to": [8, 12.5], "role": "detail"},
+        {"type": "line", "id": "bar-high", "from": [12, 16.5], "to": [12, 7.5], "role": "detail"},
+        {"type": "line", "id": "bar-mid", "from": [16, 16.5], "to": [16, 10.5], "role": "detail"}
+      ]
+    },
+    {
+      "name": "folder",
+      "role": "browse recipe collections",
+      "keyline": "landscape",
+      "shapes": [
+        {"type": "path", "id": "folder", "d": "M4 19 V5 H10 L12 7 H20 V19 Z"},
+        {"type": "line", "id": "flap", "from": [4, 10.5], "to": [20, 10.5], "role": "detail", "variants": ["outline", "duotone"], "min_detail": "medium"}
+      ]
+    },
+    {
+      "name": "lock",
+      "role": "keep a recipe private",
+      "keyline": "portrait",
+      "shapes": [
+        {"type": "rounded-rect", "id": "body", "x": 5, "y": 11, "w": 14, "h": 9},
+        {"type": "path", "id": "shackle", "d": "M8 11 V7.5 A4 4 0 0 1 16 7.5 V11"},
+        {"type": "line", "id": "keyhole", "from": [12, 14.5], "to": [12, 16.5], "role": "detail"}
+      ]
+    },
+    {
+      "name": "upload",
+      "role": "import a recipe file",
+      "keyline": "square",
+      "shapes": [
+        {"type": "arrow", "id": "arrow", "from": [12, 15], "to": [12, 3.5], "head": 4},
+        {"type": "polyline", "id": "tray", "points": [[4, 14], [4, 20], [20, 20], [20, 14]], "duotone_fill": true}
+      ]
+    },
+    {
+      "name": "download",
+      "role": "keep a recipe for offline cooking",
+      "keyline": "square",
+      "shapes": [
+        {"type": "arrow", "id": "arrow", "from": [12, 3.5], "to": [12, 15], "head": 4},
+        {"type": "polyline", "id": "tray", "points": [[4, 14], [4, 20], [20, 20], [20, 14]], "duotone_fill": true}
+      ]
+    },
+    {
+      "name": "trash",
+      "role": "delete a recipe",
+      "keyline": "square",
+      "shapes": [
+        {"type": "line", "id": "lid", "from": [3.5, 7], "to": [20.5, 7]},
+        {"type": "polyline", "id": "handle", "points": [[9, 7], [9, 4], [15, 4], [15, 7]], "radius": 0},
+        {"type": "polyline", "id": "bin", "points": [[5.5, 7], [6.5, 20], [17.5, 20], [18.5, 7]], "role": "body"},
+        {"type": "line", "id": "slot", "from": [10, 11], "to": [10, 16], "role": "detail", "mirror": "x", "min_detail": "medium"}
+      ]
+    },
+    {
+      "name": "scale-servings",
+      "role": "scale a recipe's servings up or down",
+      "keyline": "square",
+      "shapes": [
+        {"type": "path", "id": "bowl", "d": "M5 13 H19 A7 7 0 0 1 5 13 Z"},
+        {"type": "line", "id": "middle-rim", "from": [7, 9], "to": [17, 9]},
+        {"type": "line", "id": "top-rim", "from": [9, 5], "to": [15, 5]}
+      ]
+    },
+    {
+      "name": "pantry-stocked",
+      "role": "mark an ingredient as already in the pantry",
+      "keyline": "portrait",
+      "shapes": [
+        {"type": "rounded-rect", "id": "jar", "x": 5, "y": 8, "w": 14, "h": 12},
+        {"type": "line", "id": "lid", "from": [8, 4], "to": [16, 4]},
+        {"type": "polyline", "id": "check", "points": [[9, 14.5], [11, 16.5], [15, 12.5]], "radius": 0, "role": "detail"}
+      ]
+    }
+  ]
+}

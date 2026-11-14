@@ -162,6 +162,7 @@ snowe-ui-skill/
 │       ├── search.py                  # CLI entrypoint
 │       ├── core.py                    # BM25 retrieval and evidence roles
 │       ├── decision_packet.py         # Portfolio/open-inquiry packet and persistence
+│       ├── glyph.py                   # Custom icon-family builder (outline, solid, duotone)
 │       ├── asset_quality.py           # SVG structure/provenance validation
 │       ├── icon_review.py             # Self-contained icon decision comparison
 │       ├── contrast.py                # Exact opaque-color contrast checks
@@ -322,6 +323,13 @@ python skill/snowe-ui-skill/scripts/icon_review.py \
 ```
 
 The [checked icon decision proof](evals/icon-decisions/README.md) demonstrates all three valid outcomes: an existing glyph wins, custom work wins, and visible text/no icon wins. Structural validation and browser rendering do not certify recognition, optical balance, metaphor, or taste.
+
+New original work defaults to a custom icon family. `glyph.py` builds every glyph in outline, solid and duotone from one token spec, validates each output with `asset_quality.py`, and writes a contact sheet; [docs/glyph-examples](docs/glyph-examples/README.md) builds one demo family in two distinct voices:
+
+```bash
+python skill/snowe-ui-skill/scripts/glyph.py build docs/glyph-examples/larder-soft.json \
+  -o path/to/icons --sheet path/to/icons/sheet.html
+```
 
 ## Optional local evidence
 

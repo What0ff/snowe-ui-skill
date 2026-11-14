@@ -40,6 +40,7 @@ snowe-ui-skill/
 ├── docs/  # public repository documentation and atlas
 │   ├── atlas/
 │   ├── figures-src/
+│   ├── glyph-examples/
 │   └── iso-examples/
 ├── evals/  # deterministic behavior contracts and bounded operational proofs
 │   ├── acceptance-cases/
@@ -114,6 +115,7 @@ snowe-ui-skill/
 | `skill/snowe-ui-skill/scripts/observe.mjs` | Optional portable capability/replay/measure/whole-detail-sequence/compare browser CLI |
 | `skill/snowe-ui-skill/scripts/asset_quality.py` | Strict self-contained SVG structure/provenance validator |
 | `skill/snowe-ui-skill/scripts/icon_review.py` | Deterministic icon decision/context comparison builder |
+| `skill/snowe-ui-skill/scripts/glyph.py` | Token-spec custom icon-family builder (outline, solid, duotone, contact sheet) |
 | `skill/snowe-ui-skill/scripts/contrast.py` | Exact opaque-color contrast checker |
 | `skill/snowe-ui-skill/scripts/iso.py` | Deterministic isometric scene to SVG illustration generator |
 | `evals/designer-behavior/run_eval.py` | Cross-business deterministic-contract regression |
@@ -128,6 +130,7 @@ snowe-ui-skill/
 | `tests/test_installation.py` | Standalone install/update and recovery regression suite |
 | `tests/test_scope_contract.py` | Process-depth proportionality and escalation regression suite |
 | `tests/test_icon_workflow.py` | Icon lifecycle, context proof, and SVG safety regression suite |
+| `tests/test_glyph.py` | Icon-family geometry, variants, refusals, determinism and validator regression suite |
 | `tests/test_observation.py` | Browser combinations, postconditions, dependency closure, detail and relationship regression |
 | `tests/test_runtime_hardening.py` | Persistence identity/race and runtime failure regression suite |
 | `tests/test_iso.py` | Isometric projection, order, routing, refusal and CLI regression suite |
@@ -140,16 +143,16 @@ The generated map itself is excluded from the counts.
 
 | Extension | Files |
 | --- | --- |
-| `.png` | 498 |
-| `.md` | 89 |
-| `.json` | 78 |
+| `.png` | 502 |
+| `.md` | 90 |
+| `.json` | 80 |
 | `.jpg` | 52 |
-| `.py` | 44 |
+| `.py` | 46 |
 | `.csv` | 31 |
 | `.html` | 29 |
 | `.svg` | 25 |
 | `.css` | 13 |
-| `.mjs` | 9 |
+| `.mjs` | 10 |
 | `.js` | 8 |
 | `.woff2` | 8 |
 | `.txt` | 7 |
@@ -173,6 +176,8 @@ The generated map itself is excluded from the counts.
 | Change correction lifecycle, scope applicability, evidence freshness or journal CLI | `skill/snowe-ui-skill/scripts/corrections.py` |
 | Change custom SVG validation | `skill/snowe-ui-skill/scripts/asset_quality.py` |
 | Change icon need, custom/existing/no-icon comparison, or context proof | `skill/snowe-ui-skill/scripts/icon_review.py` |
+| Change custom icon-family construction, variants or contact sheets | `skill/snowe-ui-skill/scripts/glyph.py` |
+| Inspect or re-render the two-voice icon-family demo | `docs/glyph-examples/` |
 | Change exact color/contrast validation | `skill/snowe-ui-skill/scripts/contrast.py` |
 | Change isometric illustration generation | `skill/snowe-ui-skill/scripts/iso.py` |
 | Inspect or re-render the isometric illustration examples | `docs/iso-examples/` |
@@ -206,6 +211,7 @@ The generated map itself is excluded from the counts.
 | `skill/snowe-ui-skill/scripts/decision_packet.py` | Identity manifests, atomic inquiry writes, race handling, containment, and byte-preserved DECISIONS.md form one persistence contract. |
 | `skill/snowe-ui-skill/scripts/asset_quality.py` | A structural PASS requires a strict self-contained SVG/metadata subset but can never certify visual or provenance truth. |
 | `skill/snowe-ui-skill/scripts/icon_review.py` | Comparison sheets bind exact assets, metadata, source/license text, UI-context selectors, decisions, and rejected alternatives. |
+| `skill/snowe-ui-skill/scripts/glyph.py` | Solid and duotone derive from one outline construction; nothing publishes unless every output passes asset_quality, and output bytes must stay deterministic. |
 | `skill/snowe-ui-skill/data/*.csv` | Schemas are accessed by exact header strings; malformed quoting or renamed columns can silently empty fields. |
 | `benchmarks/bicycle-commerce/assets/` | Generated media, local fonts/licenses, SVGs, and provenance metadata must stay coherent with the benchmark disclosure. |
 | `scripts/install_skill.py` | Successful updates exactly replace the final skill directory; staging, containment, recovery, and rollback must remain intact. |
