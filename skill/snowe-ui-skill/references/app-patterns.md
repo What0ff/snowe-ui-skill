@@ -1,6 +1,6 @@
 # Application Patterns
 
-Use for app screens, dashboards, admin and internal tools, and mobile apps: any work built for repeated use of objects rather than a single read. These are behavioral defaults; visual style stays open. Where each task lives is decided with [surfaces-and-disclosure.md](surfaces-and-disclosure.md).
+Use for app screens, dashboards, admin and internal tools, and mobile apps: any work built for repeated use of objects rather than a single read. These are behavioral defaults; visual style stays open. Where each task lives is decided with [surfaces-and-disclosure.md](surfaces-and-disclosure.md); charts, KPI tiles and dashboard scope with [data-visualization.md](data-visualization.md).
 
 ## Navigation Shell
 
