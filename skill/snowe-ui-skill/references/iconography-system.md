@@ -1,6 +1,6 @@
 # Iconography System
 
-Use this reference when selecting, extending, or creating interface icons, pictograms, category symbols, feature graphics, or a symbol family. Familiarity, visual fit, ownership, and implementation cost are separate decisions.
+Use this reference when selecting, extending or creating interface icons, pictograms, category symbols, feature graphics or a symbol family. Familiarity, visual fit, ownership and implementation cost are separate decisions.
 
 ## Decide Whether an Icon Helps
 
@@ -11,67 +11,43 @@ role | intended meaning | audience/domain | placement | surrounding label |
 frequency | state | target size | input/platform | accessibility owner
 ```
 
-Prefer visible text when a symbol would be unfamiliar, ambiguous, rarely used, high-stakes, or harder to scan than the label. Use an icon when it improves recognition, spatial economy, repeated scanning, direct manipulation, cross-language support, or identity without hiding meaning.
+Prefer visible text when a symbol would be unfamiliar, ambiguous, rarely used, high-stakes or harder to scan than the label. Use an icon when it improves recognition, spatial economy, repeated scanning, direct manipulation, cross-language support or identity without hiding meaning. Decorative icons on every title, statistic, feature or card add nothing; illustrative symbols and interface controls have different jobs and may use different systems.
 
-Do not add a decorative icon to every title, statistic, feature, or card. Illustrative symbols and interface controls have different jobs and may use different systems.
-
-An icon and its backing are separate decisions. Inspect the real owner for circles, capsules, tiles, nested rings and pseudo-element paint; a clean path or valid metadata cannot justify a button-like surface behind a passive symbol. Apply the [icon-backing acceptance check](quality-gates.md#icon-backings-and-nested-surfaces) in context, preserving justified interaction, contrast, masks and accepted identity. A wrapper-only correction can keep the existing glyph and stay Direct when its answer and owner are bounded.
+An icon and its backing are separate decisions: a clean path or valid metadata cannot justify a button-like surface behind a passive symbol. Apply the [backing check](quality-gates.md#icon-backings-and-nested-surfaces); a wrapper-only correction keeps the existing glyph and stays Direct when its answer and owner are bounded.
 
 ## Choose the Control Label Mode
 
-Use the role/context record above to choose the presentation that makes the action quickest to understand and operate at the intended density. Do not automatically add a caption to every icon or remove text because another app looks cleaner. Reason by action family, keep peers consistent, and justify meaningful exceptions rather than re-deciding every identical row.
+Choose the presentation that makes the action quickest to understand and operate at its density, by action family, keeping peers consistent and justifying exceptions:
 
-- **Icon only:** a recognizable, repeated utility whose meaning and state remain clear in its toolbar, view switcher or row context before a tooltip appears.
-- **Text only:** wording communicates the action well and an accompanying glyph adds no useful recognition, scanning or identity value.
-- **Icon with text:** the pair materially helps recognition or scanning, or visible wording is needed to understand an unfamiliar, ambiguous or consequential action.
+- **Icon only:** a recognizable, repeated utility whose meaning and state stay clear in its toolbar, view switcher or row before a tooltip appears.
+- **Text only:** the wording carries the action, and a glyph would add no recognition, scanning or identity value.
+- **Icon with text:** the pair materially helps recognition or scanning, or the action is unfamiliar, ambiguous or consequential enough to need visible wording.
 
-Inspect the actual handler/outcome and neighbors before naming or hiding the label. A table/list view switcher can use familiar symbols with localized “Table view” / “List view” tooltips and a visible/programmatic selected state. An important commitment may need an action phrase. Preserve accepted conventional controls; a passive service name, data label or form label is not a redundant button caption.
+Inspect the actual handler, outcome and neighbors before naming or hiding a label. A table/list view switcher can use familiar symbols with localized "Table view" / "List view" tooltips and a visible and programmatic selected state; an important commitment may need an action phrase. Keep accepted conventional controls, and never treat a passive service name, data label or form label as a redundant caption.
 
-Own this reversible decision. If it remains material and unresolved, compare the credible modes in the real control set at its actual size and input contexts, then select the clearest result yourself. Inspect icon-only recognition with the tooltip closed: hover help cannot rescue an unclear metaphor or make touch users guess. Retain necessary wording when uncertainty remains. A known accepted pattern or bounded caption correction does not require an icon-source workshop or a new decision document.
+Own this reversible decision. When it is material and open, compare the credible modes in the real control set at actual size and input contexts, and select the clearest yourself. Judge icon-only recognition with the tooltip closed: hover help cannot rescue an unclear metaphor or serve touch users. Keep the wording while uncertainty remains. A known accepted pattern or a bounded caption fix needs no icon-source workshop or decision document.
 
-Every icon-only action needs an accessible name independent of hover, such as the owning button's `aria-label` or `aria-labelledby`; hide decorative SVG content from assistive output. Reuse the site's tooltip component/style: concise help on hover and keyboard focus, readable while hovered, and Escape dismissal without moving focus or activating the action. A plain tooltip contains no focusable controls. Do not rely on HTML `title` alone or announce identical name/description twice. On touch, preserve understandable operation without hover; use wording or an equivalent labelled path when needed. See [button naming and state](https://www.w3.org/WAI/ARIA/apg/patterns/button/) and [hover/focus content behavior](https://www.w3.org/WAI/WCAG22/Understanding/content-on-hover-or-focus.html).
-
-Verify the chosen mode's recognition, accessible name/state, input behavior, target size and tooltip clipping at the affected viewport. Do not present speculative label stripping as an improvement before checking the whole control set.
+Every icon-only action needs an accessible name independent of hover, such as the owning button's `aria-label` or `aria-labelledby`, with decorative SVG content hidden from assistive output. Reuse the site's tooltip component: concise help on hover and keyboard focus, readable while hovered, dismissed by Escape without moving focus or activating the action, and free of focusable controls. HTML `title` alone is not enough, and the name and description should not repeat each other. On touch, keep an understandable path without hover. See [button naming and state](https://www.w3.org/WAI/ARIA/apg/patterns/button/) and [hover/focus content](https://www.w3.org/WAI/WCAG22/Understanding/content-on-hover-or-focus.html). Verify recognition, accessible name and state, input behavior, target size and tooltip clipping at the affected viewport before presenting label removal as an improvement.
 
 ## Inspect the Existing Symbol Ecology
 
-Before searching:
-
-- inventory current sources, exact glyphs, sizes, stroke/fill modes, optical weight, alignment, color behavior, labels, and component wrappers;
-- identify platform-native expectations and repository-owned assets;
-- distinguish brand marks, interface actions, object/category symbols, status indicators, data glyphs, and decorative/illustrative graphics;
-- find semantic duplication and misleading metaphors;
-- verify installed packages, versions, adapters, licenses, tree-shaking or font loading, and ownership.
-
-An established source is evidence and usually the baseline, not an automatic winner or a closed allowlist. Preserve it for routine actions when it already fits; explore further only where coverage, meaning, platform, or art direction makes the difference material.
+Before searching, inventory the current sources, exact glyphs, sizes, stroke and fill modes, optical weight, alignment, color behavior, labels and wrappers; platform expectations and repository-owned assets; which symbols are brand marks, actions, object or category symbols, status indicators, data glyphs or illustrations; semantic duplicates and misleading metaphors; and installed packages, versions, adapters, licenses, tree-shaking or font loading, and ownership. An established source is the usual baseline, not an automatic winner or a closed allowlist: keep it for routine actions that fit, and explore only where coverage, meaning, platform or art direction makes a material difference.
 
 ## Resolve Identity Before Inventing a Metaphor
 
-Establish what the symbol identifies from the actual label, destination, action and product facts. A third-party identity is a source-fidelity decision; a product-specific mechanism is a metaphor/drawing decision. Do not infer either from a service name alone or a keyword list. Keep uncertainty explicit.
+Establish what the symbol identifies from the actual label, destination, action and product facts, never from a service name or keyword list alone, and keep uncertainty explicit. A third-party identity is a source-fidelity decision; a product-specific mechanism is a metaphor and drawing decision.
 
-For a third-party brand mark, inspect approved repository assets first, then the brand owner's current asset kit or a distribution whose exact artwork and usage terms can be checked against primary sources. Use the appropriate supplied symbol/wordmark and approved color or monochrome variant. Preserve its geometry, aspect ratio, clear space and required treatment; normalize the surrounding slot without stretching, tracing, simplifying, tinting or adding effects to the mark. A generic arrow, ring, initials or hand-drawn approximation does not become the real brand icon beside its name. Custom preferences apply to the product's own symbols, not replacement identities for external services.
+For a third-party brand mark, look first in approved repository assets, then in the brand owner's current asset kit or a distribution whose exact artwork and terms can be checked against primary sources. Use the supplied symbol or wordmark in an approved color or monochrome variant, and keep its geometry, aspect ratio, clear space and required treatment: normalize the surrounding slot, never stretch, trace, simplify, tint or add effects to the mark. A generic arrow, ring, initials or hand-drawn approximation does not become the brand's icon. Custom preferences apply to the product's own symbols, not to replacement identities for external services.
 
-Record the exact asset, source/variant, usage evidence and what was actually verified. A URL, library name or byte digest alone cannot prove officialness or permitted use. When a required asset cannot be verified, retain useful visible wording and leave that source/fidelity claim UNKNOWN; do not invent an official-looking replacement. Developing an original identity for the user's own product is a separate legitimate custom task. An accepted conventional action also need not reopen source exploration.
-
-Known brand artwork does not need a custom challenger. If a variant is genuinely open, compare only suitable official variants in their real hosts. Inspect recognition, contrast, native size, clear space, focus/selected/disabled treatment and any inherited CSS that can recolor or distort the asset. Distinguish the mark's identity from the owning control's state; brand colors need not inherit the monochrome action family.
+Record the exact asset, source and variant, usage evidence and what was verified; a URL, library name or digest alone proves neither officialness nor permitted use. When a required asset cannot be verified, keep useful visible wording and leave that claim `UNKNOWN` rather than inventing an official-looking replacement. Known brand artwork needs no custom challenger; if a variant is genuinely open, compare official variants in their real hosts for recognition, contrast, native size, clear space, focus, selected and disabled treatment and inherited CSS that can recolor or distort the mark. The mark's identity is separate from the owning control's state, so brand colors need not join the monochrome action family. Developing an original identity for the user's own product is a separate, legitimate custom task.
 
 ## Choose Meaning Before Source
 
-For each unresolved concept, create a small semantic set:
-
-- direct object or action;
-- mechanism or transformation;
-- output, consequence, or state;
-- domain-specific metaphor users already know;
-- visible text or no icon.
-
-Test the metaphor in its full label, neighboring actions, state, and user vocabulary. Reject a clever symbol that becomes ambiguous without explanation. Avoid reusing one glyph for different meanings in the same experience.
-
-Only then compare exact glyphs. Local `icon-concepts` results can prompt metaphor alternatives; `icon-families` and `icon-candidates` are discovery snapshots, not current package or quality truth.
+For each unresolved concept, build a small semantic set: the direct object or action; the mechanism or transformation; the output, consequence or state; a domain metaphor users already know; and visible text or no icon. Test each in its full label, neighboring actions, state and user vocabulary. Reject a clever symbol that becomes ambiguous without explanation, and use one glyph for one meaning per experience. Only then compare exact glyphs: `icon-concepts` results can prompt metaphors, while `icon-families` and `icon-candidates` are discovery snapshots, not current package or quality truth.
 
 ## Choose the Family Style
 
-Decide outline, solid or duotone once per family and role, then apply that choice consistently. An accepted system or platform convention comes first: SF Symbols use `.fill` for the selected tab item; Material uses outlined icons at rest and filled icons for the selected navigation item; Fluent pairs Regular with Filled. When the style is open, start from these defaults:
+Decide outline, solid or duotone once per family and role, then apply it consistently. An accepted system or platform convention comes first: SF Symbols use `.fill` for the selected tab item; Material uses outlined icons at rest and filled icons for the selected navigation item; Fluent pairs Regular with Filled. When the style is open, start from these defaults:
 
 | Role | Default style | Reason |
 |---|---|---|
@@ -106,63 +82,21 @@ Library variants to check against the installed package and version:
 - SF Symbols: `.fill` variants with hierarchical and palette rendering.
 - Lucide: outline only. Pair it with a solid family or custom solids when selected states need mass.
 
-Validate custom solid and duotone SVG in `fill` or `duotone` mode; build their forms with [icon-craft.md](icon-craft.md#build-solid-and-duotone-forms).
+Validate custom solid and duotone SVG in `fill` or `duotone` mode, and build their forms with [icon-craft.md](icon-craft.md#build-solid-and-duotone-forms).
 
 ## Select an Existing Source
 
-Rank exact candidates on:
-
-- semantic recognition in context;
-- optical size, weight, density, baseline, perspective, terminals, corners, and negative space beside the actual UI;
-- required state and variant coverage;
-- platform and brand fit;
-- accessibility and localization behavior;
-- current official availability, license, maintenance, adapter, payload, and repository compatibility.
-
-Render finalists at target size beside real neighbors before dependency economics break a semantic/visual tie. Do not install an entire comparison set. When an external winner is justified in build work, verify its current official source and license, install only the selected adapter with the repository package manager, and update the lockfile. Review-only work does not authorize dependency changes.
-
-Multiple sources may coexist only with an explicit role boundary and compatible rendering. Normalize size or wrapper behavior where appropriate; do not distort paths until incompatible drawings merely look uniformly mediocre.
+Rank exact candidates on recognition in context; optical size, weight, density, baseline, perspective, terminals, corners and negative space beside the real UI; state and variant coverage; platform and brand fit; accessibility and localization; and current official availability, license, maintenance, adapter, payload and repository compatibility. Render finalists at target size beside real neighbors before dependency economics break a semantic or visual tie, without installing the whole comparison set. When build work justifies an external winner, verify its official source and license, install only the selected adapter with the repository's package manager, and update the lockfile; review-only work authorizes no dependency change. Several sources can coexist only with an explicit role boundary and compatible rendering; normalize size and wrappers, never distort paths until incompatible drawings look uniformly mediocre.
 
 ## Develop Custom Candidates Where They Add Value
 
-For open product-specific roles, especially when the user prefers custom work, treat a well-crafted custom drawing as the preferred exploration rather than stopping at Lucide or another approximate match. Read [icon-craft.md](icon-craft.md) for slot-first construction, optical finishing and native owner/detail acceptance. The preference changes what to explore and refine; it does not lower the quality bar or authorize replacing an accepted conventional action with an obscure metaphor.
+For an open product-specific feature, category, service or repeated family, and whenever the user prefers custom work, sketch a custom candidate instead of stopping at an approximate library match, then finish it with [icon-craft.md](icon-craft.md). An explicit request for custom icons puts drawing in scope without further asking. The preference changes what to explore, not the quality bar, and adds no icons where text works.
 
-Custom work is justified when at least one is true:
+Custom work is justified when the product has an object, mechanism, category or brand behavior no existing symbol expresses clearly; when a small signature family materially strengthens identity or comprehension; when platform templates support a coherent extension; or when licensing, language, state or technical constraints rule out available sources. "Feels premium", "a generator can make SVG" or "the library is imperfect" is not a justification. Keep Home, close, search, back and similar conventional actions unless the user opens them; custom drawing may refine a familiar silhouette without inventing a new meaning, and a bounded correction to an accepted glyph does not reopen its source.
 
-- the product has a specific object, mechanism, category, or brand behavior no existing symbol expresses clearly;
-- a small signature family materially strengthens identity or product comprehension;
-- platform/native templates support a coherent extension;
-- licensing, language, state, or technical constraints make available sources unsuitable.
+Before paths, inspect the feature's real input, action or object, outcome, state, label, nearest sibling meanings and smallest slot, and write a brief: `this symbol represents …; it must not imply …; it sits beside … at … CSS px`. Leave an unknown mechanism unresolved instead of inventing a capability. Pick a dominant silhouette and the minimum modifier that changes the meaning, and test alternative constructions only while the metaphor is open. Generic sparkles, shields, crowns, gears and crossed tools fit any feature; a shield-check asserts safety or completion and a download arrow turns a history view into an action, so verify such implications against the actual state.
 
-For an open product-specific feature, category, service or repeated family, actively sketch a custom candidate when feasible instead of ending the search at an approximate library match. This is a preferred exploration route, not a requirement to add icons where text works. An explicit request for custom icons puts drawing in scope; do not repeatedly ask whether to try it. A bounded correction to an accepted glyph does not reopen its source decision.
-
-Compare the custom candidate against the strongest relevant existing or text alternative at equal size and in the same host. Prefer custom when recognition, accessibility and rendering are at least as strong and its metaphor or family fit is visibly more specific. Do not require custom to be unprecedented or to defeat every external library. Preserve conventional Home, close, search, back and similar actions unless the user opens that decision; custom drawing may refine a familiar silhouette without inventing a new meaning.
-
-It is not justified merely because custom feels premium, a generator can produce SVG, or a library is imperfect. More custom work should come from exploring meaningful opportunities and improving candidates, never from weakening acceptance or decorating every label.
-
-## Generate From the Real Meaning
-
-Before paths, inspect the feature's actual input, action or object, outcome, current state, label, nearest sibling meanings and smallest real slot. Write a short semantic brief: `this symbol represents …; it must not imply …; it sits beside … at … CSS px`. Use repository/product evidence; keep an unknown mechanism unresolved rather than inventing a capability. A service name alone is insufficient when its meaning is ambiguous.
-
-Choose the distinguishing visual cue. For compound concepts, start with a dominant silhouette and the minimum modifier that changes the meaning; test different constructions only while the metaphor is open. Avoid generic sparkle, shield, crown, gear or crossed-tool substitutions that could accompany any feature. A shield/check can assert safety or completion; a download arrow can turn a history view into an action. Verify these implications against the actual state. Do not stack several tiny symbols to reproduce an entire description.
-
-Draw editable SVG geometry or extend the established vector system. Use raster generation only for a genuinely raster illustration role, not as a shortcut for crisp small interface glyphs. Establish the native grid and stroke/fill language around the smallest implemented size; choose coordinates and stroke alignment that survive its actual scale. Integer coordinates alone do not guarantee crisp curves or diagonals. Inspect computed SVG dimensions, viewBox scaling, ancestor transforms, flex shrinking and device-pixel ratio when blur appears; redrawing the asset cannot fix a scaled host.
-
-Render the rough candidate in its real slot early, alongside its label and nearest semantic sibling. Reduce tangencies, merged counters, redundant strokes and unstable detail before adding polish. Use optical variants when an essential cue fails at a smaller implemented size; do not hide a weak 16/20 px symbol behind a successful enlarged preview. Avoid `crispEdges` as a blanket fix for curved/diagonal paths and avoid raster upscaling or blur filters. Keep directional meaning, visual weight and state behavior consistent across variants.
-
-Once the construction works, propagate the grammar to the required family and inspect the full set. A familiar library asset reused unchanged remains existing; call an adaptation derived, preserve its license/provenance, and distinguish it from an original drawing. Ownership is not a visual-quality claim.
-
-### Repair Weak or Pixelated Results
-
-Treat reports of weak, muddy or pixelated icons as a defect to reproduce at the user's actual size, scale and background. First distinguish a raster source/upscaled screenshot from vector geometry, host resampling and ordinary edge antialiasing. Preserve the original asset and capture conditions so a sharper screenshot is not mistaken for a better drawing.
-
-Use a lossless, unresized capture or the live renderer for sharpness judgments, recording CSS size and DPR. JPEG compression, thumbnail downsampling and enlarged chat previews can introduce artifacts absent from the SVG. They may reveal a suspected defect but cannot settle its cause; inspect the actual native-size rendering before changing paths. A sharper capture proves better evidence, not an improved icon.
-
-Inspect the silhouette at 100% display scale. A thin, fragmented or visually timid mark needs a stronger construction: remove incidental segments, open counters, balance dominant masses and redraw joins or diagonals that merge. Do not simply thicken every path; that can close gaps and make dense icons heavier than their neighbors. Use the simplest distinguishing form the context supports, with deliberate curvature, terminal treatment and optical spacing. Rounded caps alone do not make a family polished.
-
-For a 16/20 px owner, simplify around that native slot; use an optical small-size drawing if scaling the larger mark loses the essential cue. Compare it against the established family at the same apparent weight and background. Reject unresolved jagged, fuzzy, doubled, cramped or fragmented forms when they materially weaken recognition or fit, even if the file passes structural validation. An enlarged polished render cannot excuse a weak actual-size result. State exactly which sizes passed; do not propagate an accepted large version into uninspected compact controls.
-
-When the source is sound but the host is soft, fix actual width/height, accidental fractional translation or scaling, flex shrink, CSS filter, bitmap delivery or screenshot resampling at its owner. Inspect relevant DPR and zoom conditions; do not force all paths to integer coordinates, disable antialiasing, or add sharpening as a universal repair. After the cause changes, recapture native-size context and confirm both clarity and semantic fit before accepting it.
+Draw editable SVG geometry or extend the established vector system; raster generation suits only genuine raster illustration roles. Compare the custom candidate with the strongest existing or text alternative at equal size in the same host. Prefer custom when recognition, accessibility and rendering are at least as strong and its metaphor or family fit is visibly more specific; it need not be unprecedented or beat every library. Once the construction works, propagate its grammar to the family and inspect the whole set. A library asset reused unchanged stays existing; call an adaptation derived and keep its license and provenance. Ownership is not a quality claim.
 
 ## Specify the Drawing Language
 
@@ -183,87 +117,45 @@ color/currentColor and theme behavior
 accessibility ownership, provenance, license, and maintainer
 ```
 
-The grid is a construction aid, not the optical result. Curves may overshoot; asymmetrical subjects may need asymmetric padding; diagonals and circles often need visual compensation. Equal numeric boxes do not guarantee equal perceived size.
+The grid is a construction aid, not the optical result: curves overshoot, asymmetric subjects need asymmetric padding, and diagonals and circles need visual compensation, so equal numeric boxes do not guarantee equal perceived size. Establish the grid and stroke or fill language around the smallest implemented size (16, 20 and 24 px for ordinary interface icons unless the component documents another set), and make deliberate optical variants where a detailed large drawing would scale into illegibility. When a change introduces or materially extends a family, prove it on unlike subjects (one simple orthogonal, one circular, one diagonal or asymmetric, one dense domain icon) before polishing a single favorable symbol; a single bounded correction compares against established neighbors and the strongest exact alternative instead.
 
-When the change introduces or materially extends a family, build a proof with unlike subjects: one simple orthogonal icon, one circular or curved icon, one diagonal/asymmetric icon, and one dense domain-specific icon. This exposes a weak language earlier than polishing a single favorable symbol. A single bounded icon correction does not need a ceremonial family workshop; compare it against the established neighbors and the strongest exact alternative at its real sizes.
-
-## Construct and Iterate
-
-1. Sketch silhouettes and semantic alternatives at or near target size.
-2. Choose the clearest skeleton and reduce it to the family primitives.
-3. Draw clean source geometry on the declared viewBox. Use as few paths and control points as clarity permits, but do not sacrifice optical correction for mathematical purity.
-4. Render at every target size, including 16, 20, and 24 px for ordinary interface icons unless the real component uses a different documented set.
-5. Compare light/dark themes and relevant default, hover, active, disabled, selected, and high-contrast contexts.
-6. Place it beside real family neighbors, labels, buttons, fields, navigation, and dense content. Inspect blur/squint, silhouette, baseline, center of mass, counters, terminal rhythm, and detail loss.
-7. Compare with the strongest existing candidate and visible text. Revise or reject.
-
-For very small sizes, create a deliberate optical variant when necessary; do not uniformly scale a detailed large pictogram into illegibility.
+When an icon looks weak, muddy or pixelated, reproduce it at the user's actual size, scale and background. Separate a raster source or upscaled screenshot from vector geometry, host resampling and ordinary antialiasing, and keep the original asset and capture conditions. Judge sharpness from a lossless, unresized capture or the live renderer with CSS size and DPR recorded: JPEG compression, thumbnails and enlarged chat previews add artifacts, and a sharper capture is better evidence, not a better icon. When the source is sound but the host is soft, fix the owner's width and height, fractional translation or scale, flex shrink, CSS filter, bitmap delivery or resampling, checking the relevant DPR and zoom; integer coordinates, disabled antialiasing, `crispEdges` on curves, sharpening or raster upscaling are not universal repairs. Drawing repairs belong to [icon-craft.md](icon-craft.md#make-the-drawing-intentional).
 
 ## SVG Contract
 
-For interface SVGs:
+For interface SVGs: declare a stable `viewBox` without unexplained transforms or fractional drift; paint with `currentColor` or documented semantic roles unless multicolor carries meaning; keep inline text, scripts, embedded remote images and external references out; prefer simple geometry to masks, filters and clipping; let the owning component provide the accessible name and hide decorative duplicates; and keep editable source or construction parameters when optical variants are expected. Validate structure and provenance with `asset_quality.py`, using the `interface-icon` profile for original drawings and the `brand-mark` profile for unchanged imported brand artwork ([validator](cli-reference.md#validate-custom-svg-structure)). A passing validator proves only the declared structural contract, never beauty, recognition, optical balance or family coherence; never rewrite a brand mark to obtain a PASS.
 
-- declare a stable `viewBox`; avoid unexplained transforms and fractional drift;
-- use `currentColor` or documented semantic color roles unless multicolor conveys required meaning;
-- keep inline text, scripts, embedded remote images, and external references out of the asset;
-- avoid masks, filters, and clipping when simpler geometry produces the same result;
-- let the owning component provide the accessible name for action icons; decorative duplicates remain hidden;
-- preserve raw editable source or construction parameters when future optical variants are expected.
+## Compare Candidates
 
-Validate structure and provenance:
+When the outcome is genuinely open, compare only the strongest plausible existing, custom and visible-text or no-icon alternatives; a familiar routine action in an accepted family stays Direct, with no manufactured challengers. For a material decision, `icon_review.py` builds a representative-control matrix from validated, digest-bound candidates and their contexts ([manifest rules](cli-reference.md#compare-existing-custom-and-no-icon-candidates)); it supports like-for-like size and state comparison but does not replace the host component.
 
-```text
-python <skill-directory>/scripts/asset_quality.py path/to/icon.svg --metadata path/to/icon.metadata.json
-```
+Inspect the matrix at wide and narrow viewports, then claimed winners and close losers in the real UI at every implemented size and the relevant default, focus, selected, disabled, light, dark and high-contrast states. Record four evidence categories separately:
 
-Metadata requires the icon role, grid/live area, drawing language, target sizes, source/license, accessibility owner, and structured local evidence bindings. Local source and license records must resolve from metadata-relative paths to safe regular files whose exact bytes match their digests; external source URLs remain explicitly unverified. A passing validator proves only the declared structural contract. It cannot certify beauty, recognition, optical balance, or family coherence.
+- deterministic contract: SVG, metadata and manifest structure, exact byte bindings, source and license bindings, and comparison-to-host state coverage;
+- rendered or browser regression: what the sheet and host component actually render;
+- current source evidence: official asset bytes, version and license for external assets, which stay unverified until primary-source review;
+- human visual judgment: recognition, silhouette, optical center, weight, negative space, metaphor and neighboring fit.
 
-The default `interface-icon` profile accepts a strict self-contained subset. It rejects nested viewports, executable or linked content, embedded text/raster content, URI/local-fragment dependencies, transforms/masks/filters/clipping, unknown attributes, malformed or clipped geometry, collapsed root dimensions, non-`currentColor` paint, asset-level muted opacity, unsupported miter joins, and metadata/provenance contradictions. The exact schema and boundary are in [cli-reference.md](cli-reference.md).
-
-Use the explicit `brand-mark` profile for unchanged imported brand SVGs in the supported subset. It binds a retained upstream artwork copy and usage record, permits opaque supplied colors, and preserves active-content/reference/geometry checks. It does not grant a trademark license or certify source truth. An unsupported official SVG, gradient, mask or raster asset needs a suitable official variant or the host's supported asset inspection path; never rewrite the mark just to obtain validator PASS.
-
-## Operational Candidate Comparison
-
-When the outcome is genuinely unresolved, compare only the strongest plausible existing, custom, and visible-text/no-icon alternatives. A familiar routine action in an accepted family can stay Direct; do not manufacture challengers after the answer is already learned and contextually sound.
-
-For a material icon decision, the standard-library helper generates a self-contained representative-control matrix after validating each SVG and cross-binding its metadata:
-
-```text
-python <skill-directory>/scripts/icon_review.py \
-  path/to/manifest.json --output path/to/comparison.html --json
-```
-
-Declare the role, component type, visible label/content, target sizes, relevant states, candidates, context evidence, current verdict, and selected candidate. Use `repository-derived` context evidence only when the named source file and selector exist and a candidate is selected; otherwise label unresolved evidence `representative`. For repository-derived proof, map every comparison state to exactly one exercised host state (including `high-contrast` → `forced-colors`) and bind the selected candidate to the actual owning host when the owner can be exercised. The matrix is useful for like-for-like size/state comparison but is not a substitute for the actual host component.
-
-Inspect the generated matrix at wide and narrow viewports, then inspect claimed winners and close losers in the real UI at every implemented size and relevant default, focus, selected, disabled, light, dark, and high-contrast state. Record four evidence categories separately:
-
-- deterministic contract: SVG/metadata/manifest structure, exact SVG-byte binding, structured source/license byte bindings, and explicit comparison-state→host-state coverage;
-- rendered/browser regression: what the comparison sheet and host component actually render;
-- current source evidence: official asset bytes, version/revision, and license where external; external URL truth remains unverified until current primary-source review;
-- human visual judgment: recognition, silhouette, optical center, weight, negative space, metaphor, and neighboring fit.
-
-The [icon-decisions proof](https://github.com/What0ff/snowe-ui-skill/tree/main/evals/icon-decisions) in the source repository (not part of an installed skill) demonstrates all three legitimate outcomes: an existing glyph wins and custom is rejected, custom wins for a product-specific mechanism, and visible text/no icon wins because an icon would assert the wrong state.
+The [icon-decisions proof](https://github.com/What0ff/snowe-ui-skill/tree/main/evals/icon-decisions) in the source repository (not part of an installed skill) shows all three legitimate outcomes: an existing glyph wins and custom is rejected, custom wins for a product-specific mechanism, and visible text with no icon wins because an icon would assert the wrong state.
 
 ## Recognizability and Optical Review
 
 Use short-context checks, not a popularity vote:
 
-- Can a representative user distinguish the icon from its nearest semantic neighbors?
-- Does the label-icon pair reinforce one meaning rather than contradict it?
-- At target size, which details disappear or merge?
-- Does it appear the same size and weight as neighboring icons without measuring larger?
-- Is the baseline and visual center correct in the real control?
-- Do curves, diagonals, counters, terminals, and corners feel from one hand?
-- Does selected/filled treatment change meaning or only emphasis?
-- Does mirroring preserve meaning across directionality, or is the symbol culturally/spatially fixed?
+- Can a representative user tell the icon from its nearest semantic neighbors?
+- Do label and icon reinforce one meaning?
+- Which details disappear or merge at target size?
+- Does it look the same size and weight as its neighbors without measuring larger?
+- Are the baseline and visual center right in the real control?
+- Do curves, diagonals, counters, terminals and corners feel drawn by one hand?
+- Does the selected or filled treatment change emphasis only, not meaning?
+- Does mirroring preserve meaning across directionality, or is the symbol culturally or spatially fixed?
 
-Mark custom work `REJECT` when recognition, ambiguity, balance, detail survival, state clarity, or family coherence is worse than the best existing or text alternative. Record the loser; do not keep it because it is ownable or took effort.
+Mark custom work `REJECT` when recognition, ambiguity, balance, detail survival, state clarity or family coherence is worse than the best existing or text alternative. Record the loser; keep nothing because it is ownable or took effort.
 
 ## Accept the Context, Not the Drawing Sheet
 
-Bind whole-context and diagnostic detail captures through [visual-system-and-observation.md](visual-system-and-observation.md) for reusable acceptance. A selected custom asset remains an unverified draft until its actual slot, neighboring label, backing and required compact states are inspected. Apply the detail/artifact sweep in quality gates; a malformed join, unintended sliver or doubled stroke is a visual finding even when all XML and bounding-box checks pass.
-
-For a new or materially revised custom symbol, close each applicable claim separately in the existing finding record:
+A selected custom asset stays an unverified draft until its actual slot, neighboring label, backing and required compact states are inspected; bind whole-context and detail captures through [browser observation](cli-reference.md#observe-in-a-browser) for reusable acceptance and apply the [detail sweep](quality-gates.md#detail-and-artifact-acceptance). A malformed join, stray sliver or doubled stroke is a visual finding even when XML and bounding-box checks pass. For a new or materially revised custom symbol, close each applicable claim in the existing finding record:
 
 | Claim | Required evidence and failure disposition |
 | --- | --- |
@@ -274,10 +166,8 @@ For a new or materially revised custom symbol, close each applicable claim separ
 | Technical and accessible behavior | Validate the changed SVG/metadata, then verify accessible ownership, color inheritance, clipping and relevant themes/focus/disabled/forced-color states. Fix applicable failures before acceptance; distinguish asset integrity from interaction proof. |
 | Fresh proof | Bind findings to exact asset bytes and the current host/state/viewport. Missing or stale required context stays `UNKNOWN`; screenshots created but not inspected cannot close the claim. |
 
-Use a native-size context view for acceptance; an enlarged crop helps diagnose geometry only. When small-size softness is at issue, compare ordinary DPR 1 and an available higher-density render, with actual browser metrics recorded; inspect fractional scale only where it is used or implicated. Do not invent device coverage. Review icon-only ambiguity without the author's explanation, then restore the real label context; a labelled domain icon need not become a universally understood standalone symbol, but it must not contradict or confuse that label.
-
-Repair failed semantics before polishing paths, paths before optical alignment, and host paint/scaling at its owner. Compare the improved candidate with the same viable baseline, preserve rejected evidence, and stop when the applicable claims pass. If a contextual custom candidate still loses, use the better existing/text outcome and record the limiting cause so the next attempt can improve it. Delivery must not count an unverified custom draft as an accepted icon.
+Accept at native size; an enlarged crop only diagnoses geometry. When small-size softness is at issue, compare DPR 1 with an available higher-density render and record actual browser metrics, inspecting fractional scale only where it is used; never invent device coverage. Judge icon-only ambiguity without the author's explanation, then restore the real label: a labelled domain icon need not stand alone universally, but must not contradict its label. Repair semantics before paths, paths before optical alignment, and host paint and scaling at its owner. Compare the improved candidate with the same baseline, keep rejected evidence, and stop when the applicable claims pass. If the custom candidate still loses, use the better existing or text outcome and record the limiting cause; an unverified custom draft never counts as an accepted icon.
 
 ## Delivery
 
-Report semantic decisions, established ecology, exact finalists, current source/license evidence, family role boundaries, custom family specification when used, target-size/context renders, validator output, accessibility ownership, rejected candidates, and unresolved symbols. Do not claim an icon family is coherent from SVG validity alone.
+Report semantic decisions, the established ecology, exact finalists, current source and license evidence, family role boundaries, the custom family specification when used, target-size context renders, validator output, accessibility ownership, rejected candidates and unresolved symbols. SVG validity alone never shows that a family is coherent.

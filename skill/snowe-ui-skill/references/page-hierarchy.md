@@ -1,67 +1,59 @@
 # Page Hierarchy, Copy and Actions
 
-Use before component/layout selection for a new page with a known job, a material change to one page's hierarchy, or an explicitly rejected composition. This is a Focused route when the objects and surrounding product flow are known. A specified local property correction stays Direct. Unknown page goals or whole-product relationships escalate to experience architecture; the size of the file diff does not choose the route.
+Use before component and layout selection for a new page with a known job, a material change to one page's hierarchy, or an explicitly rejected composition. This is a Focused route when the objects and surrounding product flow are known. A specified local property correction stays Direct. Unknown page goals or whole-product relationships escalate to [experience architecture](experience-architecture.md); the size of the diff does not choose the route.
 
 ## Map the Page Before Containers
 
-In the existing working record, state the user task and relevant context. List the content and operations the page actually needs, then assign their roles and relationships:
+In the existing working record, state the user task and context, list the content and operations the page needs, and assign their roles and relationships:
 
 ```text
 group / purpose / parent or related group / importance / required states / surface
 what the user must understand or do / what must be seen together
 ```
 
-`surface` is where the group lives: main surface, side panel, dialog, popover, tabs, in-place disclosure or its own route. Choose it with [surfaces-and-disclosure.md](surfaces-and-disclosure.md); keeping a group on the main surface is a choice too.
+`surface` is where the group lives (main surface, side panel, dialog, popover, tabs, in-place disclosure or its own route), chosen with [surfaces-and-disclosure.md](surfaces-and-disclosure.md); keeping a group on the main surface is a choice too.
 
-Possible roles include resource context, page identity, local navigation, selected object, primary work/data, current action, supporting state and reference/help. Extend or omit roles according to the task; these are not mandatory sections. Distinguish a selector from a status summary and a working collection from settings before styling any of them. State the intended reading/task order and which relationships must survive a narrow viewport.
+Roles can include resource context, page identity, local navigation, selected object, primary work or data, current action, supporting state and reference or help; extend or omit them by task. Distinguish a selector from a status summary and a working collection from settings before styling either, and state the reading and task order and which relationships must survive a narrow viewport.
 
-Only then choose grouping, composition, components and visual emphasis. Do not map every group to a card. A container can represent an independent object or operation; ordinary attributes may need only proximity, alignment and typography. A section heading must distinguish its contents, not repeat a nearby selector without an orientation benefit. Existing markup is a baseline, never evidence that its hierarchy was accepted.
+Only then choose grouping, composition, components and visual emphasis. A container represents an independent object or operation; ordinary attributes usually need only proximity, alignment and type. A section heading must distinguish its contents, not repeat a nearby selector.
 
-For a material open choice, compare the baseline page map with a credible alternative that changes the weak relationships. Reordering identical boxes without changing importance or grouping is not enough. Implement a complete affected surface with real content before claiming that its hierarchy works. Keep this internal map concise; do not create a new document for every small correction.
+For a material open choice, compare the baseline map with a credible alternative that changes the weak relationships; reordering identical boxes without changing importance or grouping is not an alternative. Implement a complete affected surface with real content before claiming its hierarchy works, and keep the map concise rather than a new document per correction.
 
 ### Connect Importance to Visible Cues
 
-For a live hierarchy choice, extend that same record with the few states that change the user's decision:
+For a live hierarchy choice, extend the record with the few states that change the user's decision:
 
 ```text
 state / immediate user question / intended attention order
 visible cue and owner / competing element / observed render / disposition
 ```
 
-Name the actual content, not only “primary” and “secondary.” Explain how placement, scale, type weight, grouping, contrast or disclosure makes it distinguishable, and what could compete with it. “Use a journal” or “make the palette neutral” names a treatment; it does not establish that the treatment improves this task. Preserve useful technical data and a calm accepted system when they work.
+Name the actual content, not "primary" and "secondary", and explain which placement, scale, weight, grouping, contrast or disclosure makes it distinguishable and what competes with it. "Use a journal" or "make the palette neutral" names a treatment, not proof that it helps this task. Keep useful technical data and a calm accepted system when they work.
 
-Inspect meaningful transitions. While a scan runs, progress and affected kingdoms may lead; on failure, the problem and recovery may lead; after completion, the result and next useful operation may lead. These are a worked example, not a universal dashboard recipe. Stable geometry can remain valuable: change emphasis only where the user's question changes, without making panels jump or adding ceremonial animation.
+Inspect meaningful transitions: while a scan runs, progress and affected records may lead; on failure, the problem and recovery; after completion, the result and next useful operation. This is a worked example, not a dashboard recipe. Change emphasis only where the user's question changes, without jumping panels or ceremonial animation.
 
-Author the intended order and cues before evaluating the candidate. Compare them with what the full render actually emphasizes; do not derive the expectation from the same DOM/CSS being checked. A self-review's observed attention is a reasoned visual judgment, not measured gaze or a timed user study. If structure is clear but its visual expression remains weak, use [art-direction-gate.md](art-direction-gate.md) for that bounded choice before accepting it.
+Author the intended order and cues before evaluating, then compare them with what the full render emphasizes; never derive the expectation from the DOM and CSS being checked. A self-review's observed attention is reasoned judgment, not measured gaze. When structure is clear but its visual expression stays weak, settle that bounded choice with [art-direction-gate.md](art-direction-gate.md).
 
 ## Use References at the Requested Level
 
-Identify what the user likes: hierarchy, density, navigation, typography, material, interaction or another specific attribute. Inspect the actual referenced surface. A vendor's marketing homepage is not evidence of its dashboard hierarchy. Cloudflare dashboards can illustrate distinct resource context, navigation, actionable work and secondary tools, but do not prescribe their palette, sidebar, module count or content model to unrelated products.
-
-Record which observed relationship transfers and why. Retain the target product's confirmed semantics, rights and identity. Keep direct-copy conformance separate from reference-inspired work. An engineering fixture or a visually rejected candidate cannot become a design-quality reference merely because its tests passed.
+Identify what the user likes (hierarchy, density, navigation, typography, material, interaction) and inspect the actual referenced surface; a vendor's marketing homepage is not evidence of its dashboard hierarchy. Record which observed relationship transfers and why, such as distinct resource context or secondary tools, not the reference's palette, sidebar, module count or content model, and keep the target product's semantics, rights and identity. Direct-copy conformance stays separate from reference-inspired work. An engineering fixture or visually rejected candidate never becomes a quality reference because its tests passed.
 
 ## Audit User-Facing Text
 
-Classify visible text by its job: domain data, state, action, useful guidance, or implementation/reporting detail. A phrase earns space when it helps orientation, a decision, an operation, identification or recovery. Remove descriptions that merely restate a heading, explain an obvious empty container, or expose internal implementation vocabulary without helping that task.
+Classify visible text by its job: domain data, state, action, useful guidance, or implementation and reporting detail. A phrase earns space when it helps orientation, a decision, an operation, identification or recovery; remove lines that restate a heading, explain an obvious empty container, or expose internal vocabulary. Treat a visible ordinal as a content relationship: unordered peers get descriptive headings and grouping, not `01:`/`02:` prefixes ([incident](failure-patterns.md#section-numbering-added-as-polish)).
 
-Treat a visible ordinal as a content relationship before choosing its graphic treatment. On a landing page, benefits, services, testimonials and ordinary sections do not become ordered steps merely because there are several of them. Ask whether changing their order changes the meaning, whether visitors use the numbers to navigate or refer back, or whether an explicit supplied design establishes that identity. Start unordered peer content with descriptive headings and grouping; do not add `01:`, `02:`, leading-zero counters or oversized indices as a default polish device. A familiar benchmark's numbering is not evidence for the current brief. If numbering is an open identity choice, compare the same content without it and explain the actual orientation or identity benefit; a style adjective alone does not establish one. Preserve genuine process/dependency order, useful chapters/cross-references, identifiers, factual quantities and explicitly requested numbering. Internal planning lists are separate from the customer's visible page.
-
-Keep legitimate technical content in technical products. IDs, command aliases, API concepts and parameters can be essential data. Move occasional reference material into an accessible disclosure when it is not needed for the main operation; do not hide the primary task's evidence. Explain errors in user language, preserve recovery and put appropriate diagnostic detail outside the main flow. Never use a global forbidden-word list.
-
-Keep fixture notices, source hashes, test results and implementation disclaimers in the review report or inspector outside the target surface. They must not enter a customer screenshot or be styled as product copy. The surrounding report must still clearly identify fictional data and prototypes.
+Technical products keep legitimate technical content: IDs, command aliases, API concepts and parameters can be essential data. Move occasional reference material into an accessible disclosure without hiding the primary task's evidence. Explain errors in user language, keep recovery, and put diagnostic detail outside the main flow. Never use a global forbidden-word list. Keep fixture notices, hashes, test results and disclaimers out of the target surface ([incident](failure-patterns.md#report-notes-inside-the-product-screen)).
 
 ## Audit Actions by Meaning
 
-For each action record `operation + target object + outcome + context`, verify it against the handler/destination, and choose its placement. Different labels do not make identical operations distinct. By default keep one primary entry to the same outcome in the same context. A contextual shortcut, long-form repeat, bulk action or responsive alternative needs its own demonstrated benefit and state boundary.
+For each action record `operation + target object + outcome + context`, verify it against the handler/destination, and choose its placement. Different labels do not make identical operations distinct. Default: one primary entry to the same outcome in the same context; a contextual shortcut, long-form repeat, bulk action or responsive alternative needs its own benefit and state boundary.
 
-Identical row buttons for different objects are legitimate distinct actions. Do not deduplicate by text or globally enforce one button of each name. Inspect simultaneously available desktop/mobile variants and repeated submits. If a repeated action is retained, record the reason and make its hierarchy clear; a second equally prominent control with the same effect is not a benefit by itself.
+Identical row buttons for different objects are legitimate distinct actions. Never deduplicate by text or enforce one button per name. Inspect simultaneously available desktop and mobile variants and repeated submits. A retained repeat gets a recorded reason and a clear hierarchy; a second equally prominent control with the same effect is no benefit by itself.
 
 ## Accept the Relationships
 
-From the current complete render, establish where the user is, what is selected, which object/data matter, what can be done now and which tools are secondary. The answer should follow grouping, prominence and proximity without reading every panel. Check empty/sparse/populated and important permission/error/dialog states, keyboard access, text scaling and responsive transformation.
+From the current complete render, the user should see where they are, what is selected, which object and data matter, what can be done now and which tools are secondary, through grouping, prominence and proximity rather than by reading every panel. Check empty, sparse and populated states, important permission, error and dialog states, keyboard access, text scaling and responsive transformation. Required information must be perceptible and accessible in the state under review: DOM presence, text inventories and boxes do not prove visibility through opacity, clipping, occlusion or hidden accessibility ancestors, and sampled checks cannot certify visual quality.
 
-Verify required information is actually perceptible and accessible in the state under review. DOM presence, text inventories and bounding boxes alone do not prove visibility: opacity, clipping, occlusion and hidden accessibility ancestors can invalidate the claim. Use declared owner checks and manual rendering together; sampled technical checks cannot certify complete visual quality.
+A clear role map is not a finished visual direction: review the whole screen for deliberate type relationships, readable surface separation, balanced grouping and coherent control states. Keeping a palette or font does not require keeping rough stock styling. Equally, approved quiet or native-looking controls are valid: change them only when context or feedback warrants it.
 
-A clear role map is not a finished visual direction. Review the complete screen for deliberate type relationships, readable surface separation, balanced grouping and coherent control states. Preserving a palette or font does not require preserving rough stock styling. Equally, approved quiet or native-looking controls are valid: change them only when context or feedback warrants it.
-
-Record four separate outcomes: technical contract, evidence integrity, visual assessment and user acceptance. Resolve material hierarchy/copy/action findings before visual KEEP. User rejection reopens the affected direction; the absence of a new user objection is not approval. Report only the scope actually proved, without a numerical taste score.
+Record four separate outcomes: technical contract, evidence integrity, visual assessment and user acceptance. Resolve material hierarchy, copy and action findings before visual `KEEP`. User rejection reopens the affected direction, and silence is not approval. Report only the scope actually proved, without a numerical taste score.
