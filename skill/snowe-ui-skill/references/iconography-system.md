@@ -261,7 +261,7 @@ Mark custom work `REJECT` when recognition, ambiguity, balance, detail survival,
 
 ## Accept the Context, Not the Drawing Sheet
 
-Bind whole-context and diagnostic detail captures through [visual-system-and-observation.md](visual-system-and-observation.md) for reusable acceptance. A selected custom asset remains an unverified draft until its actual slot, neighboring label, backing and required compact states are inspected. Apply the detail/artifact sweep in quality gates; a malformed join, unintended sliver or doubled stroke is a visual finding even when all XML and bounding-box checks pass.
+Bind whole-context and diagnostic detail captures through [browser observation](cli-reference.md#observe-in-a-browser) for reusable acceptance. A selected custom asset remains an unverified draft until its actual slot, neighboring label, backing and required compact states are inspected. Apply the detail/artifact sweep in quality gates; a malformed join, unintended sliver or doubled stroke is a visual finding even when all XML and bounding-box checks pass.
 
 For a new or materially revised custom symbol, close each applicable claim separately in the existing finding record:
 

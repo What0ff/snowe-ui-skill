@@ -52,7 +52,7 @@ Color weight depends on area and neighbors: a small vivid action and a full vivi
 
 Keep a compact chain: **observation → plausible cause → one relational change → expected consequence → comparable rerender → collateral checks → disposition**. For example, if the action is lost, first test its grouping/contrast relative to the result, rather than simultaneously changing font, palette, spacing and copy. Use identical content for causal comparisons. A redesign can change content, but record that it is no longer an isolated test of visual treatment.
 
-Retain rejected repairs with reasons: making the button larger may have restored attention but damaged proportion and crowded the mobile line; removing a backing may have quieted the page but erased selection. A supported lesson records applicability and a counterexample, with bound before/after evidence. Never turn “this decorative disk competed with these labels” into “remove all round shapes.” See the hypothesis record in [visual-system-and-observation.md](visual-system-and-observation.md).
+Retain rejected repairs with reasons: making the button larger may have restored attention but damaged proportion and crowded the mobile line; removing a backing may have quieted the page but erased selection. A supported lesson records applicability and a counterexample, with bound before/after evidence. Never turn “this decorative disk competed with these labels” into “remove all round shapes.” See the hypothesis record in [visual-system contract](cli-reference.md#version-a-visual-system-contract).
 
 ## Specialized Checks
 

@@ -37,7 +37,7 @@ The stroke advice above applies to outline glyphs. Solid and duotone forms are b
 2. **Native owner:** compare exact candidates inside the same real button/row, with identical content, size, background and state. Inspect apparent size/weight, baseline, label gap and recognition without a tooltip. Include a repeated dense context and an overlay if they consume the owner.
 3. **Diagnostic detail:** use lossless 2× detail captures to inspect joins, counters, clipping, fractional scaling, doubled strokes and raster artifacts, then return to native size. Enlargement diagnoses the cause; it cannot certify compact recognition.
 
-The [portable observation contract](visual-system-and-observation.md) supports whole-page and bound owner/detail captures. Declare native slot, DPR, theme and input in the plan. Include the actual SVG file/metadata, CSS owner, shared tokens, font/label and any pseudo-element backing in dependency scope. Relevant states include normal/pressed/selected/disabled/focus and forced colors when supported; test actual used states, not every theoretical permutation.
+The [portable observation contract](cli-reference.md#observe-in-a-browser) supports whole-page and bound owner/detail captures. Declare native slot, DPR, theme and input in the plan. Include the actual SVG file/metadata, CSS owner, shared tokens, font/label and any pseudo-element backing in dependency scope. Relevant states include normal/pressed/selected/disabled/focus and forced colors when supported; test actual used states, not every theoretical permutation.
 
 ## Retain the closest losing attempt
 

@@ -55,7 +55,7 @@ The resolved example caps the panel to its content role, positions it from the a
 
 ## Verify the state, then judge its finish
 
-Use independent postconditions: expanded trigger, correct visible options/value, selected state, active focus and outcome after activation. A click sent to a moving or covered target can leave the popup closed while a screenshot is labelled “open.” The [portable observation contract](visual-system-and-observation.md) records actual postconditions, preserves scroll context, and captures native viewport, whole composition and owner/details.
+Use independent postconditions: expanded trigger, correct visible options/value, selected state, active focus and outcome after activation. A click sent to a moving or covered target can leave the popup closed while a screenshot is labelled “open.” The [portable observation contract](cli-reference.md#observe-in-a-browser) records actual postconditions, preserves scroll context, and captures native viewport, whole composition and owner/details.
 
 Inspect closed/open, pointer hover, keyboard active/focus, selected/unselected, disabled and the content-pressure states the component actually has: long labels, groups, empty/no results, loading/error and long lists. Exercise representative repeats such as a toolbar, a form and an overlay only when they consume the shared owner. Include relevant theme, narrow/pressure width, zoom/DPR and viewport edges. Do not run every theoretical state for a bounded known property.
 
