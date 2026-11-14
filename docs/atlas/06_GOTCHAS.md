@@ -11,7 +11,7 @@
 
 ## Imports and console behavior
 
-- Product scripts use bare sibling imports; this is not an installed Python package. The entry scripts (`search.py`, `corrections.py`, `visual_review.py`, `icon_review.py`) add their own directory to `sys.path`, so they also run under `python -I` / `PYTHONSAFEPATH`. Library modules imported directly (as tests do) still need the scripts directory on `sys.path`.
+- Product scripts use bare sibling imports; this is not an installed Python package. The entry scripts (`search.py`, `corrections.py`, `visual_review.py`, `icon_review.py`) add their own directory to `sys.path`, so they also run under `python -I` / `PYTHONSAFEPATH`; `iso.py` imports no sibling module. Library modules imported directly (as tests do) still need the scripts directory on `sys.path`.
 - UTF-8 console normalization exists in `search.py`; direct module callers do not inherit it.
 - `checked_evidence.read_json` accepts UTF-8 with or without a BOM and rejects UTF-16/32 (Windows PowerShell 5.1's default for `>` and `Out-File`) with a message naming the file. Keep `object_fields(..., name=...)` labels on new call sites so field errors name the object.
 - JSON mode reserves stdout for one valid JSON document; persistence summaries go to stderr. Packet-only and search-only flags are rejected outside their owning mode rather than silently ignored.
@@ -65,6 +65,7 @@
 - `brand-mark` is an explicit imported-artwork profile, not a bypass for custom icons. Supplied opaque color and the relative rounding envelope avoid false source rewrites; exact curve extrema now apply to every profile. Source/license/usage truth remains a primary-source judgment. Unsupported gradients/masks/styles need an official variant or host asset proof. Rebinding a delivered digest alone cannot replace retained upstream bytes. A brand's kit and current prose can disagree; preserve the evidence and select a supported variant instead of silently recoloring.
 - Mixed-control alignment concerns actual input/button boxes, not caption/help wrappers. Geometry schema 1.1 needs an explicit axis, one reference and justified finite tolerance; missing/ambiguous/pseudo geometry cannot be waived. Wrapped rows and approved staggered targets are legitimate counterexamples. Numeric equality does not prove text baseline or optical finish.
 - `contrast.py` accepts exact opaque colors. It does not composite alpha, gradients, images, blend modes, overlays, or state opacity.
+- `iso.py` treats each solid as its bounding box, so a chip's pins (0.18 grid units) or a screen stand can collide with a neighbor whose drawn faces would not touch; it refuses a cycle or a two-sided connector instead of splitting geometry. Connectors stay on one level: objects standing at different heights need an explicit shared `z` or a route to the platform they share. Label fit is a character-width estimate, so a warning-free render still needs inspection with the real font. Committed `docs/iso-examples/*.svg` and manifests are compared byte for byte by the tests: re-render the examples after any change that alters output.
 
 ## Benchmark and browser evidence
 

@@ -152,6 +152,7 @@ snowe-ui-skill/
 ├── CONTRIBUTING.md                     # Human contribution workflow
 ├── .agents/skills/atlas-maintainer/     # Repository-only context maintenance workflow
 ├── docs/atlas/                         # Durable public architecture and task router
+├── docs/iso-examples/                  # Demo scenes and captures for iso.py (repository-only)
 ├── skill/snowe-ui-skill/             # Installable product
 │   ├── SKILL.md                       # Core workflow and reference router
 │   ├── agents/openai.yaml             # Skill interface metadata
@@ -164,6 +165,7 @@ snowe-ui-skill/
 │       ├── asset_quality.py           # SVG structure/provenance validation
 │       ├── icon_review.py             # Self-contained icon decision comparison
 │       ├── contrast.py                # Exact opaque-color contrast checks
+│       ├── iso.py                     # Deterministic isometric scene → SVG illustrations
 │       ├── corrections.py             # Scoped correction journal and completion check
 │       ├── visual_review.py           # Checked visual verdict reports
 │       ├── observation.py, visual_system.py, checked_evidence.py  # Evidence helpers

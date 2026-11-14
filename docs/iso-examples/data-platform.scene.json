@@ -1,0 +1,35 @@
+{
+  "title": "Data platform",
+  "desc": "Events, CRM and log sources flow into an ingest tier, through the processing core, into lake and warehouse storage, and out to BI, API and ML apps. The highlighted path follows product events to the BI dashboard.",
+  "id_prefix": "dp-",
+  "unit": 36,
+  "objects": [
+    {"id": "floor", "type": "ground-grid", "x": -2.5, "y": -3, "w": 17.5, "d": 15.5, "step": 1, "pattern": "dots"},
+
+    {"id": "events", "type": "screen", "x": -0.9, "y": 4.4, "w": 2.0, "h": 1.3, "orient": "x+", "lines": 2, "label": "Events", "role": "source", "order": 0, "accent": true},
+    {"id": "crm", "type": "cylinder", "x": -1.5, "y": 7.6, "w": 1.4, "h": 1.25, "bands": 1, "label": "CRM", "role": "source", "order": 0},
+    {"id": "logs", "type": "stack", "x": -1.5, "y": 10.2, "w": 1.4, "d": 1.4, "count": 3, "h": 0.22, "gap": 0.1, "leds": false, "label": "Logs", "role": "source", "order": 0},
+
+    {"id": "ingest", "type": "stack", "x": 3.4, "y": 7.3, "w": 2, "d": 2, "count": 4, "label": "Ingest", "role": "ingest", "order": 1, "accent": true},
+
+    {"id": "core-pad", "type": "slab", "x": 6.9, "y": 5.9, "w": 4.8, "d": 4.8, "h": 0.3, "radius": 0.45, "inset": 0.35, "role": "core-group", "order": 2},
+    {"id": "core", "type": "chip", "x": 7.9, "y": 6.9, "z": 0.3, "w": 2.8, "d": 2.8, "h": 0.36, "label": "Process", "label_size": 12, "role": "core", "order": 2, "accent": true},
+
+    {"id": "lake", "type": "cylinder", "x": 7.3, "y": 2.3, "w": 1.5, "h": 1.5, "bands": 2, "label": "Lake", "role": "storage", "order": 3},
+    {"id": "dwh", "type": "cylinder", "x": 9.8, "y": 2.3, "w": 1.5, "h": 1.9, "bands": 3, "label": "DWH", "role": "storage", "order": 3, "accent": true},
+
+    {"id": "ml", "type": "card", "x": 6.9, "y": -2.1, "w": 1.6, "d": 1.6, "glyph": "spark", "label": "ML", "role": "app", "order": 4},
+    {"id": "bi", "type": "screen", "x": 9.4, "y": -1.6, "w": 2.2, "h": 1.5, "label": "BI", "lines": 3, "role": "app", "order": 4, "accent": true},
+    {"id": "api", "type": "card", "x": 12.6, "y": 2.2, "w": 1.6, "d": 1.6, "glyph": "plus", "label": "API", "role": "app", "order": 4},
+
+    {"type": "connector", "from": "events", "to": "ingest", "to_offset": -0.45, "start": "dot", "accent": true, "order": 1},
+    {"type": "connector", "from": "crm", "to": "ingest", "start": "dot", "order": 1},
+    {"type": "connector", "from": "logs", "to": "ingest", "to_offset": 0.45, "start": "dot", "order": 1},
+    {"type": "connector", "from": "ingest", "to": "core-pad", "accent": true, "order": 2},
+    {"type": "connector", "from": "core-pad", "to": "lake", "from_side": "y-", "to_side": "y+", "from_offset": -1.25, "order": 3},
+    {"type": "connector", "from": "core-pad", "to": "dwh", "from_side": "y-", "to_side": "y+", "from_offset": 1.25, "accent": true, "order": 3},
+    {"type": "connector", "from": "lake", "to": "ml", "from_side": "y-", "to_side": "y+", "order": 4},
+    {"type": "connector", "from": "dwh", "to": "bi", "from_side": "y-", "to_side": "y+", "accent": true, "order": 4},
+    {"type": "connector", "from": "dwh", "to": "api", "order": 4}
+  ]
+}

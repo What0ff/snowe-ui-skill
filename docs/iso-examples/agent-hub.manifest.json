@@ -1,0 +1,242 @@
+{
+  "schema": "1.0",
+  "projection": "isometric",
+  "style": "line",
+  "unit": 36.0,
+  "width": 726,
+  "height": 468,
+  "viewBox": [
+    0,
+    0,
+    726,
+    468
+  ],
+  "elements": [
+    {
+      "id": "hub-floor",
+      "source_id": "floor",
+      "kind": "ground-grid",
+      "role": "ground-grid",
+      "order": null,
+      "paint": 0,
+      "accent": false,
+      "bbox": {
+        "x": 16.0,
+        "y": 49.05,
+        "width": 693.36,
+        "height": 401.79
+      }
+    },
+    {
+      "id": "hub-research",
+      "source_id": "research",
+      "kind": "card",
+      "role": "agent",
+      "order": 2,
+      "paint": 1,
+      "accent": false,
+      "bbox": {
+        "x": 403.33,
+        "y": 47.0,
+        "width": 85.81,
+        "height": 100.62
+      }
+    },
+    {
+      "id": "hub-hub-pad-to-research",
+      "source_id": "hub-pad-to-research",
+      "kind": "connector",
+      "role": "connector",
+      "order": 2,
+      "paint": 2,
+      "accent": false,
+      "bbox": {
+        "x": 331.31,
+        "y": 129.22,
+        "width": 105.14,
+        "height": 62.18
+      },
+      "from": "hub-hub-pad",
+      "to": "hub-research",
+      "from_side": "y-",
+      "to_side": "y+",
+      "length": 3.26,
+      "path": "hub-hub-pad-to-research-path"
+    },
+    {
+      "id": "hub-team",
+      "source_id": "team",
+      "kind": "building",
+      "role": "requester",
+      "order": 0,
+      "paint": 3,
+      "accent": false,
+      "bbox": {
+        "x": 61.63,
+        "y": 16.0,
+        "width": 153.15,
+        "height": 188.9
+      }
+    },
+    {
+      "id": "hub-code",
+      "source_id": "code",
+      "kind": "card",
+      "role": "agent",
+      "order": 2,
+      "paint": 4,
+      "accent": true,
+      "bbox": {
+        "x": 499.98,
+        "y": 102.8,
+        "width": 85.81,
+        "height": 100.62
+      }
+    },
+    {
+      "id": "hub-team-to-hub-pad",
+      "source_id": "team-to-hub-pad",
+      "kind": "connector",
+      "role": "connector",
+      "order": 1,
+      "paint": 5,
+      "accent": true,
+      "bbox": {
+        "x": 179.25,
+        "y": 182.91,
+        "width": 63.59,
+        "height": 38.19
+      },
+      "from": "hub-team",
+      "to": "hub-hub-pad",
+      "from_side": "x+",
+      "to_side": "x-",
+      "length": 1.8,
+      "path": "hub-team-to-hub-pad-path"
+    },
+    {
+      "id": "hub-hub-pad-to-code",
+      "source_id": "hub-pad-to-code",
+      "kind": "connector",
+      "role": "connector",
+      "order": 2,
+      "paint": 6,
+      "accent": true,
+      "bbox": {
+        "x": 427.96,
+        "y": 185.02,
+        "width": 105.14,
+        "height": 62.18
+      },
+      "from": "hub-hub-pad",
+      "to": "hub-code",
+      "from_side": "y-",
+      "to_side": "y+",
+      "length": 3.26,
+      "path": "hub-hub-pad-to-code-path"
+    },
+    {
+      "id": "hub-review",
+      "source_id": "review",
+      "kind": "card",
+      "role": "agent",
+      "order": 2,
+      "paint": 7,
+      "accent": false,
+      "bbox": {
+        "x": 596.63,
+        "y": 158.6,
+        "width": 85.81,
+        "height": 100.62
+      }
+    },
+    {
+      "id": "hub-hub-pad-to-review",
+      "source_id": "hub-pad-to-review",
+      "kind": "connector",
+      "role": "connector",
+      "order": 2,
+      "paint": 8,
+      "accent": false,
+      "bbox": {
+        "x": 524.61,
+        "y": 240.82,
+        "width": 105.14,
+        "height": 62.18
+      },
+      "from": "hub-hub-pad",
+      "to": "hub-review",
+      "from_side": "y-",
+      "to_side": "y+",
+      "length": 3.26,
+      "path": "hub-hub-pad-to-review-path"
+    },
+    {
+      "id": "hub-hub-pad",
+      "source_id": "hub-pad",
+      "kind": "slab",
+      "role": "hub-group",
+      "order": 1,
+      "paint": 9,
+      "accent": false,
+      "bbox": {
+        "x": 133.12,
+        "y": 181.47,
+        "width": 387.42,
+        "height": 235.96
+      }
+    },
+    {
+      "id": "hub-orchestrator",
+      "source_id": "orchestrator",
+      "kind": "chip",
+      "role": "core",
+      "order": 1,
+      "paint": 10,
+      "accent": true,
+      "bbox": {
+        "x": 202.56,
+        "y": 207.89,
+        "width": 248.53,
+        "height": 158.65
+      }
+    },
+    {
+      "id": "hub-hub-pad-to-report",
+      "source_id": "hub-pad-to-report",
+      "kind": "connector",
+      "role": "connector",
+      "order": 3,
+      "paint": 11,
+      "accent": false,
+      "bbox": {
+        "x": 441.99,
+        "y": 370.6,
+        "width": 37.79,
+        "height": 23.3
+      },
+      "from": "hub-hub-pad",
+      "to": "hub-report",
+      "from_side": "x+",
+      "to_side": "x-",
+      "length": 1.1,
+      "path": "hub-hub-pad-to-report-path"
+    },
+    {
+      "id": "hub-report",
+      "source_id": "report",
+      "kind": "card",
+      "role": "output",
+      "order": 3,
+      "paint": 12,
+      "accent": false,
+      "bbox": {
+        "x": 463.62,
+        "y": 378.77,
+        "width": 116.13,
+        "height": 72.85
+      }
+    }
+  ],
+  "warnings": []
+}

@@ -74,7 +74,7 @@ color roles | type relationship | scale range | motion potential |
 responsive simplification | source/provenance | ownership and editability
 ```
 
-Prove the family on unlike roles, not several versions of the easiest motif, and test simple, dense, small, large, light, dark and content-adjacent cases where they exist; the language should stay recognizable without turning every surface into one motif. Build precise scalable systems as vector or code; use raster generation for photographic, painterly or textured outcomes, never for a maintainable interface symbol.
+Prove the family on unlike roles, not several versions of the easiest motif, and test simple, dense, small, large, light, dark and content-adjacent cases where they exist; the language should stay recognizable without turning every surface into one motif. Build precise scalable systems as vector or code; use raster generation for photographic, painterly or textured outcomes, never for a maintainable interface symbol. For code-drawn technical illustration, and for the path when no image tool exists, see [illustration-craft.md](illustration-craft.md).
 
 ## Layout Evaluation
 

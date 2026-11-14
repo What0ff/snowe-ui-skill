@@ -1,0 +1,386 @@
+{
+  "schema": "1.0",
+  "projection": "isometric",
+  "style": "line",
+  "unit": 36.0,
+  "width": 865,
+  "height": 470,
+  "viewBox": [
+    0,
+    0,
+    865,
+    470
+  ],
+  "elements": [
+    {
+      "id": "dp-floor",
+      "source_id": "floor",
+      "kind": "ground-grid",
+      "role": "ground-grid",
+      "order": null,
+      "paint": 0,
+      "accent": false,
+      "bbox": {
+        "x": 92.88,
+        "y": 16.0,
+        "width": 755.71,
+        "height": 437.79
+      }
+    },
+    {
+      "id": "dp-events",
+      "source_id": "events",
+      "kind": "screen",
+      "role": "source",
+      "order": 0,
+      "paint": 1,
+      "accent": true,
+      "bbox": {
+        "x": 194.63,
+        "y": 61.45,
+        "width": 70.22,
+        "height": 86.62
+      }
+    },
+    {
+      "id": "dp-events-to-ingest",
+      "source_id": "events-to-ingest",
+      "kind": "connector",
+      "role": "connector",
+      "order": 1,
+      "paint": 2,
+      "accent": true,
+      "bbox": {
+        "x": 225.03,
+        "y": 130.77,
+        "width": 67.1,
+        "height": 113.97
+      },
+      "from": "dp-events",
+      "to": "dp-ingest",
+      "from_side": "x+",
+      "to_side": "x-",
+      "length": 6.01,
+      "path": "dp-events-to-ingest-path"
+    },
+    {
+      "id": "dp-ml",
+      "source_id": "ml",
+      "kind": "card",
+      "role": "app",
+      "order": 4,
+      "paint": 3,
+      "accent": false,
+      "bbox": {
+        "x": 655.86,
+        "y": 127.91,
+        "width": 97.42,
+        "height": 62.05
+      }
+    },
+    {
+      "id": "dp-crm",
+      "source_id": "crm",
+      "kind": "cylinder",
+      "role": "source",
+      "order": 0,
+      "paint": 4,
+      "accent": false,
+      "bbox": {
+        "x": 107.65,
+        "y": 116.33,
+        "width": 65.23,
+        "height": 84.14
+      }
+    },
+    {
+      "id": "dp-lake-to-ml",
+      "source_id": "lake-to-ml",
+      "kind": "connector",
+      "role": "connector",
+      "order": 4,
+      "paint": 5,
+      "accent": false,
+      "bbox": {
+        "x": 610.85,
+        "y": 185.45,
+        "width": 72.09,
+        "height": 43.1
+      },
+      "from": "dp-lake",
+      "to": "dp-ml",
+      "from_side": "y-",
+      "to_side": "y+",
+      "length": 2.2,
+      "path": "dp-lake-to-ml-path"
+    },
+    {
+      "id": "dp-bi",
+      "source_id": "bi",
+      "kind": "screen",
+      "role": "app",
+      "order": 4,
+      "paint": 6,
+      "accent": true,
+      "bbox": {
+        "x": 760.81,
+        "y": 131.65,
+        "width": 76.45,
+        "height": 97.42
+      }
+    },
+    {
+      "id": "dp-crm-to-ingest",
+      "source_id": "crm-to-ingest",
+      "kind": "connector",
+      "role": "connector",
+      "order": 1,
+      "paint": 7,
+      "accent": false,
+      "bbox": {
+        "x": 165.72,
+        "y": 194.85,
+        "width": 97.88,
+        "height": 57.99
+      },
+      "from": "dp-crm",
+      "to": "dp-ingest",
+      "from_side": "x+",
+      "to_side": "x-",
+      "length": 2.9,
+      "path": "dp-crm-to-ingest-path"
+    },
+    {
+      "id": "dp-logs",
+      "source_id": "logs",
+      "kind": "stack",
+      "role": "source",
+      "order": 0,
+      "paint": 8,
+      "accent": false,
+      "bbox": {
+        "x": 16.0,
+        "y": 171.05,
+        "width": 86.41,
+        "height": 82.33
+      }
+    },
+    {
+      "id": "dp-dwh-to-bi",
+      "source_id": "dwh-to-bi",
+      "kind": "connector",
+      "role": "connector",
+      "order": 4,
+      "paint": 9,
+      "accent": true,
+      "bbox": {
+        "x": 688.79,
+        "y": 213.17,
+        "width": 102.02,
+        "height": 60.38
+      },
+      "from": "dp-dwh",
+      "to": "dp-bi",
+      "from_side": "y-",
+      "to_side": "y+",
+      "length": 3.16,
+      "path": "dp-dwh-to-bi-path"
+    },
+    {
+      "id": "dp-logs-to-ingest",
+      "source_id": "logs-to-ingest",
+      "kind": "connector",
+      "role": "connector",
+      "order": 1,
+      "paint": 10,
+      "accent": false,
+      "bbox": {
+        "x": 84.66,
+        "y": 235.04,
+        "width": 164.91,
+        "height": 34.82
+      },
+      "from": "dp-logs",
+      "to": "dp-ingest",
+      "from_side": "x+",
+      "to_side": "x-",
+      "length": 5.05,
+      "path": "dp-logs-to-ingest-path"
+    },
+    {
+      "id": "dp-lake",
+      "source_id": "lake",
+      "kind": "cylinder",
+      "role": "storage",
+      "order": 3,
+      "paint": 11,
+      "accent": false,
+      "bbox": {
+        "x": 545.04,
+        "y": 170.85,
+        "width": 69.64,
+        "height": 95.68
+      }
+    },
+    {
+      "id": "dp-core-pad-to-lake",
+      "source_id": "core-pad-to-lake",
+      "kind": "connector",
+      "role": "connector",
+      "order": 3,
+      "paint": 12,
+      "accent": false,
+      "bbox": {
+        "x": 498.61,
+        "y": 262.85,
+        "width": 50.27,
+        "height": 30.5
+      },
+      "from": "dp-core-pad",
+      "to": "dp-lake",
+      "from_side": "y-",
+      "to_side": "y+",
+      "length": 1.5,
+      "path": "dp-core-pad-to-lake-path"
+    },
+    {
+      "id": "dp-ingest",
+      "source_id": "ingest",
+      "kind": "stack",
+      "role": "ingest",
+      "order": 1,
+      "paint": 13,
+      "accent": true,
+      "bbox": {
+        "x": 240.47,
+        "y": 177.53,
+        "width": 123.82,
+        "height": 133.45
+      }
+    },
+    {
+      "id": "dp-ingest-to-core-pad",
+      "source_id": "ingest-to-core-pad",
+      "kind": "connector",
+      "role": "connector",
+      "order": 2,
+      "paint": 14,
+      "accent": true,
+      "bbox": {
+        "x": 341.17,
+        "y": 296.15,
+        "width": 31.56,
+        "height": 19.7
+      },
+      "from": "dp-ingest",
+      "to": "dp-core-pad",
+      "from_side": "x+",
+      "to_side": "x-",
+      "length": 0.9,
+      "path": "dp-ingest-to-core-pad-path"
+    },
+    {
+      "id": "dp-dwh",
+      "source_id": "dwh",
+      "kind": "cylinder",
+      "role": "storage",
+      "order": 3,
+      "paint": 15,
+      "accent": true,
+      "bbox": {
+        "x": 622.98,
+        "y": 201.45,
+        "width": 69.64,
+        "height": 110.08
+      }
+    },
+    {
+      "id": "dp-dwh-to-api",
+      "source_id": "dwh-to-api",
+      "kind": "connector",
+      "role": "connector",
+      "order": 4,
+      "paint": 16,
+      "accent": false,
+      "bbox": {
+        "x": 688.79,
+        "y": 307.85,
+        "width": 25.32,
+        "height": 16.1
+      },
+      "from": "dp-dwh",
+      "to": "dp-api",
+      "from_side": "x+",
+      "to_side": "x-",
+      "length": 0.7,
+      "path": "dp-dwh-to-api-path"
+    },
+    {
+      "id": "dp-core-pad-to-dwh",
+      "source_id": "core-pad-to-dwh",
+      "kind": "connector",
+      "role": "connector",
+      "order": 3,
+      "paint": 17,
+      "accent": true,
+      "bbox": {
+        "x": 576.55,
+        "y": 307.85,
+        "width": 50.27,
+        "height": 30.5
+      },
+      "from": "dp-core-pad",
+      "to": "dp-dwh",
+      "from_side": "y-",
+      "to_side": "y+",
+      "length": 1.5,
+      "path": "dp-core-pad-to-dwh-path"
+    },
+    {
+      "id": "dp-api",
+      "source_id": "api",
+      "kind": "card",
+      "role": "app",
+      "order": 4,
+      "paint": 18,
+      "accent": false,
+      "bbox": {
+        "x": 699.5,
+        "y": 307.91,
+        "width": 97.42,
+        "height": 62.05
+      }
+    },
+    {
+      "id": "dp-core-pad",
+      "source_id": "core-pad",
+      "kind": "slab",
+      "role": "core-group",
+      "order": 2,
+      "paint": 19,
+      "accent": false,
+      "bbox": {
+        "x": 311.97,
+        "y": 268.49,
+        "width": 286.36,
+        "height": 177.61
+      }
+    },
+    {
+      "id": "dp-core",
+      "source_id": "core",
+      "kind": "chip",
+      "role": "core",
+      "order": 2,
+      "paint": 20,
+      "accent": true,
+      "bbox": {
+        "x": 368.3,
+        "y": 288.05,
+        "width": 173.71,
+        "height": 114.73
+      }
+    }
+  ],
+  "warnings": []
+}
