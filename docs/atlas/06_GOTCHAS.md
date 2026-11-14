@@ -45,6 +45,7 @@
 - A Direct correction records and proves only the affected invariant; it skips packets, broad research, candidate generation, architecture, unrelated assets/motion, and full designer evaluation. A shared owner or one unresolved established-system choice is Focused. Portfolio activates only for named material goal/topology/journey/content/interaction/responsive/system-contract uncertainty. High consequence increases failure-mode proof without automatically increasing process breadth.
 - Architecture work should not load iconography without a live icon decision. A no-image result ends generation work. A routine learned glyph in an accepted family does not trigger custom drawing.
 - Automated `KEEP` proves epistemic boundaries only. It cannot certify architecture, aesthetic distinction, icon optics, motion quality, or responsive coherence.
+- Worked examples in product references must not use the domains of the measured briefs in `evals/skill-outcome/briefs.json`, or the measurement can reward a pre-written answer. The art-direction derivations describe fonts by structure and role, not by family name, so they do not reintroduce a typography-pairing recipe.
 
 ## Persistence and paths
 

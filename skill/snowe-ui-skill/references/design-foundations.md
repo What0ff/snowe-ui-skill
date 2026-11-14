@@ -7,6 +7,7 @@ Use this reference to turn an accepted architecture and art direction into a coh
 These are defaults to start from and then beat, not rules. Deviate when content, brand, platform or an accepted system gives a reason, and record the reason. An existing system's values come first.
 
 **Typography**
+- One text family. Add a display face or a mono only for a role the text family cannot carry, up to two families plus a mono. Choose, pair and write fallback stacks with the [font-pairing method](art-direction-gate.md#typographic-voice-and-font-pairing).
 - Body text 16 px on the web (14–15 px in dense apps). Line height 1.4–1.6 for body, 1.1–1.25 for headings.
 - Measure 45–75 characters (`max-width: 65ch` for reading text).
 - Scale ratio about 1.2–1.25 between steps in apps, 1.25–1.5 in editorial and marketing work.
@@ -119,7 +120,7 @@ No fixed 4/8/12 grid or gutter scale is mandatory. Use a scaffold when it fits; 
 
 ## Typography
 
-Choose type from language, content, role, metrics, and voice.
+Choose type from language, content, role, metrics, and voice. The [font-pairing method](art-direction-gate.md#typographic-voice-and-font-pairing) owns family count, pairing strategy, x-height matching, script coverage and fallback stacks; this section owns the role contract and its verification.
 
 Inventory:
 
@@ -134,9 +135,7 @@ Keep a compact role map in the existing implementation/decision record: `role �
 
 Audit assignments across the whole affected composition, including similar cards, repeated headings, tooltips, menus, dialogs, validation text and embedded chart labels. Reused library components can silently import a different default stack. Fix the shared typography token, inheritance/reset or component variant at its owner, rather than adding independent font overrides to each occurrence. Make native controls inherit the relevant role where appropriate; do not globally force every element to the body font and erase intentional display, code, icon-font or locale roles.
 
-Critique the combination as well as its implementation: compare x-height, width, density, terminals, numerals and tone in actual neighboring text. Two nearly similar faces may look like a mistake; dramatic contrast may compete with the task. An explanation that each font is attractive does not establish a coherent page. If an extra family has no distinct role, compare the same content using the accepted role family and retain the extra face only when its contribution is visible. No fixed font-count limit can replace this judgment.
-
-Compare candidates on identical real content at target widths. Inspect x-height, width, rhythm, line breaks, baseline, punctuation, numeral alignment, fallback shift, and loading failure. A font specimen, popularity rank, or dataset pairing is discovery evidence only.
+Judge the combination in actual neighboring text; an explanation that each font is attractive does not establish a coherent page. If an extra family has no distinct role, compare the same content set in the accepted role family and keep the extra face only when its contribution is visible.
 
 Verify real font files, declared weight ranges, styles and required script coverage. A requested weight may be synthetic or mapped to the wrong static file; a Latin subset may fall back within a Cyrillic label. Browser rendered-font inspection, where available, can expose which face supplies actual glyphs. `getComputedStyle().fontFamily` reports the requested stack, not necessarily the rendered face; `document.fonts.ready` and `document.fonts.check` alone do not certify glyph coverage or visual coherence. Required fallback/loading states may differ transiently but must remain readable and usable; the settled intended state still needs separate proof.
 

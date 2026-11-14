@@ -1,172 +1,188 @@
 # Art Direction
 
-Use this reference after the experience architecture and real content are understood. Art direction gives the product a coherent perceptual and behavioral point of view; it is not a style-row selection or a layer of decoration.
+Use this reference to build a visual direction once the page job and real content are known ([page-hierarchy.md](page-hierarchy.md)): its sources, its recognizable move, its tokens. Depth, candidate scope, verdicts and when to ask the user live in SKILL.md and [exploration-protocol.md](exploration-protocol.md). Direct repairs inside an accepted system do not use this file.
 
-## 1. Find Sources of Identity
+Construct before subtracting: removing pills, spacing and color is cleanup, not a direction. Accepted quiet utility and exact supplied targets gain no novelty obligation; let the quiet direction win when it fits.
 
-Inspect the sources that genuinely belong to this product:
+## Source the Direction From the Subject
 
-- real objects, construction, materials, mechanisms, interfaces, and environments;
-- workflow, state changes, relationships, rhythms, and data shapes;
-- audience language, culture, expertise, habits, anxieties, and aspirations;
-- content voice, authorship, imagery, archive, product facts, and scale;
-- verified brand history, assets, place, behavior, and commercial position;
-- platform character and interaction context.
+Start from the subject, not adjectives. Inventory what the audience already sees and handles:
 
-Avoid beginning with “minimal,” “premium,” “bold,” “playful,” “brutalist,” “glass,” or another style adjective. Translate perception into observable composition, type, color/material, imagery, graphics, interaction, and motion.
+| Source | Look for | Usually becomes |
+|---|---|---|
+| Materials | paper, metal, glass, wood, textile | canvas tone, edges, rules, texture, radius |
+| Artifacts | labels, receipts, forms, maps, packaging, instruments | grid, data blocks, type roles, the signature move |
+| Era and vernacular | print, signage and lettering the audience reads | type construction, case, numerals, rule weight |
+| Working conditions | distance, light, posture, hands, frequency, stress | type-size floor, contrast, density, motion |
+| Content shape | name lengths, numbers, scripts, image aspect | columns, measure, image frame |
+| Verified brand | accepted marks, colors and voice | fixed constraints |
 
-## 2. Frame the Perceptual Job
+Write 6–10 observations as nouns with physical properties ("collection label: typed, lower right, ruled boxes"). Use only what the brief, product or verifiable references support; a metaphor must not invent features or blur familiar actions. For reading at a distance, give capitals at least 16 arcmin, 20 preferred: cap height ≈ distance × 0.006, or 6 mm at 1 m.
 
-State:
+Turn brief adjectives into questions: "modern" asks which current artifacts this audience trusts; "premium" asks what care looks like here; "clean" asks what must get quieter; "bold" asks which one thing earns the loud axis.
 
-- what the experience should feel like and why that perception helps the task or position;
-- what it must never imply;
-- the intended state-specific attention and its visible cues, using the compact record in [page-hierarchy.md](page-hierarchy.md#connect-importance-to-visible-cues);
-- how much the interface should lead, reassure, disappear, teach, provoke, or create desire;
-- how the visual language changes across high-attention and routine states.
+Write the perceptual job in one line, "It should feel ___ because ___; it must never imply ___", and tie attention to visible cues with the [page-hierarchy record](page-hierarchy.md#connect-importance-to-visible-cues). Turn each source into a move: observed property → perceptual mechanism → move → expected consequence → rendered proof.
 
-Examples such as “precise but not clinical” or “energetic without urgency theater” are useful only when followed by concrete design consequences.
+## One Signature Move
 
-## 3. Create a Direction Portfolio
+Default: one signature move per direction. It is the direction's identity carrier, the one repeatable decision that makes the product recognizable or easier to understand; everything else supports it. It can be a composition rule, type behavior, content framing, graphic or data grammar, material or edge, or an interaction tied to real state. A logo, gradient, glow or motif is not a carrier by itself.
 
-When a user rejects the visual result, treat that as evidence that the affected direction is open. Do not call the existing implementation accepted merely because its business behavior or palette remains valid. A local visual choice can reopen at Focused depth without redesigning the entire product. An already understandable page may still need this bounded pass; it does not require an identity overhaul to qualify.
+Write its boundary: where it appears (usually page frame, repeated item and detail view) and where it stops (fields, system dialogs and errors usually stay plain).
 
-Construct before subtracting: give an unresolved design a positive, product-specific proposition through composition, typography, material, color relationships, custom imagery/graphics or interaction as appropriate. Compare this coherent candidate with the baseline; a sequence of removing pills, reducing spacing and muting color is not creative exploration by itself. Select the relevant expressive means rather than mandating an asset, extra font, animation or saturated palette. Quiet utility and expressive brand work can both succeed when they intentionally fit the brief.
+Subtraction test: remove logo, decoration, gradients, shadows and motion. Hierarchy, type, content and interaction should still look intentional; restore only what improves recognition, comprehension or feedback.
 
-Use a portfolio when identity is unresolved. Generate enough directions to cover the real perceptual and business trade-offs. Each direction uses identical requirements and real content and records:
+**Contrast budget.** Pick one or two loud axes, usually those the signature move uses, and keep the rest quiet:
 
-```text
-thesis | desired perception | product-specific source | dominant composition | type voice | color/material logic | imagery/graphic logic | interaction/motion character | identity carrier and boundary | risk
+| Axis | Loud | Quiet |
+|---|---|---|
+| Scale | a jump of 3+ scale steps; display 3–6× body | ratio 1.2–1.25, adjacent steps |
+| Weight | 300 against 800–900 | regular and semibold |
+| Color | a saturated dominant over a third of the view | tinted neutrals, accent under 10% |
+| Space | wide margins, section gaps 2–3× the base rhythm, or deliberate crowding | one even rhythm |
+| Texture | grain, halftone, visible grid, heavy rules | flat surfaces, 1 px rules |
+
+If a third axis turns loud, demote one.
+
+## Typographic Voice and Font Pairing
+
+This is the single home for choosing and pairing families; [design foundations](design-foundations.md#typography) own the role map and rendered verification.
+
+**Voice.** Describe the needed type structurally: construction (serif, sans, slab, mono), width, stroke contrast, x-height, terminals, numerals (lining or oldstyle, tabular) and case. Take these from the vernacular: a typed label suggests a mono role, an engraved plate high contrast and small caps, a stencil condensed capitals.
+
+**Roles.** Assign display, text and mono before naming families; UI labels use the text role. Default: one text family. Add a display face only for a role the text family cannot carry at size, and a mono only for code, identifiers or fixed-width data that tabular figures cannot align. Ceiling: two families plus a mono; deviate for a required script or a verified brand face.
+
+| Strategy | How | Fits | Watch for |
+|---|---|---|---|
+| One family | weights, widths, optical sizes of one family | utility, dense apps, most products | a flat voice; add width or scale contrast |
+| Superfamily | sans, serif and mono on shared proportions | role contrast at low risk | a corporate tone |
+| Structural contrast | differ in one trait (serif against sans, or high against low stroke contrast); share x-height, proportion and era | editorial, brand voice | two similar faces of one class look like a mistake |
+| Display accent | one expressive face at one or two sizes | campaign, one signature | spreading into controls and body |
+
+Pair on one clear difference; share the rest.
+
+**Match x-heights at real sizes.** Most text faces have an x-height of 0.45–0.55 of the font size. Where families share a line (inline mono, mixed runs), keep x-heights within about 5%: set the mono at 0.9–0.95em or use `font-size-adjust`. Render heading, paragraph, label and a row of numbers at the sizes where they meet (for example 32, 16 and 13 px) at the target width; compare line breaks, punctuation, italics and numerals. A specimen, popularity rank or dataset pairing is discovery evidence only.
+
+**Cover every script before shortlisting.** List the alphabets, diacritics in real names (ș, ț, ő, ł), currency signs, quotes (« », „ “) and units. Keep only families that cover them in every style you use; some ship Cyrillic in roman only. Set `lang` so localized forms such as Bulgarian Cyrillic apply. Drop a display face that lacks a required script rather than mixing fallback glyphs into a heading.
+
+**Write a fallback stack per role**, nearest metrics first, and limit shift with `size-adjust` ([starting points](design-foundations.md#starting-points)):
+
+```css
+--font-text: "Chosen Sans", system-ui, "Segoe UI", Roboto, "Noto Sans", sans-serif;
+--font-display: "Chosen Serif", Georgia, "Noto Serif", "Times New Roman", serif;
+--font-mono: "Chosen Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 ```
 
-Directions must differ where the product tension lives. They may differ through:
+**Use the local font index as a filter, never a chooser.** `google-fonts` lists category, subsets, axes, styles, designers and license, with no mood or construction terms, in lexical order. Shortlist by category and script (`python <skill-directory>/scripts/search.py "serif cyrillic" --domain google-fonts`), list superfamily siblings by a family-name stem, and read Axes and Styles. Judge three to five candidates in specimens with real content; confirm license and files ([cli-reference.md](cli-reference.md#interpret-output-honestly)).
 
-- architectural emphasis and reading path;
-- typographic authorship, proportion, width, contrast, or editorial behavior;
-- product photography versus diagrammatic explanation versus no imagery;
-- material system, surface hierarchy, physical/technical references, or controlled flatness;
-- density and disclosure;
-- interaction character and motion role;
-- visual framing of evidence, price, data, content, or product detail.
+## Color Construction
 
-Do not manufacture distinction with arbitrary palettes, radii, icon swaps, or effects. Do not force all dimensions to differ when the brief does not justify it.
+Default painted-area proportions:
 
-Search breadth follows the open visual question, independently of the task's architectural breadth. In Focused work, keep the page job, factual content, actions, owners and accepted constraints fixed while exploring the affected visual thesis. Do not declare Portfolio merely because several visual directions are useful. A bounded repair still uses its smallest credible challenger.
+| Role | Brand or editorial | Utility or app |
+|---|---|---|
+| Neutral: canvas, surfaces, rules | about 60% | 85–90% |
+| Dominant: the subject's color as field, band or ink | about 30% | 5–10% |
+| Accent | 10% or less | 5% or less |
 
-Translate a product source into an invention: observed property or behavior → perceptual mechanism → compositional or interaction move → expected consequence → rendered proof. When the first idea repeats a familiar template, try a relevant transformation such as changing scale relationships, expressing a real process spatially, or transferring a useful principle from an adjacent medium. These are optional search operations, not a style catalog or mandatory sequence. Keep the source truthful; a metaphor must not fabricate product features or make familiar actions ambiguous.
+Deviate when a verified brand leads with a full field; the dominant then becomes the canvas.
 
-Sketch unresolved directions cheaply before polishing one. Hold content, state and viewport constant; render the decision surface and a repeated or secondary context that could invalidate its carrier. A renamed concept with the same visible relationships adds no search coverage. Return to the fixed requirements after an adventurous sketch and reject it if those requirements depend on removing its central idea.
+1. Sample the dominant from the subject's materials or artifacts (card stock, steel, ink, signage paint).
+2. Tint neutrals toward it: OKLCH chroma about 0.005–0.02 at its hue for light surfaces, with even lightness steps.
+3. Give each accent hue one job: action, selection, one domain state or one data series. Default one accent hue; add a second only for a job weight or position cannot carry.
+4. Keep status hues apart from the accent so "selected" never reads as "warning".
+5. Check 4.5:1 for text and 3:1 for focus, controls and graphics, then judge the full render with the [color and material rules](design-foundations.md#color-and-material).
 
-When color expression is the open decision, compare actual role palettes using the [color and material rules](design-foundations.md#color-and-material). Tie the chosen hue family and color area to product evidence and the intended task/identity, then explain the role of chroma and lightness. Neither a uniformly pale accent set nor an arbitrary full-page hue is an unquestioned starting point.
+## Composition
 
-Complete that selection before scaling the implementation or presenting it as finished. The agent owns ordinary reversible palette choices; internal comparison must lead to a justified selected direction, not a menu that requires the user to become the designer. A swatch set, readable color pairs or a theme-name explanation cannot replace the full-context judgment.
+| Move | Default | Check |
+|---|---|---|
+| Grid | 12 columns on desktop, 4–6 on tablet, 4 on phone; gutters 16–24 px; outer margin at least one gutter | five alignment axes per view at most |
+| Deliberate break | one or two per view, owned by the focal or signature element: full bleed, hanging into the margin, spanning rows | offset a full column or to the frame edge; small offsets read as errors |
+| Asymmetry | a 7/5 or 8/4 split; center only single-message moments | the light side holds something by intent |
+| Cropping | crop subject images tight for scale; bleed display type off an edge only while it stays readable | never crop body text |
+| Scale jump | routine steps adjacent on the ratio; one jump of 3+ steps per view | the jumped element is the real priority |
+| Density rhythm | alternate dense and open bands; in apps, a dense work region inside calm chrome | density follows content |
+| Edge tension | margins of 24 px or more (16 px on phones) for calm; bleed or near-edge placement for energy | text keeps its safe margin |
 
-## 4. Work With Real Content
+Mechanics and responsive transformation: [design foundations](design-foundations.md#composition-and-hierarchy).
 
-Every direction must survive:
+## Imagery, Material and Motion
 
-- the real offer, product names, prices, labels, claims, and proof;
-- long headings, short headings, localization, and missing content;
-- representative imagery or an explicit no-image state;
-- primary, secondary, destructive, unavailable, and error actions;
-- narrow, pressure/intermediate, and wide compositions;
-- the actual script, numerals, currencies, units, and data.
+| Facet | Decide | Default | Mechanics |
+|---|---|---|---|
+| Imagery | one treatment rule for every image: crop, grade, frame (bleed, mounted, inset), relation to type | no image until a slot has a job | [imagery-and-assets.md](imagery-and-assets.md) |
+| Material and texture | surfaces from the subject's material | flat surfaces, 1 px rules; texture only on the canvas or signature surface, grain at 4% opacity or less, never under small text | [shape and edge](design-foundations.md#shape-and-edge-language) |
+| Motion personality | posture (immediate, functional, expressive) and character: mechanical (short ease-out, no overshoot), soft (longer ease-in-out) or springy (overshoot under 5%) | immediate controls; functional motion for state changes | [motion-and-interaction.md](motion-and-interaction.md) |
 
-A direction that needs placeholder brevity, a perfect hero image, or generic product copy is not ready.
+## Translate the Direction Into Tokens
 
-## 5. Choose an Identity Carrier
+Write the token sheet before components and name tokens by role (`--accent`, not `--green-500`). Each signature decision becomes a token or named variant so it cannot drift.
 
-An identity carrier is the primary repeatable decision that makes the product recognizable or easier to understand. It can be:
+| Group | Tokens | Derive from |
+|---|---|---|
+| Type | `--font-text`, `--font-display`, `--font-mono`; `--step--1` to `--step-5`; line height and tracking per role | ratio 1.2–1.25 quiet, 1.333 balanced, 1.5+ loud |
+| Color | `--canvas`, `--surface`, `--surface-raised`, `--ink`, `--ink-muted`, `--rule`, `--dominant`, `--accent`, `--on-accent`, `--focus`, `--status-*` | proportions, one-job accents |
+| Radius | `--radius-control`, `--radius-container`, `--radius-overlay` | material: paper 0–2 px, molded plastic 6–12 px |
+| Elevation | `--elev-0` to `--elev-2` | what sits above what |
+| Space | base 4 or 8 px; `--space-1` to `--space-8` | density |
+| Motion | `--dur-fast` 100–150 ms, `--dur-base` 200–250 ms, `--dur-slow` 300–350 ms; `--ease-out`, `--ease-in-out` | motion posture |
 
-- a composition or spatial rule;
-- typographic voice or content behavior;
-- product framing or photographic language;
-- diagram, illustration, icon, or data grammar;
-- material, edge, join, line, or surface behavior;
-- navigation or interaction pattern;
-- motion choreography tied to a real state or story.
+Type scale: size(n) = base × ratio^n, rounded to whole pixels. Base 16 at ratio 1.25 gives 13, 16, 20, 25, 31, 39, 49.
 
-Define where it appears, where it must not appear, and what consequence it serves. A logo, gradient, glow, or decorative motif is not automatically a carrier.
+## Generate Two or Three Directions
 
-Run a subtraction test: remove the logo, decorative layer, gradient, shadow, and motion. The architecture, hierarchy, type, content, and interaction should still feel intentional. Restore only what materially improves recognition, comprehension, desire, or feedback.
+Default: three directions for an open identity, two for a bounded visual thesis, on fixed brief, content, page job and viewport. Directions differ in signature move and at least one loud axis; a palette, radius or icon swap is the same direction renamed. Use three generators:
 
-## 6. Compare and Select
+| Generator | How |
+|---|---|
+| Vernacular | take one of the subject's own artifacts and make it the frame |
+| Transfer | apply a principle from an adjacent medium: print, signage, instrument, map, packaging |
+| Reduction | hierarchy by type, space and order alone, no motif; every other direction must beat it |
 
-Use `KEEP`, `REVISE`, `REJECT`, or `UNKNOWN` instead of a taste score.
+Record each as `thesis | source | signature move and boundary | loud axes | pairing strategy | color proportions | image and material | motion posture | risk`.
 
-Inspect:
+Sketch each at the primary surface with real content at one width; judge the thumbnail before reading its rationale. Kill a direction that:
 
-- product, audience, and business position;
-- primary task, conversion, and content hierarchy;
-- architecture and navigation fit;
-- product-specific identity and template resemblance;
-- typography and image/graphic relationship;
-- material and state coherence;
-- accessibility, localization, and responsive feasibility;
-- asset truth, provenance, and availability;
-- motion value and reduction;
-- technical, performance, and delivery feasibility.
+- resembles another direction or a common template at thumbnail size;
+- needs placeholder-short copy, a perfect image or an unavailable asset;
+- lets its loud axes compete with the primary task;
+- fails legibility or contrast in its own palette;
+- breaks in a repeated item, form, long heading or narrow width.
 
-Reject a direction when it contradicts the product truth, depends on unavailable or misleading content, makes accessibility structurally infeasible, obscures the primary outcome, or becomes incoherent across real states. Keep unknowns explicit and prototype them when they can change the winner.
+Render survivors with a secondary context and select with [exploration-protocol.md](exploration-protocol.md#7-converge-without-false-precision). When the brief asks for distinctive character, recognizability and product-specific invention count beside clarity and fit.
 
-Select the direction with the strongest causal and rendered evidence. When the brief requires distinctive character, evaluate recognizability and product-specific invention as an explicit outcome alongside clarity, coherence and fit; novelty alone cannot compensate for a failed requirement. For accepted utility or an exact supplied target, novelty has no independent priority. Hybridize only moves that form one thesis; do not average a portfolio into a collage.
+## Worked Derivations
 
-Before reading a candidate's rationale, describe the visible organizing difference and whether its carrier belongs to this product. Then check the explanation against those observations. A confident story cannot rescue an interchangeable render. Label a later pass by the same author as self-review; neither a model critic nor an image-similarity metric establishes human preference.
+**Herbarium catalogue** (browsing digitized plant sheets)
+- Subject: plants on cream archival card at about 1:1.45; typed label lower right; binomials italic by convention.
+- Move: each record is a sheet, image on a mount at sheet ratio with data anchored lower right, on grid items and detail pages; search and filters stay plain. Loud: space and image scale.
+- Type: structural contrast; a text serif whose true italic sets binomials, a mono for accession numbers; Latin Extended for collectors' names.
+- Tokens: `--canvas: oklch(96% 0.015 85)`, `--ink: oklch(25% 0.02 60)`, `--accent: oklch(52% 0.17 28)` for type specimens only; ratio 1.25 from 17 px; radius 0; no shadows; `--sheet-ratio: 1 / 1.45`.
 
-Ask the user to choose only when viable directions imply materially different business or brand positions. Do not ask them to decide reversible details that the designer can resolve through evidence.
+**Chess tournament pairings** (checked on phones between rounds in a noisy hall)
+- Subject: pairing sheets pinned to a wall; board numbers; white and black assignments.
+- Move: the board number is each row's largest object, with literal white or black squares beside the names. Loud: scale, weight; color stays black, white and gray plus one accent for the player's own row.
+- Type: one family with tabular figures, from a superfamily whose mono sets game notation.
+- Tokens: board number 48 px at weight 800; names 20 px; ratio 1.333; `--radius-control: 2px` echoing the squares; one 200 ms crossfade when a round is published.
 
-## 7. Define the Visual System
+**Kitchen order rail** (display read from about 1 m across the pass)
+- Subject: printed order slips clipped to a steel rail as they arrive; all-caps thermal print; modifiers handwritten in red.
+- Move: orders as tall strips on a horizontal rail; age shows as a heat band on each slip's top edge beside the printed timer, stepping at the kitchen's target times. Loud: color, weight.
+- Type: one family with width and weight axes: heavy condensed item names, regular normal-width tabular timers.
+- Tokens: dark steel `--canvas`, slip-paper `--surface`, three-step heat ramp, red `--accent-modifier`; item names 32 px and nothing under 26 px at 96 ppi (20 and 16 arcmin at 1 m); ratio 1.25; radius 0; new orders slide in over 200 ms, instantly under reduced motion.
 
-After selection, establish role-based systems:
+## Hand Off the Direction
 
-- composition, grid, alignment, rhythm, and responsive transformation;
-- type roles, scripts, actual fonts, weights/axes, fallbacks, numerals, and loading;
-- semantic color, material, surface, elevation, focus, and data/state roles;
-- shape and edge logic by component behavior;
-- icon/graphic drawing language and source roles;
-- imagery roles, crop, grade, provenance, and loading;
-- motion roles, tokens, interruption, and reduced/static equivalents;
-- components and interaction states.
+Record in the existing decision record: thesis and perceptual job, subject sources, signature move and boundary, contrast budget, token sheet, forbidden drift ("no second accent"), the strongest rejected direction with its decisive weakness, and a revisit trigger. Before scaling, pass the [early gate](quality-gates.md#early-gate-for-a-visual-system). Keep a material successful invention as a conditional project hypothesis (source, mechanism, comparison, outcome, counterexample), not a global taste rule. Reopen the direction when real content, rendered behavior, assets or platform constraints break its premise. A user-rejected proposal stays rejected until a materially changed one is reviewed.
 
-Do not let one expressive permission spread automatically. A campaign visual does not define every control; an illustrated product category does not authorize decorative icons; a soft brand edge does not require pill-shaped fields.
+## Check
 
-Before scaling a new direction, render the primary decision surface and a representative secondary/repeated context with real content. Inspect the full composition as well as target-size details. If the direction only works in the hero, if every fact needs a badge, or if repeated containers erase content hierarchy, revise the system before building the rest. Use the early gate in [quality-gates.md](quality-gates.md); do not invent a separate approval ceremony.
-
-## 8. Freeze the Implementation Contract
-
-Record:
-
-- selected thesis and desired perception;
-- causal source of the identity;
-- dominant composition and focal hierarchy;
-- identity carrier and repetition boundary;
-- type, color/material, shape, imagery/graphic, icon, interaction, and motion roles;
-- responsive transformations and real-content stress set;
-- repository conventions preserved and justified deviations;
-- forbidden drift for this direction;
-- unresolved evidence, safe fallback, and revisit trigger;
-- strongest rejected direction and decisive weakness.
-
-This is a drift boundary, not a permanent law. Reopen it when real content, rendered behavior, user evidence, asset quality, performance, or platform constraints invalidate the premise.
-
-Retain a material successful invention as a conditional hypothesis in existing project evidence: source, mechanism, before/after or rejected comparison, observed outcome, applicability and counterexample. Reuse the mechanism only after checking its fit in the new context. Do not create a global taste profile, treat a single success as general learning, or edit the shared skill during ordinary product work.
-
-## 9. Rendered Art-Direction Review
-
-Separate an engineering fixture from a finished design proposal. The former can demonstrate a corrected overflow or density contract while remaining visually weak. Do not promote it to visual KEEP on that basis. For a proposal, inspect the complete composition, quality of the type/graphic relationship, hierarchy, rhythm, material consistency and finishing of every exposed state. If the user asked for character and the result is interchangeable, merely sparse or colorized, revise the actual direction. A user-rejected proposal remains rejected evidence until a materially changed proposal is reviewed; do not relabel it a success because it passed tests.
-
-Review the functioning product, not a direction card alone.
-
-At thumbnail scale inspect focal order, page rhythm, silhouette, and whether the composition resembles a generic template. At full scale inspect type metrics, alignment, spacing, crop, optical balance, state coherence, surface nesting, detail, and asset quality.
-
-Test:
-
-- default and important interactive states;
-- narrow, pressure/intermediate, and wide sizes;
-- long/localized content and zoom/text scaling;
-- light/dark/high-contrast modes when supported;
-- reduced motion;
-- no-image, slow-image, or failed-image behavior where imagery matters;
-- the identity carrier in repeated and absent contexts.
-
-If the correction would change the thesis, architecture, or primary carrier, reopen the decision rather than hiding the problem with local polish.
+- Subject observations, not adjectives, drive every decision.
+- One signature move with a written boundary survives the subtraction test.
+- One or two loud axes; the rest quiet.
+- At most two families plus a mono, each with a role, checked at real sizes, scripts covered, fallbacks written.
+- Each accent has one job; neutrals are tinted; proportions match the defaults or a stated reason.
+- A named grid with at most two deliberate breaks per view.
+- Role-named tokens exist before components.
+- The selected direction beats the reduction at narrow, pressure and wide widths, including a repeated item.
+- Rendered review follows [quality-gates.md](quality-gates.md) and [failure-patterns.md](failure-patterns.md).
