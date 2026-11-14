@@ -1,0 +1,140 @@
+{
+  "schema": "1.0",
+  "projection": "isometric",
+  "style": "line",
+  "unit": 30.0,
+  "width": 244,
+  "height": 266,
+  "viewBox": [
+    0,
+    0,
+    244,
+    266
+  ],
+  "elements": [
+    {
+      "id": "dpn-events",
+      "source_id": "events",
+      "kind": "screen",
+      "role": "source",
+      "order": 0,
+      "paint": 0,
+      "accent": true,
+      "bbox": {
+        "x": 63.33,
+        "y": 8.0,
+        "width": 56.5,
+        "height": 69.77
+      }
+    },
+    {
+      "id": "dpn-events-to-ingest",
+      "source_id": "events-to-ingest",
+      "kind": "connector",
+      "role": "connector",
+      "order": 1,
+      "paint": 1,
+      "accent": true,
+      "bbox": {
+        "x": 96.14,
+        "y": 63.52,
+        "width": 55.13,
+        "height": 33.31
+      },
+      "from": "dpn-events",
+      "to": "dpn-ingest",
+      "from_side": "x+",
+      "to_side": "x-",
+      "length": 1.86,
+      "path": "dpn-events-to-ingest-path"
+    },
+    {
+      "id": "dpn-ingest",
+      "source_id": "ingest",
+      "kind": "stack",
+      "role": "ingest",
+      "order": 1,
+      "paint": 2,
+      "accent": true,
+      "bbox": {
+        "x": 131.41,
+        "y": 47.29,
+        "width": 103.77,
+        "height": 97.99
+      }
+    },
+    {
+      "id": "dpn-ingest-to-core",
+      "source_id": "ingest-to-core",
+      "kind": "connector",
+      "role": "connector",
+      "order": 2,
+      "paint": 3,
+      "accent": true,
+      "bbox": {
+        "x": 125.17,
+        "y": 132.33,
+        "width": 26.1,
+        "height": 16.55
+      },
+      "from": "dpn-ingest",
+      "to": "dpn-core",
+      "from_side": "y+",
+      "to_side": "y-",
+      "length": 0.87,
+      "path": "dpn-ingest-to-core-path"
+    },
+    {
+      "id": "dpn-core",
+      "source_id": "core",
+      "kind": "chip",
+      "role": "core",
+      "order": 2,
+      "paint": 4,
+      "accent": true,
+      "bbox": {
+        "x": 8.0,
+        "y": 123.94,
+        "width": 145.34,
+        "height": 95.59
+      }
+    },
+    {
+      "id": "dpn-core-to-dwh",
+      "source_id": "core-to-dwh",
+      "kind": "connector",
+      "role": "connector",
+      "order": 3,
+      "paint": 5,
+      "accent": true,
+      "bbox": {
+        "x": 127.76,
+        "y": 203.28,
+        "width": 32.6,
+        "height": 20.3
+      },
+      "from": "dpn-core",
+      "to": "dpn-dwh",
+      "from_side": "x+",
+      "to_side": "x-",
+      "length": 1.12,
+      "path": "dpn-core-to-dwh-path"
+    },
+    {
+      "id": "dpn-dwh",
+      "source_id": "dwh",
+      "kind": "cylinder",
+      "role": "storage",
+      "order": 3,
+      "paint": 6,
+      "accent": true,
+      "bbox": {
+        "x": 156.05,
+        "y": 168.61,
+        "width": 62.29,
+        "height": 88.44
+      }
+    }
+  ],
+  "warnings": []
+}

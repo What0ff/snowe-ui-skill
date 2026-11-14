@@ -39,7 +39,8 @@ snowe-ui-skill/
 │   └── doppler-regeneration/
 ├── docs/  # public repository documentation and atlas
 │   ├── atlas/
-│   └── figures-src/
+│   ├── figures-src/
+│   └── iso-examples/
 ├── evals/  # deterministic behavior contracts and bounded operational proofs
 │   ├── acceptance-cases/
 │   │   └── captures/
@@ -114,6 +115,7 @@ snowe-ui-skill/
 | `skill/snowe-ui-skill/scripts/asset_quality.py` | Strict self-contained SVG structure/provenance validator |
 | `skill/snowe-ui-skill/scripts/icon_review.py` | Deterministic icon decision/context comparison builder |
 | `skill/snowe-ui-skill/scripts/contrast.py` | Exact opaque-color contrast checker |
+| `skill/snowe-ui-skill/scripts/iso.py` | Deterministic isometric scene to SVG illustration generator |
 | `evals/designer-behavior/run_eval.py` | Cross-business deterministic-contract regression |
 | `evals/creative-search/run_pilot.py` | Opt-in frozen-copy real-agent generation and browser capture pilot |
 | `benchmarks/bicycle-commerce/index.html` | Rendered bicycle-commerce forward-test |
@@ -128,6 +130,7 @@ snowe-ui-skill/
 | `tests/test_icon_workflow.py` | Icon lifecycle, context proof, and SVG safety regression suite |
 | `tests/test_observation.py` | Browser combinations, postconditions, dependency closure, detail and relationship regression |
 | `tests/test_runtime_hardening.py` | Persistence identity/race and runtime failure regression suite |
+| `tests/test_iso.py` | Isometric projection, order, routing, refusal and CLI regression suite |
 | `.github/workflows/ci.yml` | Cross-platform runtime, browser, and context validation workflow |
 | `scripts/atlas/generate_atlas.py` | Structural atlas write/check command |
 
@@ -137,17 +140,17 @@ The generated map itself is excluded from the counts.
 
 | Extension | Files |
 | --- | --- |
-| `.png` | 486 |
-| `.md` | 87 |
-| `.json` | 72 |
+| `.png` | 498 |
+| `.md` | 88 |
+| `.json` | 78 |
 | `.jpg` | 52 |
-| `.py` | 42 |
+| `.py` | 44 |
 | `.csv` | 31 |
 | `.html` | 29 |
-| `.svg` | 22 |
+| `.svg` | 25 |
 | `.css` | 13 |
+| `.mjs` | 9 |
 | `.js` | 8 |
-| `.mjs` | 8 |
 | `.woff2` | 8 |
 | `.txt` | 7 |
 | `[no extension]` | 5 |
@@ -171,6 +174,8 @@ The generated map itself is excluded from the counts.
 | Change custom SVG validation | `skill/snowe-ui-skill/scripts/asset_quality.py` |
 | Change icon need, custom/existing/no-icon comparison, or context proof | `skill/snowe-ui-skill/scripts/icon_review.py` |
 | Change exact color/contrast validation | `skill/snowe-ui-skill/scripts/contrast.py` |
+| Change isometric illustration generation | `skill/snowe-ui-skill/scripts/iso.py` |
+| Inspect or re-render the isometric illustration examples | `docs/iso-examples/` |
 | Change a runtime dataset or schema (verify configured headers) | `skill/snowe-ui-skill/scripts/core.py` |
 | Change process-depth contracts or inspect bounded observed-host probes | `evals/designer-behavior/` |
 | Run or inspect repeated creative-search generation evidence | `evals/creative-search/` |

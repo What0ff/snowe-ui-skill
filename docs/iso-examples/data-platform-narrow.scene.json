@@ -1,0 +1,16 @@
+{
+  "title": "Data platform",
+  "desc": "Product events flow through ingest and the processing core into the warehouse.",
+  "id_prefix": "dpn-",
+  "unit": 30,
+  "padding": 8,
+  "objects": [
+    {"id": "events", "type": "screen", "x": 0, "y": 0.4, "w": 1.9, "h": 1.25, "orient": "x+", "lines": 2, "label": "Events", "role": "source", "order": 0, "accent": true},
+    {"id": "ingest", "type": "stack", "x": 2.6, "y": 0.35, "w": 2, "d": 2, "count": 3, "label": "Ingest", "role": "ingest", "order": 1, "accent": true},
+    {"id": "core", "type": "chip", "x": 2.3, "y": 4.0, "w": 2.8, "d": 2.8, "h": 0.34, "label": "Process", "role": "core", "order": 2, "accent": true},
+    {"id": "dwh", "type": "cylinder", "x": 7.0, "y": 4.6, "w": 1.6, "h": 1.7, "bands": 2, "label": "DWH", "role": "storage", "order": 3, "accent": true},
+    {"type": "connector", "from": "events", "to": "ingest", "start": "dot", "accent": true, "order": 1},
+    {"type": "connector", "from": "ingest", "to": "core", "accent": true, "order": 2},
+    {"type": "connector", "from": "core", "to": "dwh", "accent": true, "order": 3}
+  ]
+}

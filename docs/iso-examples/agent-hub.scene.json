@@ -1,0 +1,26 @@
+{
+  "title": "Agent orchestration hub",
+  "desc": "Requests from the team building enter the orchestrator chip, which dispatches work to research, code and review agents and returns a report. The highlighted path follows a request to the code agent.",
+  "id_prefix": "hub-",
+  "unit": 36,
+  "objects": [
+    {"id": "floor", "type": "ground-grid", "x": -1, "y": -1, "w": 17, "d": 13, "step": 1, "pattern": "dots"},
+
+    {"id": "team", "type": "building", "x": 0.2, "y": 5.4, "w": 2.4, "d": 2.4, "floors": 5, "label": "Team", "role": "requester", "order": 0},
+
+    {"id": "hub-pad", "type": "slab", "x": 5.0, "y": 4.6, "w": 6.9, "d": 6.0, "h": 0.3, "radius": 0.5, "inset": 0.45, "role": "hub-group", "order": 1},
+    {"id": "orchestrator", "type": "chip", "x": 6.45, "y": 5.6, "z": 0.3, "w": 4.0, "d": 4.0, "h": 0.38, "label": "Orchestrator", "label_size": 11, "role": "core", "order": 1, "accent": true},
+
+    {"id": "research", "type": "card", "x": 4.1, "y": 0.6, "w": 2.5, "h": 1.5, "orient": "y+", "t": 0.14, "glyph": "user", "label": "Research", "lines": 2, "role": "agent", "order": 2},
+    {"id": "code", "type": "card", "x": 7.2, "y": 0.6, "w": 2.5, "h": 1.5, "orient": "y+", "t": 0.14, "glyph": "user", "label": "Code", "lines": 2, "role": "agent", "order": 2, "accent": true},
+    {"id": "review", "type": "card", "x": 10.3, "y": 0.6, "w": 2.5, "h": 1.5, "orient": "y+", "t": 0.14, "glyph": "user", "label": "Review", "lines": 2, "role": "agent", "order": 2},
+
+    {"id": "report", "type": "card", "x": 13.6, "y": 6.8, "w": 2.2, "d": 1.6, "glyph": "check", "label": "Report", "role": "output", "order": 3},
+
+    {"type": "connector", "from": "team", "to": "hub-pad", "start": "dot", "accent": true, "order": 1},
+    {"type": "connector", "from": "hub-pad", "to": "research", "from_side": "y-", "to_side": "y+", "order": 2},
+    {"type": "connector", "from": "hub-pad", "to": "code", "from_side": "y-", "to_side": "y+", "accent": true, "order": 2},
+    {"type": "connector", "from": "hub-pad", "to": "review", "from_side": "y-", "to_side": "y+", "order": 2},
+    {"type": "connector", "from": "hub-pad", "to": "report", "order": 3}
+  ]
+}
