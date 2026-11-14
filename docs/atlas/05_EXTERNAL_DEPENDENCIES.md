@@ -55,7 +55,7 @@ This is repository validation infrastructure, not an installable-skill dependenc
 `.github/workflows/ci.yml` uses:
 
 - `actions/checkout@v4`;
-- `actions/setup-python@v5` with 3.11/3.13 on Ubuntu/Windows;
+- `actions/setup-python@v5` with 3.11/3.13 on Ubuntu/Windows/macOS;
 - `actions/setup-node@v4` with Node 22 for Ubuntu and Windows browser smoke;
 - the system Chrome/Chromium available on each GitHub-hosted runner.
 
@@ -65,7 +65,7 @@ Its public contributor-context job uses only Python 3.13 standard-library code p
 
 Permissions are `contents: read`; CI performs no deployment, release, package publication, cache, credential write, or artifact upload.
 
-The active Pages configuration uses branch publication: `build_type:legacy`, source `codex/doppler-pages:/`, with `.nojekyll` at the source root. Repository Actions remain disabled. The branch is an exact static snapshot of `benchmarks/soda-campaign/` plus that marker; there is no Jekyll/framework build or Actions artifact upload in this route. Publishing another revision requires updating the source branch, not only `main`. On 2026-10-08, the public root and all 23 runtime/source assets matched the new Doppler bytes, and live flavor selection/confirmation worked. The latest-build API returned 404 on this direct static route; public bytes and source-settings read-back supplied the deployment evidence.
+The active Pages configuration uses branch publication: `build_type:legacy`, source `codex/doppler-pages:/`, with `.nojekyll` at the source root. The branch is an exact static snapshot of `benchmarks/soda-campaign/` plus that marker; there is no Jekyll/framework build or Actions artifact upload in this route. Publishing another revision requires updating the source branch, not only `main`. On 2026-10-08, the public root and all 23 runtime/source assets matched the new Doppler bytes, and live flavor selection/confirmation worked. The latest-build API returned 404 on this direct static route; public bytes and source-settings read-back supplied the deployment evidence.
 
 The retained, inactive `.github/workflows/pages.yml` uses the official Pages artifact flow when Actions are enabled and workflow publication is selected:
 

@@ -141,7 +141,7 @@ The generated map itself is excluded from the counts.
 | `.md` | 87 |
 | `.json` | 72 |
 | `.jpg` | 52 |
-| `.py` | 41 |
+| `.py` | 42 |
 | `.csv` | 31 |
 | `.html` | 29 |
 | `.svg` | 22 |

@@ -1282,7 +1282,10 @@ class InstallerOwnershipTests(unittest.TestCase):
             with patch.object(INSTALLER, "_validate_source_tree", side_effect=record_validation):
                 INSTALLER.install_skill(source, destination)
 
-            self.assertEqual([source.resolve(), source.resolve()], validated[:2])
+            # The installer keeps lexical spellings (macOS /var, not /private/var) and only
+            # expands Windows 8.3 names, so compare against its own normalization.
+            expected = INSTALLER._normalize_lexical_aliases(source, "Skill source")
+            self.assertEqual([expected, expected], validated[:2])
             self.assertTrue(os.path.samefile(destination.parent, validated[2].parent))
             self.assertIn("installing", validated[2].name)
             self.assertTrue((destination / "SKILL.md").is_file())

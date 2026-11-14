@@ -24,7 +24,7 @@ Checks installable Python syntax/import compilation. It does not validate Markdo
 python -m unittest discover -s tests -v
 ```
 
-Current inspected result: **404 tests run successfully, with one Windows directory-symlink capability skip**. A shallow clone or source archive additionally skips the four tests that read historical git revisions. Hosts without Node 22 skip the five observer tests that execute `observe.mjs` (the CI Python jobs do not set up Node), and hosts without a system Chrome/Chromium/Edge skip its real Space-key capture.
+Current inspected result: **409 tests run successfully, with one Windows directory-symlink capability skip**. A shallow clone or source archive additionally skips the four tests that read historical git revisions. Hosts without Node 22 skip the five observer tests that execute `observe.mjs` (the CI Python jobs do not set up Node), and hosts without a system Chrome/Chromium/Edge skip its real Space-key capture.
 
 - `tests/test_snowe_ui_skill.py`: package routing/docs, schema-3 unresolved framing, multilingual/ambiguity/unknown behavior, opt-in analogs, persistence/path safety, evidence deletion/schemas/claims, icon constraints, contrast (including CLI exit codes 0/1/2, minimum bounds and 3:1 presets), SVG, and CLI (lookup-error exits, lock-contention and file-in-path errors, actual persistence paths/statuses, validated `--declared-context`).
 - `tests/test_catalogs.py`: bundled-CSV hygiene (BOM-free UTF-8, LF, rectangular rows, unique ids, configured columns present) and a whole-cell recipe-leakage scan (hex colors, millisecond durations, Tailwind color utilities, numbered template prescriptions, frame-rate claims) with an exact, stale-checked exception list that is now empty, plus a guard against backslash-escaped quotes; chart and UX catalog content contracts; superseded Flutter/SwiftUI/Compose APIs absent from recommending columns.
@@ -43,6 +43,7 @@ Current inspected result: **404 tests run successfully, with one Windows directo
 - `tests/test_visual_acceptance.py`: visual-acceptance and correction-transfer fixture/capture hash binding, variant coverage, decoded JPEG width and measured viewport/document geometry, plus rejection of stale-source reuse; no aesthetic assertion.
 - `tests/test_icon_workflow.py`: strict SVG grammar/geometry/paint/path safety and resource budgets, structured source/license evidence byte bindings, metadata/provenance/schema boundaries, typed/digest/one-to-one host-state icon manifest binding, actual-owner dialog selection, deterministic comparison regeneration, no-icon behavior, unresolved repository-derived selection rejection, and manifest/asset/output redirection or alias protection.
 - `tests/test_runtime_hardening.py`: project/page identity collisions and races, reserved-name/page-preflight/atomic/shared-file/reparse persistence, real Windows 8.3 alias/lock identity and alias-normalization swap probes, retrieval-limit/mode failures, installer ownership/locking/quarantine/recovery, source/staging/activation revalidation, junction/symlink boundaries, and selected-root resolution (a redirected ancestor works for persistence, corrections and visual review; redirects below the resolved root are refused).
+- `tests/test_system_root_aliases.py`: macOS root aliases `/tmp`, `/var`, `/etc` into `/private` are accepted by every lexical redirect-chain check (SVG validator, icon review, persistence, installer), while the same link on other platforms, a root alias with another target, a same-named link below the root and a redirect below an accepted alias stay refused.
 
 Focused examples:
 
@@ -194,12 +195,12 @@ python scripts/atlas/generate_atlas.py --check
 | Job | Surface |
 |---|---|
 | Public contributor context | Strict tracked public/private boundary plus atlas freshness on Ubuntu/Python 3.13. |
-| Python matrix | compile + current full unittest suite on Ubuntu/Windows, Python 3.11/3.13 |
+| Python matrix | compile + current full unittest suite on Ubuntu/Windows/macOS, Python 3.11/3.13 |
 | Designer behavior | behavior runner on Ubuntu/Python 3.13 |
 | Rendered benchmark smoke | Node 22/system Chrome CDP on Ubuntu and Windows, five-minute timeout per matrix job |
 | Doppler Pages deployment | Active static branch snapshot with `.nojekyll`; retained workflow is an inactive alternative |
 
-Configured normal CI triggers are pushes to `main`, pull requests, and manual dispatch with read-only permissions; repository Actions are currently disabled. The retained Pages workflow has path-filtered `main` and manual triggers with `pages: write` and `id-token: write`, but is not the active publication route. The active branch snapshot must be updated separately from `main`.
+Configured normal CI triggers are pushes to `main`, pull requests, and manual dispatch with read-only permissions. The retained Pages workflow has path-filtered `main` and manual triggers with `pages: write` and `id-token: write`, but is not the active publication route. The active branch snapshot must be updated separately from `main`.
 
 Normal CI does not run manual aesthetic review, lint/format/type/coverage, packaging, deployment, or release validation. Either Pages route publishes static Doppler files and performs no aesthetic certification or benchmark build.
 

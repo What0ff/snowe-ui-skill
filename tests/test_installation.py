@@ -96,7 +96,8 @@ class InstallationTests(unittest.TestCase):
             destination.mkdir(parents=True)
             (destination / "SKILL.md").write_text("---\nname: snowe-ui-skill\n---\nold\n", encoding="utf-8")
             destination_argument = destination.parent / "path-alias" / ".." / destination.name
-            resolved_destination = destination_argument.resolve(strict=False)
+            # The installer collapses ".." lexically and keeps macOS /var rather than /private/var.
+            resolved_destination = INSTALLER._normalize_lexical_aliases(destination_argument, "Destination")
             staging = resolved_destination.parent / f".{INSTALLER.PRODUCT_NAME}.installing"
             self.assertNotEqual(destination_argument, resolved_destination)
             real_rename = INSTALLER._rename
