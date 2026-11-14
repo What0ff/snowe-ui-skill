@@ -1,6 +1,6 @@
 # CLI Reference
 
-The bundled scripts give deterministic local evidence: retrieval, a Portfolio decision packet, identity-bound persistence, stack guidance, SVG validation, icon comparison, browser observation, visual-system contracts, checked visual reports and exact contrast. None of them designs or aesthetically judges the rendered result.
+The bundled scripts give deterministic local evidence: retrieval, a Portfolio decision packet, identity-bound persistence, stack guidance, SVG validation, icon comparison, browser observation, visual-system contracts, checked visual reports and exact contrast. None of them designs or judges the rendered result.
 
 ## Runtime
 
@@ -11,13 +11,11 @@ python <skill-directory>/scripts/icon_review.py --help
 python <skill-directory>/scripts/contrast.py --help
 ```
 
-Use Python 3.11+; isolated mode (`python -I`) works. Do not install or modify system Python to run Snowe without user authorization.
-
-`search.py` exits `0` on success, `1` when a lookup reports an error (the message goes to stderr; with `--json` the error object stays on stdout) or another run holds a persistence lock, and `2` for invalid arguments or an unusable `--output-dir`.
+Use Python 3.11+ (`python -I` works); never install or modify system Python for Snowe without user authorization. `search.py` exits `0` on success, `1` when a lookup reports an error (stderr; with `--json` the error object stays on stdout) or another run holds a persistence lock, and `2` for invalid arguments or an unusable `--output-dir`.
 
 ## Open a Decision Packet
 
-Open a packet only for Portfolio work or when the caller asks; Direct and Focused work keep their compact records.
+Open a packet only for Portfolio work or when the caller asks.
 
 ```text
 python <skill-directory>/scripts/search.py \
@@ -25,9 +23,9 @@ python <skill-directory>/scripts/search.py \
   --decision-packet --format markdown --project-name "Project Name"
 ```
 
-`--decision-packet` (`-dp`) preserves the brief verbatim and returns unresolved product, architecture, art-direction, imagery, custom-graphic, motion, responsive, research and evaluation questions. It never detects the language, classifies vocabulary, infers a domain, platform or work mode, or invents pressures; unknown framing stays unresolved.
+`--decision-packet` (`-dp`) keeps the brief verbatim and returns unresolved product, architecture, art-direction, imagery, custom-graphic, motion, responsive, research and evaluation questions. It never detects language, classifies vocabulary, infers domain, platform or work mode, or invents pressures.
 
-Local analogs are off by default. Add a caller-chosen lexical query only when a product analogy can change an open decision:
+Local analogs are off by default; add a caller-chosen lexical query only when an analogy can change an open decision:
 
 ```text
 python <skill-directory>/scripts/search.py \
@@ -35,9 +33,9 @@ python <skill-directory>/scripts/search.py \
   --decision-packet --analog-query "cycling retail shop"
 ```
 
-`--analog-query` ranks at most three subordinate product-catalog matches. It is not semantic confidence, does not expand the brief, and changes no situation or architecture field when results are absent.
+`--analog-query` ranks at most three subordinate product-catalog matches; it is not semantic confidence, does not expand the brief, and changes no situation or architecture field when nothing matches.
 
-Declare a work mode, platforms, facts or pressures the caller already knows in a file; the runtime never derives them from the brief:
+Declare known work mode, platforms, facts or pressures in a file; the runtime never derives them:
 
 ```text
 python <skill-directory>/scripts/search.py \
@@ -54,9 +52,9 @@ python <skill-directory>/scripts/search.py \
 }
 ```
 
-The file is a UTF-8 JSON object: `work_mode` is nonempty text; `platforms`, `facts` and `pressures` are arrays of nonempty strings; other keys pass through to `situation.other_declared_context`. Declarations mark framing `PARTIALLY_DECLARED` and appear in the packet and a persisted `BRIEF.md`. They are caller claims, so verify their provenance.
+The file is a UTF-8 JSON object: `work_mode` is nonempty text, `platforms`, `facts` and `pressures` are arrays of nonempty strings, and other keys pass through to `situation.other_declared_context`. Declarations mark framing `PARTIALLY_DECLARED` and appear in the packet and a persisted `BRIEF.md`; they are caller claims whose provenance still needs checking.
 
-`--format json` gives structured output; with `--persist`, stdout stays one packet JSON document and the persistence confirmation goes to stderr. `--json` belongs to domain and stack search and cannot combine with a packet. `--design-system` / `-ds` is a compatibility alias for the same open packet, not the old recipe generator; new tooling uses `--decision-packet`. The packet is a starting workbench, never the delivered design.
+`--format json` gives structured output; with `--persist`, stdout stays one packet JSON document and the persistence confirmation goes to stderr. `--json` belongs to domain and stack search only. `--design-system` / `-ds` is a compatibility alias for the same packet, not the old recipe generator. The packet is a starting workbench, never the delivered design.
 
 ## Persist Design Intelligence
 
@@ -67,21 +65,15 @@ python <skill-directory>/scripts/search.py \
   --output-dir <project-directory>
 ```
 
-This writes:
+This writes `PROJECT.json`, `BRIEF.md` and `DECISIONS.md` under `<project-directory>/design-intelligence/care-flow/`:
 
-```text
-<project-directory>/design-intelligence/care-flow/PROJECT.json
-<project-directory>/design-intelligence/care-flow/BRIEF.md
-<project-directory>/design-intelligence/care-flow/DECISIONS.md
-```
+- `PROJECT.json` binds the exact project identity to its slug; another identity with the same slug, or a shared-hardlink/inode manifest, is refused.
+- `BRIEF.md` is atomically regenerated from the current inquiry; `--page` keeps an existing project brief, creates one only when absent, and puts the page brief into the page inquiry. The brief is stored verbatim, so keep credentials, personal data and internal hosts out: persistence warns on stderr (and returns `sensitive_content`) for likely secrets, emails or private hosts and never redacts silently.
+- `DECISIONS.md`, the decision ledger, is created only when absent and then preserved byte for byte; a shared-hardlink/inode ledger is refused. It holds accepted causal decisions with scope, evidence, risk and revisit trigger, never hypotheses as facts.
 
-- `PROJECT.json` binds the exact project identity to its slug. A different identity that normalizes to the same slug is refused, as is a shared-hardlink/inode manifest.
-- `BRIEF.md` is atomically regenerated from the current inquiry. `--page` preserves an existing project brief and creates one only when absent; the page brief goes into the page inquiry. The brief is stored verbatim, so keep credentials, personal data and internal hosts out of it: persistence warns on stderr (and returns `sensitive_content`) for likely secrets, emails or private hosts and never redacts silently.
-- `DECISIONS.md`, the decision ledger, is created only when absent and then preserved byte for byte; a shared-hardlink/inode ledger is refused, so preserving it cannot mutate another file. Record accepted causal decisions, scope, evidence, risk and revisit trigger there, never hypotheses as facts.
+The confirmation prints the resolved project directory and marks each file `written` or `preserved` (stdout, or stderr with `--format json`). An `--output-dir` that is or runs through an existing file is refused with that file named. If another run holds the project lock (Windows gives up after about ten seconds; POSIX waits), the command exits `1` with `Another persistence operation is active`; retry afterwards.
 
-The confirmation prints the resolved project directory and marks each file `written` or `preserved` as persistence actually did, on stdout or on stderr with `--format json`. An `--output-dir` that is, or runs through, an existing file is refused with that file named. If another run holds the project lock (Windows gives up after about ten seconds; POSIX waits), the command exits `1` with `Another persistence operation is active`; retry after it finishes.
-
-Add an unresolved page inquiry:
+Add an unresolved page inquiry with `--page`:
 
 ```text
 python <skill-directory>/scripts/search.py \
@@ -90,11 +82,11 @@ python <skill-directory>/scripts/search.py \
   --output-dir <project-directory>
 ```
 
-This adds `<project-directory>/design-intelligence/city-cycles/pages/find-a-bike.md`, which asks for the page job, content and objects, entry and exit, candidate architectures, responsive transformations, states and proof without classifying the page or prescribing sections.
+It writes `pages/find-a-bike.md`, asking for the page job, content and objects, entry and exit, candidate architectures, responsive transformations, states and proof, without classifying the page or prescribing sections.
 
-`--page` and `--output-dir` require `--persist`; persistence requires a decision packet and an explicit `--project-name`. One per-project lock serializes manifest, brief, ledger and page publication, each a complete atomic write. Page identity and parent-directory checks run before `BRIEF.md` is published and again just before the page is; accepted ledger bytes are never regenerated. `--output-dir` (default: the current directory) is resolved once to its real path, so a directory under a redirected ancestor such as macOS `/tmp` or `/var/folders` works and Windows short names expand to the long spelling; the resolved path is rechecked before locking or writing. Project and page slug collisions, Windows-reserved identities, malformed identity manifests without a safe recovery basis, and any symlink, junction or reparse point at or below the resolved directory are refused rather than followed or overwritten.
+`--page` and `--output-dir` require `--persist`, which requires a packet and an explicit `--project-name`. One per-project lock serializes manifest, brief, ledger and page writes, each complete and atomic; page identity and parent-directory checks run before `BRIEF.md` is published and again before the page; accepted ledger bytes are never regenerated. `--output-dir` (default: current directory) is resolved once to its real path, so redirected ancestors such as macOS `/tmp` work and Windows short names expand, and the resolved path is rechecked before locking or writing. Slug collisions, Windows-reserved identities, malformed manifests without a safe recovery basis, and any symlink, junction or reparse point at or below the directory are refused.
 
-A persisted brief or page inquiry ranks just above labelled local analogs and generated hypotheses in the [source precedence](../SKILL.md#evidence-and-authority).
+A persisted brief or page inquiry ranks just above local analogs and generated hypotheses in the [source precedence](../SKILL.md#evidence-and-authority).
 
 ## Search Local Evidence
 
@@ -103,15 +95,15 @@ python <skill-directory>/scripts/search.py "query" --domain <domain> --max-resul
 python <skill-directory>/scripts/search.py "query" --domain <domain> --json
 ```
 
-Every result reports a **source role** and **use boundary**. Rows from catalogs that number them start with `No`, a stable row id within the named file (removed rows leave gaps), so a finding can cite, for example, `charts.csv` row 3. `data/CATALOGS.md` records each catalog's source, dates, row count and license notice. A top row is not semantic classification, current external truth or a design selection.
+Every result reports a **source role** and **use boundary**. Rows from numbered catalogs start with `No`, a stable row id within the named file (removed rows leave gaps), so a finding can cite `charts.csv` row 3; `data/CATALOGS.md` records each catalog's source, dates, row count and license. A top row is not semantic classification, current external truth or a design selection.
 
 Ranking is English-oriented lexical BM25 over a bundled snapshot:
 
-- Query and rows share one normalization: case folding, a small English stopword list (`for`, `the`, `vs`, ...), light suffix stemming (`rerenders`, `rerendering` → `rerender`; `lists` → `list`), and hyphen compounds indexed split and joined (`re-render` also matches `rerender`). Non-English words pass through unstemmed. This is normalization, not a synonym table or query expansion.
-- The row's name column (`Issue`, `Product Type`, `Family`, `Guideline`, ...) counts three times, `Keywords` and `Category` twice, other searched columns once. UX, React and mobile lookups also search the `Do` column.
-- A row whose name equals the query ranks first, then rows whose name starts with it (`IBM Plex Sans` before `IBM Plex Sans Condensed`), then rows whose name and query overlap as a phrase.
-- Scores are multiplied by the share of distinct query terms a row matches. When some row matches several terms, rows matching fewer than half as many are dropped as incidental, so fewer than `--max-results` rows can return.
-- `unmatched_terms` (JSON) lists query words found in no searched column; when it is not empty, the use boundary names them too. They did not affect ranking: `geometric` cannot match the font index, which has no construction or mood vocabulary.
+- Query and rows share one normalization: case folding, a small English stopword list (`for`, `the`, `vs`, ...), light stemming (`rerenders`, `rerendering` → `rerender`; `lists` → `list`), and hyphen compounds indexed split and joined (`re-render` matches `rerender`). Non-English words pass through unstemmed; there is no synonym table or query expansion.
+- The name column (`Issue`, `Product Type`, `Family`, `Guideline`, ...) counts three times, `Keywords` and `Category` twice, other searched columns once; UX, React and mobile lookups also search `Do`.
+- An exact name match ranks first, then names starting with the query (`IBM Plex Sans` before `IBM Plex Sans Condensed`), then phrase overlap.
+- Scores scale with the share of distinct query terms matched; when some row matches several terms, rows matching fewer than half as many drop out, so fewer than `--max-results` can return.
+- `unmatched_terms` (JSON) lists query words found in no searched column, also named in the use boundary; they did not affect ranking (`geometric` cannot match the font index, which has no construction or mood vocabulary).
 
 | Domain | Evidence role |
 |---|---|
@@ -127,9 +119,9 @@ Ranking is English-oriented lexical BM25 over a bundled snapshot:
 | `icon-candidates` | Exact known glyph/import hints for one named family |
 | `icons` | Legacy concrete icon-name lookup |
 
-There is no layout, landing, style, palette, typography-pairing or motion-preset domain: those catalogs were removed because their bundled combinations acted like solutions even when labelled as historical evidence.
+There is no layout, landing, style, palette, typography-pairing or motion-preset domain: those catalogs were removed because their bundled combinations acted like solutions.
 
-Query with the unresolved decision and its context, not `modern app`, and search a domain only when it can change a decision. Unstable, high-leverage or unsupported questions still need current external research; the English-oriented lexical limit affects only an explicit lookup, never packet framing. For `icon-candidates`, name exactly one supported family per query, repeat exact-glyph lookup across sources, and render finalists in the same component; package counts and catalog thumbnails are not visual evidence.
+Query with the open decision and its context, not `modern app`, and search a domain only when it can change a decision; unstable or high-leverage questions still need current external research. The English-oriented limit affects explicit lookups only, never packet framing. For `icon-candidates`, name one supported family per query, repeat exact-glyph lookup across sources, and render finalists in the same component; package counts and thumbnails are not visual evidence.
 
 ## Search Stack Guidance
 
@@ -146,13 +138,11 @@ nuxtjs, nuxt-ui, html-tailwind, shadcn, jetpack-compose, threejs,
 angular, laravel, javafx, wpf, winui, avalonia, uno
 ```
 
-The `uwp` catalog was retired on 2026-11-12 because it targeted retired device families such as Windows 10 Mobile; `--stack uwp` returns an error naming `winui`, whose catalog covers choosing WinUI 3 and migrating UWP code.
-
-Use the repository's actual stack. Stack rows are bundled guidance, not proof of current API behavior; check official documentation when versions, platform behavior or dependencies may have changed. Rows start with their `No` id where the file has one. Every stack response carries the domain evidence boundary plus `documentation_coverage` counts for returned rows with and without a `Docs URL`. A URL is a discovery pointer, not proof that a source is primary or current, and when a returned row lacks one, text and JSON output say it stays unsourced until independently verified.
+The `uwp` catalog was retired on 2026-11-12 (it targeted retired device families such as Windows 10 Mobile); `--stack uwp` returns an error naming `winui`, which covers choosing WinUI 3 and migrating UWP code. Use the repository's actual stack, and check official documentation when versions or platform behavior may have changed: rows are bundled guidance, not proof of current APIs. Rows start with their `No` id where the file has one, and each response carries the evidence boundary plus `documentation_coverage` counts of rows with and without a `Docs URL`. A URL is a discovery pointer, not proof of a primary or current source; output says when a returned row stays unsourced until verified.
 
 ## Validate Custom SVG Structure
 
-Start from the SVG: write the metadata skeleton, replace its placeholders, then bind evidence digests and validate.
+Start from the SVG: write the metadata skeleton, replace its placeholders, then bind digests and validate.
 
 ```text
 python <skill-directory>/scripts/asset_quality.py path/to/icon.svg --init-metadata
@@ -162,8 +152,8 @@ python <skill-directory>/scripts/asset_quality.py \
   path/to/icon.svg --metadata path/to/icon.metadata.json
 ```
 
-- `--init-metadata` writes `<svg-stem>.metadata.json` beside the SVG (or at `--metadata`) and never overwrites a file. It computes the name, grid, a full-grid live area, the observed drawing language (mode, stroke width, caps, joins, duotone tone) and the exact SVG digest; everything needing judgment stays a `<...>` placeholder that fails validation until a person replaces it. The default skeleton is original artwork under a project-owned license; `--provenance external` starts an imported-asset skeleton (unverified external source plus a retained license file).
-- `--rehash` is for an intentional edit. It recomputes the original-provenance digest and the digests of local evidence files already named in the metadata, prints every changed, unchanged and skipped field, then validates; a changed digest rewrites the file atomically as two-space-indented JSON. It never rebinds external or brand-mark artwork digests (restore the upstream bytes, or re-import and review them), and writes nothing when a named evidence path is unsafe or unreadable.
+- `--init-metadata` writes `<svg-stem>.metadata.json` beside the SVG (or at `--metadata`), never overwriting. It computes name, grid, a full-grid live area, the observed drawing language and the SVG digest; everything needing judgment stays a `<...>` placeholder that fails until a person replaces it. The default is original artwork under a project-owned license; `--provenance external` starts an imported skeleton (unverified source plus retained license file).
+- `--rehash` is for an intentional edit: it recomputes the original-provenance digest and named local evidence digests, prints every changed, unchanged and skipped field, validates, and rewrites changed digests atomically as two-space-indented JSON. It never rebinds external or brand-mark artwork (restore the upstream bytes or re-import and review them), and writes nothing when a named evidence path is unsafe or unreadable.
 
 Use `--json` for machine-readable output.
 
@@ -215,11 +205,9 @@ Required metadata fields:
 }
 ```
 
-Declare unique positive targets for the real implemented slots: the validator checks geometry at the smallest declared size, and the comparison manifest requires every context size to be covered, so an 18 px owner declares 18, not an invented 16/20/24. Specific source, license and accessibility declarations, exact grid and live area, a consistent drawing language, the SVG provenance digest and structured safe local evidence bindings are required. External source truth stays explicitly unverified, and evidence paths are never inferred from prose.
+Declare unique positive targets for the real slots: geometry is checked at the smallest size and the comparison manifest must cover every context size, so an 18 px owner declares 18. Source, license and accessibility declarations, exact grid and live area, a consistent drawing language, the provenance digest and safe local evidence bindings are required; external source truth stays unverified, and evidence paths are never inferred from prose. `grid` matches the viewBox width and height, and `live_area` is measured from the viewBox origin, so a Material Symbols `viewBox="0 -960 960 960"` declares `{"min_x": 0, "min_y": 0, "max_x": 960, "max_y": 960}`. Original artwork may declare `evidence.license` as exactly `{"kind": "project-owned"}`; external sources bind a retained license file.
 
-`grid` matches the viewBox width and height. `live_area` is measured from the viewBox origin, so a Material Symbols `viewBox="0 -960 960 960"` declares its full grid as `{"min_x": 0, "min_y": 0, "max_x": 960, "max_y": 960}`. Original artwork may declare `evidence.license` as exactly `{"kind": "project-owned"}` instead of a `{path, sha256}` binding; external sources still bind a retained license file.
-
-Choose the drawing mode per role: `stroke` draws outlines only, `fill` solid shapes only, `mixed` is one tone that needs both, and `duotone` layers a full-strength primary over a lighter secondary. A solid icon declares no stroke language:
+Choose the drawing mode per role: `stroke` outlines only, `fill` solid shapes only, `mixed` one tone needing both, `duotone` a full-strength primary over a lighter secondary. A solid icon declares no stroke language:
 
 ```json
 "drawing_language": {
@@ -254,7 +242,7 @@ A duotone icon marks each painted element, or a `<g>` around it, with `data-icon
 }
 ```
 
-Every painted duotone element resolves to `primary` or `secondary`, and a primary layer is required. The secondary layer renders at exactly `tones.secondary_opacity`, a finite number from 0.12 to 0.6: its `opacity`, `fill-opacity` and `stroke-opacity` multiply to that tone, while the root and primary layer stay at opacity 1. Undeclared tones, unknown layer values, a layer changing inside another layer, a secondary without a primary, `tones` outside duotone, and layers in any other mode fail. A stroked duotone layer declares its positive `stroke_width` and concrete linecap and linejoin; otherwise declare 0 and `not applicable`.
+Every painted duotone element resolves to `primary` or `secondary`, and a primary is required. The secondary renders at exactly `tones.secondary_opacity` (0.12–0.6), its `opacity`, `fill-opacity` and `stroke-opacity` multiplying to that tone, while root and primary stay at 1. Undeclared tones, unknown or nested-changing layer values, a secondary without a primary, `tones` outside duotone, and layers in other modes fail. A stroked layer declares a positive `stroke_width` and concrete caps and joins; otherwise 0 and `not applicable`.
 
 The default `interface-icon` subset accepts `svg`, `g`, `title`, `desc`, `path`, `circle`, `ellipse`, `rect`, `line`, `polyline` and `polygon` with their geometry attributes, `currentColor`/`none`/`transparent` paint, stroke, opacity, `display` and `visibility`, plus these inert or fixed-value attributes:
 
@@ -271,28 +259,28 @@ The default `interface-icon` subset accepts `svg`, `g`, `title`, `desc`, `path`,
 | `shape-rendering` | `auto`, `geometricPrecision` | any element |
 | `data-icon-layer` | `primary`, `secondary` (duotone only) | drawing elements, `<g>` |
 
-Root `width`/`height` are optional unitless or px lengths that keep the viewBox aspect ratio. An unpainted `<rect>` or `<path>` exactly covering the viewBox (the spacer Phosphor and Tabler export) is ignored. Arc flags may be compact, as SVGO writes them (`a8 8 0 0116 0`), and path data must begin with a moveto.
+Root `width`/`height` are optional unitless or px lengths keeping the viewBox ratio; an unpainted `<rect>` or `<path>` covering the viewBox (the Phosphor and Tabler spacer) is ignored; compact SVGO arc flags (`a8 8 0 0116 0`) are accepted; path data must begin with a moveto.
 
-The subset rejects event handlers; document, entity and stylesheet declarations; nested viewports; executable, linked, animated, text, embedded, styled, external, unknown or namespaced content; `id` and all URI and local-fragment references; transforms, masks, filters and clipping; other attributes and values; malformed or clipped geometry; collapsed root dimensions or a contradictory aspect ratio; non-`currentColor` paint; muted opacity outside the duotone secondary layer; and drawing-language contradictions. Round and bevel joins are supported; miter geometry (and `arcs`, which browsers render as miter) is rejected because the bounds proof cannot certify its spike extent. Square caps are bounded by their diagonal corner reach.
+The subset rejects event handlers; document, entity and stylesheet declarations; nested viewports; executable, linked, animated, text, embedded, styled, external, unknown or namespaced content; `id` and all URI and fragment references; transforms, masks, filters and clipping; other attributes and values; malformed or clipped geometry; collapsed root dimensions or a contradictory ratio; non-`currentColor` paint; muted opacity outside the duotone secondary; and drawing-language contradictions. Round and bevel joins pass; miter geometry (and `arcs`, which renders as miter) fails because its spike extent cannot be bounded. Square caps are bounded by their diagonal reach.
 
-Two checks warn instead of failing. Under `fill-rule` `nonzero`, an inner subpath with the same winding as its outer one renders solid, so a drawn hole disappears; reverse it or declare `evenodd`. In `fill` and `duotone` modes, a filled subpath whose shorter side renders below 1 CSS px at the smallest target can close up or vanish. A structural `PASS` cannot prove source or license truth, recognition, silhouette, optical balance, metaphor or family and UI fit.
+Two checks only warn: under `nonzero`, an inner subpath with the outer one's winding renders solid, so reverse it or declare `evenodd`; in `fill` and `duotone`, a subpath narrower than 1 CSS px at the smallest target can close up or vanish. A structural `PASS` proves neither source or license truth nor recognition, silhouette, balance, metaphor or fit.
 
-For unchanged imported brand SVGs, declare `asset_type:"brand-mark"` and add `brand:{schema:"1.0",identity:<exact identity>,variant:<supplied variant>,artwork:{path,sha256},usage:{path,sha256}}`. Other metadata fields stay required, with drawing-language fields describing the supplied artwork rather than prescribing a redesign. Provenance must be `external` with a canonical HTTPS source URL, and `evidence.source` stays `{kind:"external",verification:"unverified"}`. `artwork` binds a retained upstream copy whose digest must also match the delivered SVG; `usage` binds a local reviewed usage record; both use the license evidence's metadata-relative regular-file, path and digest checks, within a 1,000,000-byte budget each. The profile also permits opaque `#RGB`, `#RRGGBB`, black and white paint; all other self-contained checks stay in force. It supports no gradients, masks or styles and certifies neither officialness, licensing nor context: use another official variant or the host's asset proof for unsupported originals, and never trace, recolor or flatten an external identity to pass. Missing or stale records fail; hashes do not stop someone rewriting both self-authored records, so primary-source review is still required, and a URL never authorizes remote references inside the SVG.
+For unchanged imported brand SVGs, declare `asset_type:"brand-mark"` with `brand:{schema:"1.0",identity:<exact identity>,variant:<supplied variant>,artwork:{path,sha256},usage:{path,sha256}}`. Other fields stay required and describe the supplied artwork; provenance is `external` with a canonical HTTPS URL, and `evidence.source` stays `{kind:"external",verification:"unverified"}`. `artwork` binds a retained upstream copy whose digest matches the delivered SVG and `usage` a reviewed local usage record, each a metadata-relative regular file within a 1,000,000-byte budget. The profile adds opaque `#RGB`, `#RRGGBB`, black and white paint and keeps every other check; it supports no gradients, masks or styles and certifies neither officialness, license nor context. Use another official variant or the host's asset proof for unsupported originals, never tracing, recoloring or flattening an identity to pass. Missing or stale records fail, but hashes cannot stop both self-authored records being rewritten, so primary-source review stays required, and a URL never permits remote references inside the SVG.
 
-Both profiles bound quadratic and cubic curves by their actual extrema, including reflected smooth controls, rather than the control-point hull, so a rounded solid whose control points leave the grid is not reported as clipped. Curve arithmetic keeps the 1,000,000-coordinate safety envelope. The imported profile tolerates only 1e-7 of the smaller viewBox dimension for decimal rounding (below 0.000003 CSS px at a 24 px slot); `interface-icon` keeps an absolute 1e-7, so a curve that really overshoots still fails. Host clipping and appearance still need rendered inspection.
+Both profiles bound curves by their actual extrema (including reflected smooth controls), not the control hull, within the 1,000,000-coordinate envelope. The imported profile tolerates 1e-7 of the smaller viewBox side for decimal rounding (under 0.000003 CSS px at 24 px); `interface-icon` keeps an absolute 1e-7, so a real overshoot still fails. Host clipping and appearance still need rendered inspection.
 
 ## Compare Existing, Custom, and No-Icon Candidates
 
-Once exact candidates and a real role are known, write a compact manifest and generate a self-contained representative-control sheet:
+Once exact candidates and a real role are known, write a manifest and generate a self-contained representative-control sheet:
 
 ```text
 python <skill-directory>/scripts/icon_review.py \
   path/to/manifest.json --output path/to/comparison.html --json
 ```
 
-The manifest binds every SVG candidate to its validated metadata name, provenance kind, explicit asset SHA-256, metadata provenance digest and every context target size. It rejects duplicate SVG bytes posing as different candidates, custom candidates without original provenance, unsafe local host routes, malformed, deep or extreme-number JSON and Unicode scalar inputs, uninspectable paths, invalid selection and verdict combinations, and repository-derived contexts whose source file is absent. Repository-derived host proof must select a candidate (use `representative` evidence for unresolved `REJECT`/`UNKNOWN` contexts), and its explicit `host_proof.state_map` covers every declared comparison state exactly once with the same-name host state, except `high-contrast`, which maps to the exercised `forced-colors` state. A button-clone no-icon candidate uses the exact visible label of its owning control. The sheet renders the same labels and declared states for every alternative, and a no-icon alternative shows the visible UI truth once rather than a blank icon cell.
+The manifest binds each SVG candidate to its validated metadata name, provenance kind, asset SHA-256, metadata provenance digest and every context size. It rejects duplicate bytes posing as different candidates, custom candidates without original provenance, unsafe host routes, malformed, deep or extreme-number JSON and Unicode scalar inputs, uninspectable paths, invalid selection and verdict combinations, and repository-derived contexts whose source file is missing. Repository-derived host proof must select a candidate (unresolved `REJECT`/`UNKNOWN` contexts use `representative` evidence), and its `host_proof.state_map` maps every comparison state once to the same-name host state, except `high-contrast` → exercised `forced-colors`. A button-clone no-icon candidate uses its control's exact visible label; every alternative gets the same labels and states, and no-icon shows the visible UI truth once rather than a blank cell.
 
-To decide a drawing style for one role, a schema-`1.2` interface context can set `"comparison_axis": "style"` instead of the default `"kind"`. Candidates may then share a kind (two custom drawings, or two variants of one library glyph), but at least two SVG candidates are required, each differing from every other in declared drawing style (mode, stroke width, caps, joins, duotone tone) in at least one state. A candidate may add `state_assets`, keyed by declared non-default states, to show different artwork per state, for example outline by default and solid when selected:
+To decide a drawing style for one role, a schema-`1.2` interface context can set `"comparison_axis": "style"` instead of `"kind"`. Candidates may then share a kind, but at least two SVG candidates must each differ from every other in declared drawing style (mode, stroke width, caps, joins, duotone tone) in at least one state. A candidate may add `state_assets` keyed by declared non-default states, for example outline by default and solid when selected:
 
 ```json
 {
@@ -315,17 +303,15 @@ To decide a drawing style for one role, a schema-`1.2` interface context can set
 }
 ```
 
-Each state asset is validated, digest-bound and size-checked like the default asset, must differ from it, and is listed on the card with its own name, digest, source and license. A candidate with state assets names a combination, so its `id` need not equal one asset name, but it cannot borrow another asset's name; duplicates are detected on the exact bytes shown in every state. Brand contexts accept neither field.
+Each state asset is validated, digest-bound and size-checked like the default, must differ from it, and is listed with its own name, digest, source and license. A combination's `id` need not equal one asset name but cannot borrow another's, and duplicates are detected on the bytes shown in every state. Brand contexts accept neither field. Repository-derived host proof may also exercise a `selected` state by declaring `selected_attribute` (`aria-pressed`, `aria-current` or `aria-selected`) and optionally `select_selector`, a control to click first; browser smoke requires that attribute, never a style alone, keeps the accessible-label check, and renders each candidate's state artwork in the host.
 
-Repository-derived host proof may also exercise a `selected` host state. It must declare `selected_attribute` (`aria-pressed`, `aria-current` or `aria-selected`) and may declare `select_selector`, a control to click first. Browser smoke requires that attribute to report selection on the host target, never a style alone, keeps the accessible-label check of every other state, and renders each candidate's state artwork in the host.
+New manifests use schema `1.2`, with explicit `lang`, `dir` (`ltr`, `rtl`, `auto`) and `symbol_role` (`interface-icon` or `brand-mark`) on every context. Brand contexts also declare `brand_identity`, bind matching `brand-mark` metadata for every artwork candidate and reject `custom` substitutes; they may hold one supplied `existing` candidate or a visible-text `none` fallback without manufactured alternatives, and ordinary contexts cannot silently consume brand artwork. Versions `1.0` and `1.1` stay readable (`1.0` defaults to `en`/`ltr`); typed role fields need 1.2. The attributes apply to preview content, long headers and text alternatives wrap rather than clip, and language and role are never inferred from label vocabulary.
 
-New manifests use schema `1.2`, with explicit `lang` (language tag), `dir` (`ltr`, `rtl`, `auto`) and `symbol_role` (`interface-icon` or `brand-mark`) on every context. Brand contexts also declare `brand_identity`, bind matching `brand-mark` metadata for every artwork candidate and reject `custom` substitutes; they may hold one known supplied `existing` candidate or a visible-text `none` fallback without manufactured alternatives. Ordinary interface contexts keep the comparison requirements and cannot silently consume brand artwork. Versions `1.0` and `1.1` stay readable; typed role fields need schema 1.2, and `1.0` keeps `en`/`ltr` defaults. The attributes apply to preview content, while English inspector metadata keeps its own language. Long headers and text alternatives wrap and grow rather than clip. Language and semantic role are never inferred from label vocabulary.
-
-The sheet is representative comparison evidence, not a pixel-identical host render or an automatic decision. Inspect it at wide and narrow viewports, then render the claimed winner and the closest rejected alternative inside the owning component beside real neighbors, recording the optical and semantic choice as human judgment. Source fidelity and usage suitability still need primary-source and host review. A worked example is the [icon-decisions proof](https://github.com/What0ff/snowe-ui-skill/tree/main/evals/icon-decisions) in the source repository; it is not part of an installed skill.
+The sheet is representative evidence, not a pixel-identical host render or an automatic decision. Inspect it at wide and narrow viewports, render the winner and the closest rejected alternative inside the owning component, and record the optical and semantic choice as human judgment; source fidelity and usage still need primary-source and host review. A worked example is the [icon-decisions proof](https://github.com/What0ff/snowe-ui-skill/tree/main/evals/icon-decisions) in the source repository, not part of an installed skill.
 
 ## Observe in a Browser
 
-Prefer the host's browser tools when they support the target application. The skill also ships an optional, dependency-free adapter for **Node 22+ with a system Chrome, Chromium or Edge**:
+Prefer the host's browser tools when they support the app. The skill also ships an optional, dependency-free adapter for **Node 22+ with a system Chrome, Chromium or Edge**:
 
 ```text
 node <skill-directory>/scripts/observe.mjs capabilities
@@ -333,41 +319,41 @@ node <skill-directory>/scripts/observe.mjs capture <workspace> <plan.json> <fres
 node <skill-directory>/scripts/observe.mjs compare <workspace> <before-receipt.json> <after-receipt.json> <comparison.html>
 ```
 
-`capabilities` reports the browser found, `available`, and `reasons` when capture cannot run (Node older than 22, or no browser). Discovery tries `CHROME_PATH`, then Chrome, Edge and Chromium in standard locations: `%ProgramFiles%`, `%ProgramFiles(x86)%` and `%LOCALAPPDATA%` on Windows; `/Applications` and `~/Applications` on macOS; `/usr/bin` (including `microsoft-edge-stable`) and `PATH` on Linux. Nothing is downloaded, and Python stays standard-library-only. Missing Node or a browser blocks only formal browser proof: use the host's tools, report their actual capabilities, and mark the unavailable proof `UNKNOWN`. The adapter serves local static files only and refuses external or unbound assets; app-server builds, authentication, native apps, closed shadow roots and temporal canvas or video proof need the host adapter and explicit environment records. Never substitute a static fixture for a working backend claim.
+`capabilities` reports the browser found, `available`, and `reasons` when capture cannot run. Discovery tries `CHROME_PATH`, then standard Chrome, Edge and Chromium locations (`%ProgramFiles%`, `%ProgramFiles(x86)%`, `%LOCALAPPDATA%`; `/Applications`, `~/Applications`; `/usr/bin` including `microsoft-edge-stable`, and `PATH`), downloading nothing. Without Node or a browser, use the host's tools, report their real capabilities, and mark formal browser proof `UNKNOWN`. The adapter serves local static files only and refuses external or unbound assets: app servers, authentication, native apps, closed shadow roots and temporal canvas or video proof need the host and explicit environment records, and a static fixture never stands in for a working backend.
 
-The Chromium sandbox stays on unless it cannot start (running as root on Linux, or inside a Linux container), or you pass `--no-sandbox` to `capabilities`/`capture` or set `SNOWE_OBSERVE_NO_SANDBOX=1`; `capabilities` reports the decision and why. If the browser exits before DevTools starts, the error says so and, on Linux, suggests the opt-out. Usage mistakes print usage and exit `2`; capture failures print one `observe.mjs: error:` line and exit `1` (`SNOWE_OBSERVE_DEBUG=1` adds a stack). Headless capture hides native scrollbar paint so full-page and detail geometry stay comparable, bound through the observer revision; check scroll behavior and native scrollbar affordances with the host, and never infer a scrollbar bug from these captures.
+The Chromium sandbox stays on unless it cannot start (root on Linux, or a Linux container) or `--no-sandbox` / `SNOWE_OBSERVE_NO_SANDBOX=1` turns it off; `capabilities` reports why. A browser that exits before DevTools starts is named in the error, with the opt-out suggested on Linux. Usage mistakes exit `2`; capture failures print one `observe.mjs: error:` line and exit `1` (`SNOWE_OBSERVE_DEBUG=1` adds a stack). Headless capture hides native scrollbar paint for comparable geometry, so check scrollbar affordances with the host and never infer a scrollbar bug from these captures.
 
-Observation plan schema `1.0` has `scope`, `sourceRoots` and `cases`. Each case looks like:
+Observation plan schema `1.0` has `scope`, `sourceRoots` and `cases`:
 
 ```json
 {"id":"mobile-selected","state":"selected","viewport":"390x844@1","theme":"light","input":"touch","motion":"reduced","context":"page","route":"/index.html","steps":[{"action":"click","selector":"#choose"}],"expect":[{"selector":"#choose","property":"attribute:aria-pressed","equals":"true"}],"probes":[{"selector":"main","pseudo":""},{"selector":".selection","pseudo":""},{"selector":".selection","pseudo":"::before"}],"details":[{"id":"selected-owner","selector":".selection","padding":12,"scale":2}]}
 ```
 
-- **Viewport** is `<CSS width>x<CSS height>@<device pixel ratio>`, the ratio from 1 to 4 with up to two decimals, compared numerically with the browser's `devicePixelRatio` (`@1` and `@1.0` are the same capture).
-- **Matrix.** Choose explicit combinations from affected states, breakpoints, themes, inputs and composition contexts instead of multiplying irrelevant dimensions, and record why representative siblings suffice and which dependencies would require widening. Reduced motion can remove nodes: plan the static layer.
-- **Steps.** Actions are `click`, `fill` (`selector`, `value`), `key` (`Tab`, `Enter`, `Escape`, `ArrowDown`, `ArrowUp` or `Space`; `space` is accepted, a literal space character is not, and other names are rejected), `wait-for-selector` and `scroll-to-selector`. Keyboard cases activate with keys, touch cases dispatch touch. Reproduce loading and error states through stable local routes or explicit setup, never screenshots labelled after capture.
-- **Source roots** are the complete bounded owner, import, asset and build scopes, not a hand-picked list that omits changed CSS; include separately owned shared dependencies, and directory roots detect additions and removals. The server serves only inventoried bytes and records requests; output directories must be disjoint; secrets and unrelated large repositories stay out of scope. Capture fails when a resource falls outside the inventory, source or plan bytes change during observation, fonts, motion or layout do not settle, or a required probe is absent.
-- **Details** are required for the affected owners: unique `id`, measured `selector`, `padding` (0–100 CSS px) and `scale` (1 native, 2 diagnostic). The receipt binds crop bounds and lossless PNG dimensions and hashes; missing or unassessed details block closure. Fixed, top-layer and portalled owners use `space:"viewport"`, cropped from the exact bound native viewport PNG with its parent digest and pixel rectangle, not a later screenshot. A 2× crop enlarges captured pixels and proves nothing about higher-density rendering; use a real DPR case for that. Receipts keep scroll coordinates and separate viewport and whole-page captures; pseudo-element measurements report computed paint plus labelled owner-element bounds.
-- **Postconditions** (`expect`) are planned independently: `selector`, `property` and `equals` or text `includes`, with property `attribute:<name>`, `css:<property>`, `text`, `focused`, `disabled`, `checked`, `open` or `value`. A state name or dispatched click does not prove a selected value, open overlay or confirmation. The adapter scrolls click targets into view and rejects covered or out-of-viewport targets; a met postcondition is technical state evidence, not visual quality.
-- **Sequences.** Optional `sequence:{fps,durationMs,start,events}` records bounded temporal proof (1–30 fps, up to 10 s): `start` is replay steps and `events` carry increasing `atMs` and `steps`. A trusted caller-authored `script` step with `value` can set up or replay application state; inspect its code first and never run instructions scraped from page content. Each frame binds time, environment and PNG bytes; the checker validates coverage, not choreography, and endless canvas or video work still needs a deliberate capture protocol and human inspection.
+- **Viewport:** `<CSS width>x<CSS height>@<DPR>`, DPR 1–4 with up to two decimals, compared numerically with `devicePixelRatio`.
+- **Matrix:** explicit combinations of affected states, breakpoints, themes, inputs and contexts, not a product of irrelevant dimensions; record why representative siblings suffice and which dependencies would require widening. Reduced motion can remove nodes, so plan the static layer.
+- **Steps:** `click`, `fill` (`selector`, `value`), `key` (`Tab`, `Enter`, `Escape`, `ArrowDown`, `ArrowUp`, `Space`; `space` is accepted, a literal space and other names are rejected), `wait-for-selector`, `scroll-to-selector`. Keyboard cases use keys, touch cases dispatch touch. Reach loading and error states through local routes or explicit setup, never relabelled screenshots.
+- **Source roots:** the complete bounded owner, import, asset and build scopes, including separately owned shared dependencies; directory roots detect additions and removals. Only inventoried bytes are served, output directories must be disjoint, and secrets or unrelated repositories stay out. Capture fails on a resource outside the inventory, source or plan bytes changing, unsettled fonts, motion or layout, or a missing probe.
+- **Details:** required for affected owners: unique `id`, `selector`, `padding` (0–100 CSS px), `scale` (1 native, 2 diagnostic). The receipt binds crop bounds and lossless PNG sizes and hashes, and unassessed details block closure. Fixed, top-layer and portalled owners use `space:"viewport"`, cropped from the bound native viewport PNG with parent digest and pixel rectangle. A 2× crop enlarges captured pixels and proves nothing about higher-density rendering; use a real DPR case. Receipts keep scroll coordinates, and pseudo-element measurements report computed paint with labelled owner-element bounds.
+- **Postconditions** (`expect`), planned independently: `selector`, `property` and `equals` or text `includes`, with property `attribute:<name>`, `css:<property>`, `text`, `focused`, `disabled`, `checked`, `open` or `value`. A state name or dispatched click proves no selection or open overlay; the adapter scrolls click targets into view and rejects covered ones, and a met postcondition is state evidence, not visual quality.
+- **Sequences:** optional `sequence:{fps,durationMs,start,events}` for bounded temporal proof (1–30 fps, up to 10 s; `events` with increasing `atMs` and `steps`). A trusted caller-authored `script` step can set up state: inspect its code first and never run instructions scraped from page content. Each frame binds time, environment and PNG bytes; the checker validates coverage, not choreography, and endless canvas or video work needs its own capture protocol and human inspection.
 
-Each immutable receipt binds the plan, observer revision, browser product, user agent and protocol, actual CSS viewport and DPR, emulated theme, touch and motion, route, font settlement, requested and rendered font faces, source inventory, loaded resources, measured layers, and whole and detail captures. Compare at the intended display scale; a full-page image does not replace viewport attention or interaction proof. Receipt reads have an 8 MB budget, while contract and journal JSON keep 1 MB; split an oversized scope into justified plans. `compare` pairs identical combinations and warns when measured content changed; it has no score or winner.
+Each immutable receipt binds plan, observer revision, browser and protocol, actual CSS viewport and DPR, emulated theme, touch and motion, route, font settlement, requested and rendered faces, source inventory, loaded resources, measured layers, and whole and detail captures. Compare at the intended display scale; a full-page image does not replace viewport attention or interaction proof. Receipt reads have an 8 MB budget (contract and journal JSON keep 1 MB); split oversized scopes into justified plans. `compare` pairs identical combinations, warns when content changed, and picks no winner.
 
 ## Version a Visual-System Contract
 
-Write a new revision file instead of overwriting the accepted one. The decision ledger stays byte-preserved; a new contract may supersede a decision only in appended history, with its reason and revisit trigger. `visual_system.py` keeps schema `1.0` and supports opt-in schema `1.1`:
+Write a new revision file instead of overwriting the accepted one; the decision ledger stays byte-preserved, and a superseding contract records its reason and revisit trigger in appended history. `visual_system.py` keeps schema `1.0` and supports opt-in `1.1`:
 
-- `revision` (positive integer), `previous` (path and SHA-256 when revision > 1), `scope`, `depth` (Direct, Focused or Portfolio).
-- `direction`: `status` (proposed, selected or user-specified), `thesis`, `axes` and `revisit` conditions. Axes are composition, typography, color, surfaces, shape, imagery, motion and responsive; Portfolio addresses all, bounded work only the affected ones, and a justified no-image or no-motion decision is a real axis decision.
-- `tokens`: `{id, owner, property, value}` with source-bound owners; values record intent, not guessed computed equivalents.
-- `components`: `{id, role, owner, selector, tokens, states, consumers, layers}`. Consumers name `{case, selector}`; layers name `{kind, selector, pseudo, sources, cases}` with kinds element, pseudo, backdrop, portal, font, image, svg, canvas and video. Every declared consumer and layer needs a planned measurement, and dependencies and owners must be inventoried.
-- `relations`: `{id, members, intent, checks}`. Each check has `id, case, selector, pseudo, property` and either `equals` or `sameAs:{selector,pseudo}`, applied to all matching siblings. Use measured properties, bounds or text only for a justified explicit contract, never as a beauty formula.
-- `exceptions`: `{check, reason, revisit}` naming a real check. An exception preserves a justified scoped distinction, including a user-specified design; it never waives missing browser evidence or a negative visual finding.
-- `hypotheses`: `{id, observation, cause, change, prediction, outcome, evidence, applicability, counterexamples, reason}` with outcome untested, supported, rejected or inconclusive. A supported result needs current path and digest evidence; keep why a repair was rejected and where the lesson does not transfer. Prose stays reasoned judgment, not proven causality.
+- `revision`, `previous` (path and SHA-256 after revision 1), `scope`, `depth`.
+- `direction`: `status` (proposed, selected, user-specified), `thesis`, `axes` (composition, typography, color, surfaces, shape, imagery, motion, responsive; all for Portfolio, the affected ones otherwise, where no-image or no-motion is a real decision) and `revisit`.
+- `tokens`: `{id, owner, property, value}`, source-bound, recording intent rather than guessed computed values.
+- `components`: `{id, role, owner, selector, tokens, states, consumers, layers}`, consumers as `{case, selector}` and layers as `{kind, selector, pseudo, sources, cases}` (element, pseudo, backdrop, portal, font, image, svg, canvas, video); every consumer and layer needs a planned measurement.
+- `relations`: `{id, members, intent, checks}`, each check `id, case, selector, pseudo, property` with `equals` or `sameAs:{selector,pseudo}`, applied to every matching sibling; measured values serve an explicit contract, never a beauty formula.
+- `exceptions`: `{check, reason, revisit}` preserving a justified distinction, never waiving missing evidence or a negative finding.
+- `hypotheses`: `{id, observation, cause, change, prediction, outcome, evidence, applicability, counterexamples, reason}`, outcome untested, supported, rejected or inconclusive; supported needs current digest evidence, rejected repairs keep their reason, and prose stays judgment, not proven causality.
 
-Schema `1.1` adds `property:"bounds.<axis>"` for x, y, width, height, right, bottom, centerX and centerY. Each geometry check needs `tolerance:{cssPixels:<finite nonnegative number>,reason:<context-specific justification>}` and either a numeric `equals` or one `sameAs:{selector,pseudo:""}` reference owner that matches exactly one element; every actual match must satisfy the axis. For example, compare `.toolbar button` `bounds.centerY` with `.toolbar input`, excluding the field caption. Use native element probes with an empty pseudo, since pseudo paint has only owner-element bounds. Missing, ambiguous or invalid geometry cannot be waived. The tolerance is declared for the target, not a universal aesthetic threshold, and box centers certify neither text baseline nor optical mass. Older contracts keep exact-property semantics and opt in to geometry explicitly.
+Schema `1.1` adds `property:"bounds.<axis>"` (x, y, width, height, right, bottom, centerX, centerY) with `tolerance:{cssPixels:<finite nonnegative>,reason:<justification>}` and a numeric `equals` or one `sameAs:{selector,pseudo:""}` owner matching exactly one element; every match must satisfy the axis. For example, compare `.toolbar button` `bounds.centerY` with `.toolbar input`, excluding the caption. Probe native elements with an empty pseudo. Missing or ambiguous geometry cannot be waived, tolerance belongs to the target rather than an aesthetic threshold, box centers certify neither baseline nor optical mass, and older contracts opt in explicitly.
 
-Direction selection, checked implementation, recorded verdict and user acceptance stay separate: `selected` means neither verified nor approved, a supplied design can be `user-specified` while its fidelity is unverified, and silence is `UNCONFIRMED`.
+Direction selection, checked implementation, recorded verdict and user acceptance stay separate: `selected` is neither verified nor approved, a supplied design can be `user-specified` with fidelity unverified, and silence is `UNCONFIRMED`.
 
 ## Check a Recorded Visual Verdict
 
@@ -377,7 +363,7 @@ For a material visual decision whose review is reused or handed off:
 python <skill-directory>/scripts/visual_review.py design/REVIEW.json --workspace .
 ```
 
-This read-only command checks a caller-authored report. `--workspace` is resolved once to its real path, and evidence paths inside it must not run through a symlink, junction or reparse point. It never inspects pixels, infers attention from CSS, scores taste or turns self-review into approval. Ordinary Direct corrections keep their short record.
+The command is read-only. `--workspace` is resolved once, and evidence paths must not pass through a symlink, junction or reparse point. It never inspects pixels, infers attention from CSS, scores taste or turns self-review into approval; Direct corrections keep their short record.
 
 The attention contract is authored before evaluation:
 
@@ -385,18 +371,16 @@ The attention contract is authored before evaluation:
 {"schema":"1.0","scope":"Run monitoring","states":[{"id":"running","question":"Is this run progressing?","priority":["Run progress","Affected records"],"cues":["Progress value grouped with coverage"],"competing":["Create new"]}]}
 ```
 
-Schema `2.0` of the contract keeps `scope` and the independent `states`, and adds `plan` and `system` path and digest bindings. A schema `3.0` report keeps the schema-2 fields `scope, method, reviewer, contract, sources, renders, visualAssessment, userAcceptance` and adds `capture`, the browser receipt binding; `sources` exactly equal the receipt inventory, and each render combines its receipt binding with `id, state, viewport, theme, input, motion, context` from the planned observations. The fields:
+Contract schema `2.0` adds `plan` and `system` path and digest bindings. A schema `3.0` report keeps `scope, method, reviewer, contract, sources, renders, visualAssessment, userAcceptance` and adds `capture`, the receipt binding; `sources` equal the receipt inventory, and each render adds `id, state, viewport, theme, input, motion, context` from the plan.
 
-- `scope` matches the contract; `method` is `self-review`, `peer-review` or `user-review`; `reviewer` is named; `userAcceptance` is separate (`UNCONFIRMED`, `ACCEPTED`, `REJECTED`). A method never supplies either verdict.
-- `contract` is `{path, sha256}` for the independent expectation file; `sources` and `renders` are nonempty, renders as `{path, sha256, state, viewport}`, with forward-slash paths relative to `--workspace` and an explicit viewport such as `390x844@1`. Bind every implementation owner and inspected render, and cover all required contract states.
-- `visualAssessment` has an explicit `verdict` (`KEEP`, `REVISE`, `REJECT`, `UNKNOWN`), a concrete overall `finding`, and `assessments` and `findings` arrays. Each state assessment is `{state, renders, observedAttention, finding, verdict}`, and every bound render is assessed once in its declared state. Observed attention is the reviewer's judgment, not eye tracking or a copied expectation.
-- Each material finding is `{id, states, owner, observation, consequence, blocking, status, renders}`, with `status` `open`, `resolved` or `accepted`. Resolution or acceptance needs a `resolution` reason, a blocking defect cannot be accepted away, its renders cover its states, and a negative state verdict needs an open causal finding rather than a generic label.
+- `method` is `self-review`, `peer-review` or `user-review` with a named `reviewer`; `userAcceptance` (`UNCONFIRMED`, `ACCEPTED`, `REJECTED`) is separate, and a method supplies no verdict.
+- `contract` is `{path, sha256}`; `sources` and `renders` are nonempty, renders `{path, sha256, state, viewport}` with forward-slash workspace-relative paths and explicit viewports such as `390x844@1`, covering every owner, inspected render and required state.
+- `visualAssessment` has an explicit `verdict`, a concrete `finding`, and `assessments` (`{state, renders, observedAttention, finding, verdict}`, each render assessed once) and `findings`. Observed attention is the reviewer's judgment, not eye tracking.
+- Each finding is `{id, states, owner, observation, consequence, blocking, status, renders}`, `status` `open`, `resolved` or `accepted` with a `resolution` reason; a blocking defect cannot be accepted away, and a negative verdict needs an open causal finding.
 
-The checker verifies every planned combination and mapped relationship: dropping mobile renders, relabelling a viewport, omitting CSS or losing a dependency cannot keep a PASS. Use empty findings only when nothing was observed; never invent defects to fill the format. Optional `date`, `notes`, `evidence` and `inspectedCaptures` add metadata without replacing bindings. Schema-1/2 reports and inline receipts stay readable as history but never PASS new obligations: re-review explicitly and keep the prior version, because the checker never rewrites history or upgrades it to KEEP. A narrowed plan is a changed obligation to justify, not a way to erase missing evidence.
+The checker verifies every planned combination and relationship, so dropping renders, relabelling a viewport, omitting CSS or losing a dependency loses PASS. Empty findings mean nothing was observed; never invent defects. Optional `date`, `notes`, `evidence` and `inspectedCaptures` add metadata only. Schema-1/2 reports and inline receipts stay readable as history but never PASS new obligations: re-review and keep the prior version, since history is never rewritten. A narrowed plan is a changed obligation to justify.
 
-Exit dispositions: `0/PASS` for a current, consistent recorded KEEP; `2/BLOCKED` for unresolved blocking findings, REVISE or REJECT, or user rejection; `3/REVIEW_REQUIRED` for missing or unknown judgment, incomplete coverage or stale evidence; `1` for invalid structure, paths or I/O. Output separates `integrity`, `visual_verdict`, `method` and `user_acceptance`. PASS confirms the recorded acceptance conditions, not aesthetic truth, independent review or user acceptance; local JSON and hashes are an audit trail, not tamper-proof attestation.
-
-The correction journal closes a visual criterion with such a report or with a host-browser capture ([close a visual criterion](correction-memory.md#close-a-visual-criterion)); its commands, schemas and exit codes are in [correction-memory.md](correction-memory.md#checked-journal-commands).
+Exit dispositions: `0/PASS` for a current, consistent recorded KEEP; `2/BLOCKED` for blocking findings, REVISE or REJECT, or user rejection; `3/REVIEW_REQUIRED` for missing judgment, incomplete coverage or stale evidence; `1` for invalid structure, paths or I/O. Output separates `integrity`, `visual_verdict`, `method` and `user_acceptance`. PASS confirms recorded conditions, not aesthetic truth, independent review or acceptance, and the JSON trail is not tamper-proof. The correction journal closes a visual criterion with such a report or a host capture ([close a visual criterion](correction-memory.md#close-a-visual-criterion); [commands](correction-memory.md#checked-journal-commands)).
 
 ## Check an Exact Opaque Color Pair
 
@@ -406,16 +390,14 @@ python <skill-directory>/scripts/contrast.py "#18201B" "#F4F0E6" --large
 python <skill-directory>/scripts/contrast.py "#5A6B61" "#F4F0E6" --non-text --json
 ```
 
-The helper accepts `#RGB`, `#RRGGBB`, `rgb(r,g,b)`, `black` and `white`, and uses WCAG relative-luminance math. The default minimum is 4.5:1 (1.4.3 AA normal text); `--large` requires 3:1 for large text (at least 24px, or 18.66px bold); `--non-text` requires 3:1 for UI component boundaries, states and graphical objects (1.4.11). `--minimum <ratio>` sets any finite ratio from 1 to 21 and cannot combine with a preset. Choosing the criterion for the rendered element stays your judgment; output and JSON name the criterion used.
-
-Exit status is `0` PASS, `1` FAIL and `2` invalid input: an unsupported color, alpha, an out-of-range channel or an invalid minimum prints one stderr line. The helper rejects alpha, gradients, images and effects because those need rendered measurement.
+It accepts `#RGB`, `#RRGGBB`, `rgb(r,g,b)`, `black` and `white` and uses WCAG relative luminance. The default minimum is 4.5:1 (1.4.3); `--large` needs 3:1 (at least 24px, or 18.66px bold); `--non-text` needs 3:1 for component boundaries, states and graphics (1.4.11); `--minimum <ratio>` sets any finite 1–21 and cannot combine with a preset. Choosing the criterion stays your judgment, and the output names the one used. Exit `0` PASS, `1` FAIL, `2` invalid input (unsupported color, alpha, out-of-range channel, invalid minimum). Alpha, gradients, images and effects need rendered measurement.
 
 ## Interpret Output Honestly
 
-- `source_role` explains what a dataset can contribute; `warning` states what it cannot decide.
-- Empty or weak lexical results mean the local snapshot has little evidence, not that the design space is empty.
-- Retrieved numeric claims are unverified until traced to a credible current source; unsupported chart thresholds, threshold-bearing use/avoid prose, grades, palette values, library advice and interaction prescriptions are not in the bundled catalog at all.
-- A contrast calculation applies only to its exact solid pair; imagery, gradients, transparency, effects and states need contextual measurement.
+- `source_role` says what a dataset can contribute; `warning` says what it cannot decide.
+- Empty or weak lexical results mean little local evidence, not an empty design space.
+- Retrieved numeric claims stay unverified until traced to a credible current source; unsupported chart thresholds, threshold-bearing use/avoid prose, grades, palettes, library advice and interaction prescriptions are absent from the bundled catalog.
+- A contrast result covers only its exact solid pair.
 - A font stays `UNKNOWN` until its files, script coverage, license, metrics, representative content, fallbacks and rendering are checked.
-- An SVG `PASS` is structural only; an icon sheet proves that the declared contexts rendered, not that the selected glyph is optically or semantically best.
-- The CLI cannot select or certify architecture, art direction, imagery, custom asset quality, motion, usability or taste; those need causal comparison and rendered evidence.
+- An SVG `PASS` is structural only, and an icon sheet proves that contexts rendered, not that a glyph is best.
+- The CLI cannot select or certify architecture, art direction, imagery, custom asset quality, motion, usability or taste.
