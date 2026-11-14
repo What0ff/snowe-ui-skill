@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="figure" content="surface-crammed.png 1200x760@1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self' 'unsafe-inline'; img-src data:">
+<title>Crammed catalog editor</title>
+<link rel="stylesheet" href="surface.css">
+</head>
+<body>
+<div class="topbar"><span class="shop">Tsuru Tea</span><span>Orders</span><span class="on">Catalog</span><span>Customers</span></div>
+<div class="layout">
+<main>
+<div class="page-head"><div><h1>Catalog</h1><span class="count">8 teas</span></div><div class="actions"><span class="btn quiet">Export CSV</span></div></div>
+
+<section class="add-form">
+<h2>Add a tea</h2>
+<div class="add-grid">
+<div class="field"><label>Name</label><div class="input empty">Tea name</div></div>
+<div class="field"><label>Origin</label><div class="input empty">Country, region</div></div>
+<div class="field"><label>Type</label><div class="input select empty">Choose</div></div>
+<div class="field"><label>Price per 50 g</label><div class="input empty">€</div></div>
+<div class="field"><label>Stock (bags)</label><div class="input empty">0</div></div>
+<span class="btn fill">Add tea</span>
+</div>
+</section>
+
+<table>
+<thead><tr><th>Tea</th><th>Origin</th><th>Type</th><th>Price per 50 g</th><th>Stock</th></tr></thead>
+<tbody>
+<tr><td class="name">Gyokuro Asahi</td><td>Japan, Uji</td><td>Green</td><td class="num">€18.50</td><td class="num">12</td></tr>
+<tr><td class="name">Dong Ding Oolong</td><td>Taiwan, Nantou</td><td>Oolong</td><td class="num">€14.00</td><td class="num">30</td></tr>
+<tr class="selected"><td class="name">Darjeeling First Flush</td><td>India, Darjeeling</td><td>Black</td><td class="num">€12.00</td><td class="num low">4 · low</td></tr>
+<tr><td class="editor-cell" colspan="5">
+<div class="editor-grid">
+<div class="field wide"><label>Name</label><div class="input">Darjeeling First Flush</div></div>
+<div class="field"><label>Origin</label><div class="input">India, Darjeeling</div></div>
+<div class="field"><label>Type</label><div class="input select">Black</div></div>
+<div class="field"><label>Price per 50 g</label><div class="input">€12.00</div></div>
+<div class="field"><label>Stock (bags)</label><div class="input">4</div></div>
+<div class="field wide"><label>Brewing</label><div class="input">85 °C · 3 min</div></div>
+<div class="field wide"><label>Tasting notes</label><div class="input area">Muscatel grape, apricot, light astringency. First picking of the spring harvest.</div></div>
+</div>
+<div class="editor-actions"><span class="btn fill">Save tea</span><span class="btn quiet">Cancel</span></div>
+</td></tr>
+<tr><td class="name">Sencha Fukamushi</td><td>Japan, Shizuoka</td><td>Green</td><td class="num">€9.50</td><td class="num">41</td></tr>
+<tr><td class="name">Bai Mudan</td><td>China, Fujian</td><td>White</td><td class="num">€11.00</td><td class="num">18</td></tr>
+<tr><td class="name">Hojicha</td><td>Japan, Kyoto</td><td>Roasted green</td><td class="num">€7.50</td><td class="num out">0 · sold out</td></tr>
+<tr><td class="name">Assam Second Flush</td><td>India, Assam</td><td>Black</td><td class="num">€8.00</td><td class="num">26</td></tr>
+<tr><td class="name">Lapsang Souchong</td><td>China, Fujian</td><td>Black</td><td class="num">€10.50</td><td class="num">9</td></tr>
+</tbody>
+</table>
+</main>
+</div>
+</body>
+</html>

@@ -102,6 +102,14 @@ Techniques:
 
 Intentional resizing is fine when the user asked for it, for example expanding a disclosure or dragging a splitter. Prove stability by comparing the bounding boxes of the frame regions and the active control in state A and state B at the same viewport. Unrequested movement is a defect.
 
+![Hold card whose button and frame move between states](figures/geometry-shifting.png)
+
+**Shifting:** against the dashed idle edges, the loading button grows wider, and the on-hold and error messages push the button down and the card taller.
+
+![The same hold card with reserved geometry](figures/geometry-reserved.png)
+
+**Reserved:** a fixed-width button and a reserved message line below it keep every edge on the guides in all four states.
+
 ### Bounded Lists and Scroll Ownership
 
 Decide which surface owns scrolling. A document/content page may grow naturally; a list inside a height-bounded dialog, dashboard panel or persistent workspace should scroll in its assigned region while its heading and actions remain reachable. Establish the parent height/max-height and shrinking chain, use `min-height:0` on the relevant flex/grid children, and apply `overflow:auto` to the list owner. Do not hide rows, shrink text or put overflow on an unrelated ancestor to disguise the failure.

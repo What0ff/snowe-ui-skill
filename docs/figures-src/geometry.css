@@ -1,0 +1,48 @@
+/* Shared page for geometry-shifting and geometry-reserved.
+   One library hold card in four states. Dashed guides mark the idle
+   button's top and right edges and the idle card's bottom edge. */
+:root {
+  --bg: #f2f1ee;
+  --card: #ffffff;
+  --line: #dedbd4;
+  --ink: #1f2328;
+  --muted: #5f6670;
+  --brand: #1f4e79;
+  --brand-soft: #e6eef7;
+  --error: #b3261e;
+  --guide: #c2185b;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--bg); }
+body {
+  position: relative;
+  width: 1040px; height: 300px; overflow: hidden;
+  padding: 26px 38px 0;
+  color: var(--ink);
+  font: 14px/1.4 "Segoe UI Variable Text", "Segoe UI", sans-serif;
+}
+.states { display: grid; grid-template-columns: repeat(4, 220px); gap: 28px; align-items: start; }
+.state-label { font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 16px; }
+.title { font: 600 17px/1.25 Georgia, serif; }
+.meta { font-size: 13px; color: var(--muted); margin-top: 2px; }
+.avail { font-size: 13px; margin: 10px 0 14px; }
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  height: 38px; padding: 0 16px; border-radius: 7px;
+  background: var(--brand); color: #fff; font-weight: 600; white-space: nowrap;
+}
+.btn.on { background: var(--brand-soft); color: var(--brand); box-shadow: inset 0 0 0 1px var(--brand); }
+.btn svg { flex: none; }
+.note { margin: 0 0 10px; font-size: 13px; color: var(--muted); }
+.note.error, .msg.error { color: var(--error); }
+
+/* reserved geometry */
+.reserved .btn { width: 168px; padding: 0; }
+.msg { min-height: 20px; margin-top: 8px; font-size: 13px; color: var(--muted); }
+
+.legend { position: absolute; left: 38px; bottom: 16px; display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--muted); }
+.legend i { width: 26px; border-top: 1px dashed var(--guide); }
+.guide { position: absolute; z-index: 3; pointer-events: none; }
+.guide.h { left: 24px; right: 24px; border-top: 1px dashed var(--guide); }
+.guide.v { border-left: 1px dashed var(--guide); }

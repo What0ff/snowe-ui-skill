@@ -1,0 +1,83 @@
+/* Shared page for dropdown-before and dropdown-after.
+   The page, trigger and menu text are identical; only the open surface's
+   width, position, padding, edge and elevation differ. */
+:root {
+  --paper: #f3eee6;
+  --ink: #201c18;
+  --ink-soft: #5b5248;
+  --rule: #d9cfbf;
+  --panel: #fbf8f2;
+  --clay: #b5532c;
+  --clay-deep: #9c4322;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--paper); }
+body {
+  position: relative;
+  width: 390px; height: 844px; overflow: hidden;
+  color: var(--ink);
+  font: 15px/1.45 "Segoe UI Variable Text", "Segoe UI", sans-serif;
+}
+header {
+  display: flex; align-items: center; justify-content: space-between;
+  height: 64px; padding: 0 20px; border-bottom: 1px solid var(--rule);
+}
+.wordmark { font-weight: 800; font-size: 19px; letter-spacing: 0.16em; }
+.trigger {
+  display: inline-flex; align-items: center; gap: 8px;
+  height: 40px; padding: 0 12px; border-radius: 8px;
+  background: #e7dfd2; font-weight: 600; font-size: 14px;
+}
+.trigger svg { display: block; }
+
+.hero {
+  position: relative; margin: 20px 20px 0; height: 300px; border-radius: 14px; overflow: hidden;
+  background: var(--clay);
+}
+.hero::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 74px; background: var(--clay-deep); }
+.bag {
+  position: absolute; z-index: 1; left: 26px; top: 46px; width: 136px; height: 200px;
+  background: #efe5d3; border-radius: 6px 6px 4px 4px; transform: rotate(-5deg);
+  box-shadow: 0 14px 22px rgba(60, 22, 6, 0.35);
+  padding: 34px 14px 0; color: var(--ink);
+}
+.bag::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 18px; background: #d8ccb7; border-radius: 6px 6px 0 0; }
+.bag .brand { font-weight: 800; font-size: 10px; letter-spacing: 0.18em; }
+.bag .origin { margin-top: 18px; font: 600 26px/1 Georgia, serif; }
+.bag .detail { margin-top: 6px; font-size: 11px; color: var(--ink-soft); }
+.bag .weight { position: absolute; left: 14px; bottom: 14px; font-size: 11px; font-weight: 600; }
+
+main { padding: 26px 20px 0; }
+h1 { margin: 0; font: 700 31px/1.08 "Segoe UI Variable Display", "Segoe UI", sans-serif; letter-spacing: -0.015em; }
+main p { margin: 14px 0 22px; color: var(--ink-soft); }
+.cta-row { display: flex; align-items: center; gap: 16px; }
+.cta { display: inline-flex; align-items: center; height: 48px; padding: 0 20px; background: var(--ink); color: var(--paper); font-weight: 600; border-radius: 6px; }
+.price { font-size: 13px; color: var(--ink-soft); }
+
+/* the open menu */
+.menu { position: absolute; z-index: 5; margin: 0; padding: 0; list-style: none; background: var(--panel); }
+.menu li { font-weight: 600; font-size: 16px; }
+
+.before .menu {
+  top: 64px; left: 16px; right: 16px;
+  padding: 26px 24px;
+  border: 2px solid var(--ink);
+  box-shadow: 0 26px 50px rgba(32, 28, 24, 0.28);
+}
+.before .menu li { padding: 18px 0; }
+
+.after .menu {
+  top: 58px; right: 20px; min-width: 184px;
+  padding: 6px 0;
+  border: 1px solid rgba(32, 28, 24, 0.12); border-radius: 10px;
+  box-shadow: 0 10px 26px rgba(32, 28, 24, 0.16);
+}
+.after .menu li { display: flex; align-items: center; height: 44px; padding: 0 16px; }
+.after .menu li + li { border-top: 1px solid #e8e0d3; }
+
+.week { margin: 40px 20px 0; border-top: 1px solid var(--rule); }
+.week h2 { margin: 18px 0 4px; font-size: 13px; font-weight: 600; color: var(--ink-soft); }
+.week .row { display: grid; grid-template-columns: 1fr auto; padding: 14px 0; border-bottom: 1px solid var(--rule); }
+.week .row b { font-weight: 600; font-size: 16px; }
+.week .row span { color: var(--ink-soft); font-size: 13px; }
+.week .row .cost { grid-row: 1 / span 2; grid-column: 2; align-self: center; color: var(--ink); font-size: 15px; font-weight: 600; }

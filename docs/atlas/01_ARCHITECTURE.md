@@ -27,6 +27,7 @@ Repository-only deterministic contracts, five rendered implementations, an opera
 | Browser regression | `scripts/browser-smoke.mjs`, `scripts/ui-proof.mjs`, `scripts/titlebot-pilot.mjs` | Dependency-free Chrome/CDP lifecycle; benchmark checks; declared-role visibility/action identity; isolated pilot interactions and captures. |
 | Single-page hierarchy pilot | `evals/titlebot-hierarchy/` | Existing Title Bot contract snapshot, fictional distinct per-title data, local functional UI, pre-component page map, bound captures and separate self-review; no production API. |
 | Public showcase | GitHub Pages source branch `codex/doppler-pages` | Publishes a snapshot of `benchmarks/soda-campaign/` at the branch root with `.nojekyll`; repository Actions stay disabled. The checked-in Pages workflow is an inactive alternative. |
+| Reference figure sources | `docs/figures-src/` | HTML sources and `render.mjs` for most `references/figures/*.png`; only the rendered PNGs enter the product. |
 | Public contributor layer | root `AGENTS.md`/`CONTRIBUTING.md`, `docs/atlas/`, allowlisted `.agents/skills/atlas-maintainer/`, `scripts/`, `tests/`, `.github/` | Durable contributor guidance, architecture, maintenance tooling, CI, exact standalone installation/update, and regressions; never copied into the product. |
 | Maintainer-local state | ignored `.codex/`, non-allowlisted `.agents/`, `work/`, `outputs/`, `logs/`, handoffs, and personal configuration | Optional task/session continuity only; absent from public clones and never authoritative for repository behavior. |
 

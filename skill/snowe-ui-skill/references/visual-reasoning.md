@@ -10,7 +10,7 @@ The warm filled **New scan** action in the upper right is the only large chromat
 
 ![Stronger completed-state hierarchy](figures/attention-directed.png)
 
-The result moves to the start of the reading column and becomes a heading. Its action inherits the warm fill; New scan becomes subordinate. Progress remains visible as corroboration on the right. The heading, count and action form one proximity group; the divider closes that group before optional details. The table retains compact repeated rows, so correcting the current state does not inflate the entire page.
+The result moves to the start of the reading column and becomes a heading. Its action inherits the warm fill; New scan becomes subordinate. The fill appears nowhere else: progress turns neutral and Completed keeps the green of the history rows. Progress remains visible as corroboration on the right. The heading, count and action form one proximity group; the divider closes that group before optional details. The table retains compact repeated rows, so correcting the current state does not inflate the entire page.
 
 **Mechanism:** redistribute contrast, scale, area and proximity toward the current question. **Prediction:** the completed result should be distinguishable before a new operation without deleting progress or history. **Counterexample:** during a running scan, progress can legitimately lead. A destructive action should not acquire prominence merely because it comes next. Re-render running/error states after this repair; they require different emphasis.
 

@@ -43,13 +43,15 @@ Choose the coordinate space explicitly. An absolutely positioned local surface u
 
 ## Compare a weak shell with a resolved one
 
-![Earlier oversized navigation surface](figures/dropdown-before.png)
+Both images show the same page, open trigger and three items; only the open surface changes.
 
-This short three-destination list spends substantial space on generic padding and a heavy outer frame. On larger narrow/tablet contexts a full-width shell can separate the small option group from its trigger even more. It fits the viewport, but that alone does not make its density or layering intentional.
+![Oversized full-width navigation surface](figures/dropdown-before.png)
 
-![Refined surface in its real trigger context](figures/dropdown-after.png)
+This short three-destination list spans the screen and spends substantial space on generic padding and a heavy outer frame, leaving its items far from the Menu trigger. On larger narrow/tablet contexts a full-width shell can separate the small option group from its trigger even more. It fits the viewport, but that alone does not make its density or layering intentional.
 
-The resolved example caps the panel to its content role, positions it from the actual Menu owner, groups consistent rows and uses a quieter edge/elevation. Type remains part of the page system. The open-state and keyboard proof are separate from the closed header. This is an authored navigation example, not a universal width/radius/row-height preset. A long searchable list or touch-oriented modal task can be equally strong with a wider sheet.
+![Menu surface sized to its role under its trigger](figures/dropdown-after.png)
+
+The resolved example caps the panel to its content role, positions it from the actual Menu owner, groups consistent rows and uses a quieter edge/elevation. It sits over an empty corner of the hero image and leaves the wordmark clear. Type remains part of the page system. The open-state and keyboard proof are separate from the closed header. This is an authored navigation example, not a universal width/radius/row-height preset. A long searchable list or touch-oriented modal task can be equally strong with a wider sheet.
 
 ## Verify the state, then judge its finish
 

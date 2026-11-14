@@ -37,6 +37,14 @@ Signs of over-hiding:
 
 The main surface holds what the current decision needs. Everything else is one visible step away, with its trigger next to the object it affects.
 
+![Catalog with an always-open add form and an inline edit form](figures/surface-crammed.png)
+
+**Crammed:** the inline edit form pushes five of the eight teas below the fold, and the rarely used Add a tea form stays open with a second filled button.
+
+![The same catalog with the edit form in a side panel](figures/surface-allocated.png)
+
+**Allocated:** the same fields open in a side panel beside the list, so all eight teas stay visible with the edited row marked, and adding a tea is one button away.
+
 ## Keep Context and Control
 
 - Opening a detail keeps the list position, filters, selection and entered data. Closing returns focus to the trigger.

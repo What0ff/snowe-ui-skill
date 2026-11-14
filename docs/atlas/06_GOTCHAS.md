@@ -6,6 +6,7 @@
 - `agents/openai.yaml` and copied `LICENSE` are intentional product files.
 - Root `AGENTS.md`, `docs/atlas/`, `scripts/atlas/`, and `.agents/skills/atlas-maintainer/` are durable public contributor infrastructure. Their AI-assisted use does not make them private or installable product content.
 - `.codex/`, non-allowlisted `.agents/` content, work/output/log directories, raw memory/handoff files, and personal runtime configuration remain ignored. Never solve a missing-public-context defect by publishing those artifacts.
+- Reference figures ship in every install. Their HTML sources stay in `docs/figures-src/`; re-render with `render.mjs` (120 KB per figure) on Windows, because other systems substitute the system fonts the committed PNGs use. A caption that no longer matches its image teaches the image, not the caption.
 - The structural generator reads tracked files plus nonignored candidate additions. If a durable path is accidentally ignored it disappears from `repo-map.md`; if private state becomes visible it can contaminate the map. Run both context and atlas checks after ignore-rule changes.
 
 ## Imports and console behavior
