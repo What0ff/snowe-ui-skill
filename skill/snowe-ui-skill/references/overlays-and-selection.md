@@ -26,7 +26,7 @@ Size width from content and the trigger relationship: a value list may align wit
 
 - Give rows deliberate proportions and align visible icon mass with text baselines; finish custom glyphs in the row with [icon-craft.md](icon-craft.md).
 - Separate groups with a small interval or quiet rule. Options get no individual cards, headings or wells; a header or footer earns space only for search, orientation, commitment or recovery.
-- Keep selected, keyboard-active, hover, pressed and disabled distinguishable: hover is not selection, and a chosen value survives focus moving away. A check, weight or shape cue can support color.
+- Keep selected, keyboard-active, hover, pressed and disabled distinguishable: hover is not selection, and a chosen value survives focus moving away. A check, weight or shape cue can support color; unrelated badges cannot.
 - Resolve fill, edge, shadow and corners against the real substrate: a heavy border and large shadow can overpower a quiet page, a faint surface can vanish into a table.
 - Keep focus paint readable against the surface it touches; on-color option text does not make a good outer ring ([incident](failure-patterns.md#a-focus-ring-that-vanished-beside-a-dark-button)). Check clipping at padding, corners and scroll edges.
 - Bound long lists at the actual scroll owner with search and actions reachable, the selected option visible and the last row reachable by wheel, touch and keyboard. Never hide options to tidy a screenshot.

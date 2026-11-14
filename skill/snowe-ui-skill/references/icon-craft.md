@@ -34,7 +34,7 @@ The stroke advice above applies to outline glyphs. Solid and duotone forms are b
 ## Review at three scales
 
 1. **Full composition:** can people tell actions, objects and status apart? Does the family belong to the product rather than a collage of drawings, and does any custom detail pull more attention than its label or task?
-2. **Native owner:** compare exact candidates in the same real button or row with identical content, size, background and state, for apparent size and weight, baseline, label gap and recognition without a tooltip. Include a dense repeated context and an overlay when they consume the owner.
+2. **Native owner:** compare exact candidates in the same real button or row with identical content, size, background and state, for apparent size and weight, baseline, label gap and recognition without a tooltip, including a blur or squint test. Include a dense repeated context and an overlay when they consume the owner.
 3. **Diagnostic detail:** lossless 2× captures expose joins, counters, clipping, fractional scaling, doubled strokes and raster artifacts; then return to native size, because enlargement diagnoses but cannot certify compact recognition.
 
 The [portable observation contract](cli-reference.md#observe-in-a-browser) binds whole-page and owner detail captures. Declare the native slot, DPR, theme and input, and put the SVG and metadata, CSS owner, shared tokens, font and label and any pseudo-element backing in dependency scope. Test the states actually used (normal, pressed, selected, disabled, focus, forced colors where supported), not every permutation.
