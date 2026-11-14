@@ -149,7 +149,7 @@ Sketch each at the primary surface with real content at one width; judge the thu
 - fails legibility or contrast in its own palette;
 - breaks in a repeated item, form, long heading or narrow width.
 
-Render survivors with a secondary context and select with [exploration-protocol.md](exploration-protocol.md#7-converge-without-false-precision). When the brief asks for distinctive character, recognizability and product-specific invention count beside clarity and fit.
+Render survivors with a secondary context and select with [exploration-protocol.md](exploration-protocol.md#6-converge-without-false-precision). When the brief asks for distinctive character, recognizability and product-specific invention count beside clarity and fit.
 
 ## Worked Derivations
 

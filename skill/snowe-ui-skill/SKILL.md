@@ -57,7 +57,7 @@ Start with the high-salience consequence (the failure that matters if the change
 
 Depth is provisional. Escalate when proof reveals a Portfolio uncertainty, a newly affected owner or consumer, or an invariant that cannot be repaired locally. De-escalate when evidence closes the uncertainty.
 
-Consequence changes proof intensity independently of process breadth: a safety-, privacy-, financial- or accessibility-critical invariant can stay Direct, but its proof covers failure and recovery, input and assistive modes, adverse states and rollback. Creative search breadth is independent too ([search breadth](references/exploration-protocol.md#0-prerequisite-and-evidence-by-depth)).
+Consequence changes proof intensity independently of process breadth: a safety-, privacy-, financial- or accessibility-critical invariant can stay Direct, but its proof covers failure and recovery, input and assistive modes, adverse states and rollback. Creative search breadth is independent too ([search breadth](references/exploration-protocol.md#0-prerequisite-and-depth)).
 
 ## Route the Work
 

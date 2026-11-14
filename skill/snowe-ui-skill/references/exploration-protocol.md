@@ -1,175 +1,106 @@
 # Causal Design Inquiry
 
-Use this reference when the answer is not already a verified invariant or routine platform convention. It replaces recipe selection with a compact loop that can widen, compare, commit, and reopen decisions as evidence changes.
+Use this reference when the answer is not already a verified invariant or routine platform convention. It replaces recipe selection with a loop that widens, compares, commits and reopens decisions as evidence changes.
 
-## 0. Prerequisite and Evidence by Depth
+## 0. Prerequisite and Depth
 
-Start only after the depth record in SKILL.md exists; this protocol does not recalibrate. Resolve the requested target first: search exact user-supplied product, feature, route or visible-label identifiers in file paths and file content, then follow manifests, indexes, entrypoints and rendered routes. A filename miss is not absence evidence.
+Start only after the depth record in [SKILL.md](../SKILL.md#calibrate-consequence-and-change-surface) exists; this protocol does not recalibrate. Resolve the requested target first: search exact user-supplied product, feature, route or visible-label identifiers in file paths and file content, then follow manifests, indexes, entrypoints and rendered routes. A filename miss is not absence evidence.
 
-| Depth | Use this protocol | Evidence required |
+| Depth | Use | Record, then stop when |
 |---|---|---|
-| Direct | No. Implement, rerender and stop at the affected invariant. Do not open a packet, broad research, candidate set, architecture exercise, asset/motion exploration, or evaluation route. | Repository and rendered context, the affected invariant and state, targeted implementation and rerender |
-| Focused | Sections 2–8 for the one open choice: baseline plus the smallest credible challenger, or several directions for an open visual thesis, inside fixed owners and product contracts | Causal driver and expected consequence; baseline plus credible alternatives; same-content comparison at the affected sizes and states; accepted decision and revisit trigger |
-| Portfolio | The full protocol, for the named uncertainty in goals, topology, journey, content/object relationships, interaction, responsive transformation or system contracts | Whole-journey and content/object model; structurally distinct candidates; proof slices with real content; strongest rejected alternative; implementation contract and rendered learning |
+| Direct | None. Implement, rerender and stop at the affected invariant. Do not open a packet, broad research, candidate set, architecture exercise, asset/motion exploration, or evaluation route. | The affected invariant and its rendered proof |
+| Focused | Sections 1 and 3–8 for the one open choice, inside fixed owners and product contracts | Causal driver and expected consequence; baseline and the closest credible challenger, or several directions for an open visual thesis; same-content comparison at the affected sizes, states and sibling contexts; accepted decision and revisit trigger. Stop when that decision and its sibling proof close. |
+| Portfolio | All sections, for the named uncertainty | Whole journey and content/object model; structurally different candidates; proof slices with real content; strongest rejected alternative; implementation contract in the decision ledger. Stop when the whole-journey uncertainty and its proof slices close. |
 
-Search breadth follows the open decision, not process breadth: a known page job can support distinct visual theses without a whole-journey workshop. Candidate count and expressive intensity are not success criteria. Escalate when a supposedly routine answer proves weak, generic, inaccessible or contradicted and the failure reaches a material contract or another owner or consumer; de-escalate when further search is unlikely to change the decision. Record the trigger either way.
+Within each section, Focused work applies only what can change its affected decision, and steps marked Portfolio wait for an explicit escalation. A narrower route never owes Portfolio candidates, ledger entries or whole-journey framing before it stops.
 
-## 2. Frame a Decision Graph
+Search breadth follows the open decision, not process breadth: a known page job can support distinct visual theses without a whole-journey workshop. For an open visual choice, name what is fixed, what can be invented and what rendered difference would justify another direction, then explore until evidence stops changing the choice. Candidate count and expressive intensity are not success criteria. When depth changes, record the trigger.
 
-Use one row only for choices that shape architecture, perception, behavior, assets, or substantial implementation cost:
+## 1. Frame a Decision Graph
+
+Use one row only for a choice that shapes architecture, perception, behavior, assets or substantial implementation cost:
 
 ```text
 driver → design move → expected user/business consequence → evidence → risk → revisit trigger
 ```
 
-Drivers can include:
+Drivers include user outcome, context, frequency, ability, confidence or risk; business model, positioning, conversion, trust or service obligation; product objects, content relationships, real data, quantity or lifecycle; verified brand, culture, geography, language, material or history; platform, input, performance, accessibility or delivery constraints.
 
-- user outcome, context, frequency, ability, confidence, or risk;
-- business model, positioning, conversion, trust, or service obligation;
-- product objects, content relationships, real data, quantity, or lifecycle;
-- verified brand, culture, geography, language, material, or history;
-- platform, input, performance, accessibility, or delivery constraints.
+A move can be new and needs no catalog label. Its consequence must be observable in content, behavior, hierarchy, conversion, comprehension, recognition or operational efficiency.
 
-A design move can be new. Do not require a catalog label. The expected consequence must be observable in content, behavior, hierarchy, conversion, comprehension, recognition, or operational efficiency.
+## 2. Find the Live Trade-offs (Portfolio)
 
-For Focused work, keep this graph to the affected decision and its owner/sibling proof. Portfolio work may open a graph for each material whole-experience choice; loading this reference does not require a Portfolio journal.
+Build alternatives from tensions the brief actually contains, not by changing everything: broad discovery versus guided selection; immediate action versus education and confidence; editorial immersion versus fast comparison; expert density versus occasional-user guidance; fixed narrative versus self-directed exploration; expressive character versus high-stakes calm; visual proof versus performance and content flexibility; persistent context versus focused progression.
 
-## 3. Find the Live Trade-offs
+Candidates take meaningful positions on those tensions. Two candidates that organize the same content and journey identically are visual variants, not different solutions.
 
-This is a Portfolio expansion stage. Focused work compares only the live trade-off in the affected context and, when shared, representative sibling contexts; it does not create whole-journey candidate directions without an explicit escalation.
-
-Do not create alternatives by changing everything. Identify tensions the brief actually contains, for example:
-
-- broad discovery versus guided selection;
-- immediate action versus education and confidence;
-- editorial immersion versus fast product comparison;
-- expert density versus occasional-user guidance;
-- fixed narrative versus self-directed exploration;
-- expressive brand character versus high-stakes calm;
-- visual proof versus performance and content flexibility;
-- persistent context versus focused progression.
-
-Portfolio candidate directions should take meaningful positions on those tensions. If two Portfolio candidates organize the same content and journey identically, they are probably visual variants, not different solutions.
-
-## 4. Expand the Evidence Space
-
-At Direct or Focused depth, gather only repository/product evidence and targeted current sources that can change the affected invariant or decision. Portfolio work may expand across the whole journey, object model, and system when its uncertainty surface requires it; broad research is never implied by loading this reference.
+## 3. Expand the Evidence Space
 
 Gather evidence that can change the decision:
 
-- repository behavior, components, content, analytics, assets, and accepted decisions;
+- repository behavior, components, content, analytics, assets and accepted decisions;
 - user or stakeholder evidence supplied in the task;
-- current primary standards and official platform/package sources;
-- real current products, category conventions, and counterexamples;
+- current primary standards and official platform or package sources;
+- real current products, category conventions and counterexamples;
 - credible usability or domain research;
 - local Snowe datasets as analogs and vocabulary;
-- generated sketches, prototypes, content models, and visual candidates.
+- generated sketches, prototypes, content models and visual candidates.
 
-Do not search everything. External exploration has value when the decision is current, unfamiliar, high-impact, market/brand-defining, or likely to benefit from real examples. Skip it when the answer is native, accepted, low-risk, or already saturated. See [research-and-evidence.md](research-and-evidence.md).
+Research externally when the decision is current, unfamiliar, high-impact, market- or brand-defining, or benefits from real examples; skip it when the answer is native, accepted, low-risk or saturated ([research-and-evidence.md](research-and-evidence.md)). Keep discovery and selection separate enough to notice anchoring; hard constraints such as accessibility, license, platform and unavailable content apply throughout.
 
-Keep discovery and selection separate enough to notice anchoring, but do not ignore hard constraints such as accessibility, license, platform incompatibility, or unavailable content.
+## 4. Generate Candidates From Causes
 
-## 5. Generate Candidates From Causes
-
-Whole-system candidate directions and whole-journey candidate records are Portfolio-only unless calibration explicitly escalates. Rebuilding the internal hierarchy of one page with a known job is Focused; use [page-hierarchy.md](page-hierarchy.md) before selecting its components. Focused work records the current baseline and closest credible challenger for the affected decision, with sibling contexts when a shared owner is involved; it does not require a candidate to explain the whole journey, navigation, page jobs, art direction, assets, or motion.
-
-For an open visual thesis, the Focused comparison may include several materially different directions scoped to that same page or owner. Use [art-direction-gate.md](art-direction-gate.md) to derive and render them from product evidence. Retain the closest rejected direction and decisive difference; do not expand their records into unrelated journey, asset or motion obligations.
+For one page with a known job, map it with [page-hierarchy.md](page-hierarchy.md) before choosing components. An open visual thesis can take several materially different directions scoped to the same page or owner, derived and rendered with [art-direction-gate.md](art-direction-gate.md); keep the closest rejected direction and the decisive difference.
 
 For each Portfolio candidate:
 
 1. State its organizing thesis in plain language.
 2. Trace its key moves to drivers.
-3. Show how the whole journey, content/object model, navigation, page jobs, art direction, assets, interaction, and responsive behavior reinforce that thesis.
+3. Show how the whole journey, content/object model, navigation, page jobs, art direction, assets, interaction and responsive behavior reinforce that thesis.
 4. Name the trade-off it accepts.
 5. Identify the assumption most likely to invalidate it.
 
-At least one Portfolio candidate should be synthesized from the evidence rather than inherited from the nearest local pattern whenever the catalog does not represent the strongest answer. This is not a novelty quota: a familiar architecture can still win when the task and evidence support it.
+Synthesize at least one Portfolio candidate from the evidence when the nearest local pattern is not the strongest answer; this is not a novelty quota, and a familiar architecture can still win. A rationale of "more creative", "more premium", "more modern" or "easier to implement" counts only once translated into observable behavior and perception.
 
-Do not generate a Portfolio candidate whose only rationale is “more creative,” “more premium,” “more modern,” or “easier to implement.” Translate those claims into observable behavior and perception.
+## 5. Prototype Proof Slices
 
-## 6. Prototype Proof Slices
+Test the decision that separates candidates before polishing complete concepts. Choose the smallest slice that can invalidate a candidate:
 
-Choose a proof slice for the calibrated depth: Direct uses the affected state/invariant; Focused uses the affected comparison and sibling context when shared; Portfolio may prototype the riskiest whole-journey, architecture, or system slice. A Focused icon, interaction, or component proof does not become a site-map or hero workshop.
-
-The slice examples below are Portfolio-oriented when they describe a journey, topology, or opening composition. Direct and Focused select only the example that can invalidate their affected invariant or decision.
-
-Do not implement complete polished concepts before testing the decision that separates them.
-
-Choose the smallest slice that can invalidate a candidate:
-
-- site map and navigation transition;
+- site map and navigation transition (Portfolio);
 - catalog discovery and comparison moment;
 - first transaction step and recovery;
 - article discovery into sustained reading;
 - dense exception triage and action;
-- hero or opening composition with real offer, price, and proof;
-- type/image relationship at actual crop and long copy;
-- custom icon beside established neighbors at 16/20/24px;
+- opening composition with real offer, price and proof (Portfolio);
+- type and image at actual crop and long copy;
+- custom icon beside established neighbors at 16/20/24 px;
 - state transition with and without motion;
 - mobile reordering at the layout's pressure width.
 
-Keep content, state, viewport, and requirements identical when comparing candidates. A moodboard, style name, package page, prompt, or isolated asset is discovery evidence—not a proof slice.
+Keep content, state, viewport and requirements identical across candidates. A moodboard, style name, package page, prompt or isolated asset is discovery evidence, not a proof slice.
 
-## 7. Converge Without False Precision
+## 6. Converge Without False Precision
 
-Direct and Focused apply only the criteria relevant to the affected invariant or decision. Portfolio applies the whole set when its material uncertainty requires it; architecture/content resilience and full identity/asset/motion criteria are not mandatory for an unrelated Focused correction.
-
-Use `KEEP`, `REVISE`, `REJECT`, or `UNKNOWN` per relevant criterion:
-
-- causal fit;
-- user and business outcome;
-- architecture and content resilience;
-- task/conversion clarity;
-- identity and coherence;
-- accessibility and localization;
-- responsive and interaction behavior;
-- asset truth and provenance;
-- performance and implementation feasibility.
-
-Do not add the statuses into a taste score. Some criteria are disqualifying, others are trade-offs. Explain the decisive difference.
+Give each relevant criterion a [verdict](quality-gates.md#explicit-visual-disposition): causal fit; user and business outcome; architecture and content resilience; task or conversion clarity; identity and coherence; accessibility and localization; responsive and interaction behavior; asset truth and provenance; performance and implementation feasibility. Statuses never add up to a taste score: some criteria disqualify, others trade off. Explain the decisive difference.
 
 Selection order:
 
-1. Reject violations of required outcomes, facts, accessibility, safety, content, platform, or scope.
-2. Treat unknowns as explicit risk and prototype or research them when they can change the winner.
+1. Reject violations of required outcomes, facts, accessibility, safety, content, platform or scope.
+2. Treat unknowns as explicit risk; prototype or research them when they can change the winner.
 3. Prefer the candidate with the strongest causal fit and real proof.
-4. Apply implementation cost after the meaningful experience alternatives are understood, while respecting hard feasibility throughout.
+4. Weigh implementation cost after the meaningful experience alternatives are understood, while respecting hard feasibility throughout.
 5. Hybridize only compatible moves that become one coherent thesis.
 
-Ask for a user decision only when viable candidates imply materially different business or brand positions and the user owns that choice. Continue autonomously on reversible implementation details.
+Ask the user only when viable candidates imply materially different business or brand positions and the user owns that choice. Decide reversible implementation details yourself.
 
-## 8. Commit and Reopen
+## 7. Commit and Reopen
 
-Direct records the affected invariant and proof. Focused records the affected causal decision, owner/sibling proof, accepted baseline/challenger outcome, and revisit trigger. Only Portfolio records the accepted whole-experience design in the full implementation contract and durable decision journal. Include the revisit trigger—for example new brand assets, a wider catalog, user-test failure, localization, performance data, or a platform change.
+Record what the depth table names, with a revisit trigger such as new brand assets, a wider catalog, a failed user test, localization, performance data or a platform change.
 
-Apply the reopen triggers below only when they reach the calibrated change surface. A whole-journey, architecture, or unrelated asset/motion trigger is an escalation signal, not a new Focused obligation.
+Reopen a decision when real content breaks the architecture, the rendered hierarchy contradicts the intended consequence, a custom or generated asset loses to the simpler alternative, motion obscures or delays the state change, an intermediate width exposes a weak composition premise, external evidence invalidates an assumption, or implementation cost materially changes the feasible set. A trigger outside the calibrated change surface is an escalation signal, not a new Focused obligation. Do not keep a weak premise because it already produced code or polished assets.
 
-Reopen a decision when:
+## 8. Stop
 
-- real content breaks the architecture;
-- rendered hierarchy contradicts the intended consequence;
-- the custom or generated asset loses to the simpler alternative;
-- motion obscures or delays the state change;
-- intermediate width reveals a weak composition premise;
-- external evidence invalidates a current assumption;
-- implementation cost changes the feasible set materially.
-
-Do not preserve a weak premise because it has already produced code or polished assets.
-
-## 9. Stop
-
-Direct stops when the affected invariant is proved; Focused stops when the affected decision and sibling-system proof are closed; Portfolio stops when its whole-journey uncertainty and required proof slices are closed. A narrower route never has to satisfy Portfolio-style candidate, journal, or whole-journey obligations before it stops.
-
-The expansion checks below are Portfolio-oriented. Direct and Focused use only the checks that can change their affected proof; they do not need a representative candidate for every unrelated trade-off.
-
-Stop expanding when:
-
-- every live trade-off has a representative candidate or an evidence-backed exclusion;
-- new sources and sketches repeat existing approaches;
-- proof slices expose a decisive difference;
-- the accepted decision has no unresolved blocker;
-- further change cannot be tied to a driver.
-
-This is evidence saturation, not exhaustion of the internet or every visual possibility.
+Stop where the depth table says. Portfolio stops expanding when every live trade-off has a representative candidate or an evidence-backed exclusion, new sources and sketches repeat existing approaches, proof slices expose a decisive difference, the accepted decision has no unresolved blocker, and further change cannot be tied to a driver. This is evidence saturation, not exhaustion of every possibility.
 
 <!-- End of the operative inquiry protocol. Notes after this marker are non-operative evidence and cannot widen a calibrated route. -->
