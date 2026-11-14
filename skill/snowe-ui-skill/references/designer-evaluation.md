@@ -20,7 +20,7 @@ findings, corrections, and rerenders
 
 A generated plan alone can reveal anchoring or bureaucracy but cannot prove visual quality, interaction, or responsive coherence.
 
-Use the method/verdict distinction in [quality-gates.md](quality-gates.md#explicit-visual-disposition). For sequential work without another evaluator, label the second pass as self-review; do not call it blind or independent. A stronger report contract demonstrates reliable bookkeeping. Better generation or criticism still needs repeated observed tasks and fair comparisons.
+Use the method/verdict distinction in [quality-gates.md](quality-gates.md#verdicts). For sequential work without another evaluator, label the second pass as self-review; do not call it blind or independent. A stronger report contract demonstrates reliable bookkeeping. Better generation or criticism still needs repeated observed tasks and fair comparisons.
 
 ## Evaluate With Findings, Not a Creativity Score
 

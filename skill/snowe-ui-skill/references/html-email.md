@@ -54,7 +54,7 @@ Clients either leave colors alone, partially invert light backgrounds and dark t
 - Cover light and dark mode, images on and off, and phone width.
 - Measure HTML size after the sending platform inlines styles and rewrites links.
 - Send real tests: click every link and the unsubscribe flow, read the plain-text part, and listen once with a screen reader such as VoiceOver.
-- A browser preview is not client proof; record untested clients as `UNKNOWN` ([dispositions](quality-gates.md#dispositions)).
+- A browser preview is not client proof; record untested clients as `UNKNOWN` ([dispositions](quality-gates.md#verdicts)).
 
 ## Check
 

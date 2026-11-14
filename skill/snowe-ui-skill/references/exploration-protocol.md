@@ -81,7 +81,7 @@ Keep content, state, viewport and requirements identical across candidates. A mo
 
 ## 6. Converge Without False Precision
 
-Give each relevant criterion a [verdict](quality-gates.md#explicit-visual-disposition): causal fit; user and business outcome; architecture and content resilience; task or conversion clarity; identity and coherence; accessibility and localization; responsive and interaction behavior; asset truth and provenance; performance and implementation feasibility. Statuses never add up to a taste score: some criteria disqualify, others trade off. Explain the decisive difference.
+Give each relevant criterion a [verdict](quality-gates.md#verdicts): causal fit; user and business outcome; architecture and content resilience; task or conversion clarity; identity and coherence; accessibility and localization; responsive and interaction behavior; asset truth and provenance; performance and implementation feasibility. Statuses never add up to a taste score: some criteria disqualify, others trade off. Explain the decisive difference.
 
 Selection order:
 
