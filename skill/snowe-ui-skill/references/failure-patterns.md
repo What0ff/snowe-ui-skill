@@ -23,7 +23,7 @@ Use before accepting an original visual design, and whenever a result looks gene
 | Invented stats, testimonials, client logos ("10k+ teams") | Filler social proof | Is each claim supplied or verified? | Omit unverified proof; show real facts | Real data provided by the user |
 | Generic marketing copy ("Unlock the power of…", "seamless") | Template language | Could the sentence describe any product? | Specific claims from product facts, in the audience's words | — |
 | Interface text describing itself ("This dashboard helps you…") | Model narrating its work | Does the line help the next action? | Remove it; let headings and labels name things | — |
-| `01 / 02 / 03` on unordered sections | Template polish | Does order carry meaning? | See the [ordinal audit](page-hierarchy.md#audit-user-facing-text) | Real steps, chapters, references |
+| `01 / 02 / 03` on unordered sections | Template polish | Does order carry meaning? | Descriptive headings and grouping; see the [numbering incident](#section-numbering-added-as-polish) | Real steps, chapters, references |
 | Dark theme in pure `#000` and `#fff` with neon accents | Inverting a light theme | Do elevated surfaces get lighter, and is chroma reduced? | Off-black base, lighter elevated layers, softened text white, less saturated accents | OLED-specific products that verified the choice |
 | Hover lift or scale on every card | Default interactivity cue | Is the element actually interactive? | Hover only on interactive elements, with a change that doesn't shift layout | — |
 
@@ -69,3 +69,47 @@ Specific past failures, kept as worked examples. Each entry names the general le
 - **Symptom:** a five-item navigation menu spanned the full header width at tablet size.
 - **Cause:** `left: 0; right: 0` was convenient, not chosen.
 - **Lesson:** size a secondary surface from its content and its relationship to the trigger.
+
+### Section numbering added as polish
+
+- **Symptom:** landing-page benefits, services, testimonials and ordinary sections carried `01:`, `02:`, leading-zero counters (including CSS-generated counters) or oversized indices. The numbers implied sequence, priority or progress among unordered peers and competed with the real headings.
+- **Cause:** numbering was applied as a default polish device instead of being treated as a content relationship.
+- **Fix:** descriptive headings and grouping for unordered peers; the unsupported counter removed at its shared owner, not swapped for letters, Roman numerals or icons.
+- **Lesson:** a visible ordinal is a content relationship. Keep it when changing the order changes the meaning, when visitors use the numbers to navigate or refer back, or when a supplied design establishes it; a familiar benchmark's numbering is not evidence for the current brief. Keep process and dependency order, chapters and cross-references, identifiers, factual quantities and requested numbering. When numbering is an open identity choice, compare the same content without it, keeping useful grouping and links, and name the orientation or identity benefit; a style adjective is not one, and no number count or blanket no-numbers rule proves quality. Internal planning lists are separate from the visible page. A reported recurrence blocks the affected visual `KEEP` until the current result is repaired and inspected.
+
+### A field caption that pushed its input off the row axis
+
+- **Symptom:** in a mixed field, filter and action row, a field's caption enlarged its wrapper, so the input sat off the axis of the neighboring filters and buttons.
+- **Cause:** alignment was applied to the wrappers rather than to the visible controls.
+- **Fix:** align the actual input and button boxes on the axis the composition intends (control center, bottom edge or text baseline are different contracts) while the caption stays with its field, for example a shared controls row with a separate caption, or a correctly aligned field wrapper.
+- **Lesson:** separate visible controls from label, help and error wrappers. Inspect CSS flex/grid or Figma Auto Layout at the real owner before changing offsets, and measure the actual input and button owners in the browser (raster measurements from a design file are estimates). Do not compensate with per-button translations or force equal heights where different roles are justified. Check settled fonts, long labels and help, wrapping and sibling states; a multiline toolbar may need a new relationship. No page overflow does not prove peer alignment. A material unexplained shift is `REVISE` until the layout owner is fixed and rerendered; a supplied staggered design stays the target.
+
+### Accents that kept collapsing to pale tints
+
+- **Symptom:** an open accent choice repeatedly landed on the lightest ramp steps, as if "professional", "calm", "accessible" or dark mode implied pastel; the correction then overshot into a fully tinted page skin.
+- **Cause:** hue, chroma, lightness and painted area were treated as one dial, and the rationale was never revisited.
+- **Fix:** a same-content intensity comparison within the intended product direction, judging fill, foreground and on-color text separately with compositing and interactive states.
+- **Lesson:** choose hue, chroma, lightness and area separately; a light color can be strongly chromatic. Revisit the color rationale rather than oscillating between pale accents and a tinted skin. Neither neutrality nor maximum saturation proves quality, and a specified color or accepted role needs no new palette workshop.
+
+### Pills replaced with square buttons
+
+- **Symptom:** after a correction against decorative capsules, controls and icon backings were converted to square corners; the competing emphasis remained and buttons departed from the reference curvature.
+- **Cause:** the finding was about an unnecessary wrapper or emphasis, but the repair changed only the shape.
+- **Fix:** remove the unnecessary wrapper and rebalance spacing and type; derive control edges from the reference or the control family, independently of card and image edges.
+- **Lesson:** a circle-to-square conversion, a smaller radius, recoloring or lower opacity does not by itself resolve an unnecessary backing, and replacing every pill with a rectangle does not repair hierarchy. An oversized or inappropriately squared button fails its control family or target even when it is clickable.
+
+### A variable font reported as ExtraLight
+
+- **Symptom:** font inspection reported a face named "ExtraLight", which looked like proof that the wrong weight was rendering.
+- **Cause:** a variable font can report its named base face while rendering another valid axis value; the CSS alias, the internal family name and the PostScript name are different things.
+- **Lesson:** verify the file and axis mapping and the actual rendered result before diagnosing synthesis or substitution.
+
+### A screenshot narrower than its layout
+
+- **Symptom:** a capture was described by its image width or the browser launch flag, but it showed a crop of a wider layout.
+- **Lesson:** read the browser's actual layout viewport (CSS width and device pixel ratio) before naming the width a review covers.
+
+### Report notes inside the product screen
+
+- **Symptom:** fixture notices, source hashes, test results and implementation disclaimers rendered inside customer screenshots, styled as product copy.
+- **Lesson:** keep them in the review report or an inspector outside the target surface. The surrounding report must still say clearly which data is fictional and which screens are prototypes.

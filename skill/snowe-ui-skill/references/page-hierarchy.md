@@ -30,13 +30,13 @@ visible cue and owner / competing element / observed render / disposition
 
 Name the actual content, not only “primary” and “secondary.” Explain how placement, scale, type weight, grouping, contrast or disclosure makes it distinguishable, and what could compete with it. “Use a journal” or “make the palette neutral” names a treatment; it does not establish that the treatment improves this task. Preserve useful technical data and a calm accepted system when they work.
 
-Inspect meaningful transitions. While a scan runs, progress and affected kingdoms may lead; on failure, the problem and recovery may lead; after completion, the result and next useful operation may lead. These are a worked example, not a universal dashboard recipe. Stable geometry can remain valuable: change emphasis only where the user's question changes, without making panels jump or adding ceremonial animation.
+Inspect meaningful transitions. While a scan runs, progress and affected records may lead; on failure, the problem and recovery may lead; after completion, the result and next useful operation may lead. These are a worked example, not a universal dashboard recipe. Stable geometry can remain valuable: change emphasis only where the user's question changes, without making panels jump or adding ceremonial animation.
 
 Author the intended order and cues before evaluating the candidate. Compare them with what the full render actually emphasizes; do not derive the expectation from the same DOM/CSS being checked. A self-review's observed attention is a reasoned visual judgment, not measured gaze or a timed user study. If structure is clear but its visual expression remains weak, use [art-direction-gate.md](art-direction-gate.md) for that bounded choice before accepting it.
 
 ## Use References at the Requested Level
 
-Identify what the user likes: hierarchy, density, navigation, typography, material, interaction or another specific attribute. Inspect the actual referenced surface. A vendor's marketing homepage is not evidence of its dashboard hierarchy. Cloudflare dashboards can illustrate distinct resource context, navigation, actionable work and secondary tools, but do not prescribe their palette, sidebar, module count or content model to unrelated products.
+Identify what the user likes: hierarchy, density, navigation, typography, material, interaction or another specific attribute. Inspect the actual referenced surface. A vendor's marketing homepage is not evidence of its dashboard hierarchy. Transfer an observed relationship, such as distinct resource context or secondary tools, not the reference's palette, sidebar, module count or content model.
 
 Record which observed relationship transfers and why. Retain the target product's confirmed semantics, rights and identity. Keep direct-copy conformance separate from reference-inspired work. An engineering fixture or a visually rejected candidate cannot become a design-quality reference merely because its tests passed.
 
@@ -44,11 +44,11 @@ Record which observed relationship transfers and why. Retain the target product'
 
 Classify visible text by its job: domain data, state, action, useful guidance, or implementation/reporting detail. A phrase earns space when it helps orientation, a decision, an operation, identification or recovery. Remove descriptions that merely restate a heading, explain an obvious empty container, or expose internal implementation vocabulary without helping that task.
 
-Treat a visible ordinal as a content relationship before choosing its graphic treatment. On a landing page, benefits, services, testimonials and ordinary sections do not become ordered steps merely because there are several of them. Ask whether changing their order changes the meaning, whether visitors use the numbers to navigate or refer back, or whether an explicit supplied design establishes that identity. Start unordered peer content with descriptive headings and grouping; do not add `01:`, `02:`, leading-zero counters or oversized indices as a default polish device. A familiar benchmark's numbering is not evidence for the current brief. If numbering is an open identity choice, compare the same content without it and explain the actual orientation or identity benefit; a style adjective alone does not establish one. Preserve genuine process/dependency order, useful chapters/cross-references, identifiers, factual quantities and explicitly requested numbering. Internal planning lists are separate from the customer's visible page.
+Treat a visible ordinal as a content relationship: unordered peers get descriptive headings and grouping, not `01:`/`02:` prefixes ([incident](failure-patterns.md#section-numbering-added-as-polish)).
 
 Keep legitimate technical content in technical products. IDs, command aliases, API concepts and parameters can be essential data. Move occasional reference material into an accessible disclosure when it is not needed for the main operation; do not hide the primary task's evidence. Explain errors in user language, preserve recovery and put appropriate diagnostic detail outside the main flow. Never use a global forbidden-word list.
 
-Keep fixture notices, source hashes, test results and implementation disclaimers in the review report or inspector outside the target surface. They must not enter a customer screenshot or be styled as product copy. The surrounding report must still clearly identify fictional data and prototypes.
+Keep fixture notices, hashes, test results and disclaimers out of the target surface ([incident](failure-patterns.md#report-notes-inside-the-product-screen)).
 
 ## Audit Actions by Meaning
 
