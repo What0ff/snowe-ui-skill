@@ -1,0 +1,47 @@
+{
+  "name": "billing-outline",
+  "asset_type": "interface-icon",
+  "role": "billing agent that issues invoices",
+  "grid": 24,
+  "live_area": {
+    "min_x": 2,
+    "min_y": 2,
+    "max_x": 22,
+    "max_y": 22
+  },
+  "drawing_language": {
+    "mode": "stroke",
+    "stroke_width": 1.5,
+    "linecap": "round",
+    "linejoin": "round",
+    "corner_language": "2-unit corner radius, round caps, round joins on a 24-unit grid",
+    "detail_budget": "4 construction shapes at medium detail density; gaps checked at 16 px"
+  },
+  "target_sizes": [
+    16,
+    20,
+    24,
+    32
+  ],
+  "source": "glyph.py family relay-agents",
+  "license": "project-owned demo family",
+  "accessibility_owner": "owning labelled control; SVG decorative (aria-hidden)",
+  "provenance": {
+    "kind": "original",
+    "creator": "Snowe iso.py demo (orchestration hub v2, Relay Supply)",
+    "source_ref": "relay-agents.spec.json#billing",
+    "reviewed": "2026-11-14",
+    "sha256": "feca6fa234f38e541746a0d1c12c3c0d8c1ad3324aaa54599d8cc94cfafe86fb"
+  },
+  "evidence": {
+    "source": {
+      "kind": "local",
+      "path": "../relay-agents.spec.json",
+      "sha256": "9c90981100beeee34492cf9b5a35a3faac4582c26773dadf90d55e264cb59ff6",
+      "locator": "#billing"
+    },
+    "license": {
+      "kind": "project-owned"
+    }
+  }
+}

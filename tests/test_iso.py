@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import math
 import re
@@ -17,6 +18,7 @@ ISO = SCRIPTS / "iso.py"
 EXAMPLES = ROOT / "docs" / "iso-examples"
 sys.path.insert(0, str(SCRIPTS))
 
+import glyph  # noqa: E402
 import iso  # noqa: E402
 
 
@@ -470,6 +472,505 @@ class CliTests(unittest.TestCase):
             result = self.run_cli("render", str(path), "-o", str(Path(temp) / "out.svg"))
             self.assertEqual(0, result.returncode)
             self.assertIn("iso.py: warning:", result.stderr)
+
+
+
+# --------------------------------------------------------------------------
+# Schema 1.1
+
+V2 = EXAMPLES / "orchestration-hub-v2.scene.json"
+# SHA-256 of the schema 1.0 demo SVGs as generated before schema 1.1 existed (main at 6cb21c5).
+V1_DIGESTS = {
+    "agent-hub": "7af0aa3f3e379a87e25f7817e2b8d4db90e236674ba4e796028096cfbf560323",
+    "data-platform": "692202406d40c3bb129dc2bba0997066a00120381d963997bb6ed70b94a49978",
+    "data-platform-narrow": "97b8f6a948eb1e8329afbd848421cd43706f168729d64b1b4130631a4e95af0c",
+}
+ICON_SVG = ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
+            'stroke-width="1.5"><path d="M4 12 L20 12"/><circle cx="12" cy="12" r="6"/></svg>')
+
+
+def tech(*objects: dict, **settings) -> dict:
+    return scene(*objects, **{"style": "technical", **settings})
+
+
+def link(source: str, target: str, **extra) -> dict:
+    return {"type": "connector", "from": source, "to": target, **extra}
+
+
+def route_of(data: dict) -> dict:
+    """Route the scene's last object (a connector) under the scene's own schema rules."""
+    normalized = iso.normalize_scene(data)
+    items = normalized["items"]
+    solids = [item for item in items if item["type"] not in ("connector", "ground-grid")]
+    errors: list[str] = []
+    connect = iso._connector_v11 if normalized["v11"] else iso._connector
+    result = connect(iso.Projection(), items[-1], {item["id"]: item for item in solids}, solids, errors)
+    if errors:
+        raise AssertionError(errors)
+    return result
+
+
+def with_icons(data: dict, icons: dict[str, str]) -> tuple[str, dict]:
+    """Render a scene after writing its icon files to a temporary directory."""
+    with tempfile.TemporaryDirectory() as temp:
+        names = {}
+        for name, text in icons.items():
+            path = Path(temp) / f"{name}.svg"
+            path.write_text(text, encoding="utf-8")
+            names[name] = path.name
+        return iso.render({**data, "icons": names}, temp)
+
+
+def solid_of(svg_text: str, source_id: str, prefix: str = "iso-") -> ET.Element:
+    return [g for g in groups(svg_text) if g.get("id") == f"{prefix}{source_id}"][0]
+
+
+def matrix_of(element: ET.Element) -> list[float]:
+    return [float(v) for v in re.search(r"matrix\(([^)]*)\)", element.get("transform")).group(1).split()]
+
+
+class SchemaVersionTests(unittest.TestCase):
+    def test_v1_scenes_report_schema_1_0_and_new_features_report_1_1(self):
+        self.assertEqual("1.0", iso.render(scene(box("a", 0, 0)))[1]["schema"])
+        self.assertEqual("1.1", iso.render(tech(box("a", 0, 0)))[1]["schema"])
+        self.assertEqual("1.1", iso.render(scene(box("a", 0, 0), schema="1.1"))[1]["schema"])
+        self.assertEqual("1.0", iso.render(scene(box("a", 0, 0), schema="1.0"))[1]["schema"])
+
+    def test_declared_1_0_refuses_1_1_features(self):
+        for data in (scene(box("a", 0, 0), schema="1.0", style="technical"),
+                     scene({"id": "t", "type": "tile", "x": 0, "y": 0, "w": 1, "d": 1}, schema="1.0"),
+                     scene(box("a", 0, 0), box("b", 3, 0), link("a", "b", end="port"), schema="1.0"),
+                     scene(box("a", 0, 0), colors={"shadow": "#000"}, schema="1.0")):
+            with self.subTest(data=data), self.assertRaises(iso.SceneError) as caught:
+                iso.render(data)
+            self.assertIn("schema 1.0 does not include", str(caught.exception))
+        with self.assertRaises(iso.SceneError) as caught:
+            iso.render(scene(box("a", 0, 0), schema="2.0"))
+        self.assertIn("must be one of 1.0, 1.1", str(caught.exception))
+
+    def test_v1_demo_scenes_stay_byte_identical_to_the_pre_1_1_generator(self):
+        for name, digest in V1_DIGESTS.items():
+            with self.subTest(scene=name):
+                svg, manifest = iso.render_file(EXAMPLES / f"{name}.scene.json")
+                self.assertEqual(digest, hashlib.sha256(svg.encode("utf-8")).hexdigest())
+                self.assertEqual("1.0", manifest["schema"])
+                self.assertNotIn('"level"', json.dumps(manifest))
+
+    def test_v1_styles_keep_their_exact_stylesheet(self):
+        svg, _ = iso.render(scene(box("a", 0, 0)))
+        style = ET.fromstring(svg).find(SVG + "style").text
+        for added in ("iso-glass", "iso-port", "iso-sh", "iso-inv", "--iso-shadow"):
+            self.assertNotIn(added, style)
+
+
+class TechnicalStyleTests(unittest.TestCase):
+    def style_of(self, svg_text: str) -> str:
+        return ET.fromstring(svg_text).find(SVG + "style").text
+
+    def test_hairline_defaults_and_detail_thinner_than_outline(self):
+        svg, manifest = iso.render(tech(box("a", 0, 0)))
+        style = self.style_of(svg)
+        outline = float(re.search(r"\.iso-o\{[^}]*stroke-width:([\d.]+)", style).group(1))
+        detail = float(re.search(r"\.iso-d\{[^}]*stroke-width:([\d.]+)", style).group(1))
+        self.assertEqual((1.0, 0.6), (outline, detail))
+        self.assertIn("iso-technical", ET.fromstring(svg).get("class"))
+        colors = iso.DEFAULT_COLORS["technical"]
+        self.assertGreater(luminance(colors["top"]), luminance(colors["left"]))
+        self.assertGreater(luminance(colors["left"]), luminance(colors["right"]))
+        self.assertEqual([], manifest["warnings"])
+        _, manifest = iso.render(tech(box("a", 0, 0), stroke=0.8, detail_stroke=1.2))
+        self.assertIn("thinner than outlines", manifest["warnings"][0])
+
+    def test_every_technical_paint_is_an_iso_variable(self):
+        svg, _ = iso.render_file(V2)
+        root = ET.fromstring(svg)
+        style = self.style_of(svg)
+        var = r"var\(--iso-[a-z]+,#[0-9a-f]{6}\)"
+        for prop, value in re.findall(r"(?<![-\w])(fill|stroke):([^;}]+)", style):
+            if value == "none":
+                continue
+            with self.subTest(prop=prop, value=value):
+                self.assertRegex(value, rf"^(?:{var}|color-mix\(in srgb,{var} \d+%,{var}\))$")
+        self.assertIn("var(--iso-shadow,", style)
+        for element in root.iter():
+            for attribute in ("fill", "stroke", "style", "color", "stop-color"):
+                self.assertIsNone(element.get(attribute), f"{element.tag} carries a raw {attribute}")
+
+    def test_shadows_form_one_layer_for_ground_objects_and_stay_in_group_when_raised(self):
+        data = tech(box("a", 0, 0), {"id": "pad", "type": "slab", "x": 3, "y": 0, "w": 3, "d": 3},
+                    box("b", 3.5, 0.5, z=0.25))
+        svg, manifest = iso.render(data)
+        layer = [g for g in groups(svg) if g.get("data-kind") == "shadows"]
+        self.assertEqual(1, len(layer))
+        self.assertEqual("iso-shadow-layer", layer[0].get("id"))
+        self.assertIn("shadows", [element["kind"] for element in manifest["elements"]])
+        self.assertIn("iso-sh", [path.get("class") for path in solid_of(svg, "b")])
+        self.assertNotIn("iso-sh", [path.get("class") for path in solid_of(svg, "a")])
+        plain, _ = iso.render(tech(box("a", 0, 0), shadows=False))
+        self.assertNotIn('class="iso-sh"', plain)
+        with self.assertRaises(iso.SceneError) as caught:
+            iso.render(tech(box("shadow-layer", 0, 0)))
+        self.assertIn("reserved", str(caught.exception))
+
+    def test_mesh_grid_fades_by_level(self):
+        svg, _ = iso.render(tech({"id": "g", "type": "ground-grid", "x": 0, "y": 0, "w": 10, "d": 10, "pattern": "mesh"},
+                                 box("a", 4, 4)))
+        classes = [path.get("class") for path in solid_of(svg, "g")]
+        self.assertGreater(len(classes), 3)
+        self.assertTrue(all(cls.startswith("iso-grid iso-f") for cls in classes))
+        flat, _ = iso.render(tech({"id": "g", "type": "ground-grid", "x": 0, "y": 0, "w": 4, "d": 4, "pattern": "mesh",
+                                   "fade": False}, box("a", 1, 1)))
+        self.assertEqual(["iso-grid iso-f10"], [path.get("class") for path in solid_of(flat, "g")])
+
+
+class PrimitiveTests(unittest.TestCase):
+    def classes(self, svg_text: str, source_id: str) -> list[str]:
+        return [child.get("class") for child in solid_of(svg_text, source_id)]
+
+    def test_building_details(self):
+        plain = {"id": "b", "type": "building", "x": 0, "y": 0, "w": 3, "d": 2, "floors": 4}
+        rich = dict(plain, w=4, windows="curtain", entrance="x+", plinth=0.3, roof_unit=True, sign="Head office",
+                    sign_face="y+", glyph="bars")
+        svg, manifest = iso.render(scene(rich))
+        classes = self.classes(svg, "b")
+        for expected in ("iso-glass", "iso-mull", "iso-r"):
+            self.assertIn(expected, classes)
+        self.assertEqual(["Head office"], [t.text for t in ET.fromstring(svg).iter(SVG + "text")])
+        self.assertEqual([], manifest["warnings"])
+        item = iso.normalize_scene(scene(rich))["items"][0]
+        self.assertEqual((-0.3, 4 + iso.CANOPY_DEPTH, -0.3, 2.3), tuple(round(v, 9) for v in item["space"][:4]))
+        self.assertAlmostEqual(iso.PLINTH_H + 4 * 0.55 + iso.SIGN_H, item["space"][5])
+        self.assertAlmostEqual(iso.PLINTH_H, item["body"][4])
+        canopy = iso.normalize_scene(scene(dict(plain, entrance="y+")))["items"][0]
+        self.assertAlmostEqual(2 + iso.CANOPY_DEPTH, canopy["space"][3])
+        banded, _ = iso.render(scene(dict(plain, windows="bands", entrance="y+")))
+        self.assertIn("iso-glass", self.classes(banded, "b"))
+
+    def test_tree_shapes_planters_and_groups(self):
+        for shape in ("oval", "pine"):
+            svg, _ = iso.render(scene({"id": "t", "type": "tree", "x": 0, "y": 0, "w": 1, "h": 2, "shape": shape,
+                                       "planter": True}))
+            self.assertIn("iso-o", self.classes(svg, "t"))
+        with self.assertRaises(iso.SceneError) as caught:
+            iso.render(scene({"id": "t", "type": "tree", "x": 0, "y": 0, "w": 1, "h": 1.2, "shape": "oval"}))
+        self.assertIn("h >= 1.4 * w", str(caught.exception))
+        positions = None
+        for layout in ("row", "grid", "scatter"):
+            data = scene({"id": "g", "type": "trees", "x": 0, "y": 0, "w": 4, "d": 3, "count": 5, "size": 0.6,
+                          "layout": layout, "seed": 7})
+            positions = iso.normalize_scene(data)["items"][0]["positions"]
+            with self.subTest(layout=layout):
+                self.assertEqual(5, len(positions))
+                self.assertEqual(positions, iso.normalize_scene(json.loads(json.dumps(data)))["items"][0]["positions"])
+                for cx, cy in positions:
+                    self.assertTrue(0.3 - 1e-9 <= cx <= 3.7 + 1e-9 and 0.3 - 1e-9 <= cy <= 2.7 + 1e-9)
+                for i, a in enumerate(positions):
+                    for b in positions[i + 1:]:
+                        self.assertGreaterEqual(max(abs(a[0] - b[0]), abs(a[1] - b[1])), 0.6 - 1e-9)
+        other = iso.normalize_scene(scene({"id": "g", "type": "trees", "x": 0, "y": 0, "w": 4, "d": 3, "count": 5,
+                                           "size": 0.6, "layout": "scatter", "seed": 8}))["items"][0]["positions"]
+        self.assertNotEqual(positions, other)
+        with self.assertRaises(iso.SceneError) as caught:
+            iso.render(scene({"id": "g", "type": "trees", "x": 0, "y": 0, "w": 2, "d": 1, "count": 5, "size": 0.6}))
+        self.assertIn("along the row", str(caught.exception))
+
+    def test_tile_stacks_its_mark_above_its_label(self):
+        svg, manifest = iso.render(scene({"id": "t", "type": "tile", "x": 0, "y": 0, "w": 2, "d": 2, "glyph": "database",
+                                          "label": "Records"}))
+        group = solid_of(svg, "t")
+        text_y = matrix_of(group.find(SVG + "text"))[5]
+        mark_y = [y for child in group if child.get("class") == "iso-g" for _, y in path_points(child.get("d"))]
+        self.assertLess(max(mark_y), text_y)
+        self.assertEqual([], manifest["warnings"])
+        row, _ = iso.render(scene({"id": "t", "type": "tile", "x": 0, "y": 0, "w": 1.2, "d": 4, "glyph": "chat",
+                                   "label": "Support", "layout": "row", "label_axis": "y"}))
+        self.assertEqual("start", solid_of(row, "t").find(SVG + "text").get("text-anchor"))
+
+    def test_core_layers_cap_and_glyph(self):
+        core = {"id": "c", "type": "core", "x": 0, "y": 0, "w": 4, "d": 4, "glyph": "spark", "label": "Core"}
+        item = iso.normalize_scene(scene(core))["items"][0]
+        self.assertAlmostEqual(0.3 + iso.CORE_PACKAGE_H + 2 * 0.6 + iso.CORE_PLATE_H + iso.CORE_CAP_H, item["space"][5])
+        svg, manifest = iso.render(scene(core))
+        classes = self.classes(svg, "c")
+        for expected in ("iso-t iso-inv", "iso-guide", "iso-node", "iso-gif", "iso-slot"):
+            self.assertIn(expected, classes)
+        self.assertEqual([], manifest["warnings"])
+        flat = iso.normalize_scene(scene(dict(core, layers=0, cap=False)))["items"][0]
+        self.assertAlmostEqual(0.3 + iso.CORE_PACKAGE_H, flat["space"][5])
+        with self.assertRaises(iso.SceneError) as caught:
+            iso.render(scene(dict(core, w=1)))
+        self.assertIn("at least 1.2", str(caught.exception))
+
+    def test_rack_has_slots_seams_and_indicators(self):
+        svg, _ = iso.render(scene({"id": "r", "type": "rack", "x": 0, "y": 0, "w": 1.6, "d": 1.2, "units": 3,
+                                   "label": "Edge", "accent": True}))
+        classes = self.classes(svg, "r")
+        for expected in ("iso-slot", "iso-ledon", "iso-dotf"):
+            self.assertIn(expected, classes)
+        self.assertIn("iso-accent .iso-ledon", svg)
+
+    def test_dashboard_chart_rows_and_series(self):
+        board = {"id": "d", "type": "dashboard", "x": 0, "y": 0, "w": 4, "h": 2.6, "label": "Throughput",
+                 "series": [0.1, 0.4, 0.3, 0.9]}
+        svg, manifest = iso.render(scene(board))
+        classes = self.classes(svg, "d")
+        for expected in ("iso-cl", "iso-area", "iso-bar", "iso-dotf"):
+            self.assertIn(expected, classes)
+        self.assertEqual(3, classes.count("iso-g"))
+        self.assertEqual([], manifest["warnings"])
+        line_only, _ = iso.render(scene(dict(board, chart="line", rows=0)))
+        self.assertNotIn("iso-bar", self.classes(line_only, "d"))
+        for bad in ([0.5], [2, 0.1], "high", [0.1] * 17):
+            with self.subTest(series=bad), self.assertRaises(iso.SceneError):
+                iso.render(scene(dict(board, series=bad)))
+
+    def test_new_builtin_glyphs_render_on_any_face(self):
+        for name in iso.GLYPHS_V11:
+            with self.subTest(glyph=name):
+                svg, manifest = iso.render(scene(box("a", 0, 0, w=2, d=2, glyph=name)))
+                self.assertTrue(any(c.get("class") in ("iso-g", "iso-gf") for c in solid_of(svg, "a")))
+                self.assertEqual("1.1", manifest["schema"])
+
+
+class IconTests(unittest.TestCase):
+    def icon_group(self, svg_text: str, source_id: str = "a") -> ET.Element:
+        return [child for child in solid_of(svg_text, source_id) if child.get("class") == "iso-icon"][0]
+
+    def test_glyph_family_variants_keep_their_paint_roles(self):
+        with tempfile.TemporaryDirectory() as temp:
+            glyph.build_family(ROOT / "docs" / "glyph-examples" / "larder-soft.json", Path(temp) / "family")
+            icons = {variant: (Path(temp) / "family" / variant / "home.svg").read_text(encoding="utf-8")
+                     for variant in ("outline", "solid", "duotone")}
+        expected = {"outline": {"iso-g"}, "solid": {"iso-gf"}, "duotone": {"iso-g", "iso-gf"}}
+        for variant, text in icons.items():
+            with self.subTest(variant=variant):
+                svg, _ = with_icons(scene(box("a", 0, 0, w=2, d=2, icon="home")), {"home": text})
+                children = list(self.icon_group(svg))
+                self.assertEqual(expected[variant], {child.get("class") for child in children})
+                if variant == "duotone":
+                    tint = [c for c in children if c.get("class") == "iso-gf"][0]
+                    self.assertEqual("0.22", tint.get("fill-opacity"))
+
+    def test_icon_matrix_projects_the_viewbox_onto_the_face(self):
+        svg, _ = with_icons(scene(box("a", 0, 0, w=2, d=2, h=1, icon="mark")), {"mark": ICON_SVG})
+        a, b, c, d, e, f = matrix_of(self.icon_group(svg))
+        proj = iso.Projection()
+        frame = iso._face(proj, (0, 2, 0, 2, 0, 1), "top", "x")
+        size = min(frame.h * 0.56, 0.8, frame.w * 0.45)
+        scale = size / 24
+        for got, want in zip((a, b, c, d), (*frame.vec(scale, 0), *frame.vec(0, scale))):
+            self.assertAlmostEqual(want, got, places=3)
+        # Two face points keep the same offset as the drawing origin, so the viewBox maps through the face frame.
+        center = (e + (a + c) * 12, f + (b + d) * 12)
+        corner = (e, f)
+        want_center, want_corner = frame.at(1, 1), frame.at(1 - size / 2, 1 - size / 2)
+        self.assertAlmostEqual(center[0] - corner[0], want_center[0] - want_corner[0], places=2)
+        self.assertAlmostEqual(center[1] - corner[1], want_center[1] - want_corner[1], places=2)
+
+    def test_icons_in_tiles_cards_cores_buildings_and_dashboards(self):
+        objects = [
+            {"id": "t", "type": "tile", "x": 0, "y": 0, "w": 2, "d": 2, "icon": "mark", "label": "Docs"},
+            {"id": "c", "type": "card", "x": 3, "y": 0, "w": 2, "d": 1.4, "icon": "mark", "label": "Agent"},
+            {"id": "k", "type": "core", "x": 6, "y": 0, "w": 3, "d": 3, "icon": "mark"},
+            {"id": "d", "type": "dashboard", "x": 10, "y": 0, "w": 3, "h": 2, "icon": "mark", "label": "Ops"},
+            {"id": "b", "type": "building", "x": 0, "y": 4, "w": 3, "d": 2, "floors": 3, "icon": "mark", "sign": "HQ"},
+        ]
+        svg, manifest = with_icons(scene(*objects), {"mark": ICON_SVG})
+        for source_id in ("t", "c", "k", "d", "b"):
+            with self.subTest(object=source_id):
+                self.icon_group(svg, source_id)
+        self.assertIn("iso-gi", [child.get("class") for child in self.icon_group(svg, "k")])
+        self.assertEqual("1.1", manifest["schema"])
+
+    def test_committed_demo_icons_equal_a_fresh_glyph_build(self):
+        content = (EXAMPLES / "icons-src" / "relay-agents.json").read_bytes()
+        files = glyph.render_family(glyph.compile_family(glyph.parse_spec(content)), content)
+        self.assertEqual(sorted(files), sorted(p.relative_to(EXAMPLES / "icons").as_posix()
+                                               for p in (EXAMPLES / "icons").rglob("*") if p.is_file()))
+        for relative, data in files.items():
+            with self.subTest(file=relative):
+                self.assertEqual(data, (EXAMPLES / "icons" / relative).read_bytes())
+
+    def test_icon_refusals(self):
+        ns = 'xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"'
+        bad = {
+            "script": (f"<svg {ns}><script>x</script></svg>", "not allowed"),
+            "style": (f'<svg {ns} fill="currentColor"><path style="fill:red" d="M0 0L1 1"/></svg>', "'style' is not allowed"),
+            "href": (f'<svg {ns} xmlns:x="http://www.w3.org/1999/xlink"><path x:href="#a" d="M0 0"/></svg>',
+                     "namespaced attribute"),
+            "doctype": (f'<!DOCTYPE svg [<!ENTITY a "b">]><svg {ns}/>', "DOCTYPE"),
+            "color": (f'<svg {ns} fill="#ff0000"><path d="M0 0L2 2"/></svg>', "currentColor or none"),
+            "viewbox": ('<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path d="M0 0L2 2"/></svg>', "viewBox"),
+            "black": (f'<svg {ns}><path d="M0 0L2 2"/></svg>', "default black fill"),
+            "transform": (f'<svg {ns} fill="currentColor"><path transform="scale(2)" d="M0 0L2 2"/></svg>',
+                          "'transform' is not allowed"),
+            "injection": (f'<svg {ns} fill="currentColor"><path d="M0 0 L1 1 &quot;/&gt;&lt;script&gt;"/></svg>',
+                          "path command"),
+            "malformed": ("<svg", "not well-formed"),
+        }
+        for name, (text, fragment) in bad.items():
+            with self.subTest(case=name), self.assertRaises(iso.SceneError) as caught:
+                with_icons(scene(box("a", 0, 0, w=2, d=2, icon="mark")), {"mark": text})
+            self.assertIn(fragment, str(caught.exception))
+        refusals = [
+            (scene(box("a", 0, 0, icon="nope")), "unknown icon 'nope'"),
+            (scene(box("a", 0, 0, icon="m", glyph="dot"), icons={"m": "m.svg"}), "either glyph or icon"),
+            (scene(box("a", 0, 0), icons={"m": "/etc/m.svg"}), "relative path"),
+            (scene(box("a", 0, 0), icons={"m": "m.png"}), "relative path"),
+            (scene(box("a", 0, 0, icon="m"), icons={"m": "missing.svg"}), "is not a file"),
+        ]
+        for data, fragment in refusals:
+            with self.subTest(fragment=fragment), self.assertRaises(iso.SceneError) as caught:
+                iso.render(data, ROOT)
+            self.assertIn(fragment, str(caught.exception))
+
+    def test_icon_output_is_rebuilt_from_parsed_numbers(self):
+        text = ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" fill-rule="evenodd">'
+                '<title>t</title><g opacity=".5"><path d="m2,2 10 0 0,10z M4 4 A2 2 0 0110 10"/></g>'
+                '<rect x="1" y="1" width="3" height="3" rx="1"/><polygon points="1,1 2,2 3,1"/></svg>')
+        svg, _ = with_icons(scene(box("a", 0, 0, w=2, d=2, icon="m")), {"m": text})
+        children = list(self.icon_group(svg))
+        self.assertEqual(["path", "rect", "polygon"], [child.tag[len(SVG):] for child in children])
+        self.assertEqual("m2 2 l10 0 l0 10 Z M4 4 A2 2 0 0 1 10 10", children[0].get("d"))
+        self.assertEqual("0.5", children[0].get("fill-opacity"))
+        self.assertEqual("evenodd", children[0].get("fill-rule"))
+        self.assertEqual("1 1 2 2 3 1", children[2].get("points"))
+
+
+class ConnectorV11Tests(unittest.TestCase):
+    def test_technical_connectors_end_exactly_on_the_visible_face(self):
+        route = route_of(tech(box("a", 0, 0, w=2, d=2), box("b", 0, 5, w=2, d=2), link("a", "b", end="none")))
+        self.assertAlmostEqual(5.0, route["points"][-1][1])
+        route = route_of(tech(box("a", 0, 0, w=2, d=2), box("b", 0, 5, w=2, d=2), link("b", "a")))
+        self.assertEqual("y+", route["to_side"])
+        self.assertAlmostEqual(2.0, route["points"][-1][1])
+        solids = iso.normalize_scene(tech(box("a", 0, 0, w=2, d=2)))["items"]
+        for point in iso._arrow_geometry(route["points"], route["to_side"]):
+            self.assertIsNone(iso._hidden_by(point, solids, iso.Projection().view))
+        legacy = route_of(scene(box("a", 0, 0, w=2, d=2), box("b", 0, 5, w=2, d=2), link("b", "a")))
+        self.assertAlmostEqual(2.3, legacy["points"][-1][1])
+
+    def test_rounded_surfaces_and_cylinders_take_the_end_point(self):
+        route = route_of(tech(box("b", 0, 0, w=2, d=2, radius=0.6), box("a", 5, 0, w=2, d=2),
+                              link("a", "b", from_side="x-", to_side="x+", to_offset=0.8, end="dot")))
+        end = route["points"][-1]
+        self.assertAlmostEqual(0.6, math.hypot(end[0] - 1.4, end[1] - 1.4), places=9)
+        self.assertLess(end[0], 2.0)
+        route = route_of(tech(box("a", 0, 0, w=2, d=2), {"id": "c", "type": "cylinder", "x": 5, "y": 0.5, "w": 2, "h": 1},
+                              link("a", "c", from_side="x+", to_side="x-", to_offset=0.5, end="none")))
+        end = route["points"][-1]
+        self.assertAlmostEqual(1.0, math.hypot(end[0] - 6, end[1] - 1.5), places=9)
+
+    def test_hidden_end_markers_are_rerouted_when_sides_are_automatic(self):
+        objects = (box("a", 0, 0, w=1, d=1, h=1), box("b", 4, -0.5, w=2, d=2, h=1.5))
+        data = tech(*objects, link("a", "b"))
+        route = route_of(data)
+        self.assertIn(route["to_side"], ("x+", "y+"))
+        solids = [item for item in iso.normalize_scene(data)["items"] if item["type"] != "connector"]
+        for point in iso._arrow_geometry(route["points"], route["to_side"]):
+            self.assertIsNone(iso._hidden_by(point, solids, iso.Projection().view))
+        # Schema 1.0 keeps its original route into the hidden face.
+        self.assertEqual("x-", route_of(scene(*objects, link("a", "b")))["to_side"])
+
+    def test_explicit_hidden_markers_are_refused_but_unmarked_ends_pass(self):
+        objects = (box("a", 0, 0, w=1, d=1, h=1), box("b", 4, -0.5, w=2, d=2, h=1.5))
+        with self.assertRaises(iso.SceneError) as caught:
+            iso.render(tech(*objects, link("a", "b", from_side="x+", to_side="x-")))
+        self.assertIn("hidden behind 'b'", str(caught.exception))
+        with self.assertRaises(iso.SceneError) as caught:
+            iso.render(tech(*objects, link("b", "a", from_side="x-", to_side="x+", start="port", end="none")))
+        self.assertIn("start marker", str(caught.exception))
+        iso.render(tech(*objects, link("a", "b", from_side="x+", to_side="x-", end="none")))
+
+    def test_ground_routes_rise_to_attach_heights(self):
+        card = {"id": "card", "type": "tile", "x": 5, "y": 0, "w": 1.2, "d": 3, "h": 0.6}
+        data = tech(box("a", 0, 0, w=2, d=2), card,
+                    link("a", "card", from_side="x+", to_side="x-", route="ground", from_z=0.5, to_z=0.3, end="none"))
+        points = route_of(data)["points"]
+        self.assertEqual((2.0, 1.0, 0.5), tuple(round(v, 9) for v in points[0]))
+        self.assertAlmostEqual(0.0, points[1][2])
+        self.assertAlmostEqual(0.3, points[-1][2])
+        self.assertEqual(points[-1][:2], points[-2][:2])
+        visible = tech(box("a", 4, 4, w=2, d=2), dict(card, x=0, y=0),
+                       link("a", "card", from_side="x-", to_side="x+", to_z=0.3, end="port"))
+        svg, manifest = iso.render(visible)
+        group = [g for g in groups(svg) if g.get("data-kind") == "connector"][0]
+        self.assertEqual(["iso-path", "iso-port", "iso-portc"], [p.get("class") for p in group])
+        self.assertIn("A", group[0].get("d"))
+        self.assertEqual(0.0, [e for e in manifest["elements"] if e["kind"] == "connector"][0]["level"])
+        with self.assertRaises(iso.SceneError) as caught:
+            iso.render(tech(box("a", 0, 0, w=2, d=2), box("b", 5, 0, w=2, d=2), link("a", "b", to_z=3)))
+        self.assertIn("to_z=3 is outside the height of 'b'", str(caught.exception))
+        with self.assertRaises(iso.SceneError) as caught:
+            iso.render(tech(box("a", 0, 0), box("b", 4, 0, z=1), link("a", "b")))
+        self.assertIn("route 'ground'", str(caught.exception))
+
+    def test_risers_cannot_pass_through_solids(self):
+        pad = {"id": "pad", "type": "slab", "x": 4, "y": -1, "w": 4, "d": 3, "h": 0.3}
+        card = {"id": "card", "type": "tile", "x": 5, "y": -0.5, "z": 0.3, "w": 1.2, "d": 2, "h": 0.5}
+        with self.assertRaises(iso.SceneError) as caught:
+            iso.render(tech(box("a", 0, 0, w=2, d=1), pad, card,
+                            link("a", "card", from_side="x+", to_side="x-", route="ground", end="none")))
+        self.assertIn("passes through 'pad'", str(caught.exception))
+
+    def test_junction_dots_mark_via_points_and_detours_route_around(self):
+        data = tech(box("a", 0, 0, w=2, d=2), box("b", 6, 4, w=2, d=2),
+                    link("a", "b", from_side="x+", to_side="y-", via=[[4, 1]], joints=True, end="none"))
+        svg, _ = iso.render(data)
+        group = [g for g in groups(svg) if g.get("data-kind") == "connector"][0]
+        self.assertEqual(1, [p.get("class") for p in group].count("iso-joint"))
+        route = route_of(tech(box("a", 0, 0, w=2, d=2), box("b", 5, 0, w=2, d=2, h=2), link("a", "b", to_side="y+")))
+        self.assertGreater(len(route["points"]), 3)
+        self.assertAlmostEqual(2.0, route["points"][-1][1])
+        self.assertGreater(route["points"][-2][1], 2.0)
+
+    def test_one_flow_path_per_connector_in_the_v2_demo(self):
+        svg, manifest = iso.render_file(V2)
+        connectors = 0
+        for group, element in zip(groups(svg), manifest["elements"]):
+            if element["kind"] != "connector":
+                continue
+            connectors += 1
+            paths = [child for child in group if child.get("pathLength")]
+            self.assertEqual(1, len(paths))
+            self.assertEqual(element["path"], paths[0].get("id"))
+        self.assertEqual(7, connectors)
+
+
+class AnimatedExampleTests(unittest.TestCase):
+    def test_animated_page_embeds_the_committed_svg_and_motion_hooks(self):
+        html = (EXAMPLES / "animated.html").read_text(encoding="utf-8")
+        match = re.search(r"<!-- iso-scene: orchestration-hub-v2 -->\n(.*?)<!-- /iso-scene -->", html, re.S)
+        self.assertIsNotNone(match)
+        self.assertEqual((EXAMPLES / "orchestration-hub-v2.svg").read_text(encoding="utf-8"), match.group(1))
+        for hook in ("prefers-reduced-motion", "IntersectionObserver", ".iso-link", ".iso-path", "getPointAtLength",
+                     'data-role="agent"', "visibilitychange", "animation-play-state: paused"):
+            self.assertIn(hook, html)
+        outside = html.replace("http://www.w3.org/2000/svg", "")
+        self.assertNotIn("http://", outside)
+        self.assertNotIn("https://", outside)
+
+
+class V11DeterminismAndCliTests(unittest.TestCase):
+    def test_v2_demo_is_deterministic_and_resolves_icons_beside_the_scene(self):
+        first = iso.render_file(V2)
+        second = iso.render(json.loads(V2.read_text(encoding="utf-8")), EXAMPLES)
+        self.assertEqual(first[0].encode("utf-8"), second[0].encode("utf-8"))
+        self.assertEqual(json.dumps(first[1]), json.dumps(second[1]))
+        self.assertEqual("1.1", first[1]["schema"])
+        with tempfile.TemporaryDirectory() as temp:
+            out = Path(temp) / "v2.svg"
+            result = subprocess.run([sys.executable, "-I", str(ISO), "render", str(V2), "-o", str(out)], cwd=temp,
+                                    capture_output=True, text=True, encoding="utf-8", check=False)
+            self.assertEqual(0, result.returncode, result.stderr)
+            self.assertEqual(first[0].encode("utf-8"), out.read_bytes())
+            bad = Path(temp) / "bad.json"
+            bad.write_text(json.dumps(tech(box("a", 0, 0, icon="m"), icons={"m": "m.svg"})), encoding="utf-8")
+            result = subprocess.run([sys.executable, "-I", str(ISO), "render", str(bad)], cwd=ROOT,
+                                    capture_output=True, text=True, encoding="utf-8", check=False)
+            self.assertEqual(1, result.returncode)
+            self.assertIn("is not a file next to the scene", result.stderr)
+            self.assertNotIn("Traceback", result.stderr)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,47 @@
+{
+  "name": "dispatch-outline",
+  "asset_type": "interface-icon",
+  "role": "dispatch agent that ships orders",
+  "grid": 24,
+  "live_area": {
+    "min_x": 2,
+    "min_y": 2,
+    "max_x": 22,
+    "max_y": 22
+  },
+  "drawing_language": {
+    "mode": "stroke",
+    "stroke_width": 1.5,
+    "linecap": "round",
+    "linejoin": "round",
+    "corner_language": "2-unit corner radius, round caps, round joins on a 24-unit grid",
+    "detail_budget": "3 construction shapes at medium detail density; gaps checked at 16 px"
+  },
+  "target_sizes": [
+    16,
+    20,
+    24,
+    32
+  ],
+  "source": "glyph.py family relay-agents",
+  "license": "project-owned demo family",
+  "accessibility_owner": "owning labelled control; SVG decorative (aria-hidden)",
+  "provenance": {
+    "kind": "original",
+    "creator": "Snowe iso.py demo (orchestration hub v2, Relay Supply)",
+    "source_ref": "relay-agents.spec.json#dispatch",
+    "reviewed": "2026-11-14",
+    "sha256": "17fbfe86475b6714e5bcdc7560e7572e4e10eca485caded84a37b21adc7cb614"
+  },
+  "evidence": {
+    "source": {
+      "kind": "local",
+      "path": "../relay-agents.spec.json",
+      "sha256": "9c90981100beeee34492cf9b5a35a3faac4582c26773dadf90d55e264cb59ff6",
+      "locator": "#dispatch"
+    },
+    "license": {
+      "kind": "project-owned"
+    }
+  }
+}

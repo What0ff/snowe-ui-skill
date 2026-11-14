@@ -10,7 +10,9 @@
 // Usage:
 //   node docs/iso-examples/render.mjs            render every scene
 //   node docs/iso-examples/render.mjs platform   render scenes whose name contains "platform"
-// Set CHROME_PATH to choose the browser and PYTHON for the interpreter.
+// Set CHROME_PATH to choose the browser and PYTHON for the interpreter. Pages in this
+// directory that embed a scene between <!-- iso-scene: <name> --> markers (animated.html)
+// are refreshed with the newly generated SVG.
 
 import { spawnSync } from "node:child_process";
 import { existsSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
@@ -28,7 +30,7 @@ const THEMES = {
   dark: {
     background: "#0f131c",
     vars: `--iso-top:#232a3a;--iso-left:#1a2030;--iso-right:#141927;--iso-stroke:#c9d2e6;
-           --iso-detail:#6f7a93;--iso-accent:#7c93ff;--iso-text:#e7ecf7;--iso-grid:#2a3244;`,
+           --iso-detail:#6f7a93;--iso-accent:#7c93ff;--iso-text:#e7ecf7;--iso-grid:#2a3244;--iso-shadow:#000000;`,
   },
 };
 
@@ -94,5 +96,21 @@ for (const name of scenes) {
       capture(chrome, html, width, height, scale, target);
       console.log(`${name}${suffix}@${scale}x.png  ${width * scale}x${height * scale}`);
     }
+  }
+}
+
+// Pages such as animated.html embed a generated SVG between
+// <!-- iso-scene: <name> --> and <!-- /iso-scene -->; refresh them so they never drift.
+for (const page of readdirSync(HERE).filter((f) => f.endsWith(".html")).sort()) {
+  const file = join(HERE, page);
+  const before = readFileSync(file, "utf8");
+  const after = before.replace(/(<!-- iso-scene: ([a-z0-9-]+) -->\n)[\s\S]*?(<!-- \/iso-scene -->)/g,
+    (whole, open, name, close) => {
+      const source = join(HERE, `${name}.svg`);
+      return scenes.includes(name) && existsSync(source) ? `${open}${readFileSync(source, "utf8")}${close}` : whole;
+    });
+  if (after !== before) {
+    writeFileSync(file, after);
+    console.log(`${page}  inlined the current SVG`);
   }
 }
