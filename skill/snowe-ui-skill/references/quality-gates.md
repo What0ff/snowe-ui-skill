@@ -104,6 +104,17 @@ Choose widths from content pressure, not device labels: a narrow width; a pressu
 
 Responsive design may reorder, change navigation or control form, alter disclosure, simplify a graphic, turn a side panel into an overlay or move conversion support closer to the decision. It never merely shrinks the wide composition or hides required content.
 
+### Narrow Screens
+
+Render at 390 and 320 px and at 200% text size, and judge each as a composition designed for that width. Defaults where agents most often fail:
+
+- **Header:** the logo plus one control (a menu, or the primary action when there are two links or fewer); other links and actions move into the menu or the page. The row never wraps, truncates the logo or crowds its groups.
+- **First screen:** heading, supporting line and primary action fit the first viewport unless the visual is the message; a heading runs to about four lines at most. Full-height sections use `svh`/`dvh`, not `vh`, and respect `env(safe-area-inset-*)`. Sticky header and bottom bar together take about a fifth of the height at most.
+- **Type and input:** body text stays at 16 px or more, and form fields at 16 px so iOS does not zoom on focus. Display type steps down the scale with `rem`-based sizes, so text zoom still works.
+- **Diagrams, charts and illustrations:** recompose rather than shrink: fewer nodes, a vertical flow or a separate narrow scene. Labels stay 11–12 CSS px or more at the rendered size, with no collisions between labels, lines and marks.
+- **Code, terminals and tables:** wrap where meaning allows. Otherwise scroll inside the block with a visible edge cue and keyboard access, and shorten authored sample lines; tables become stacked rows or keep priority columns with a sticky first column. The page itself never scrolls sideways (`document.documentElement.scrollWidth` equals the viewport width).
+- **Touch:** anything shown on hover gets a tap path; targets follow [platform sizes](app-patterns.md#mobile) with space between neighbors; overlays transform as [surfaces](surfaces-and-disclosure.md) specify.
+
 ## State and Content Resilience
 
 Test the states that can change understanding or completion: default, hover, pressed, focus-visible, selected, disabled; loading, partial, empty, no result, error, success; validation, destructive confirmation, undo, offline and retry; signed-out, permission-limited and expired; long, translated, bidirectional, missing, user-authored and extreme-but-valid content; open menus, dialogs and drawers, interrupted motion and rapid repeated input. Trace the actual lifecycle and high-risk failures rather than fabricating every state for every element. Empty and error states keep context and offer the next useful action. Required content must be visible and accessibly named, free of clipping and occlusion, in the state under review; presence in the DOM is not enough.
