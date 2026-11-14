@@ -24,7 +24,7 @@ Checks installable Python syntax/import compilation. It does not validate Markdo
 python -m unittest discover -s tests -v
 ```
 
-Current inspected result: **409 tests run successfully, with one Windows directory-symlink capability skip**. A shallow clone or source archive additionally skips the four tests that read historical git revisions. Hosts without Node 22 skip the five observer tests that execute `observe.mjs` (the CI Python jobs do not set up Node), and hosts without a system Chrome/Chromium/Edge skip its real Space-key capture.
+Current inspected result: **449 tests run successfully, with one Windows directory-symlink capability skip**. A shallow clone or source archive additionally skips the four tests that read historical git revisions. Hosts without Node 22 skip the five observer tests that execute `observe.mjs` (the CI Python jobs do not set up Node), and hosts without a system Chrome/Chromium/Edge skip its real Space-key capture.
 
 - `tests/test_snowe_ui_skill.py`: package routing/docs, schema-3 unresolved framing, multilingual/ambiguity/unknown behavior, opt-in analogs, persistence/path safety, evidence deletion/schemas/claims, icon constraints, contrast (including CLI exit codes 0/1/2, minimum bounds and 3:1 presets), SVG, and CLI (lookup-error exits, lock-contention and file-in-path errors, actual persistence paths/statuses, validated `--declared-context`).
 - `tests/test_catalogs.py`: bundled-CSV hygiene (BOM-free UTF-8, LF, rectangular rows, unique ids, configured columns present) and a whole-cell recipe-leakage scan (hex colors, millisecond durations, Tailwind color utilities, numbered template prescriptions, frame-rate claims) with an exact, stale-checked exception list that is now empty, plus a guard against backslash-escaped quotes; chart and UX catalog content contracts; superseded Flutter/SwiftUI/Compose APIs absent from recommending columns.
@@ -43,6 +43,7 @@ Current inspected result: **409 tests run successfully, with one Windows directo
 - `tests/test_visual_acceptance.py`: visual-acceptance and correction-transfer fixture/capture hash binding, variant coverage, decoded JPEG width and measured viewport/document geometry, plus rejection of stale-source reuse; no aesthetic assertion.
 - `tests/test_icon_workflow.py`: strict SVG grammar/geometry/paint/path safety and resource budgets, structured source/license evidence byte bindings, metadata/provenance/schema boundaries, typed/digest/one-to-one host-state icon manifest binding, actual-owner dialog selection, deterministic comparison regeneration, no-icon behavior, unresolved repository-derived selection rejection, and manifest/asset/output redirection or alias protection.
 - `tests/test_runtime_hardening.py`: project/page identity collisions and races, reserved-name/page-preflight/atomic/shared-file/reparse persistence, real Windows 8.3 alias/lock identity and alias-normalization swap probes, retrieval-limit/mode failures, installer ownership/locking/quarantine/recovery, source/staging/activation revalidation, junction/symlink boundaries, and selected-root resolution (a redirected ancestor works for persistence, corrections and visual review; redirects below the resolved root are refused).
+- `tests/test_iso.py`: isometric and dimetric projection math, face shading order and placement, back-to-front order on overlapping footprints with refused cyclic occlusion, byte determinism and committed-example equality, well-formed self-contained SVG, id/class/`data-*`/`pathLength` hooks and manifest bounds, CSS-variable-only paint, text escaping and label-fit warnings, axis-aligned connector routes, every refusal class (intersections, unknown types/fields, mistyped/out-of-range/non-finite numbers, text and size budgets, connector routing, strict JSON) and CLI exit codes 0/1/2 under `python -I`.
 - `tests/test_system_root_aliases.py`: macOS root aliases `/tmp`, `/var`, `/etc` into `/private` are accepted by every lexical redirect-chain check (SVG validator, icon review, persistence, installer), while the same link on other platforms, a root alias with another target, a same-named link below the root and a redirect below an accepted alias stay refused.
 
 Focused examples:
@@ -52,6 +53,7 @@ python -m unittest tests.test_snowe_ui_skill.DecisionPacketTests -v
 python -m unittest tests.test_snowe_ui_skill.RetrievalTests -v
 python -m unittest tests.test_scope_contract -v
 python -m unittest tests.test_icon_workflow -v
+python -m unittest tests.test_iso -v
 python -m unittest tests.test_runtime_hardening -v
 python -m unittest tests.test_forward_benchmarks -v
 python -m unittest tests.test_bicycle_benchmark -v
@@ -216,6 +218,7 @@ Normal CI does not run manual aesthetic review, lint/format/type/coverage, packa
 | Asset/contrast validators | Focused unit tests plus every affected real asset/pair and rendered optical/contextual review. |
 | Icon lifecycle/comparison | Icon-workflow and asset tests, deterministic comparison regeneration, targeted icon browser scenario, actual host selectors, and human visual inspection. |
 | Imported identities / mixed-control geometry | `tests.test_role_and_alignment`, existing icon/observation suites, `node scripts/identity-alignment-proof.mjs`, and native-size source/context review. |
+| Isometric generator / examples | `tests.test_iso`, then `node docs/iso-examples/render.mjs` and inspection of every changed PNG at 1x and 2x in light and dark themes. |
 | Reference figures | `node docs/figures-src/render.mjs` for the affected sources within the 120 KB per-figure budget, then inspection of every changed PNG against each caption that embeds it. |
 | Behavior scenarios/runner | Runner output review; no expected layout/style encoding. |
 | Goodturn | Bicycle suite, JS check, browser smoke, affected states/screenshots/manual QA. |
