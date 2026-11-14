@@ -170,6 +170,19 @@ class DepthOrderTests(unittest.TestCase):
 
 
 class DeterminismAndStructureTests(unittest.TestCase):
+    def test_last_bit_differences_round_identically_across_platforms(self):
+        # macOS and Linux libm can differ in the last bit of sin/cos; values on a rounding
+        # boundary must still format identically (CI once saw 379.68 versus 379.69).
+        for boundary in (379.685, 153.245, -12.335, 0.005, 1024.995):
+            values = [boundary]
+            for _ in range(4):
+                values.append(math.nextafter(values[-1], math.inf))
+            down = boundary
+            for _ in range(4):
+                down = math.nextafter(down, -math.inf)
+                values.append(down)
+            self.assertEqual(1, len({iso._fmt(value) for value in values}), boundary)
+
     def test_identical_input_gives_identical_bytes(self):
         data = json.loads((EXAMPLES / "agent-hub.scene.json").read_text(encoding="utf-8"))
         first = iso.render(json.loads(json.dumps(data)))

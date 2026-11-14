@@ -1014,7 +1014,10 @@ def _segs_points(segs: list[tuple[Any, ...]]) -> list[Point]:
 
 
 def _fmt(value: float, places: int = 2) -> str:
-    rounded = round(value, places)
+    # Platform math libraries can differ in the last bit of sin/cos results; a value that
+    # lands on a rounding boundary (379.685) then rounds differently on macOS and Linux.
+    # Rounding to 6 places first collapses those last-bit differences before the final cut.
+    rounded = round(round(value, 6), places)
     if rounded == 0:
         return "0"
     text = f"{rounded:.{places}f}".rstrip("0").rstrip(".")
