@@ -1,13 +1,13 @@
 # Design Foundations
 
-Use this reference to turn an accepted architecture and art direction into a coherent visual system. Foundations are role contracts, not universal recipes. Existing verified systems remain the baseline in evolution work; new work derives tokens from real content, platform, perception, and behavior.
+Use this reference to turn an accepted architecture and art direction into a coherent visual system. Foundations are role contracts, not universal recipes: an existing verified system is the baseline in evolution work, and new work derives tokens from real content, platform, perception and behavior.
 
 ## Starting Points
 
-These are defaults to start from and then beat, not rules. Deviate when content, brand, platform or an accepted system gives a reason, and record the reason. An existing system's values come first.
+These are defaults to start from and then beat. Deviate when content, brand, platform or an accepted system gives a reason, and record it. An existing system's values come first.
 
 **Typography**
-- One text family. Add a display face or a mono only for a role the text family cannot carry, up to two families plus a mono. Choose, pair and write fallback stacks with the [font-pairing method](art-direction-gate.md#typographic-voice-and-font-pairing).
+- Family choice, count and pairing follow the [font-pairing method](art-direction-gate.md#typographic-voice-and-font-pairing).
 - Body text 16 px on the web (14–15 px in dense apps). Line height 1.4–1.6 for body, 1.1–1.25 for headings.
 - Measure 45–75 characters (`max-width: 65ch` for reading text).
 - Scale ratio about 1.2–1.25 between steps in apps, 1.25–1.5 in editorial and marketing work.
@@ -30,7 +30,7 @@ These are defaults to start from and then beat, not rules. Deviate when content,
 **Dark theme**
 - Base surface off-black (roughly 6–10% lightness), with elevated surfaces lighter rather than shadowed.
 - Body text softened from pure white. Accents slightly less saturated than in light mode.
-- Recheck every contrast pair; do not just invert the light palette.
+- Recheck every contrast pair; never just invert the light palette.
 
 **Elevation and edges**
 - Two or three elevation levels: base, raised, overlay.
@@ -59,34 +59,31 @@ These are defaults to start from and then beat, not rules. Deviate when content,
 ## Composition and Hierarchy
 
 - Define the attention order for each important viewport and state.
-- Use scale, proportion, alignment, rhythm, spacing, contrast, image/content relationships, and disclosure before adding containers.
-- Let important content occupy meaningful space; equal boxes produce equal visual weight even when the content is not equal.
-- Establish a small set of alignment axes and break them only to create an intentional focal event.
-- Use whitespace as structure. Use dividers, tonal change, or type hierarchy before cards when content is not an independent object or action.
-- A monitoring, comparison, editing, or creative workspace may have coordinated peer regions rather than one dominant focal point. The task decides.
-- Marketing and editorial pages need rhythm, but rhythm can come from content density, media, type, alignment, or interaction—not a forced alternation of identical sections.
+- Begin with content relationships and task sequence; choose grid and breakpoints after the composition exists. Use the base-unit scaffold by default and derive another when content, brand, platform or interaction needs it.
+- Use scale, proportion, alignment, rhythm, spacing, contrast, image and content relationships, and disclosure before containers. Equal boxes give equal weight even to unequal content.
+- Whitespace is structure: use dividers, tonal change or type hierarchy before cards when content is not an independent object or action.
+- A monitoring, comparison, editing or creative workspace may need coordinated peer regions instead of one focal point; the task decides.
+- Marketing and editorial rhythm can come from content density, media, type, alignment or interaction, not a forced alternation of identical sections.
+- Use intrinsic sizing, flex and grid, container queries, `min()`, `max()` and `clamp()` where they add resilience.
+- Define invariants and transformation rules for order, navigation, disclosure, comparison, imagery, sticky behavior and input mode ([responsive checks](quality-gates.md#responsive-transformation)). Keep readable measure for sustained text, scan alignment for dense data and spatial relationships for comparison.
 
-## Layout and Responsive Transformation
+## Density Before Dimensions
 
-### Density Before Dimensions
+Before choosing heights, padding and headline sizes, establish how the surface is used (reading and persuasion, occasional choice, or repeated monitoring and editing), the input mode, typical content volume and which decisions must be seen together, from behavior and product evidence rather than a category keyword. Keep a compact contract, `task/frequency → content states → information/actions visible together → existing comparable roles → fixed chrome versus working region → proof`, and reuse an accepted density system when it fits.
 
-Before choosing new heights, padding and headline sizes, establish how this surface is actually used: reading/persuasion, occasional choice, or repeated monitoring/editing; input mode; typical content volume; and which related decisions must be seen together. Derive this from behavior and product evidence, not a category keyword. Keep a compact density contract: `task/frequency → content states → information/actions visible together → existing comparable roles → fixed chrome versus working region → proof`. Reuse an accepted density system when it fits.
+Size content and grouping first, then distribute the remaining space. A wider viewport does not justify larger padding, navigation rows or status values. Minimum heights, repeated section padding, viewport-sized wrappers and flex or grid stretching accumulate even when each number looks reasonable; measure their combined effect on the first useful decision.
 
-Size the content and grouping first, then distribute remaining space. A wider viewport does not automatically justify larger padding, navigation rows or status values. Large minimum heights, repeated section paddings, viewport-sized wrappers and flex/grid stretching accumulate even when every individual number looks reasonable. Measure their combined effect on the first useful decision. Do not scale the whole interface down: small labels and control targets may already be correct while their containers are too large.
+Treat empty, sparse and populated content as distinct compositions: an unassigned value or zero count keeps its factual role instead of the emphasis of a real result. Page-level content such as a document or list may use its natural extent up to its scroll owner, while the frame around it (shell, panels, dialogs, tab panels, grid cards, toolbars, buttons) keeps its size across states ([stable geometry](#stable-geometry-across-states)). Avoid giant empty wells.
 
-Treat empty, sparse and populated content as distinct compositions. An unassigned value or zero count should carry its factual role without acquiring the emphasis of a meaningful result merely because it shares a component. Page-level content such as a document or a list may use its natural extent, capped at the intended scroll owner. The frame around it (app shell, panels, dialogs, tab panels, cards in a grid, toolbars, buttons) keeps its size across states; see [stable geometry](#stable-geometry-across-states). Avoid giant empty wells, and avoid frames that resize when data arrives.
+Default to the tightest composition that keeps readable type, usable hit regions, grouping, keyboard focus, localization and touch behavior. When density is open on a new or revised repeated-use surface, compare it with a credible tighter composition on identical empty, short and long content, judging useful information visible together, distance between related facts and actions, and scanning effort. A spacious editorial or reference design can be the right exception; record why the chosen density fits. Fix excess at its cause in the owning layout (additive padding, min-height, stretching, type role or state treatment), never with global zoom, a CSS scale transform, shrinking all fonts or clipping: small labels and targets may already be right while their containers are too large. Recheck that long lists still scroll in their region and that short states do not inherit unused height.
 
-When density remains open on newly composed or materially revised repeated-use surfaces, compare the current density against a credible tighter composition using identical empty, short and long content. Preserve type readability, control hit regions, grouping, keyboard focus, localization and touch behavior. Judge useful information visible together, distance between related facts/actions and repeated scanning effort. A spacious editorial/reference design can remain the correct counterexample. Record why the chosen density fits; neither maximum compression nor a universal 64px row, 28px heading or occupancy percentage defines quality.
+## Placement and Alignment
 
-### Placement and Alignment
+Choose the reference frame before aligning: content column, control, panel, visual group or viewport; a sidebar or asymmetric padding can make viewport centering wrong for the usable region. State whether the role needs edge alignment, a text baseline, the geometric center, the optical center or a deliberate offset, and inspect the real box, padding and visible mass; `align-items:center` alone does not prove balance.
 
-Choose the reference frame before aligning: the content column, control, panel, visual group or viewport. A sidebar or asymmetric padding can make viewport centering wrong for the usable region. State whether the role needs edge alignment, text baseline, geometric center, optical center or a deliberate offset. Inspect the real box, internal padding and visible glyph/image mass; `align-items:center` alone does not prove visual balance.
+Place actions near the object and decision they affect, group related labels, values and controls, and give repeated peers consistent axes. Compare a credible alternative when placement is open. Default: long reading text, lists and numeric columns align to their start edge; keep an offset only for a reason. In mixed control rows, align the visible inputs and buttons, not the wrappers that hold their captions ([incident](failure-patterns.md#a-field-caption-that-pushed-its-input-off-the-row-axis)).
 
-Place actions near the object and decision they affect. Keep related labels, values and controls grouped; repeated peers should use consistent axes. Compare the accepted position with a credible alternative when placement is open. Do not center long reading text, lists or numeric columns by default, and do not preserve an arbitrary offset merely because it avoids centering. If a supplied reference specifies placement, conformance remains the target.
-
-In mixed control rows, align the visible inputs and buttons, not the wrappers that hold their captions ([incident](failure-patterns.md#a-field-caption-that-pushed-its-input-off-the-row-axis)).
-
-### Stable Geometry Across States
+## Stable Geometry Across States
 
 A control the user is about to press must not move, and a panel must not change size because its content changed. Size every frame element for the largest state it must hold, or reserve the slot that a state will fill. States to cover: loading, loaded, empty and error; selection and deselection; tab switches; hover, focus and pressed; label changes such as "Save" to "Saving…"; validation messages; live updates; late images and fonts.
 
@@ -111,147 +108,74 @@ Intentional resizing is fine when the user asked for it, for example expanding a
 
 **Reserved:** a fixed-width button and a reserved message line below it keep every edge on the guides in all four states.
 
-### Bounded Lists and Scroll Ownership
+## Bounded Lists and Scroll Ownership
 
-Decide which surface owns scrolling. A document/content page may grow naturally; a list inside a height-bounded dialog, dashboard panel or persistent workspace should scroll in its assigned region while its heading and actions remain reachable. Establish the parent height/max-height and shrinking chain, use `min-height:0` on the relevant flex/grid children, and apply `overflow:auto` to the list owner. Do not hide rows, shrink text or put overflow on an unrelated ancestor to disguise the failure.
+Decide which surface owns scrolling. A document page may grow; a list inside a height-bounded dialog, dashboard panel or persistent workspace scrolls in its own region with its heading and actions reachable. Set the parent height or max-height and the shrinking chain, `min-height:0` on the relevant flex or grid children, and `overflow:auto` on the list owner. Never hide rows, shrink text or put overflow on an unrelated ancestor to disguise the failure.
 
-Check long/empty/loading lists, keyboard focus and scrolling, and narrow/touch layouts. A scroll region needs a useful accessible name and keyboard reachability where native focusable contents do not provide it. Keep focused items visible and avoid nested scroll traps. At a mobile breakpoint, explicitly choose retained internal scrolling or a coherent page-flow transformation; do not accidentally inherit an unbounded desktop panel.
-
-- Begin with content relationships and task sequence; choose grid and breakpoints after the composition exists.
-- Use intrinsic sizing, flex/grid, container queries, `min()`, `max()`, and `clamp()` where they improve resilience.
-- Define invariants and transformation rules for order, navigation, disclosure, comparison, imagery, sticky behavior, and input mode.
-- Test a pressure width where the chosen composition becomes difficult, not only popular device presets.
-- Preserve readable measure for sustained text, scan alignment for dense data, and spatial/attribute relationships for comparison.
-- Do not hide the primary outcome, shrink type below readability, or create page-level horizontal scroll to save a desktop composition.
-
-No fixed 4/8/12 grid or gutter scale is mandatory. Use a scaffold when it fits; derive another when the content, brand, platform, or interaction needs it.
+Check long, empty and loading lists, keyboard focus and scrolling, and narrow touch layouts. A scroll region needs a useful accessible name and keyboard reachability when its contents have no native focusable items. Keep focused items visible and avoid nested scroll traps. At a mobile breakpoint, choose internal scrolling or a coherent page-flow transformation deliberately instead of inheriting an unbounded desktop panel.
 
 ## Typography
 
-Choose type from language, content, role, metrics, and voice. The [font-pairing method](art-direction-gate.md#typographic-voice-and-font-pairing) owns family count, pairing strategy, x-height matching, script coverage and fallback stacks; this section owns the role contract and its verification.
+Choose type from language, content, role, metrics and voice. This section owns the role contract; the [pairing method](art-direction-gate.md#typographic-voice-and-font-pairing) owns family count, pairing, x-height, script coverage and fallback stacks, and [typography coherence](quality-gates.md#typography-coherence) owns rendered verification.
 
-Inventory:
+Inventory required scripts, locales, diacritics, bidirectionality and fallback paths; headings, body, navigation, labels, validation, prices, currencies, dates, units, tables, code and identifiers; the longest realistic strings, shortest labels, user-generated content and missing-glyph behavior; and the actual font files, license, weights, axes, subsets, loading and synthetic styles.
 
-- required scripts, locales, diacritics, bidirectionality, and fallback paths;
-- headings, body, navigation, labels, validation, prices, currencies, dates, units, tables, code, and identifiers;
-- longest realistic strings, shortest labels, user-generated content, and missing-glyph behavior;
-- actual font files, license, weights, axes, subsets, loading, and synthetic style behavior.
+Define roles before family names, and keep a compact role map in the existing record: `role → family stack → real weights/styles/axes → size/line-height/tracking → scripts → owner → exception`. Start from the accepted system. Default: the primary text family carries body, navigation, labels and controls, and hierarchy comes from size, real weight, spacing and placement rather than a new family per section; an extra family must earn a semantic or brand role. Prices can usually align with tabular figures in the existing family. Keep an accepted display face, code face, logotype and legitimate script-specific fallback.
 
-Define role contracts before family names. A display face may create authorship, a text face may disappear into reading, and a numeric or mono role may support comparison—but every additional family must earn its semantic or brand role.
+Fix assignments at the shared typography token, inheritance, reset or component variant, not with per-occurrence overrides; reused library components can import a different stack. Make native controls inherit the relevant role without forcing every element to the body font and erasing display, code, icon-font or locale roles.
 
-Keep a compact role map in the existing implementation/decision record: `role → family stack → real weights/styles/axes → size/line-height/tracking → scripts → owner → exception`. Start from the accepted system. In an ordinary interface, reuse its primary text family for body copy, navigation, labels and controls unless a verified role needs a deliberate contrast. Express hierarchy first through size, real weight, spacing and placement rather than changing family section by section. Prices do not automatically need a different font; tabular figures within the existing family may solve alignment. Preserve an accepted display face, code face, logotype and legitimate script-specific fallback.
-
-Audit assignments across the whole affected composition, including similar cards, repeated headings, tooltips, menus, dialogs, validation text and embedded chart labels. Reused library components can silently import a different default stack. Fix the shared typography token, inheritance/reset or component variant at its owner, rather than adding independent font overrides to each occurrence. Make native controls inherit the relevant role where appropriate; do not globally force every element to the body font and erase intentional display, code, icon-font or locale roles.
-
-Judge the combination in actual neighboring text; an explanation that each font is attractive does not establish a coherent page. If an extra family has no distinct role, compare the same content set in the accepted role family and keep the extra face only when its contribution is visible.
-
-Verify real font files, declared weight ranges, styles and required script coverage. A requested weight may be synthetic or mapped to the wrong static file; a Latin subset may fall back within a Cyrillic label. Browser rendered-font inspection, where available, can expose which face supplies actual glyphs. `getComputedStyle().fontFamily` reports the requested stack, not necessarily the rendered face; `document.fonts.ready` and `document.fonts.check` alone do not certify glyph coverage or visual coherence. Required fallback/loading states may differ transiently but must remain readable and usable; the settled intended state still needs separate proof.
-
-A face name alone does not prove a wrong weight; verify the file and axis mapping first ([incident](failure-patterns.md#a-variable-font-reported-as-extralight)).
-
-Use fluid size where it preserves hierarchy, not as a default spectacle. Avoid very light small text. Use tabular figures when alignment communicates meaning. Allow zoom and system text scaling without clipping or content loss.
+Use fluid size where it preserves hierarchy, not as spectacle. Avoid very light small text, use tabular figures where alignment carries meaning, and allow zoom and system text scaling without clipping or content loss.
 
 ## Color and Material
 
-Start with semantic and perceptual roles:
+Start from semantic and perceptual roles: canvas, surface, raised and overlay, foreground, muted, border; primary and secondary actions with their foregrounds; focus, selection, hover, pressed, disabled; success, warning, danger, information and domain states; data series, annotations, imagery interaction and brand expression.
 
-- canvas, surface, raised/overlay, foreground, muted, border/divider;
-- primary/secondary actions and their foregrounds;
-- focus, selection, hover, pressed, disabled;
-- success, warning, danger, information, availability, or domain states;
-- data series, annotations, imagery interaction, and brand expression.
+Set a positive direction from the product, accepted references and brand values, real content and task: name what the palette should communicate and why it belongs here before choosing a hue family. "Not gray", "more saturated", a style adjective or an attractive swatch set is not a rationale, and an internally harmonious palette can still be wrong for the product.
 
-Compare complete systems on real hierarchy and states, not isolated swatches. Verify rendered contrast, color vision resilience, theme behavior, compositing, and image overlays.
-
-Establish a positive color direction from the product, accepted references/brand values, actual content and task. Name what the palette should communicate and why it belongs here before choosing a hue family. Existing code is context, not automatic approval. “Not gray,” “more saturated,” a style adjective or an attractive swatch set is not sufficient rationale. An internally harmonious palette can still be wrong for this product.
-
-Own the reversible color decision. Before writing theme CSS, synthesize the complete role palette from that direction and identify the material uncertainty, if any. When comparison is needed, render credible alternatives on the actual content, including repeated data and an overlay where relevant; judge the full composition and select the strongest justified result yourself. Do not make the user supply hex values, choose among unfinished skins or repeatedly diagnose avoidable palette failures. Ask only when genuinely unresolved brand/business constraints would materially change the direction, not to outsource ordinary color judgment. Keep exploration in working evidence and present the selected, reviewed result unless alternatives were requested. A familiar palette can be the right choice; originality alone is not the selection criterion.
+Own the color decision; it is reversible. Before writing theme CSS, synthesize the complete role palette and name any material uncertainty. When comparison is needed, render credible alternatives on real content, including repeated data and an overlay, and select the strongest yourself. Do not make the user supply hex values, choose among unfinished skins or diagnose avoidable palette failures; ask only when unresolved brand or business constraints would change the direction. Present the selected, reviewed result unless alternatives were requested. A familiar palette can be right; originality is not the criterion.
 
 Choose hue, chroma, lightness and painted area separately, and compare intensity candidates on the same content when intensity is open ([incident](failure-patterns.md#accents-that-kept-collapsing-to-pale-tints)).
 
-Resolve the complete affected palette: canvas, panels, table header/body/hover, dialogs, fields, controls, typography and states. Inspect library defaults and hard-coded paint owners. Colorful buttons alone do not settle the page palette, but complete coverage does not mean every surface must be chromatic. Use relationships of hue, temperature, lightness, chroma and area to distinguish layers and support the task; do not mechanically tint all panels or give each component an unrelated fill. Neutrals or pastels remain valid when deliberately justified or approved.
+Resolve the complete affected palette: canvas, panels, table header, body and hover, dialogs, fields, controls, type and states. Trace final paint through library defaults, hard-coded owners, ancestors, pseudo-elements, filters, blend modes, backdrops and portals, over representative content in each theme; a token change that misses a portal or table header is incomplete. Default: neutrals carry most surfaces and color marks roles; distinguish layers through hue, temperature, lightness, chroma and area rather than tinting every panel or giving each component an unrelated fill. Deliberate neutral or pastel palettes stay valid when justified or approved.
 
-Separate action fill, on-color text, accent foreground, subtle surface, focus and semantic-status roles. A foreground that reads on a dark canvas is not automatically a good button fill. Solve contrast through the actual foreground/background pair, role-specific lightness or a suitable on-color foreground instead of washing out the whole palette. Review normal, hover, pressed, selected and focus states where relevant, including opacity, overlays, filters and disabled inheritance that can alter the resolved paint.
+Separate action fill, on-color text, accent foreground, subtle surface, focus and status roles: a foreground that reads on a dark canvas is not automatically a good button fill. Solve contrast in the actual foreground and background pair, with role-specific lightness or a suitable on-color foreground, instead of washing out the palette, and check hover, pressed, selected and focus states with any opacity, overlay, filter or disabled inheritance.
 
-Compare full renders, including a data region and open overlay when they are in scope. Judge product fit and visual mass as well as harmony and contrast: large saturated surfaces can impose an unrelated identity or pull attention from the data. Reject an unsupported or user-rejected direction even if its tokens and contrast pass. No universal hue, saturation/lightness threshold, color count, gradient, glow, texture or monochrome rule establishes quality.
+Judge full renders, including a data region and an open overlay when in scope, for product fit and visual mass as well as harmony and contrast: large saturated surfaces can impose an unrelated identity or pull attention from the data. Reject an unsupported or user-rejected direction even when its tokens pass contrast.
 
-Material is broader than shadow and blur. It includes edge, join, density, layering, texture, line, transparency, image treatment, and how surfaces respond to state. Define a small semantic elevation/layering model when layering exists.
+Material is broader than shadow and blur: edge, join, density, layering, texture, line, transparency, image treatment and state response. Define a small semantic elevation model when layers exist.
 
 ## Shape and Edge Language
 
-Shape follows component behavior, visual thesis, platform, content, and hierarchy.
+Shape follows behavior, the visual thesis, platform, content and hierarchy. Default: define edges by role (small detail, control, container, overlay, image, semantic token, circular object) and keep hit targets independent of visible geometry. Sharp, rounded, irregular, cut, framed or borderless systems all work when coherent and usable. A repeated edge can carry identity with a product reason and a repetition boundary; one global radius dial is not a system. Check nested surfaces, text fit, focus, selected, disabled and error states together.
 
-- Define edges by role: small detail, control, container, overlay, image, semantic token, or genuinely circular object.
-- Keep interaction targets independent from visible geometry.
-- Use pills when compact selection/removal, a meaningful token, or verified brand/native behavior benefits from that silhouette. A short string alone is not a semantic token. Ordinary metadata, section eyebrows, navigation links, fields, and calls to action do not inherit a capsule from a nearby filter.
-- Use circles where the silhouette communicates the object or action.
-- Sharp, rounded, irregular, cut, framed, or borderless systems can all work when coherent and usable.
-- Check nested surfaces, text fit, focus, selected, disabled, and error states together.
-
-Do not derive a system from one global radius dial. A repeated edge can be an identity carrier, but it needs a product reason and repetition boundary.
-
-For a new or revised shape system, distinguish interactive controls, selected/filter tokens, passive status, and plain content in the rendered context. They may share curvature, but must not acquire indistinguishable affordances or equal emphasis. Compare a disputed capsule with unwrapped text, a bounded control, or another role-appropriate treatment using identical content. Keep the capsule when it improves recognition, state reading, or established identity; otherwise remove the wrapper and rebalance spacing/type. A shape swap alone does not repair hierarchy ([incident](failure-patterns.md#pills-replaced-with-square-buttons)).
+Use a pill for compact selection or removal, a meaningful token, or verified brand or native behavior. A short string alone is not a token: metadata, eyebrows, navigation links, fields and calls to action do not inherit a capsule from a nearby filter. Use a circle where the silhouette communicates the object or action. In a new or revised shape system, keep interactive controls, selected tokens, passive status and plain content distinguishable even when they share curvature. Compare a disputed capsule with unwrapped text, a bounded control or another role-appropriate treatment on the same content; keep it when it improves recognition, state reading or established identity, and otherwise remove the wrapper and rebalance spacing and type. A shape swap alone does not repair hierarchy ([incident](failure-patterns.md#pills-replaced-with-square-buttons)).
 
 ## Surfaces and Containers
 
-- A card is justified when content behaves as an independent, selectable, movable, comparable, purchasable, or actionable unit.
-- Ordinary sections often need only alignment, spacing, type, or a divider.
-- Avoid card-in-card structures unless the object hierarchy is real and visually legible.
-- Use shadow, border, tone, texture, blur, or overlap to explain layers or interaction. Remove them when they only decorate.
-- Never add hover lift to a noninteractive surface.
+- A card is justified when content behaves as an independent, selectable, movable, comparable, purchasable or actionable unit; ordinary sections usually need only alignment, spacing, type or a divider.
+- Use card-in-card only when the object hierarchy is real and legible.
+- Use shadow, border, tone, texture, blur or overlap to explain layers or interaction; remove them when they only decorate.
+- Hover lift belongs only on interactive surfaces.
 
 ## Controls and Components
 
 Choose components by behavior and platform semantics, then style them within the direction.
 
-- Use links for navigation and buttons for actions.
-- Use persistent labels for form fields; placeholders are supplemental.
-- Preserve native or repository primitives when they meet the task.
-- Custom controls must reproduce keyboard, focus, selected, disabled, validation, text scaling, and assistive-technology behavior.
-- Visible control scale follows density, content, input mode, and brand. The hit target can be larger through transparent non-overlapping space.
-- Full-width, oversized, icon-only, segmented or chip treatments need a behavioral reason.
-- Choose where each task lives (main surface, panel, dialog, popover, tabs, disclosure or route) with [surfaces-and-disclosure.md](surfaces-and-disclosure.md). Keeping everything on one surface needs a reason just as much as moving something off it.
+- Links navigate; buttons act.
+- Form fields keep persistent labels; placeholders are supplemental.
+- Keep native or repository primitives when they meet the task. Custom controls reproduce keyboard, focus, selected, disabled, validation, text scaling and assistive-technology behavior.
+- Visible control scale follows density, content, input mode and brand; the hit target can grow through transparent non-overlapping space.
+- Full-width, oversized, icon-only, segmented or chip treatments need a behavioral reason. Choose icon-only, text-only or icon-with-text with the [label-mode rules](iconography-system.md#choose-the-control-label-mode); a known utility needs no new icon sourcing.
+- Choose where each task lives with [surfaces-and-disclosure.md](surfaces-and-disclosure.md); keeping everything on one surface needs a reason as much as moving it off.
 
-Choose icon-only, text-only or icon-with-text by the control's recognition and task, not a universal button template. For a known utility, use the [control label-mode rules](iconography-system.md#choose-the-control-label-mode); that focused decision does not require new icon sourcing.
+For a button family, resolve visible height, content width, padding, label metrics, icon size and gap, edge treatment and alignment from the accepted reference or system, or from local density and task. Importance can come from placement and contrast instead of a taller, wider button, so a toolbar action, an inline action and a campaign CTA need not share one size. Removing pills does not authorize square corners ([incident](failure-patterns.md#pills-replaced-with-square-buttons)).
 
-For a button family, resolve visible height, content width, horizontal/vertical padding, label metrics, icon size/gap, edge treatment, and alignment from the accepted reference/system or the local density and task. Primary importance can come from placement and contrast; it does not automatically require a taller, wider button. A compact toolbar action, an inline action, and a campaign CTA need not share one size. Removing pills does not authorize square corners ([incident](failure-patterns.md#pills-replaced-with-square-buttons)).
+Compare controls at rendered size beside nearby fields, tabs, text and secondary actions, including narrow and long-label states. Reject a size or shape change that departs from the target, dominates content without a task benefit, breaks its family's density or alignment, or squeezes essential neighbors. Trace unexpected size or corners to the owner (inherited font or line-height, size variant, min-height, padding, flex stretch, global radius utility, box sizing) and fix that cause instead of overriding every button. Keep the visual box distinct from a larger non-overlapping hit region; enlarging a target must not inflate the visible control or steal neighboring targets.
 
-Compare controls at actual rendered size beside nearby fields, tabs, text, and secondary actions, including narrow and long-label states when relevant. Reject a size/shape change when it departs from the specified target, dominates the content without a task benefit, breaks the density/alignment of its control family, or squeezes essential neighboring content. Trace unexpected size or corners to their owner: inherited font/line-height, component size variant, min-height, padding, flex stretch, global radius utilities, or box sizing. Correct that cause rather than overriding every button globally. Keep the visual box distinct from a larger non-overlapping hit region; enlarging a target must not silently inflate the visible control or steal adjacent targets.
+## Icons, Imagery and Motion
 
-## Icons and Graphics
-
-Define the primary drawing language and source roles. Familiar universal actions should remain recognizable; product and domain symbols can become more ownable when the metaphor and rendering stay clear. Open [iconography-system.md](iconography-system.md) only when icon-source, metaphor, family, or custom drawing is an active decision.
-
-## Imagery and Illustration
-
-Give each visual a communicative role and a treatment: source, truth, subject, framing, crop, aspect, light/color behavior, caption, responsive transformation, fallback, and loading. Compare no-image and alternative media directions when the visual is material. Open [imagery-and-assets.md](imagery-and-assets.md) only while that decision remains active; stop after a justified no-image choice.
-
-## Motion and Interaction
-
-Define states and transitions before animation. Motion can clarify cause, continuity, hierarchy, progress, feedback, spatial relationships, or narrative. It can also slow, distract, or harm. Start with the static/reduced experience and open [motion-and-interaction.md](motion-and-interaction.md) only when motion is an active decision or defect.
+Open their references only while the decision is active. [iconography-system.md](iconography-system.md) covers icon source, family, label mode and custom drawing: familiar actions stay recognizable, and product and domain symbols can become more ownable while metaphor and rendering stay clear. [imagery-and-assets.md](imagery-and-assets.md) gives each visual a job and treatment and stops after a justified no-image choice. [motion-and-interaction.md](motion-and-interaction.md) starts from defined states and the static, reduced experience, and opens only when motion is a decision or a defect.
 
 ## System Coherence
 
-Coherence is not uniformity. It means roles and exceptions are understandable:
-
-- type roles share a hierarchy even when expressive display differs from utility text;
-- icon sources have stable roles and compatible rendered weight;
-- product imagery may be rich while routine chrome stays quiet;
-- marketing motion may be expressive while frequent controls are immediate;
-- one page family may be dense and another spacious while both share product logic.
-
-Document the role boundary rather than forcing one token, package, or visual treatment everywhere.
-
-## Foundation Review
-
-Ask:
-
-- Does every visible system choice support the accepted architecture or art-direction thesis?
-- Does the hierarchy survive without decorative effects?
-- Do real prices, labels, long copy, missing data, and localization fit?
-- Are state, focus, and disabled meanings still clear without color alone?
-- Are image and type competing or cooperating?
-- Do custom assets belong beside their neighbors at actual size?
-- Does responsive transformation preserve priority and conversion?
-- Does the result have too many role exceptions to remain teachable and maintainable?
-- Can any container, effect, asset, or animation be removed with no loss of meaning or identity?
+Coherence is not uniformity; it means roles and exceptions are understandable. Type roles share a hierarchy even when display differs from utility text; icon sources have stable roles and compatible rendered weight; product imagery can be rich while routine chrome stays quiet; marketing motion can be expressive while frequent controls stay immediate; one page family can be dense and another spacious while both share product logic. Document the role boundary rather than forcing one token, package or treatment everywhere.
