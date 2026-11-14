@@ -1,0 +1,42 @@
+{
+  "schema": "1.2",
+  "title": "Order orchestration hub",
+  "desc": "Records, contracts and apps feed the Relay Supply office, which hands work to the orchestrator core. The core dispatches intake, billing and dispatch agents, and the dashboard beside it reports resolved orders. The highlighted path follows a contract through billing.",
+  "id_prefix": "hub3-",
+  "style": "technical",
+  "unit": 36,
+  "icons": {
+      "intake": "icons/outline/intake.svg",
+      "billing": "icons/outline/billing.svg",
+      "dispatch": "icons/outline/dispatch.svg",
+      "hub": "icons/outline/hub.svg"
+  },
+  "objects": [
+    {"id": "floor", "type": "ground-grid", "x": 0.6, "y": -3.0, "w": 15.0, "d": 14.0, "step": 1, "pattern": "mesh"},
+
+    {"id": "records", "type": "tile", "x": 2.4, "y": -0.6, "w": 1.7, "d": 1.7, "h": 0.32, "model": "database", "label": "Records", "role": "source", "order": 0},
+    {"id": "contracts", "type": "tile", "x": 2.4, "y": 1.5, "w": 1.7, "d": 1.7, "h": 0.32, "model": "documents", "label": "Contracts", "role": "source", "order": 0},
+    {"id": "apps", "type": "tile", "x": 2.4, "y": 3.6, "w": 1.7, "d": 1.7, "h": 0.32, "glyph": "apps", "label": "Apps", "role": "source", "order": 0},
+
+    {"id": "plaza", "type": "slab", "x": 1.2, "y": 7.4, "w": 4.8, "d": 4.6, "h": 0.16, "radius": 0.12, "inset": 0.18, "role": "site", "order": 1},
+    {"id": "office", "type": "building", "x": 1.6, "y": 7.8, "z": 0.16, "w": 3.0, "d": 3.2, "floors": 5, "floor_h": 0.46, "massing": "stepped", "windows": "fins", "entrance": "x+", "sign": "Relay Supply", "glyph": "bars", "role": "office", "order": 1},
+    {"id": "grove-front", "type": "trees", "x": 1.5, "y": 11.15, "z": 0.16, "w": 3.4, "d": 0.8, "count": 5, "size": 0.4, "shape": "mixed", "seed": 5},
+    {"id": "grove-side", "type": "trees", "x": 5.1, "y": 8.8, "z": 0.16, "w": 0.7, "d": 2.4, "count": 3, "size": 0.4, "seed": 2},
+
+    {"id": "core", "type": "core", "x": 6.6, "y": 2.8, "w": 5.0, "d": 5.0, "h": 0.42, "layers": 2, "spacing": 1.05, "icon": "hub", "label": "Orchestrator", "role": "core", "order": 2, "seed": 4},
+
+    {"id": "intake", "type": "tile", "x": 10.2, "y": -2.2, "w": 1.0, "d": 3.2, "h": 0.42, "radius": 0.22, "layout": "row", "label_axis": "y", "icon": "intake", "label": "Intake agent", "role": "agent", "order": 3},
+    {"id": "billing", "type": "tile", "x": 11.6, "y": -2.2, "w": 1.0, "d": 3.2, "h": 0.42, "radius": 0.22, "layout": "row", "label_axis": "y", "icon": "billing", "label": "Billing agent", "role": "agent", "order": 3, "accent": true},
+    {"id": "dispatch", "type": "tile", "x": 13.0, "y": -2.2, "w": 1.0, "d": 3.2, "h": 0.42, "radius": 0.22, "layout": "row", "label_axis": "y", "icon": "dispatch", "label": "Dispatch agent", "role": "agent", "order": 3},
+
+    {"id": "board", "type": "dashboard", "x": 12.8, "y": 8.2, "w": 3.3, "h": 1.9, "orient": "x+", "label": "Resolved today", "chart": "both", "rows": 3, "role": "report", "order": 4},
+
+    {"type": "connector", "from": "records", "to": "core", "from_side": "x+", "to_side": "x-", "from_z": 0.16, "route": "ground", "start": "port", "end": "none", "order": 1},
+    {"type": "connector", "from": "contracts", "to": "plaza", "from_side": "x+", "to_side": "y-", "to_offset": 1.4, "from_z": 0.16, "route": "ground", "start": "port", "end": "none", "accent": true, "order": 1},
+    {"type": "connector", "from": "apps", "to": "plaza", "from_side": "x+", "to_side": "y-", "to_offset": 0.9, "from_z": 0.16, "route": "ground", "start": "port", "end": "none", "order": 1},
+    {"type": "connector", "from": "plaza", "to": "core", "from_side": "x+", "to_side": "y+", "from_offset": -1.6, "to_offset": -0.6, "from_z": 0.08, "to_z": 0.18, "route": "ground", "end": "port", "accent": true, "order": 2},
+    {"type": "connector", "from": "core", "to": "intake", "from_side": "y-", "to_side": "y+", "from_offset": -1.0, "via": [[10.7, 1.6]], "route": "ground", "to_z": 0.21, "end": "port", "order": 3},
+    {"type": "connector", "from": "core", "to": "billing", "from_side": "y-", "to_side": "y+", "from_offset": 0.0, "via": [[12.1, 2.0]], "route": "ground", "to_z": 0.21, "end": "port", "accent": true, "order": 3},
+    {"type": "connector", "from": "core", "to": "dispatch", "from_side": "y-", "to_side": "y+", "from_offset": 1.0, "via": [[13.5, 2.4]], "route": "ground", "to_z": 0.21, "end": "port", "order": 3}
+  ]
+}

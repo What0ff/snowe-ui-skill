@@ -5,7 +5,9 @@
 //   python skill/snowe-ui-skill/scripts/iso.py render <name>.scene.json -o <name>.svg --manifest <name>.manifest.json
 // then inlines the SVG into a page (so the CSS custom properties apply) and
 // captures it with headless Chrome at 1x and 2x, in the light theme and in a
-// dark theme that only redefines the --iso-* variables.
+// dark theme that only redefines the --iso-* variables. Scenes listed in UNLABELED
+// are also rendered with --no-labels to <name>-unlabeled.svg and light captures, the
+// proof that their objects are recognizable without text.
 //
 // Usage:
 //   node docs/iso-examples/render.mjs            render every scene
@@ -24,6 +26,7 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(HERE, "..", "..");
 const ISO = join(REPO_ROOT, "skill", "snowe-ui-skill", "scripts", "iso.py");
 const MARGIN = 24;
+const UNLABELED = ["orchestration-hub-v3"];
 
 const THEMES = {
   light: { background: "#f6f7fb", vars: "" },
@@ -50,13 +53,14 @@ function resolveChrome() {
   return found;
 }
 
-function renderScene(name) {
+function renderScene(name, output = name, extra = []) {
   const python = process.env.PYTHON ?? (process.platform === "win32" ? "python" : "python3");
   const result = spawnSync(python, ["-I", ISO, "render", join(HERE, `${name}.scene.json`),
-    "-o", join(HERE, `${name}.svg`), "--manifest", join(HERE, `${name}.manifest.json`)], { encoding: "utf8" });
-  if (result.status !== 0) throw new Error(`iso.py failed for ${name}:\n${result.stderr}`);
+    "-o", join(HERE, `${output}.svg`), "--manifest", join(HERE, `${output}.manifest.json`), ...extra],
+    { encoding: "utf8" });
+  if (result.status !== 0) throw new Error(`iso.py failed for ${output}:\n${result.stderr}`);
   if (result.stderr.trim()) process.stderr.write(result.stderr);
-  return JSON.parse(readFileSync(join(HERE, `${name}.manifest.json`), "utf8"));
+  return JSON.parse(readFileSync(join(HERE, `${output}.manifest.json`), "utf8"));
 }
 
 function capture(chrome, html, width, height, scale, target) {
@@ -82,19 +86,24 @@ const scenes = readdirSync(HERE).filter((f) => f.endsWith(".scene.json") && f.in
   .map((f) => f.slice(0, -".scene.json".length)).sort();
 if (scenes.length === 0) throw new Error(`No scenes match "${filter}".`);
 const chrome = resolveChrome();
-for (const name of scenes) {
-  const manifest = renderScene(name);
-  const svg = readFileSync(join(HERE, `${name}.svg`), "utf8");
+const jobs = scenes.flatMap((name) => [
+  { name, output: name, extra: [], themes: Object.keys(THEMES) },
+  ...(UNLABELED.includes(name) ? [{ name, output: `${name}-unlabeled`, extra: ["--no-labels"], themes: ["light"] }] : []),
+]);
+for (const { name, output, extra, themes } of jobs) {
+  const manifest = renderScene(name, output, extra);
+  const svg = readFileSync(join(HERE, `${output}.svg`), "utf8");
   const width = manifest.width + 2 * MARGIN;
   const height = manifest.height + 2 * MARGIN;
-  for (const [theme, { background, vars }] of Object.entries(THEMES)) {
+  for (const theme of themes) {
+    const { background, vars } = THEMES[theme];
     const html = `<!doctype html><meta charset="utf-8"><style>html,body{margin:0;background:${background}}
       body{padding:${MARGIN}px;${vars}}svg{display:block}</style>${svg}`;
     for (const scale of [1, 2]) {
       const suffix = theme === "light" ? "" : `-${theme}`;
-      const target = join(HERE, `${name}${suffix}@${scale}x.png`);
+      const target = join(HERE, `${output}${suffix}@${scale}x.png`);
       capture(chrome, html, width, height, scale, target);
-      console.log(`${name}${suffix}@${scale}x.png  ${width * scale}x${height * scale}`);
+      console.log(`${output}${suffix}@${scale}x.png  ${width * scale}x${height * scale}`);
     }
   }
 }

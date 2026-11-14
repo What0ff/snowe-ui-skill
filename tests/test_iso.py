@@ -986,5 +986,482 @@ class V11DeterminismAndCliTests(unittest.TestCase):
             self.assertNotIn("Traceback", result.stderr)
 
 
+# --------------------------------------------------------------------------
+# Schema 1.2
+
+V3 = EXAMPLES / "orchestration-hub-v3.scene.json"
+# SHA-256 of the schema 1.1 demo SVG as generated before schema 1.2 existed (main at b588668).
+# Digest after the cross-platform two-stage rounding fix (a37196f), which moved a few v2
+# coordinates by 0.01; the 1.2 work must not change it further.
+V11_DIGESTS = {"orchestration-hub-v2": "04d921bfa78bee508b405c39bf620264cf74a2fa311cd518b3269515d469e9c1"}
+
+
+def v12(*objects: dict, **settings) -> dict:
+    return scene(*objects, **{"schema": "1.2", "style": "technical", **settings})
+
+
+def classes_of(svg_text: str, source_id: str) -> list[str]:
+    return [child.get("class") for child in solid_of(svg_text, source_id)]
+
+
+def normalized_item(data: dict, index: int = 0) -> dict:
+    return iso.normalize_scene(data)["items"][index]
+
+
+def vertical_xs(svg_text: str) -> list[float]:
+    """The x of every vertical M/L segment in the SVG's path data."""
+    xs = []
+    for d in re.findall(r' d="([^"]+)"', svg_text):
+        if re.search(r"[^MLAZ0-9.\s-]", d):
+            continue
+        current = None
+        for command, body in re.findall(r"([MLAZ])([^MLAZ]*)", d):
+            numbers = [float(value) for value in body.split()]
+            if command in "ML":
+                point = (numbers[0], numbers[1])
+                if command == "L" and current and abs(point[0] - current[0]) < 1e-9 and abs(point[1] - current[1]) > 0.5:
+                    xs.append(point[0])
+                current = point
+            elif command == "A":
+                current = (numbers[5], numbers[6])
+    return xs
+
+
+class SchemaV12Tests(unittest.TestCase):
+    def test_declared_or_used_features_select_1_2_and_older_declarations_refuse_them(self):
+        self.assertEqual("1.2", iso.render(scene(box("a", 0, 0), schema="1.2"))[1]["schema"])
+        self.assertEqual("1.2", iso.render(tech({"id": "t", "type": "tile", "x": 0, "y": 0, "w": 2, "d": 2,
+                                                 "model": "database"}))[1]["schema"])
+        self.assertEqual("1.2", iso.render(scene({"id": "d", "type": "database", "x": 0, "y": 0, "w": 1, "h": 1}))[1]["schema"])
+        self.assertEqual("1.2", iso.render(scene(box("a", 0, 0), labels="upright"))[1]["schema"])
+        for declared, data in (("1.1", scene({"id": "t", "type": "tree", "x": 0, "y": 0, "w": 0.5, "h": 0.8,
+                                                "shape": "conifer"}, schema="1.1")),
+                               ("1.0", scene(box("a", 0, 0), schema="1.0", labels="hidden")),
+                               ("1.1", tech({"id": "b", "type": "building", "x": 0, "y": 0, "w": 3, "d": 3, "floors": 3,
+                                             "windows": "fins"}, schema="1.1"))):
+            with self.subTest(declared=declared), self.assertRaises(iso.SceneError) as caught:
+                iso.render(data)
+            self.assertIn(f"schema {declared} does not include", str(caught.exception))
+            self.assertIn('declare "schema": "1.2"', str(caught.exception))
+        with self.assertRaises(iso.SceneError) as caught:
+            iso.render(scene(box("a", 0, 0), schema="1.3"))
+        self.assertIn("must be one of 1.0, 1.1, 1.2", str(caught.exception))
+
+    def test_1_1_demo_stays_byte_identical_to_the_pre_1_2_generator(self):
+        for name, digest in V11_DIGESTS.items():
+            with self.subTest(scene=name):
+                svg, manifest = iso.render_file(EXAMPLES / f"{name}.scene.json")
+                self.assertEqual(digest, hashlib.sha256(svg.encode("utf-8")).hexdigest())
+                self.assertEqual("1.1", manifest["schema"])
+                self.assertNotIn("labels", manifest)
+
+    def test_older_schemas_keep_their_stylesheet_and_unsnapped_coordinates(self):
+        for data in (scene(box("a", 0, 0)), tech(box("a", 0, 0))):
+            with self.subTest(schema=data.get("style", "line")):
+                style = ET.fromstring(iso.render(data)[0]).find(SVG + "style").text
+                for added in ("iso-sign", "iso-silh", "iso-hole", "iso-ao"):
+                    self.assertNotIn(added, style)
+
+    def test_v3_demo_is_deterministic_warning_free_and_renders_under_isolated_python(self):
+        first = iso.render_file(V3)
+        second = iso.render(json.loads(V3.read_text(encoding="utf-8")), EXAMPLES)
+        self.assertEqual(first[0].encode("utf-8"), second[0].encode("utf-8"))
+        self.assertEqual(json.dumps(first[1]), json.dumps(second[1]))
+        self.assertEqual("1.2", first[1]["schema"])
+        self.assertEqual([], first[1]["warnings"])
+        with tempfile.TemporaryDirectory() as temp:
+            out = Path(temp) / "v3.svg"
+            result = subprocess.run([sys.executable, "-I", str(ISO), "render", str(V3), "-o", str(out)], cwd=temp,
+                                    capture_output=True, text=True, encoding="utf-8", check=False)
+            self.assertEqual(0, result.returncode, result.stderr)
+            self.assertEqual(first[0].encode("utf-8"), out.read_bytes())
+
+
+class TreeV12Tests(unittest.TestCase):
+    def tree(self, shape: str, **extra) -> dict:
+        return {"id": "t", "type": "tree", "x": 0, "y": 0, "w": 0.5, "h": 1.2, "shape": shape, **extra}
+
+    def test_species_build_canopies_from_volumes_or_tiers_on_a_trunk_and_a_ground_patch(self):
+        expected = {"broadleaf": 3, "columnar": 3}
+        for species, volumes in expected.items():
+            with self.subTest(species=species):
+                classes = classes_of(iso.render(v12(self.tree(species)))[0], "t")
+                self.assertEqual(volumes, classes.count("iso-l iso-leaf"))
+                self.assertEqual(volumes, classes.count("iso-shade"))
+                for part in ("iso-trunk", "iso-silh", "iso-patch", "iso-leafline"):
+                    self.assertIn(part, classes)
+        conifer = classes_of(iso.render(v12(self.tree("conifer")))[0], "t")
+        self.assertEqual(3, conifer.count("iso-l iso-leaf"))
+        self.assertEqual(3, conifer.count("iso-r iso-leaf"))
+        self.assertIn("iso-trunk", conifer)
+        # Older shape names draw as the species they stand for.
+        self.assertEqual(normalized_item(v12(self.tree("oval")))["plan"][0]["species"], "broadleaf")
+        self.assertEqual(normalized_item(v12(self.tree("pine")))["plan"][0]["species"], "conifer")
+        with self.assertRaises(iso.SceneError) as caught:
+            iso.render(v12(self.tree("columnar", h=0.6)))
+        self.assertIn("columnar tree needs h >= 1.8 * w", str(caught.exception))
+
+    def test_no_planter_by_default_and_planters_opt_in(self):
+        plain = classes_of(iso.render(v12(self.tree("broadleaf")))[0], "t")
+        self.assertIn("iso-patch", plain)
+        self.assertNotIn("iso-hole", plain)
+        self.assertNotIn("iso-o", plain[:4])
+        potted = classes_of(iso.render(v12(self.tree("broadleaf", planter=True)))[0], "t")
+        self.assertIn("iso-hole", potted)
+        self.assertNotIn("iso-patch", potted)
+        group = {"id": "g", "type": "trees", "x": 0, "y": 0, "w": 4, "d": 1, "count": 5}
+        self.assertNotIn("iso-hole", classes_of(iso.render(v12(group))[0], "g"))
+
+    def test_groups_vary_by_seed_never_overlap_and_default_to_a_plausible_height(self):
+        group = {"id": "g", "type": "trees", "x": 0, "y": 0, "w": 5, "d": 3, "count": 9, "layout": "scatter",
+                 "shape": "mixed", "seed": 3}
+        plan = normalized_item(v12(group))["plan"]
+        self.assertEqual(plan, normalized_item(v12(json.loads(json.dumps(group))))["plan"])
+        self.assertGreater(len({tree["species"] for tree in plan}), 1)
+        self.assertGreater(len({round(tree["h"], 6) for tree in plan}), 3)
+        self.assertGreater(len({tree["mirror"] for tree in plan}), 1)
+        for i, a in enumerate(plan):
+            self.assertLessEqual(a["w"], 0.5 + 1e-9)
+            for b in plan[i + 1:]:
+                gap = max(abs(a["cx"] - b["cx"]), abs(a["cy"] - b["cy"]))
+                self.assertGreaterEqual(gap, (a["w"] + b["w"]) / 2 - 1e-9)
+        self.assertNotEqual(plan, normalized_item(v12(dict(group, seed=4)))["plan"])
+        uniform = normalized_item(v12(dict(group, vary=False, shape="broadleaf")))["plan"]
+        self.assertEqual({0.5}, {round(tree["w"], 9) for tree in uniform})
+        # The 1.2 default is a broadleaf half a unit wide and 1.45 default floors tall.
+        default = normalized_item(v12({"id": "g", "type": "trees", "x": 0, "y": 0, "w": 3, "d": 1, "count": 3,
+                                       "vary": False}))["plan"]
+        self.assertEqual({"broadleaf"}, {tree["species"] for tree in default})
+        self.assertAlmostEqual(0.8, default[0]["h"])
+        self.assertTrue(1.0 <= default[0]["h"] / 0.55 <= 1.5)
+
+
+class BuildingV12Tests(unittest.TestCase):
+    OFFICE = {"id": "b", "type": "building", "x": 0, "y": 0, "w": 3.4, "d": 3.2, "floors": 5, "floor_h": 0.5,
+              "massing": "stepped", "windows": "fins", "entrance": "x+", "sign": "Relay", "glyph": "bars"}
+
+    def test_stepped_massing_lobby_portal_parapet_and_rooftop_geometry(self):
+        item = normalized_item(v12(self.OFFICE))
+        volumes = item["volumes"]
+        self.assertEqual(["main", "wing", "front"], [v["role"] for v in volumes])
+        heights = [v["box"][5] for v in volumes]
+        self.assertEqual(3, len(set(heights)))
+        self.assertEqual(max(heights), volumes[0]["box"][5])
+        footprints = {v["box"][:4] for v in volumes}
+        self.assertEqual(3, len(footprints))
+        for i, a in enumerate(volumes):
+            for b in volumes[i + 1:]:
+                self.assertFalse(iso._intersects(a["box"], b["box"]))
+        self.assertAlmostEqual(0.5 * iso.LOBBY_RATIO, volumes[0]["lobby"])
+        self.assertGreater(volumes[0]["lobby"], 0.5)
+        portal = item["portal"]
+        self.assertAlmostEqual(volumes[2]["box"][1], portal[0])
+        self.assertAlmostEqual(iso.PORTAL_DEPTH, portal[1] - portal[0])
+        self.assertAlmostEqual(portal[1] + iso.PORTAL_LIP, item["space"][1])
+        self.assertAlmostEqual(volumes[0]["box"][5] - iso.PARAPET_H + iso.ROOFTOP_H, item["space"][5])
+        with self.assertRaises(iso.SceneError) as caught:
+            iso.render(v12(dict(self.OFFICE, floors=2)))
+        self.assertIn("stepped massing needs at least 3 floors", str(caught.exception))
+
+    def test_facades_have_depth_fins_glazed_lobby_portal_rooftop_and_integrated_lettering(self):
+        svg, manifest = iso.render(v12(self.OFFICE))
+        self.assertEqual([], manifest["warnings"])
+        classes = classes_of(svg, "b")
+        for part in ("iso-glass", "iso-mull", "iso-deck", "iso-dim", "iso-hole", "iso-sign", "iso-g"):
+            self.assertIn(part, classes)
+        texts = [t for t in solid_of(svg, "b").iter(SVG + "text")]
+        self.assertEqual(["Relay"], [t.text for t in texts])
+        self.assertEqual("iso-sign", texts[0].get("class"))
+        # No floating sign board: the wall lettering adds no box above the roof.
+        self.assertLess(normalized_item(v12(self.OFFICE))["space"][5],
+                        normalized_item(v12(dict(self.OFFICE, sign_mount="roof")))["space"][5])
+        punched = classes_of(iso.render(v12(dict(self.OFFICE, massing="block", windows="punched")))[0], "b")
+        self.assertGreater(punched.count("iso-l") + punched.count("iso-r"), 2)
+        plaque_svg, plaque = iso.render(v12(dict(self.OFFICE, w=4.4, d=5.0, sign_mount="plaque")))
+        self.assertEqual([], plaque["warnings"])
+        self.assertEqual(["Relay"], [t.text for t in ET.fromstring(plaque_svg).iter(SVG + "text")])
+        _, narrow = iso.render(v12(dict(self.OFFICE, massing="block", w=2.2, d=2, sign="Relay Supply Depot",
+                                        sign_mount="plaque", entrance="y+")))
+        self.assertTrue(any("plaque" in w for w in narrow["warnings"]))
+
+    def test_rooftop_plant_is_seeded_and_stays_clear_of_the_parapet(self):
+        def plant(seed: int) -> str:
+            return "".join(c.get("d") or "" for c in solid_of(iso.render(v12(dict(self.OFFICE, seed=seed)))[0], "b"))
+        self.assertEqual(plant(1), plant(1))
+        self.assertNotEqual(plant(1), plant(2))
+        vol = normalized_item(v12(dict(self.OFFICE, massing="block")))["volumes"][0]
+        x0, x1, y0, y1, _, _ = vol["box"]
+        rng = iso._Rand(1, 7)
+        near, far = iso.PARAPET_T + 0.06, iso.PARAPET_T + vol["cap"] * 1.6 + 0.08
+        area = (x0 + near, x1 - far, y0 + near, y1 - far)
+        placed = iso._place_rects(area, [("core", 0.56, 0.46), ("hvac", 0.34, 0.34), ("vent-pipe", 0.12, 0.12)], rng, 0.1)
+        for _, (a0, a1, b0, b1) in placed:
+            self.assertTrue(area[0] - 1e-9 <= a0 and a1 <= area[1] + 1e-9 and area[2] - 1e-9 <= b0 and b1 <= area[3] + 1e-9)
+
+
+class MicroDetailTests(unittest.TestCase):
+    def populate(self, seed: int, density: int, blocked=()) -> list:
+        _, placed = iso._populate(iso.Projection(), (0, 4, 0, 4), 0.3, (1.0, 3.0, 1.0, 2.6, 0.3, 0.5), list(blocked),
+                                  density, seed, "technical")
+        return placed
+
+    def test_placement_is_deterministic_seeded_inside_the_free_area_and_collision_free(self):
+        blocked = [(0.0, 4.0, 3.3, 4.0)]
+        placed = self.populate(7, 3, blocked)
+        self.assertEqual(placed, self.populate(7, 3, blocked))
+        self.assertNotEqual(placed, self.populate(8, 3, blocked))
+        self.assertGreater(len(placed), 8)
+        package = (1.0, 3.0, 1.0, 2.6)
+        for i, (kind, rect) in enumerate(placed):
+            with self.subTest(part=i, kind=kind):
+                self.assertIn(kind, iso.PARTS)
+                self.assertTrue(-1e-9 <= rect[0] and rect[1] <= 4 + 1e-9 and -1e-9 <= rect[2] and rect[3] <= 4 + 1e-9)
+                self.assertTrue(iso._rects_clear(rect, package, 0.1))
+                self.assertTrue(iso._rects_clear(rect, blocked[0], 0.0))
+                for _, other in placed[i + 1:]:
+                    self.assertTrue(iso._rects_clear(rect, other, 0.02), f"{rect} overlaps {other}")
+
+    def test_detail_density_scales_the_part_count(self):
+        counts = [len(self.populate(3, density)) for density in (0, 1, 2, 3)]
+        self.assertEqual(0, counts[0])
+        self.assertLess(counts[1], counts[2])
+        self.assertLessEqual(counts[2], counts[3])
+
+    def test_cores_and_boards_render_populated_parts_buses_and_vents(self):
+        core = {"id": "c", "type": "core", "x": 0, "y": 0, "w": 4.4, "d": 4.4, "glyph": "spark", "label": "Core"}
+        svg, manifest = iso.render(v12(core))
+        self.assertEqual([], manifest["warnings"])
+        classes = classes_of(svg, "c")
+        for part in ("iso-tick", "iso-trace", "iso-node", "iso-hole", "iso-led", "iso-t iso-inv", "iso-guide"):
+            self.assertIn(part, classes)
+        sparse = classes_of(iso.render(v12(dict(core, detail=0)))[0], "c")
+        self.assertLess(len(sparse), len(classes))
+        self.assertNotIn("iso-trace", sparse)
+        board = classes_of(iso.render(v12({"id": "p", "type": "slab", "x": 0, "y": 0, "w": 4, "d": 2.4, "h": 0.12,
+                                           "detail": 2}))[0], "p")
+        self.assertGreater(board.count("iso-tick"), 1)
+        self.assertIn("iso-node", board)
+
+    def test_core_parts_keep_clear_of_the_label_strip(self):
+        core = v12({"id": "c", "type": "core", "x": 0, "y": 0, "w": 4.4, "d": 4.4, "label": "Orchestrator", "detail": 3})
+        svg, manifest = iso.render(core)
+        self.assertEqual([], manifest["warnings"])
+        item = normalized_item(core)
+        proj = iso.Projection()
+        top = iso._face(proj, item["body"], "top", "x")
+        strip = max(0.44, 11 / 32 + 0.26)
+        hole = iso._frame_box(top, 0.0, top.h - strip - 0.04, top.w, top.h, 0.3, 0.3)[:4]
+        margin = max(0.4, 4.4 * 0.2)
+        package = iso._frame_box(top, margin, margin, top.w - margin, top.h - margin - strip, 0.3, 0.5)
+        _, placed = iso._populate(proj, (0.16, 4.24, 0.16, 4.24), 0.3, package, [hole], 3, 1, "technical")
+        self.assertTrue(placed)
+        for _, rect in placed:
+            self.assertTrue(iso._rects_clear(rect, hole, 0.0))
+
+
+class RecipeV12Tests(unittest.TestCase):
+    def test_database_documents_and_tile_models_are_recognizable_constructions(self):
+        svg, manifest = iso.render(v12(
+            {"id": "db", "type": "database", "x": 0, "y": 0, "w": 1, "h": 1, "drums": 3},
+            {"id": "doc", "type": "documents", "x": 2, "y": 0, "w": 0.9, "h": 1.1},
+            {"id": "flat", "type": "documents", "x": 4, "y": 0, "w": 1, "d": 1.2, "orient": "flat"},
+            {"id": "rec", "type": "tile", "x": 0, "y": 3, "w": 1.8, "d": 1.8, "model": "database", "label": "Records"},
+            {"id": "con", "type": "tile", "x": 3, "y": 3, "w": 1.8, "d": 1.8, "model": "documents", "label": "Docs"}))
+        self.assertEqual([], manifest["warnings"])
+        db = classes_of(svg, "db")
+        self.assertEqual(3, db.count("iso-led"))
+        self.assertGreaterEqual(db.count("iso-o"), 5)
+        for doc in ("doc", "flat"):
+            self.assertEqual(1, classes_of(svg, doc).count("iso-shade"), doc)
+        self.assertIn("iso-led", classes_of(svg, "rec"))
+        self.assertIn("iso-shade", classes_of(svg, "con"))
+        item = normalized_item(v12({"id": "rec", "type": "tile", "x": 0, "y": 0, "w": 2, "d": 2, "model": "database"}))
+        self.assertGreater(item["space"][5], item["body"][5])
+        for data, fragment in ((v12({"id": "t", "type": "tile", "x": 0, "y": 0, "w": 2, "d": 2, "model": "database",
+                                     "glyph": "apps"}), "either model or a glyph"),
+                               (v12({"id": "d", "type": "documents", "x": 0, "y": 0, "w": 1, "d": 1}), "require 'h'"),
+                               (v12({"id": "d", "type": "database", "x": 0, "y": 0, "w": 1, "h": 0.3, "drums": 4}), "drums")):
+            with self.subTest(fragment=fragment), self.assertRaises(iso.SceneError) as caught:
+                iso.render(data)
+            self.assertIn(fragment, str(caught.exception))
+
+    def test_dashboards_stand_on_a_foot_behind_a_bezel_and_racks_have_bays_and_handles(self):
+        board = {"id": "d", "type": "dashboard", "x": 0, "y": 0, "w": 3.4, "h": 2, "orient": "x+", "label": "Today"}
+        item = normalized_item(v12(board))
+        self.assertTrue(item["stand"])
+        self.assertAlmostEqual(iso.STAND_LIFT, item["body"][4])
+        self.assertLess(item["space"][0], item["body"][0])
+        self.assertAlmostEqual(0.0, item["space"][4])
+        classes = classes_of(iso.render(v12(board))[0], "d")
+        self.assertIn("iso-dotf", classes)
+        self.assertGreater(classes.count("iso-l") + classes.count("iso-r") + classes.count("iso-t"), 6)
+        bare = normalized_item(v12(dict(board, stand=False)))
+        self.assertAlmostEqual(0.0, bare["body"][4])
+        rack = classes_of(iso.render(v12({"id": "r", "type": "rack", "x": 0, "y": 0, "w": 1.6, "d": 1.2, "units": 3}))[0], "r")
+        for part in ("iso-hole", "iso-deck", "iso-perf", "iso-ledon"):
+            self.assertIn(part, rack)
+
+    def test_cards_have_depth_and_ports_have_sockets(self):
+        card = {"id": "c", "type": "tile", "x": 4, "y": 0, "w": 1, "d": 3, "h": 0.42, "layout": "row", "label_axis": "y",
+                "glyph": "chat", "label": "Agent"}
+        svg, _ = iso.render(v12(box("a", 0, 0, w=2, d=2), card,
+                                link("a", "c", from_side="x+", to_side="y+", via=[[3.0, 3.6], [4.5, 3.6]], to_z=0.21, end="port",
+                                     route="ground")))
+        self.assertEqual(2, classes_of(svg, "c").count("iso-d iso-faint"))
+        connector = [g for g in groups(svg) if g.get("data-kind") == "connector"][0]
+        self.assertEqual(["iso-path", "iso-sock", "iso-port", "iso-portc"], [p.get("class") for p in connector])
+
+
+class LabelModeTests(unittest.TestCase):
+    def test_hidden_labels_drop_every_text_and_keep_the_geometry(self):
+        labelled, manifest = iso.render_file(V3)
+        hidden, hidden_manifest = iso.render_file(V3, "hidden")
+        self.assertGreater(len(list(ET.fromstring(labelled).iter(SVG + "text"))), 5)
+        self.assertEqual([], list(ET.fromstring(hidden).iter(SVG + "text")))
+        self.assertEqual("hidden", hidden_manifest["labels"])
+        self.assertNotIn("labels", manifest)
+        self.assertEqual([e["id"] for e in manifest["elements"]], [e["id"] for e in hidden_manifest["elements"]])
+        for a, b in zip(groups(labelled), groups(hidden)):
+            self.assertEqual([c.get("class") for c in a if c.tag == SVG + "path"],
+                             [c.get("class") for c in b if c.tag == SVG + "path"])
+        flagged = json.loads(V3.read_text(encoding="utf-8"))
+        flagged["labels"] = "hidden"
+        self.assertEqual(hidden, iso.render(flagged, EXAMPLES)[0])
+        # The override works under every schema.
+        legacy, legacy_manifest = iso.render_file(EXAMPLES / "agent-hub.scene.json", "hidden")
+        self.assertEqual([], list(ET.fromstring(legacy).iter(SVG + "text")))
+        self.assertEqual("1.0", legacy_manifest["schema"])
+
+    def test_committed_unlabeled_variant_matches_the_generator(self):
+        svg, manifest = iso.render_file(V3, "hidden")
+        self.assertEqual((EXAMPLES / "orchestration-hub-v3-unlabeled.svg").read_text(encoding="utf-8"), svg)
+        committed = json.loads((EXAMPLES / "orchestration-hub-v3-unlabeled.manifest.json").read_text(encoding="utf-8"))
+        self.assertEqual(committed, json.loads(json.dumps(manifest)))
+
+    def test_cli_no_labels_under_isolated_python(self):
+        with tempfile.TemporaryDirectory() as temp:
+            out = Path(temp) / "plain.svg"
+            result = subprocess.run([sys.executable, "-I", str(ISO), "render", str(V3), "-o", str(out), "--no-labels"],
+                                    cwd=ROOT, capture_output=True, text=True, encoding="utf-8", check=False)
+            self.assertEqual(0, result.returncode, result.stderr)
+            self.assertEqual(iso.render_file(V3, "hidden")[0].encode("utf-8"), out.read_bytes())
+
+    def test_upright_labels_are_unsheared_and_warn_when_they_leave_their_face(self):
+        svg, manifest = iso.render(v12({"id": "t", "type": "tile", "x": 0, "y": 0, "w": 2, "d": 2, "label": "Docs"},
+                                       labels="upright"))
+        self.assertEqual([], manifest["warnings"])
+        self.assertEqual([1.0, 0.0, 0.0, 1.0], matrix_of(ET.fromstring(svg).find(f".//{SVG}text"))[:4])
+        _, manifest = iso.render(v12({"id": "c", "type": "tile", "x": 0, "y": 0, "w": 1, "d": 3, "layout": "row",
+                                      "label_axis": "y", "label": "Dispatch agent"}, labels="upright"))
+        self.assertTrue(any("runs past its face" in w for w in manifest["warnings"]))
+
+    def test_calm_labels_and_the_minimum_size(self):
+        style = ET.fromstring(iso.render(v12(box("a", 0, 0, w=3, d=3, label="Core")))[0]).find(SVG + "style").text
+        rule = re.findall(r"\.iso-txt\{([^}]*)\}", style)[-1]
+        self.assertIn("font-weight:500", rule)
+        self.assertIn("color-mix(", rule)
+        _, manifest = iso.render(v12(box("a", 0, 0, w=3, d=3, label="Core", label_size=9)))
+        self.assertTrue(any("below 11 px" in w for w in manifest["warnings"]))
+
+
+class LabelCollisionTests(unittest.TestCase):
+    def test_a_connector_crossing_a_label_warns(self):
+        tile = {"id": "t", "type": "tile", "x": 0, "y": 0, "w": 2, "d": 2, "label": "Records"}
+        _, manifest = iso.render(v12(tile, box("a", 3, -2, w=1, d=1, h=0.4), box("b", -2, 3, w=1, d=1, h=0.4),
+                                     link("a", "b", from_side="y+", to_side="x+", via=[[3.5, 1.0], [1.0, 1.0], [1.0, 3.5]],
+                                          z=0.4, route="ground", end="none")))
+        self.assertTrue(any("crossed by connector" in w for w in manifest["warnings"]), manifest["warnings"])
+
+    def test_a_label_covered_by_an_object_in_front_warns(self):
+        tile = {"id": "t", "type": "tile", "x": 0, "y": 0, "w": 2, "d": 2, "label": "Records"}
+        _, manifest = iso.render(v12(tile, box("tall", 2.1, 2.1, w=1, d=1, h=4)))
+        self.assertTrue(any("covered by the object 'tall'" in w for w in manifest["warnings"]), manifest["warnings"])
+        _, clear = iso.render(v12(tile, box("tall", 2.1, 4.5, w=1, d=1, h=1)))
+        self.assertEqual([], clear["warnings"])
+
+    def test_overlapping_labels_warn(self):
+        _, manifest = iso.render(v12({"id": "a", "type": "tile", "x": 0, "y": 0, "w": 2, "d": 2, "label": "Records"},
+                                     {"id": "b", "type": "tile", "x": 0, "y": 0, "z": 0.35, "w": 2, "d": 2, "h": 0.01,
+                                      "label": "Ledger"}))
+        self.assertTrue(any("overlaps label" in w or "covered by" in w for w in manifest["warnings"]), manifest["warnings"])
+
+
+class ScaleWarningTests(unittest.TestCase):
+    OFFICE = {"id": "office", "type": "building", "x": 0, "y": 0, "w": 3, "d": 3, "floors": 3, "floor_h": 0.6}
+
+    def test_plausible_relative_sizes_pass(self):
+        _, manifest = iso.render(v12(self.OFFICE,
+                                     {"id": "trees", "type": "trees", "x": 4, "y": 0, "w": 2, "d": 1, "count": 3},
+                                     {"id": "card", "type": "tile", "x": 7, "y": 0, "w": 1, "d": 3, "h": 0.42},
+                                     {"id": "core", "type": "core", "x": 9, "y": 0, "w": 4.4, "d": 4.4}))
+        self.assertEqual([], manifest["warnings"])
+
+    def test_implausible_ratios_warn(self):
+        cases = {
+            "trees are": {"id": "trees", "type": "trees", "x": 4, "y": 0, "w": 2, "d": 1, "count": 2, "size": 0.9},
+            "floors thick": {"id": "card", "type": "tile", "x": 4, "y": 0, "w": 1, "d": 3, "h": 0.9},
+            "largest building's": {"id": "card", "type": "tile", "x": 4, "y": 0, "w": 2.5, "d": 4.6, "h": 0.4},
+        }
+        for fragment, extra in cases.items():
+            with self.subTest(fragment=fragment):
+                _, manifest = iso.render(v12(self.OFFICE, extra))
+                self.assertTrue(any(fragment in w for w in manifest["warnings"]), manifest["warnings"])
+        _, manifest = iso.render(v12({"id": "core", "type": "core", "x": 0, "y": 0, "w": 2, "d": 2},
+                                     {"id": "card", "type": "tile", "x": 3, "y": 0, "w": 1.6, "d": 3}))
+        self.assertTrue(any("focal core is smaller" in w for w in manifest["warnings"]))
+        _, manifest = iso.render(v12(dict(self.OFFICE, floor_h=1.2)))
+        self.assertTrue(any("floor_h 1.2 is outside" in w for w in manifest["warnings"]))
+
+    def test_v2_proportions_would_warn_under_1_2(self):
+        data = json.loads(V2.read_text(encoding="utf-8"))
+        data["schema"] = "1.2"
+        warnings = iso.render(data, EXAMPLES)[1]["warnings"]
+        self.assertTrue(any("largest building's" in w for w in warnings), warnings)
+
+
+class ShadowAndCrispnessV12Tests(unittest.TestCase):
+    PAD = {"id": "pad", "type": "slab", "x": 0, "y": 0, "w": 3, "d": 3, "h": 0.2, "radius": 0.1}
+    EDGE = box("edge", 1.8, 0.5, z=0.2, w=1.2, d=1, h=1.5)
+
+    def shadow_points(self, data: dict) -> list[tuple[float, float]]:
+        items = iso.normalize_scene(data)["items"]
+        solids = [i for i in items if i["type"] not in ("connector", "ground-grid")]
+        item = [i for i in solids if i["id"] == "edge"][0]
+        ops = iso._shadow_ops_v12(iso.Projection(), item, solids) if data.get("schema") == "1.2" \
+            else iso._shadow_ops(iso.Projection(), item)
+        return [p for op in ops for p in iso._segs_points(op[2])]
+
+    def test_a_raised_objects_shadow_stays_on_its_platform(self):
+        proj = iso.Projection()
+        # The pad's top face is a diamond; its right corner is the farthest point to the right on screen.
+        right_edge = max(proj(x, y, 0.2)[0] for x in (0, 3) for y in (0, 3))
+        fixed = self.shadow_points(v12(self.PAD, self.EDGE))
+        self.assertTrue(fixed)
+        self.assertLessEqual(max(x for x, _ in fixed), right_edge + 1e-6)
+        legacy = self.shadow_points(tech(self.PAD, self.EDGE))
+        self.assertGreater(max(x for x, _ in legacy), right_edge + 1.0)
+
+    def test_floating_objects_cast_no_shadow(self):
+        data = v12(box("float", 0, 0, z=1.5, w=1, d=1))
+        items = iso.normalize_scene(data)["items"]
+        self.assertEqual([], iso._shadow_ops_v12(iso.Projection(), items[0], items))
+
+    def test_vertical_hairlines_sit_on_pixel_centers_and_strokes_stay_at_least_one_pixel(self):
+        svg, _ = iso.render_file(V3)
+        xs = vertical_xs(svg)
+        self.assertGreater(len(xs), 100)
+        self.assertTrue(all(abs(x - math.floor(x) - 0.5) < 1e-6 for x in xs), [x for x in xs if abs(x % 1 - 0.5) > 1e-6][:5])
+        style = ET.fromstring(svg).find(SVG + "style").text
+        widths = [float(w) for w in re.findall(r"stroke-width:([\d.]+)", style)]
+        self.assertTrue(widths)
+        self.assertGreaterEqual(min(widths), 1.0)
+        root = ET.fromstring(svg)
+        self.assertTrue(float(root.get("width")).is_integer())
+        _, manifest = iso.render(v12(box("a", 0, 0), detail_stroke=0.6))
+        self.assertTrue(any("below 1 CSS px" in w for w in manifest["warnings"]))
+        legacy = iso.render_file(V2)[0]
+        self.assertFalse(all(abs(x % 1 - 0.5) < 1e-6 for x in vertical_xs(legacy)))
+
+
 if __name__ == "__main__":
     unittest.main()

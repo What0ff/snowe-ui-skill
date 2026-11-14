@@ -1,0 +1,381 @@
+{
+  "schema": "1.2",
+  "projection": "isometric",
+  "style": "technical",
+  "unit": 36.0,
+  "width": 923,
+  "height": 522,
+  "viewBox": [
+    0,
+    0,
+    923,
+    522
+  ],
+  "elements": [
+    {
+      "id": "hub3-floor",
+      "source_id": "floor",
+      "kind": "ground-grid",
+      "role": "ground-grid",
+      "order": null,
+      "paint": 0,
+      "accent": false,
+      "bbox": {
+        "x": 61.44,
+        "y": 16.3,
+        "width": 844.78,
+        "height": 489.0
+      }
+    },
+    {
+      "id": "hub3-shadow-layer",
+      "source_id": "shadow-layer",
+      "kind": "shadows",
+      "role": "shadows",
+      "order": null,
+      "paint": 1,
+      "accent": false,
+      "bbox": {
+        "x": 16.89,
+        "y": 74.44,
+        "width": 848.86,
+        "height": 399.69
+      }
+    },
+    {
+      "id": "hub3-records",
+      "source_id": "records",
+      "kind": "tile",
+      "role": "source",
+      "order": 0,
+      "paint": 2,
+      "accent": false,
+      "bbox": {
+        "x": 399.05,
+        "y": 60.54,
+        "width": 100.97,
+        "height": 75.24
+      }
+    },
+    {
+      "id": "hub3-records-to-core",
+      "source_id": "records-to-core",
+      "kind": "connector",
+      "role": "connector",
+      "order": 1,
+      "paint": 3,
+      "accent": false,
+      "bbox": {
+        "x": 362.45,
+        "y": 108.29,
+        "width": 147.66,
+        "height": 150.41
+      },
+      "from": "hub3-records",
+      "to": "hub3-core",
+      "from_side": "x+",
+      "to_side": "x-",
+      "length": 7.71,
+      "path": "hub3-records-to-core-path",
+      "level": 0.0
+    },
+    {
+      "id": "hub3-contracts",
+      "source_id": "contracts",
+      "kind": "tile",
+      "role": "source",
+      "order": 0,
+      "paint": 4,
+      "accent": false,
+      "bbox": {
+        "x": 333.58,
+        "y": 98.62,
+        "width": 100.97,
+        "height": 74.97
+      }
+    },
+    {
+      "id": "hub3-contracts-to-plaza",
+      "source_id": "contracts-to-plaza",
+      "kind": "connector",
+      "role": "connector",
+      "order": 1,
+      "paint": 5,
+      "accent": true,
+      "bbox": {
+        "x": 279.68,
+        "y": 146.09,
+        "width": 154.05,
+        "height": 121.61
+      },
+      "from": "hub3-contracts",
+      "to": "hub3-plaza",
+      "from_side": "x+",
+      "to_side": "y-",
+      "length": 6.11,
+      "path": "hub3-contracts-to-plaza-path",
+      "level": 0.0
+    },
+    {
+      "id": "hub3-apps",
+      "source_id": "apps",
+      "kind": "tile",
+      "role": "source",
+      "order": 0,
+      "paint": 6,
+      "accent": false,
+      "bbox": {
+        "x": 268.1,
+        "y": 140.3,
+        "width": 100.97,
+        "height": 71.08
+      }
+    },
+    {
+      "id": "hub3-apps-to-plaza",
+      "source_id": "apps-to-plaza",
+      "kind": "connector",
+      "role": "connector",
+      "order": 1,
+      "paint": 7,
+      "accent": false,
+      "bbox": {
+        "x": 264.09,
+        "y": 183.89,
+        "width": 91.32,
+        "height": 74.81
+      },
+      "from": "hub3-apps",
+      "to": "hub3-plaza",
+      "from_side": "x+",
+      "to_side": "y-",
+      "length": 3.51,
+      "path": "hub3-apps-to-plaza-path",
+      "level": 0.0
+    },
+    {
+      "id": "hub3-intake",
+      "source_id": "intake",
+      "kind": "tile",
+      "role": "agent",
+      "order": 3,
+      "paint": "s",
+      "accent": false,
+      "bbox": {
+        "x": 645.35,
+        "y": 172.7,
+        "width": 125.91,
+        "height": 89.08
+      }
+    },
+    {
+      "id": "hub3-core-to-intake",
+      "source_id": "core-to-intake",
+      "kind": "connector",
+      "role": "connector",
+      "order": 3,
+      "paint": 9,
+      "accent": false,
+      "bbox": {
+        "x": 519.74,
+        "y": 219.79,
+        "width": 144.85,
+        "height": 42.95
+      },
+      "from": "hub3-core",
+      "to": "hub3-intake",
+      "from_side": "y-",
+      "to_side": "y+",
+      "length": 4.61,
+      "path": "hub3-core-to-intake-path",
+      "level": 0.0
+    },
+    {
+      "id": "hub3-billing",
+      "source_id": "billing",
+      "kind": "tile",
+      "role": "agent",
+      "order": 3,
+      "paint": "s",
+      "accent": true,
+      "bbox": {
+        "x": 688.99,
+        "y": 197.9,
+        "width": 125.91,
+        "height": 89.08
+      }
+    },
+    {
+      "id": "hub3-core-to-billing",
+      "source_id": "core-to-billing",
+      "kind": "connector",
+      "role": "connector",
+      "order": 3,
+      "paint": 11,
+      "accent": true,
+      "bbox": {
+        "x": 550.91,
+        "y": 244.99,
+        "width": 157.33,
+        "height": 49.62
+      },
+      "from": "hub3-core",
+      "to": "hub3-billing",
+      "from_side": "y-",
+      "to_side": "y+",
+      "length": 5.01,
+      "path": "hub3-core-to-billing-path",
+      "level": 0.0
+    },
+    {
+      "id": "hub3-dispatch",
+      "source_id": "dispatch",
+      "kind": "tile",
+      "role": "agent",
+      "order": 3,
+      "paint": "s",
+      "accent": false,
+      "bbox": {
+        "x": 732.64,
+        "y": 223.1,
+        "width": 125.91,
+        "height": 89.08
+      }
+    },
+    {
+      "id": "hub3-core-to-dispatch",
+      "source_id": "core-to-dispatch",
+      "kind": "connector",
+      "role": "connector",
+      "order": 3,
+      "paint": 13,
+      "accent": false,
+      "bbox": {
+        "x": 582.09,
+        "y": 270.19,
+        "width": 169.8,
+        "height": 56.82
+      },
+      "from": "hub3-core",
+      "to": "hub3-dispatch",
+      "from_side": "y-",
+      "to_side": "y+",
+      "length": 5.41,
+      "path": "hub3-core-to-dispatch-path",
+      "level": 0.0
+    },
+    {
+      "id": "hub3-plaza",
+      "source_id": "plaza",
+      "kind": "slab",
+      "role": "site",
+      "order": 1,
+      "paint": 14,
+      "accent": false,
+      "bbox": {
+        "x": 19.98,
+        "y": 191.81,
+        "width": 291.68,
+        "height": 175.43
+      }
+    },
+    {
+      "id": "hub3-office",
+      "source_id": "office",
+      "kind": "building",
+      "role": "office",
+      "order": 1,
+      "paint": 15,
+      "accent": false,
+      "bbox": {
+        "x": 56.92,
+        "y": 111.09,
+        "width": 239.65,
+        "height": 234.03
+      }
+    },
+    {
+      "id": "hub3-grove-front",
+      "source_id": "grove-front",
+      "kind": "trees",
+      "role": "trees",
+      "order": null,
+      "paint": 16,
+      "accent": false,
+      "bbox": {
+        "x": 45.69,
+        "y": 243.53,
+        "width": 105.62,
+        "height": 92.77
+      }
+    },
+    {
+      "id": "hub3-grove-side",
+      "source_id": "grove-side",
+      "kind": "trees",
+      "role": "trees",
+      "order": null,
+      "paint": 17,
+      "accent": false,
+      "bbox": {
+        "x": 181.08,
+        "y": 278.7,
+        "width": 70.41,
+        "height": 59.36
+      }
+    },
+    {
+      "id": "hub3-core",
+      "source_id": "core",
+      "kind": "core",
+      "role": "core",
+      "order": 2,
+      "paint": "s",
+      "accent": false,
+      "bbox": {
+        "x": 320.01,
+        "y": 145.43,
+        "width": 308.92,
+        "height": 246.59
+      }
+    },
+    {
+      "id": "hub3-plaza-to-core",
+      "source_id": "plaza-to-core",
+      "kind": "connector",
+      "role": "connector",
+      "order": 2,
+      "paint": 19,
+      "accent": true,
+      "bbox": {
+        "x": 289.03,
+        "y": 292.42,
+        "width": 94.97,
+        "height": 49.3
+      },
+      "from": "hub3-plaza",
+      "to": "hub3-core",
+      "from_side": "x+",
+      "to_side": "y+",
+      "length": 3.06,
+      "path": "hub3-plaza-to-core-path",
+      "level": 0.0
+    },
+    {
+      "id": "hub3-board",
+      "source_id": "board",
+      "kind": "dashboard",
+      "role": "report",
+      "order": 4,
+      "paint": 20,
+      "accent": false,
+      "bbox": {
+        "x": 395.03,
+        "y": 341.68,
+        "width": 110.25,
+        "height": 130.57
+      }
+    }
+  ],
+  "warnings": []
+}
