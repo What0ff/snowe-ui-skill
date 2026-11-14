@@ -1,6 +1,6 @@
 # CLI Reference
 
-The bundled scripts give deterministic local evidence: retrieval, a Portfolio decision packet, identity-bound persistence, stack guidance, SVG validation, icon comparison, browser observation, visual-system contracts, checked visual reports and exact contrast. None of them designs or judges the rendered result.
+The bundled scripts give deterministic local evidence: retrieval, a Portfolio decision packet, identity-bound persistence, stack guidance, SVG validation, icon comparison, isometric illustration, browser observation, visual-system contracts, checked visual reports and exact contrast. None of them designs or judges the rendered result.
 
 ## Runtime
 
@@ -9,6 +9,7 @@ python <skill-directory>/scripts/search.py --help
 python <skill-directory>/scripts/asset_quality.py --help
 python <skill-directory>/scripts/icon_review.py --help
 python <skill-directory>/scripts/contrast.py --help
+python <skill-directory>/scripts/iso.py --help
 ```
 
 Use Python 3.11+ (`python -I` works); never install or modify system Python for Snowe without user authorization. `search.py` exits `0` on success, `1` when a lookup reports an error (stderr; with `--json` the error object stays on stdout) or another run holds a persistence lock, and `2` for invalid arguments or an unusable `--output-dir`.
@@ -309,6 +310,59 @@ New manifests use schema `1.2`, with explicit `lang`, `dir` (`ltr`, `rtl`, `auto
 
 The sheet is representative evidence, not a pixel-identical host render or an automatic decision. Inspect it at wide and narrow viewports, render the winner and the closest rejected alternative inside the owning component, and record the optical and semantic choice as human judgment; source fidelity and usage still need primary-source and host review. A worked example is the [icon-decisions proof](https://github.com/What0ff/snowe-ui-skill/tree/main/evals/icon-decisions) in the source repository, not part of an installed skill.
 
+## Draw an Isometric Illustration
+
+`iso.py` turns a JSON scene in grid units into a deterministic, self-contained SVG. It owns projection, face shading, back-to-front order, connector routing and label placement; when to draw and how to compose stay in [illustration-craft.md](illustration-craft.md).
+
+```text
+python <skill-directory>/scripts/iso.py render scene.json -o scene.svg --manifest scene.manifest.json
+```
+
+Without `-o` the SVG goes to standard output. Exit `0` on success (label-fit warnings go to stderr and the manifest), `1` with one `iso.py: error:` line per problem when the scene is refused or a file cannot be read or written, and `2` for usage errors. An output path never overwrites the scene file.
+
+```json
+{
+  "title": "Data platform",
+  "desc": "Events flow through ingest into the processing core and on to the warehouse.",
+  "id_prefix": "dp-",
+  "unit": 36,
+  "objects": [
+    {"id": "floor", "type": "ground-grid", "x": -1, "y": -4, "w": 10, "d": 9, "pattern": "dots"},
+    {"id": "ingest", "type": "stack", "x": 0, "y": 1.5, "w": 2, "d": 2, "count": 4, "label": "Ingest"},
+    {"id": "core", "type": "chip", "x": 4, "y": 1, "w": 3, "d": 3, "label": "Process", "accent": true, "order": 1},
+    {"id": "dwh", "type": "cylinder", "x": 4.7, "y": -3, "w": 1.6, "h": 1.8, "bands": 2, "label": "DWH", "order": 2},
+    {"type": "connector", "from": "ingest", "to": "core", "accent": true, "order": 1},
+    {"type": "connector", "from": "core", "to": "dwh", "from_side": "y-", "to_side": "y+", "order": 2}
+  ]
+}
+```
+
+- **Scene:** `projection` (`isometric` at 30 degrees, or `dimetric` 2:1), `style` (`line`: light faces with crisp outlines; `solid`: tonal faces without outlines), `unit` (px per grid unit, 8–96, default 32), `padding` (px), `stroke` and `detail_stroke` (px), `title` and `desc`, `id_prefix` (default `iso-`; give every SVG on a page its own), `colors` (fallback `#rgb` or `#rrggbb` per role: `top`, `left`, `right`, `stroke`, `detail`, `accent`, `text`, `grid`) and `objects`.
+- **Coordinates:** x runs to the lower right on screen, y to the lower left and z up. A solid's `x`, `y` is the minimum corner of its footprint and `z` (default 0) its base. The visible faces are `top`, `x+` (right, darkest) and `y+` (left).
+- **Solids** take `id`, `x`, `y`, optional `z`, `role`, `order` (flow step, 0–999) and `accent`. Labelled types take `label` (at most 40 characters) and `label_size` (px, default 11); those marked "face" also take `label_face` (`top`, `x+`, `y+`) and `label_axis` (`x` or `y`, top faces only).
+
+| type | size fields | options |
+|---|---|---|
+| `box` | `w`, `d`, `h` | `radius`, `bands`, `glyph`, face |
+| `slab` | `w`, `d`, `h` (0.25) | `radius` (0.2), `inset`, `glyph`, face |
+| `stack` | `w`, `d`, `count` (2–12), `h` per slab (0.3) | `gap`, `radius`, `leds`, `front` (`x+`, `y+`), face |
+| `chip` | `w`, `d`, `h` (0.3) | `pins` per side (default from size; pins reach 0.18 outside), `die`, `radius`, `glyph`, face |
+| `cylinder` | `w` (diameter), `h` | `bands`, `glyph`; labels on top |
+| `building` | `w`, `d`, `floors` (1–40), `floor_h` (0.55) | `windows` (`grid`, `ribbon`, `none`), `roof`, face |
+| `card` | `w`, plus `d` when flat or `h` when upright | `orient` (`flat`, `x+`, `y+`), `t`, `radius`, `glyph`, `lines` (0–4) |
+| `screen` | `w`, `h` | `orient` (`x+`, `y+`), `t`, `radius`, `lines` (0–6), `stand` |
+| `tree` | `w`, `h` | `shape` (`round` needs `h` ≥ 1.1 `w`; `cone` needs `h` ≥ `w`) |
+| `ground-grid` | `w`, `d` | `step`, `pattern` (`lines`, `dots`), `fade` (dots) |
+
+Glyphs are `dot`, `ring`, `check`, `plus`, `bars`, `user`, `spark` and `play`.
+
+- **Connectors** (`"type": "connector"`) join two solids: `from`, `to`, optional `id` (default `<from>-to-<to>`), `from_side` and `to_side` (`x+`, `x-`, `y+`, `y-`; by default the sides that face each other), `from_offset` and `to_offset` along the side, `via` (`[x, y]` waypoints), `start` (`none`, `dot`), `end` (`arrow` by default, `dot`, `none`), `gap` (0.3), `radius` of rounded bends (0.35), `z` (default: the base both objects share), `accent`, `role` and `order`. Routes run only along grid axes: straight when facing sides overlap and no offset is given, otherwise as an L or a Z.
+- **Output:** every solid and connector is a `<g>` with `id="<prefix><id>"`, the classes `iso-obj` or `iso-link`, `iso-<type>` and, when set, `iso-accent`, plus `data-kind`, `data-role`, `data-order` and `data-paint`. A connector adds `data-from`, `data-to`, one `<path class="iso-path" pathLength="1">` with id `<group id>-path`, and its end markers. Faces carry `iso-t`, `iso-l` or `iso-r`, outlines `iso-o` and detail `iso-d`. Paint comes only from the embedded stylesheet as `var(--iso-<role>,<fallback>)`; labels are real `<text>` placed with a face matrix in `--iso-font`; strokes use `vector-effect: non-scaling-stroke`; nothing external is referenced. A title emits `role="img"` with `aria-labelledby`; without one the SVG is `aria-hidden`.
+- **Manifest:** the projection, size and warnings, and for every group its id, kind, role, order, paint index, accent and projected bounding box in viewBox pixels. Connectors add their sides, length in grid units and path id.
+- **Refusals:** unknown types or fields; missing, mistyped, non-finite or out-of-range numbers (coordinates within ±100, sizes up to 60, `z` from 0 to 60); duplicate ids or JSON keys; labels over 40 characters (title and description over 400) or containing control characters; intersecting volumes (each solid occupies its bounding box, including chip pins and screen stands; touching and stacking are allowed); connectors to unknown objects, between different levels without a shared `z`, leaving backwards, passing through a solid, too short for their arrow, or passing both behind and in front of one object; cyclic occlusion; and scenes over 200 objects, 1,000,000 bytes, 4,000 characters of text, 12,000 px per side or 20,000 drawn elements. Every problem found is reported in one run. Label-fit warnings estimate text width; they never refuse.
+
+A render proves geometry and structure only. Composition, crowding, hidden arrows and label legibility need inspection at real size.
+
 ## Observe in a Browser
 
 Prefer the host's browser tools when they support the app. The skill also ships an optional, dependency-free adapter for **Node 22+ with a system Chrome, Chromium or Edge**:
@@ -400,4 +454,5 @@ It accepts `#RGB`, `#RRGGBB`, `rgb(r,g,b)`, `black` and `white` and uses WCAG re
 - A contrast result covers only its exact solid pair.
 - A font stays `UNKNOWN` until its files, script coverage, license, metrics, representative content, fallbacks and rendering are checked.
 - An SVG `PASS` is structural only, and an icon sheet proves that contexts rendered, not that a glyph is best.
+- An `iso.py` render proves projection, order and structure, not that the illustration earns its place or reads well.
 - The CLI cannot select or certify architecture, art direction, imagery, custom asset quality, motion, usability or taste.
