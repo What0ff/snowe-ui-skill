@@ -138,13 +138,19 @@ def _is_reparse_path(path: Path) -> bool:
     return stat.S_ISLNK(information.st_mode) or bool(attributes & reparse_flag)
 
 
+def _system_root_alias(path: Path) -> bool:
+    """macOS ships /tmp, /var and /etc as root links into /private; they are not caller redirects."""
+    return (sys.platform == "darwin" and path.parent == Path(path.anchor)
+            and path.name in {"tmp", "var", "etc"} and os.path.realpath(path) == f"/private/{path.name}")
+
+
 def _reparse_in_chain(path: Path) -> Path | None:
     try:
         current = Path(os.path.abspath(os.fspath(path)))
     except (OSError, ValueError) as error:
         raise AssetValidationError(f"Path cannot be inspected safely: {path}: {error}") from error
     while True:
-        if _is_reparse_path(current):
+        if _is_reparse_path(current) and not _system_root_alias(current):
             return current
         parent = current.parent
         if parent == current:
