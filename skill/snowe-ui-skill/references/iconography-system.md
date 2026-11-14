@@ -62,7 +62,17 @@ Decide outline, solid or duotone once per family and role, then apply it consist
 | Selected, active or on state (current tab, favorite, toggle) | Solid version of the same glyph, plus the ARIA state | A change in mass signals state without a new metaphor |
 | Very small (12–16 px), on photos or colored fills, status markers | Solid | Thin strokes break up or vanish |
 | Feature, category and empty-state pictograms, 32 px and up | Solid or duotone | Mass reads as finished and owned at that size |
-| Expressive or brand-led products where icons carry identity | Solid or duotone family | Matches the weight of display type and imagery |
+
+The role table settles state and size. For the family's base mode, read the [contrast budget](art-direction-gate.md#one-signature-move) of the direction:
+
+| Loud axis of the direction | Base mode of the family | Why |
+|---|---|---|
+| Weight or mass: heavy display type, solid blocks, filled surfaces | Solid; outline only in dense rows beside text | Icons carry the same mass as the type |
+| Line or texture: rules, hairlines, grids, drawn diagrams | Outline; solid only for selected states | Strokes continue the line language |
+| Color: a saturated dominant field or several data hues | Outline or solid at control size; duotone for pictograms at 32 px and up | The second tone echoes the palette without adding a hue |
+| Scale or space: quiet type with large jumps and generous whitespace | Outline at a light stroke | Icons stay quiet so scale and space do the work |
+
+With two loud axes, the one the signature move uses decides. Platform conventions and a stated user preference override this table; record the choice with its reason.
 
 Rules:
 - Peers in one row share a style. A mixed row reads as a state difference, so mix styles only to express state.

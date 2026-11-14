@@ -126,6 +126,7 @@ Write the token sheet before components and name tokens by role (`--accent`, not
 | Elevation | `--elev-0` to `--elev-2` | what sits above what |
 | Space | base 4 or 8 px; `--space-1` to `--space-8` | density |
 | Motion | `--dur-fast` 100–150 ms, `--dur-base` 200–250 ms, `--dur-slow` 300–350 ms; `--ease-out`, `--ease-in-out` | motion posture |
+| Icons | base mode (outline, solid, duotone), stroke, caps, corner radius, detail; the `glyph.py` family tokens | loud axis ([family style](iconography-system.md#choose-the-family-style)), text stems, control radius |
 
 Type scale: size(n) = base × ratio^n, rounded to whole pixels. Base 16 at ratio 1.25 gives 13, 16, 20, 25, 31, 39, 49.
 
