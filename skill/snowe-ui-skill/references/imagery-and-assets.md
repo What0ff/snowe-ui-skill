@@ -23,6 +23,18 @@ If the sentence is vague, compare the page without the asset first; composition,
 
 Record why the winner beats the no-visual baseline and the strongest non-generated alternative. `No image` is a completed decision, not missing polish.
 
+### Choose the hero visual by what must be shown
+
+| What the page must show | Hero visual |
+|---|---|
+| A product with an interface | Its real UI, in a real state |
+| An invisible system: infrastructure, data, AI agents, a backend | A mechanism illustration. An isometric scene from `iso.py` ([illustration-craft.md](illustration-craft.md)) is one option; a flat diagram or a custom visual language may serve better |
+| Figures and trends | A chart or dashboard built from the data ([data-visualization.md](data-visualization.md)) |
+| A physical product, people or a place | Supplied photography, or no image |
+| Strong copy with few facts | Typography, no image |
+
+The art direction picks the form, so isometric is never a default: choose it only when depth, layering or a physical metaphor makes the mechanism clearer than a flat drawing would.
+
 ## Build the Image System
 
 Define only the image roles the experience needs (product truth, proof of use, editorial story and place, orientation, explanatory mechanism, atmospheric identity, background material), and for each its subject, distance, viewpoint, light, color behavior, environment, human presence, realism, crop logic, caption or attribution, responsive treatment and repetition limit. A deliberate contrast between roles can be coherent; unexplained variation is not. Prefer real representative content, and never let one strong hero asset hide a weak catalog, article, empty, loading or mobile state.
