@@ -259,3 +259,41 @@ Pixel difference proves change, not improvement. A screenshot cannot prove keybo
 ## Delivery Evidence
 
 Report checks run, viewports and states inspected, assistive/input modes covered, important measurements, findings fixed, rerender evidence, unresolved `UNKNOWN`s, and unavailable checks. Never report compilation alone as visual QA.
+
+## Review-Only and Audits
+
+Use when the user asks to review, audit or critique an interface without asking for changes. The deliverable is a findings report, and the repository stays as it was.
+
+- **No edits.** Do not change source, tokens, configuration, dependencies or the correction journal, and open no decision packet. Keep captures and measurement scripts outside the repository. When a fix is small, describe it in the finding and offer to apply it; do not apply it.
+- **State the scope.** Name the routes or components, revision or URL, viewports, themes, states and input modes reviewed, and what was left out. Unreviewed surfaces are not passing.
+- **Gather evidence with the acceptance methods.** Render at the [responsive widths](#responsive-transformation), exercise keyboard and screen-reader paths, measure contrast with `contrast.py`, read computed styles and geometry, and read source only to locate each finding's owner.
+
+Give each finding one record:
+
+```text
+ID · severity · title
+location: route / component / selector, viewport, state
+evidence: screenshot or crop path, selector with computed value, or measurement
+why it matters: who is affected and how
+fix: the change at the owning file, token or component, with a target value
+status: verified | suspected (and the check that would settle it)
+```
+
+| Severity | Meaning |
+|---|---|
+| Critical | Blocks a primary task, loses data, misleads about money, consent or safety, or shuts people out of the primary path through an accessibility failure |
+| High | Degrades a primary task for many users, or fails WCAG AA on a frequent path |
+| Medium | Friction, inconsistency, or an AA failure off the main path |
+| Low | Polish: spacing, alignment, wording |
+
+- **Order** findings by severity, then by reach. One cause is one finding: a shared token defect lists every location under a single record.
+- **Verified is not suspected.** A verified finding was reproduced in the rendered product or measured. A finding inferred from source, seen once without confirmation, or needing a device, assistive technology or data you lacked is suspected: list it in its own section with the check that would confirm or dismiss it. It is `UNKNOWN`, never a pass or a failure.
+- **Accessibility audits** name the conformance target (WCAG 2.2 AA unless stated), cite the success criterion on each finding, and measure against the [threshold table](#accessibility-and-interaction) rather than restating it. Say which checks were manual; automated tools cover only part of the criteria.
+- **Report in this order**, in the user's language: scope and the top three issues; verified findings; suspected findings; strengths to preserve during fixes; what was not reviewed. A `KEEP | REVISE | REJECT | UNKNOWN` disposition may summarize the reviewed scope.
+
+### Check
+
+- `git status` shows no change made by the review.
+- Every finding has location, evidence, why it matters, a fix and a status.
+- Verified and suspected findings are separated and ordered by severity.
+- Scope and unreviewed areas are stated.

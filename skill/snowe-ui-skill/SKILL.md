@@ -67,6 +67,9 @@ Do not preload the library. Load a reference only while its decision is active, 
 | [page-hierarchy.md](references/page-hierarchy.md) | An open single-page hierarchy, user-facing copy or duplicated actions, before choosing components |
 | [surfaces-and-disclosure.md](references/surfaces-and-disclosure.md) | Secondary tasks, item details, settings, confirmations or feedback need a place, so they get a proportionate surface instead of all sharing one screen |
 | [app-patterns.md](references/app-patterns.md) | App screens, dashboards, internal tools, mobile apps: navigation, collections, states, undo vs confirm, saving, flows, keyboard |
+| [data-visualization.md](references/data-visualization.md) | Charts, KPI tiles, sparklines or dashboard views: form by question, encoding, series color, labels, states, chart accessibility |
+| [localization-and-rtl.md](references/localization-and-rtl.md) | More than one language, right-to-left or non-Latin scripts, or locale formatting of numbers, dates, currency and plurals |
+| [html-email.md](references/html-email.md) | Designing or building an HTML email |
 | [experience-architecture.md](references/experience-architecture.md) | New site or product topology, page family, navigation model, conversion or task flow, structural redesign |
 | [art-direction-gate.md](references/art-direction-gate.md) and [design-foundations.md](references/design-foundations.md) | New identity, campaign, visual-system change or open visual thesis; foundations also hold starting values, stable geometry and dark theme |
 | [failure-patterns.md](references/failure-patterns.md) | Before accepting an original visual design, or when a result looks generic, templated or machine-made |
@@ -77,6 +80,7 @@ Do not preload the library. Load a reference only while its decision is active, 
 | [motion-and-interaction.md](references/motion-and-interaction.md) | Motion carries information or character, or a transition is failing |
 | [research-and-evidence.md](references/research-and-evidence.md) | Current external evidence can change a high-leverage decision |
 | [quality-gates.md](references/quality-gates.md) | Implementation validation, accessibility thresholds, responsive and state stress, rendered critique |
+| [quality-gates.md#review-only-and-audits](references/quality-gates.md#review-only-and-audits) | The user asks to review or audit without changing code: findings contract, no edits |
 | [visual-reasoning.md](references/visual-reasoning.md) | Open visual relationships, image comparisons, or a repair whose perceptual cause is uncertain |
 | [visual-system-and-observation.md](references/visual-system-and-observation.md) | Shared owners and layers, versioned visual contracts, portable checked browser evidence |
 | [designer-evaluation.md](references/designer-evaluation.md) | Evaluating or comparing designs, not routine delivery |
