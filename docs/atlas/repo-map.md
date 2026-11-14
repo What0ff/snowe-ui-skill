@@ -42,6 +42,9 @@ snowe-ui-skill/
 │   ├── figures-src/
 │   ├── glyph-examples/
 │   └── iso-examples/
+│       ├── icons/
+│       │   └── outline/
+│       └── icons-src/
 ├── evals/  # deterministic behavior contracts and bounded operational proofs
 │   ├── acceptance-cases/
 │   │   └── captures/
@@ -143,14 +146,14 @@ The generated map itself is excluded from the counts.
 
 | Extension | Files |
 | --- | --- |
-| `.png` | 502 |
+| `.png` | 506 |
 | `.md` | 90 |
-| `.json` | 80 |
+| `.json` | 88 |
 | `.jpg` | 52 |
 | `.py` | 46 |
 | `.csv` | 31 |
-| `.html` | 29 |
-| `.svg` | 25 |
+| `.html` | 30 |
+| `.svg` | 30 |
 | `.css` | 13 |
 | `.mjs` | 10 |
 | `.js` | 8 |
