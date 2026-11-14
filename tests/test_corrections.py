@@ -290,6 +290,412 @@ class CorrectionTests(unittest.TestCase):
         self.assertEqual("BLOCKED", json.loads(result.stdout)["status"])
 
 
+def png_bytes(width=4, height=3):
+    import struct
+    import zlib
+    def chunk(kind, body):
+        return struct.pack(">I", len(body)) + kind + body + struct.pack(">I", zlib.crc32(kind + body))
+    pixels = (b"\0" + b"\xff\xff\xff" * width) * height
+    return (b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", struct.pack(">IIBBBBB", width, height, 8, 2, 0, 0, 0))
+            + chunk(b"IDAT", zlib.compress(pixels)) + chunk(b"IEND", b""))
+
+
+def digest_binding(root, name):
+    return {"path": name, "sha256": hashlib.sha256((root / name).read_bytes()).hexdigest()}
+
+
+class HostCaptureTests(unittest.TestCase):
+    """A server-rendered app cannot be served by observe.mjs; the host's own browser capture closes the criterion."""
+
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name)
+        self.record = {"id": "passive-service-backings", "source": "User correction",
+            "requirement": "Show passive service icons without individual backings",
+            "scope": {"owners": ["app/services/page.tsx"], "routes": ["/services"], "states": ["default"]},
+            "criteria": [{"id": "visual-default", "kind": "visual", "requirement": "Inspect service symbols beside labels and controls"}]}
+        (self.root / "app/services").mkdir(parents=True)
+        (self.root / "app/services/page.tsx").write_text("export default function Page() { return null }", encoding="utf-8")
+        (self.root / "captures").mkdir()
+        (self.root / "captures/services-390.png").write_bytes(png_bytes())
+        self.call("record", self.record)
+        self.call("update", {"id": "passive-service-backings", "status": "implemented", "note": "Removed backings in the owner"})
+
+    def call(self, command, data=None, project="Harbor"):
+        return execute(command, workspace=self.root, project=project, payload=data)
+
+    def proof(self, method="self-review"):
+        return {"sources": [digest_binding(self.root, "app/services/page.tsx")],
+            "artifacts": [digest_binding(self.root, "captures/services-390.png")],
+            "results": [{"criterion": "visual-default", "status": "PASS", "artifacts": ["captures/services-390.png"],
+                "review": {"reviewer": "Implementing agent", "finding": "Symbols sit beside labels without backings",
+                    "viewport": "390x844@3", "state": "default", "method": method, "verdict": "KEEP",
+                    "capture": {"origin": "host", "tool": "Playwright 1.49 (Chromium)", "url": "http://localhost:3000/services",
+                        "date": "2026-11-14", "image": "captures/services-390.png"}}}]}
+
+    def verify(self, proof):
+        return self.call("verify", {"id": "passive-service-backings", "proof": proof})
+
+    def refused(self, proof, message=None):
+        if message:
+            with self.assertRaisesRegex(ValueError, message): self.verify(proof)
+        else:
+            with self.assertRaises(ValueError): self.verify(proof)
+        self.assertEqual("BLOCKED", self.call("check")["status"])
+
+    def test_self_reviewed_host_capture_closes_visual_criterion_and_is_labeled(self):
+        self.verify(self.proof())
+        result = self.call("check")
+        self.assertEqual("PASS", result["status"])
+        self.assertEqual("Recorded proof integrity; not independent visual certification", result["boundary"])
+        self.assertEqual([{"id": "passive-service-backings", "criterion": "visual-default", "method": "self-review",
+            "evidence": "host-capture", "state": "default", "viewport": "390x844@3", "tool": "Playwright 1.49 (Chromium)",
+            "url": "http://localhost:3000/services", "date": "2026-11-14", "image": "captures/services-390.png"}], result["visual_closures"])
+
+    def test_peer_and_user_review_keep_their_method_label(self):
+        for method in ("peer-review", "user-review"):
+            with self.subTest(method=method):
+                self.verify(self.proof(method))
+                self.assertEqual(method, self.call("check")["visual_closures"][0]["method"])
+
+    def test_route_and_datetime_provenance_are_accepted(self):
+        proof = self.proof()
+        proof["results"][0]["review"]["capture"].update(url="/services", date="2026-11-14T09:30:00+00:00")
+        self.verify(proof)
+        self.assertEqual("PASS", self.call("check")["status"])
+
+    def test_jpeg_and_webp_host_screenshots_are_accepted(self):
+        for name, header in (("shot.jpg", b"\xff\xd8\xff\xe0\x00\x10JFIF\x00"), ("shot.webp", b"RIFF\x24\x00\x00\x00WEBPVP8 ")):
+            with self.subTest(name=name):
+                (self.root / "captures" / name).write_bytes(header + b"\x00" * 32)
+                proof = self.proof()
+                proof["artifacts"] = [digest_binding(self.root, f"captures/{name}")]
+                proof["results"][0]["artifacts"] = [f"captures/{name}"]
+                proof["results"][0]["review"]["capture"]["image"] = f"captures/{name}"
+                self.verify(proof)
+                self.assertEqual("PASS", self.call("check")["status"])
+
+    def test_missing_hash_or_unbound_image_is_refused(self):
+        proof = self.proof()
+        del proof["artifacts"][0]["sha256"]
+        self.refused(proof)
+        (self.root / "notes.txt").write_text("not the capture", encoding="utf-8")
+        proof = self.proof()
+        proof["artifacts"] = [digest_binding(self.root, "notes.txt")]
+        proof["results"][0]["artifacts"] = ["notes.txt"]
+        self.refused(proof, "bound proof artifact")
+
+    def test_hash_mismatch_is_refused(self):
+        proof = self.proof()
+        proof["artifacts"][0]["sha256"] = hashlib.sha256(b"another screenshot").hexdigest()
+        self.refused(proof, "Changed: captures/services-390.png")
+
+    def test_non_keep_or_unlabeled_review_is_refused(self):
+        for verdict in ("REVISE", "REJECT", "UNKNOWN"):
+            proof = self.proof()
+            proof["results"][0]["review"]["verdict"] = verdict
+            with self.subTest(verdict=verdict): self.refused(proof)
+        for field in ("method", "verdict"):
+            proof = self.proof()
+            del proof["results"][0]["review"][field]
+            with self.subTest(missing=field): self.refused(proof)
+        proof = self.proof()
+        proof["results"][0]["review"]["method"] = "agent-review"
+        self.refused(proof, "review method")
+
+    def test_missing_or_invalid_provenance_is_refused(self):
+        for field in ("origin", "tool", "url", "date", "image"):
+            proof = self.proof()
+            del proof["results"][0]["review"]["capture"][field]
+            with self.subTest(missing=field): self.refused(proof, "missing")
+        for field, value in (("origin", "observer"), ("tool", " "), ("url", "the services page"), ("date", "yesterday"),
+                             ("image", "../outside.png")):
+            proof = self.proof()
+            proof["results"][0]["review"]["capture"][field] = value
+            with self.subTest(field=field, value=value): self.refused(proof)
+        for field, value in (("viewport", "390x844"), ("state", "hover")):
+            proof = self.proof()
+            proof["results"][0]["review"][field] = value
+            with self.subTest(field=field, value=value): self.refused(proof)
+        proof = self.proof()
+        proof["results"][0]["review"]["capture"]["note"] = "unplanned field"
+        self.refused(proof, "unexpected")
+
+    def test_capture_must_be_its_results_own_real_image(self):
+        proof = self.proof()
+        (self.root / "notes.txt").write_text("not an image", encoding="utf-8")
+        proof["artifacts"].append(digest_binding(self.root, "notes.txt"))
+        proof["results"][0]["artifacts"] = ["notes.txt"]
+        self.refused(proof, "result")
+        proof["results"][0]["artifacts"] = ["notes.txt", "captures/services-390.png"]
+        proof["results"][0]["review"]["capture"]["image"] = "notes.txt"
+        self.refused(proof, "PNG, JPEG or WebP")
+        proof = self.proof()
+        proof["results"][0]["review"]["capture"]["image"] = "app/services/page.tsx"
+        self.refused(proof, "bound proof artifact")
+
+    def test_report_and_host_capture_are_alternatives(self):
+        proof = self.proof()
+        proof["results"][0]["review"]["report"] = "captures/services-390.png"
+        self.refused(proof, "either")
+
+    def test_changed_capture_source_or_provenance_requires_review(self):
+        self.verify(self.proof())
+        image = self.root / "captures/services-390.png"
+        original = image.read_bytes()
+        image.write_bytes(png_bytes(5, 3))
+        self.assertEqual("REVIEW_REQUIRED", self.call("check")["status"])
+        image.write_bytes(original)
+        self.assertEqual("PASS", self.call("check")["status"])
+        source = self.root / "app/services/page.tsx"
+        source.write_bytes(source.read_bytes() + b"\n")
+        result = self.call("check")
+        self.assertEqual("REVIEW_REQUIRED", result["status"])
+        self.assertEqual([], result["visual_closures"])
+        source.write_bytes(source.read_bytes()[:-1])
+        path = self.root / "design-intelligence/harbor/CORRECTIONS.json"
+        journal = json.loads(path.read_bytes())
+        journal["records"][0]["proof"]["results"][0]["review"]["capture"]["tool"] = "Another tool"
+        path.write_text(json.dumps(journal), encoding="utf-8")
+        edited = path.read_bytes()
+        self.assertEqual("REVIEW_REQUIRED", self.call("check")["status"])
+        self.assertEqual(edited, path.read_bytes())
+
+    def test_cli_closes_with_host_capture_and_reports_self_review(self):
+        script = ROOT / "skill/snowe-ui-skill/scripts/corrections.py"
+        proof_path = self.root / "proof.json"
+        proof_path.write_text(json.dumps({"id": "passive-service-backings", "proof": self.proof()}), encoding="utf-8")
+        verified = subprocess.run([sys.executable, "-I", str(script), "verify", "--workspace", str(self.root), "--project", "Harbor",
+            "--input", str(proof_path)], capture_output=True, text=True, encoding="utf-8", timeout=60)
+        self.assertEqual(0, verified.returncode, verified.stderr)
+        checked = subprocess.run([sys.executable, "-I", str(script), "check", "--workspace", str(self.root), "--project", "Harbor"],
+            capture_output=True, text=True, encoding="utf-8", timeout=60)
+        self.assertEqual(0, checked.returncode, checked.stderr)
+        self.assertEqual("self-review", json.loads(checked.stdout)["visual_closures"][0]["method"])
+
+
+class UnavailableEvidenceTests(unittest.TestCase):
+    """Recording why evidence cannot be produced ends the loop honestly; it never becomes PASS."""
+
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name)
+        self.record = {"id": "passive-service-backings", "source": "User correction",
+            "requirement": "Show passive service icons without individual backings",
+            "scope": {"owners": ["app/services/page.tsx"], "routes": ["/services"], "states": ["default"]},
+            "criteria": [{"id": "build", "kind": "technical", "requirement": "The page compiles"},
+                         {"id": "visual-default", "kind": "visual", "requirement": "Inspect service symbols beside labels and controls"}]}
+        self.reason = "No browser is available in this environment and the app server cannot start without its database"
+        self.call("record", self.record)
+
+    def call(self, command, data=None, project="Harbor"):
+        return execute(command, workspace=self.root, project=project, payload=data)
+
+    def implement(self):
+        self.call("update", {"id": "passive-service-backings", "status": "implemented", "note": "Removed backings in the owner"})
+
+    def unavailable(self, criterion="visual-default", reason=None):
+        return self.call("unavailable", {"id": "passive-service-backings", "criterion": criterion, "reason": reason or self.reason})
+
+    def test_recorded_reason_is_reported_as_blocked_never_pass(self):
+        self.implement()
+        self.unavailable()
+        result = self.call("check")
+        self.assertEqual("BLOCKED", result["status"])
+        self.assertEqual(["passive-service-backings"], result["blocked"])
+        self.assertEqual([{"id": "passive-service-backings", "criterion": "visual-default", "kind": "visual", "reason": self.reason}],
+                         result["evidence_unavailable"])
+        self.unavailable("build", "The type checker needs network access to install dependencies")
+        self.assertEqual("BLOCKED", self.call("check")["status"])
+        self.assertEqual(2, len(self.call("check")["evidence_unavailable"]))
+        history = self.call("list")["records"][0]["history"]
+        self.assertIn(self.reason, history[-2]["note"])
+
+    def test_statement_requires_implemented_record_known_criterion_and_reason(self):
+        with self.assertRaisesRegex(ValueError, "implemented"): self.unavailable()
+        self.implement()
+        with self.assertRaisesRegex(ValueError, "criterion"): self.unavailable("missing")
+        for reason in (" ", "x" * 2001):
+            with self.subTest(length=len(reason)), self.assertRaises(ValueError): self.unavailable(reason=reason)
+        with self.assertRaisesRegex(ValueError, "unexpected"):
+            self.call("unavailable", {"id": "passive-service-backings", "criterion": "build", "reason": self.reason, "status": "verified"})
+        self.assertEqual([], self.call("check")["evidence_unavailable"])
+
+    def test_repeated_statement_is_idempotent_and_a_new_reason_replaces_it(self):
+        self.implement()
+        self.assertTrue(self.unavailable()["changed"])
+        self.assertFalse(self.unavailable()["changed"])
+        self.unavailable(reason="The preview tool crashed while opening the route")
+        reasons = [item["reason"] for item in self.call("check")["evidence_unavailable"]]
+        self.assertEqual(["The preview tool crashed while opening the route"], reasons)
+
+    def test_later_verification_or_implementation_clears_the_statement(self):
+        self.implement()
+        self.unavailable()
+        self.implement()
+        self.assertEqual([], self.call("check")["evidence_unavailable"])
+        self.assertNotIn("unavailable", self.call("list")["records"][0])
+        self.unavailable()
+        (self.root / "app/services").mkdir(parents=True)
+        (self.root / "app/services/page.tsx").write_text("export default function Page() { return null }", encoding="utf-8")
+        (self.root / "shot.png").write_bytes(png_bytes())
+        (self.root / "build.log").write_text("compiled", encoding="utf-8")
+        proof = {"sources": [digest_binding(self.root, "app/services/page.tsx")],
+            "artifacts": [digest_binding(self.root, "shot.png"), digest_binding(self.root, "build.log")],
+            "results": [{"criterion": "build", "status": "PASS", "artifacts": ["build.log"]},
+                {"criterion": "visual-default", "status": "PASS", "artifacts": ["shot.png"],
+                 "review": {"reviewer": "Implementing agent", "finding": "No backings remain", "viewport": "390x844@3", "state": "default",
+                    "method": "self-review", "verdict": "KEEP", "capture": {"origin": "host", "tool": "Host preview",
+                    "url": "/services", "date": "2026-11-14", "image": "shot.png"}}}]}
+        self.call("verify", {"id": "passive-service-backings", "proof": proof})
+        result = self.call("check")
+        self.assertEqual("PASS", result["status"])
+        self.assertEqual([], result["evidence_unavailable"])
+        self.assertNotIn("unavailable", self.call("list")["records"][0])
+
+    def test_superseding_a_record_with_unavailable_evidence_keeps_the_journal_readable(self):
+        self.implement()
+        self.unavailable()
+        replacement = deepcopy(self.record); replacement["id"] = "replacement"
+        self.call("record", replacement)
+        self.call("supersede", {"id": "passive-service-backings", "replacement": "replacement", "note": "New user direction"})
+        result = self.call("check")
+        self.assertEqual(["replacement"], result["blocked"])
+        self.assertEqual([], result["evidence_unavailable"])
+        record = next(item for item in self.call("list")["records"] if item["id"] == "passive-service-backings")
+        self.assertNotIn("unavailable", record)
+        self.assertIn("unavailable", record["history"][-2]["snapshot"])
+
+    def test_direct_edit_of_a_reason_is_integrity_drift(self):
+        self.implement()
+        self.unavailable()
+        path = self.root / "design-intelligence/harbor/CORRECTIONS.json"
+        journal = json.loads(path.read_bytes())
+        journal["records"][0]["unavailable"][0]["reason"] = "Edited afterwards"
+        path.write_text(json.dumps(journal), encoding="utf-8")
+        result = self.call("check")
+        self.assertEqual("BLOCKED", result["status"])
+        self.assertEqual("passive-service-backings", result["stale"][0]["id"])
+
+    def test_malformed_statement_fails_closed(self):
+        self.implement()
+        self.unavailable()
+        path = self.root / "design-intelligence/harbor/CORRECTIONS.json"
+        original = path.read_bytes()
+        for mutate in (lambda e: e.__setitem__("unavailable", []),
+                       lambda e: e["unavailable"][0].__setitem__("criterion", "unknown"),
+                       lambda e: e["unavailable"].append(dict(e["unavailable"][0])),
+                       lambda e: e.update(status="requested", history=e["history"] + [{**e["history"][-1], "status": "requested", "snapshot": {**e["history"][-1]["snapshot"], "status": "requested"}}])):
+            journal = json.loads(original)
+            mutate(journal["records"][0])
+            path.write_text(json.dumps(journal), encoding="utf-8")
+            before = path.read_bytes()
+            with self.subTest(journal=journal["records"][0].get("unavailable")), self.assertRaises(ValueError): self.call("check")
+            self.assertEqual(before, path.read_bytes())
+
+    def test_cli_exit_status_stays_blocked(self):
+        self.implement()
+        script = ROOT / "skill/snowe-ui-skill/scripts/corrections.py"
+        statement = self.root / "unavailable.json"
+        statement.write_text(json.dumps({"id": "passive-service-backings", "criterion": "visual-default", "reason": self.reason}), encoding="utf-8")
+        recorded = subprocess.run([sys.executable, "-I", str(script), "unavailable", "--workspace", str(self.root), "--project", "Harbor",
+            "--input", str(statement)], capture_output=True, text=True, encoding="utf-8", timeout=60)
+        self.assertEqual(0, recorded.returncode, recorded.stderr)
+        checked = subprocess.run([sys.executable, "-I", str(script), "check", "--workspace", str(self.root), "--project", "Harbor"],
+            capture_output=True, text=True, encoding="utf-8", timeout=60)
+        self.assertEqual(2, checked.returncode, checked.stderr)
+        self.assertEqual(self.reason, json.loads(checked.stdout)["evidence_unavailable"][0]["reason"])
+
+
+class JournalCompatibilityTests(unittest.TestCase):
+    """Journals and observer-based receipts written before host capture keep their exact meaning."""
+
+    PREVIOUS_RELEASE = "92da6fb"
+
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name) / "workspace"
+        self.root.mkdir()
+
+    def previous_scripts(self):
+        """Extract the pre-host-capture product scripts; skip without that git history."""
+        import io
+        import tarfile
+        try:
+            raw = subprocess.check_output(["git", "archive", "--format=tar", self.PREVIOUS_RELEASE, "skill/snowe-ui-skill/scripts"],
+                                          cwd=ROOT, stderr=subprocess.DEVNULL)
+        except (subprocess.CalledProcessError, OSError):
+            raise unittest.SkipTest(f"git history with {self.PREVIOUS_RELEASE} is unavailable")
+        target = Path(self.temp.name) / "previous"
+        with tarfile.open(fileobj=io.BytesIO(raw)) as archive:
+            for member in archive.getmembers():
+                if not member.isfile(): continue
+                destination = target / member.name
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                destination.write_bytes(archive.extractfile(member).read())
+        return target / "skill/snowe-ui-skill/scripts/corrections.py"
+
+    def run_previous(self, script, command, payload=None):
+        arguments = [sys.executable, "-I", str(script), command, "--workspace", str(self.root), "--project", "Harbor"]
+        if payload is not None:
+            path = Path(self.temp.name) / f"{command}-input.json"
+            path.write_text(json.dumps(payload), encoding="utf-8")
+            arguments += ["--input", str(path)]
+        return subprocess.run(arguments, capture_output=True, text=True, encoding="utf-8", timeout=60)
+
+    def test_journal_written_by_previous_release_checks_identically(self):
+        script = self.previous_scripts()
+        (self.root / "src").mkdir()
+        (self.root / "src/page.css").write_text("body{font-weight:400}", encoding="utf-8")
+        (self.root / "build.log").write_text("compiled", encoding="utf-8")
+        base = {"source": "User request", "requirement": "Keep body role coherent",
+                "scope": {"owners": ["src/page.css"], "routes": ["/page"], "states": []},
+                "criteria": [{"id": "build", "kind": "technical", "requirement": "Compiles"}]}
+        for identifier in ("closed", "open", "old"):
+            self.assertEqual(0, self.run_previous(script, "record", {**base, "id": identifier}).returncode)
+        self.assertEqual(0, self.run_previous(script, "update", {"id": "closed", "status": "implemented", "note": "Done"}).returncode)
+        proof = {"sources": [digest_binding(self.root, "src/page.css")], "artifacts": [digest_binding(self.root, "build.log")],
+                 "results": [{"criterion": "build", "status": "PASS", "artifacts": ["build.log"]}]}
+        self.assertEqual(0, self.run_previous(script, "verify", {"id": "closed", "proof": proof}).returncode)
+        self.assertEqual(0, self.run_previous(script, "supersede", {"id": "old", "replacement": "open", "note": "New direction"}).returncode)
+        path = self.root / "design-intelligence/harbor/CORRECTIONS.json"
+        before = path.read_bytes()
+        previous = json.loads(self.run_previous(script, "check").stdout)
+        current = execute("check", workspace=self.root, project="Harbor")
+        for key in ("status", "project_identity", "journal", "applicable", "blocked", "stale", "boundary"):
+            self.assertEqual(previous[key], current[key], key)
+        self.assertEqual("BLOCKED", current["status"])
+        self.assertEqual([], current["evidence_unavailable"])
+        self.assertEqual(before, path.read_bytes())
+        self.assertEqual(json.loads(self.run_previous(script, "list").stdout)["records"],
+                         execute("list", workspace=self.root, project="Harbor")["records"])
+
+    def test_observer_report_closure_keeps_its_record_shape_and_label(self):
+        from tests.evidence_factory import make_review, binding
+        record = {"id": "type-role", "source": "User request", "requirement": "Keep body role coherent",
+            "scope": {"owners": ["src/page.css"], "routes": ["/page"], "states": ["default"]},
+            "criteria": [{"id": "render", "kind": "visual", "requirement": "Review page typography"}]}
+        execute("record", workspace=self.root, project="Example", payload=record)
+        execute("update", workspace=self.root, project="Example", payload={"id": "type-role", "status": "implemented", "note": "Corrected owner"})
+        (self.root / "src").mkdir()
+        (self.root / "src/page.css").write_text("body{font-weight:400}")
+        report = make_review(self.root, owner="src/page.css", state="default", viewport="390x844@1", image="review.png")
+        proof = {"sources": report["sources"], "artifacts": [binding(self.root, "review.png"), binding(self.root, "review.json")],
+            "results": [{"criterion": "render", "status": "PASS", "artifacts": ["review.png", "review.json"],
+                "review": {"reviewer": "Authored test", "finding": "Contract fixture only", "viewport": "390x844@1", "state": "default",
+                           "method": "self-review", "verdict": "KEEP", "report": "review.json"}}]}
+        written = execute("verify", workspace=self.root, project="Example", payload={"id": "type-role", "proof": proof})["record"]
+        self.assertEqual({"id", "source", "requirement", "scope", "criteria", "status", "history", "proof"}, set(written))
+        self.assertEqual(proof, written["proof"])
+        result = execute("check", workspace=self.root, project="Example")
+        self.assertEqual("PASS", result["status"])
+        self.assertEqual([{"id": "type-role", "criterion": "render", "method": "self-review", "evidence": "checked-report",
+                           "state": "default", "viewport": "390x844@1", "report": "review.json"}], result["visual_closures"])
+
+
 class CheckedEvidenceMessageTests(unittest.TestCase):
     """Input diagnostics name the file, the encoding problem, the object and its fields."""
 
