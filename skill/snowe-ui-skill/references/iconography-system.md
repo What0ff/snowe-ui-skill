@@ -31,7 +31,14 @@ Every icon-only action needs an accessible name independent of hover, such as th
 
 ## Inspect the Existing Symbol Ecology
 
-Before searching, inventory the current sources, exact glyphs, sizes, stroke and fill modes, optical weight, alignment, color behavior, labels and wrappers; platform expectations and repository-owned assets; which symbols are brand marks, actions, object or category symbols, status indicators, data glyphs or illustrations; semantic duplicates and misleading metaphors; and installed packages, versions, adapters, licenses, tree-shaking or font loading, and ownership. An established source is the usual baseline, not an automatic winner or a closed allowlist: keep it for routine actions that fit, and explore only where coverage, meaning, platform or art direction makes a material difference.
+Before searching, inventory the current sources, exact glyphs, sizes, stroke and fill modes, optical weight, alignment, color behavior, labels and wrappers; platform expectations and repository-owned assets; which symbols are brand marks, actions, object or category symbols, status indicators, data glyphs or illustrations; semantic duplicates and misleading metaphors; and installed packages, versions, adapters, licenses, tree-shaking or font loading, and ownership. In an accepted system the established source is the baseline, not an automatic winner or a closed allowlist: keep it for routine actions that fit, and explore only where coverage, meaning, platform or art direction makes a material difference.
+
+## Default Source
+
+- **New or original design work** (Focused or Portfolio, a new identity): default to a custom family built with `glyph.py` in the product's drawing language ([icon-craft.md](icon-craft.md#build-a-family-with-glyphpy)). It keeps learned metaphors for familiar actions, redrawn in its tokens, and invents metaphors only for product-specific concepts.
+- **Library fallback:** use one when the product needs more breadth than is worth drawing, or when the accepted system already uses one ([select it](#select-an-existing-source)).
+- **Direct work in an accepted system** keeps the existing family; a new glyph extends it.
+- **Third-party brand marks** stay official artwork.
 
 ## Resolve Identity Before Inventing a Metaphor
 
@@ -59,7 +66,7 @@ Decide outline, solid or duotone once per family and role, then apply it consist
 
 Rules:
 - Peers in one row share a style. A mixed row reads as a state difference, so mix styles only to express state.
-- Solid glyphs look larger and heavier than outline ones. Draw them on a slightly smaller live area, or use the library's smaller optical size (Heroicons mini and micro, the Material `opsz` axis).
+- Solid glyphs look larger and heavier than outline ones. An outline/solid state pair keeps one outer edge so the swap never shifts (`glyph.py` builds it that way); solids that sit beside outline peers in another role go on a slightly smaller live area, or use the library's smaller optical size (Heroicons mini and micro, the Material `opsz` axis).
 - In duotone, the primary layer alone carries the meaning; the secondary tone adds volume, never information. Use one secondary tone per family.
 - A user's stated style preference is a requirement. "Looks premium" alone is not a reason; compare instead.
 - When the style is open, render four unlike glyphs (simple, round, diagonal, dense) in outline, solid and duotone at real size, in default and selected states, then choose and record why. `icon_review.py` builds that sheet with `comparison_axis: "style"` and per-state assets ([cli-reference.md](cli-reference.md#compare-existing-custom-and-no-icon-candidates)).
@@ -82,7 +89,7 @@ Library variants to check against the installed package and version:
 - SF Symbols: `.fill` variants with hierarchical and palette rendering.
 - Lucide: outline only. Pair it with a solid family or custom solids when selected states need mass.
 
-Validate custom solid and duotone SVG in `fill` or `duotone` mode, and build their forms with [icon-craft.md](icon-craft.md#build-solid-and-duotone-forms).
+`glyph.py` derives solid and duotone forms from the outline construction and validates them ([icon-craft.md](icon-craft.md#build-a-family-with-glyphpy)); validate hand-drawn ones in `fill` or `duotone` mode.
 
 ## Select an Existing Source
 
@@ -92,7 +99,7 @@ Rank exact candidates on recognition in context; optical size, weight, density, 
 
 For an open product-specific feature, category, service or repeated family, and whenever the user prefers custom work, sketch a custom candidate instead of stopping at an approximate library match, then finish it with [icon-craft.md](icon-craft.md). An explicit request for custom icons puts drawing in scope without further asking. The preference changes what to explore, not the quality bar, and adds no icons where text works.
 
-Custom work is justified when the product has an object, mechanism, category or brand behavior no existing symbol expresses clearly; when a small signature family materially strengthens identity or comprehension; when platform templates support a coherent extension; or when licensing, language, state or technical constraints rule out available sources. "Feels premium", "a generator can make SVG" or "the library is imperfect" is not a justification. Keep Home, close, search, back and similar conventional actions unless the user opens them; custom drawing may refine a familiar silhouette without inventing a new meaning, and a bounded correction to an accepted glyph does not reopen its source.
+Inside an accepted library family, custom work is justified when the product has an object, mechanism, category or brand behavior no existing symbol expresses clearly; when a small signature family materially strengthens identity or comprehension; when platform templates support a coherent extension; or when licensing, language, state or technical constraints rule out available sources. "Feels premium", "a generator can make SVG" or "the library is imperfect" is not a justification. Keep the learned metaphor for Home, close, search, back and similar actions: a custom family redraws their familiar silhouette in its tokens without inventing a new meaning, an accepted system keeps its glyphs unless the user opens them, and a bounded correction to an accepted glyph does not reopen its source.
 
 Before paths, inspect the feature's real input, action or object, outcome, state, label, nearest sibling meanings and smallest slot, and write a brief: `this symbol represents …; it must not imply …; it sits beside … at … CSS px`. Leave an unknown mechanism unresolved instead of inventing a capability. Pick a dominant silhouette and the minimum modifier that changes the meaning, and test alternative constructions only while the metaphor is open. Generic sparkles, shields, crowns, gears and crossed tools fit any feature; a shield-check asserts safety or completion and a download arrow turns a history view into an action, so verify such implications against the actual state.
 
@@ -100,7 +107,7 @@ Draw editable SVG geometry or extend the established vector system; raster gener
 
 ## Specify the Drawing Language
 
-Write a family specification before drawing paths:
+Write a family specification before drawing; a `glyph.py` spec records its geometric half (grid, live area, keylines, stroke, caps, joins, corners, detail density, tone), and the rest stays beside it:
 
 ```text
 family role and semantic range
