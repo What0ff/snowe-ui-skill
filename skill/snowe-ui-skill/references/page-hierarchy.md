@@ -51,7 +51,7 @@ A landing or marketing page is scanned, not read: visitors take in the headline,
 | Part | Default |
 |---|---|
 | Hero | a headline of about 10 words or fewer, one or two supporting sentences (30 words or fewer), one primary action |
-| Section | one idea: a heading of about 8 words, then one short paragraph (about 40 words) or three to four one-line points, beside the visual that proves it |
+| Section | one idea: a heading of about 8 words, then one short paragraph (about 40 words) or three to four one-line points, beside the visual that proves it ([visual by section job](imagery-and-assets.md#give-each-section-the-visual-its-job-needs)) |
 | Page | about five to seven sections and 600–1,200 words of prose outside product visuals |
 | Product visual | readable at a glance: a few states with short labels and realistic sample content; a visual that must be read line by line is prose in disguise |
 

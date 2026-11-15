@@ -33,7 +33,23 @@ Record why the winner beats the no-visual baseline and the strongest non-generat
 | A physical product, people or a place | Supplied photography, or no image |
 | Strong copy with few facts | Typography, no image |
 
-The art direction picks the form, so isometric is never a default: choose it only when depth, layering or a physical metaphor makes the mechanism clearer than a flat drawing would.
+The art direction picks the form. Isometric is not a default, but for an invisible system it is a strong candidate wherever the page shows how parts connect: depth separates layers, and buildings, boards and screens read as real places where the work happens. Choose it when that spatial reading beats a flat drawing; a flat diagram or the product's own visual language wins when the relationships are simple or the direction is flat.
+
+### Give each section the visual its job needs
+
+The hero choice does not settle the rest of the page. For every section, name what it must prove and pick its visual by that job:
+
+| Section job | Visual |
+|---|---|
+| The work itself, a decision, a control | A real UI state, interactive where it helps |
+| How it fits: integrations, architecture, the path through systems and people | A mechanism illustration of the real parts and flow: an `iso.py` scene or a flat diagram |
+| Results, scale, reliability | A chart from real or clearly labelled sample data |
+| A process over time | A timeline or stepped diagram |
+| Trust and control: permissions, audit, limits | The policy, log or setting as UI |
+| People, place, craft | Supplied photography |
+| A claim with nothing to show | No visual; shorten the claim |
+
+Vary the visual types down the page. A page told only through UI mockups and tables reads flat, and an invisible-system product often has no memorable image until one well-made mechanism illustration shows the whole system at once, usually in the section that explains how it fits. One such illustration per page is the default; it uses the page's tokens (accent, stroke, icon family), and its labels name real parts from the copy.
 
 ## Build the Image System
 

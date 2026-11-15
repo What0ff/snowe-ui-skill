@@ -4,7 +4,7 @@ Use when a page may need a drawn explanation of a system: servers, chips, buildi
 
 ## Earn Its Place
 
-A technical illustration must explain a system, flow or mechanism the reader needs before deciding or acting: what connects to what, in which order, and where the work happens. Write its job with the visual-job sentence and the hero-visual table in [imagery-and-assets.md](imagery-and-assets.md#decide-whether-a-visual-exists), and compare the page without it. It is a tool, not a house style: a short list, a flat diagram or a real product screenshot often explains faster.
+A technical illustration must explain a system, flow or mechanism the reader needs before deciding or acting: what connects to what, in which order, and where the work happens. Write its job with the visual-job sentence and the hero-visual table in [imagery-and-assets.md](imagery-and-assets.md#decide-whether-a-visual-exists), and compare the page without it. It is a tool, not a house style: a short list, a flat diagram or a real product screenshot often explains faster. A UI hero does not rule it out: on a product page about an invisible system, the section that explains how it fits (integrations, architecture, the path through systems and people) is its usual place ([section visuals](imagery-and-assets.md#give-each-section-the-visual-its-job-needs)).
 
 ## Compose the Scene
 
@@ -36,7 +36,7 @@ Declare `"schema": "1.3"` for new scenes. It draws constructed objects (openings
 
 ## Keep One System
 
-Per page, keep one projection, one light, one stroke system and one corner language. Put the page's own icon family (`glyph.py`) on faces with `icon`. Mixing isometric with dimetric, perspective mockups or flat icons makes the drawing look assembled.
+Across the page's illustrations, keep one projection, one light, one stroke system and one corner language. Put the page's own icon family (`glyph.py`) on faces with `icon`. Inside a drawing, mixing isometric with dimetric, perspective mockups or flat icons makes it look assembled; flat UI states and charts in other sections are a different medium and sit well beside it.
 
 **Tone.** The light comes from the upper left. In 1.3 tops are lightest, left faces a clear light gray, right faces a denser mid gray; reveals, port walls, holes and the shaded side of canopies go darker still, and glass lies at half opacity over its wall so it follows the face. Keep it airy: light tops, gray sides, the one black accent on the focal object.
 
