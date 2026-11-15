@@ -146,12 +146,12 @@ The generated map itself is excluded from the counts.
 
 | Extension | Files |
 | --- | --- |
-| `.png` | 522 |
-| `.json` | 95 |
+| `.png` | 532 |
+| `.json` | 100 |
 | `.md` | 90 |
 | `.jpg` | 52 |
 | `.py` | 46 |
-| `.svg` | 32 |
+| `.svg` | 35 |
 | `.csv` | 31 |
 | `.html` | 30 |
 | `.css` | 13 |

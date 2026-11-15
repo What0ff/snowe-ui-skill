@@ -5,7 +5,9 @@
 //   python skill/snowe-ui-skill/scripts/iso.py render <name>.scene.json -o <name>.svg --manifest <name>.manifest.json
 // then inlines the SVG into a page (so the CSS custom properties apply) and
 // captures it with headless Chrome at 1x and 2x, in the light theme and in a
-// dark theme that only redefines the --iso-* variables. Scenes listed in UNLABELED
+// dark theme. Schema 1.0-1.2 scenes get a dark theme that only redefines the --iso-*
+// variables; schema 1.3 scenes carry their own dark ramp, so their dark page only sets
+// color-scheme: dark and lets the SVG's light-dark() fallbacks apply. Scenes listed in UNLABELED
 // are also rendered with --no-labels to <name>-unlabeled.svg and light captures, the
 // proof that their objects are recognizable without text.
 //
@@ -26,7 +28,7 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(HERE, "..", "..");
 const ISO = join(REPO_ROOT, "skill", "snowe-ui-skill", "scripts", "iso.py");
 const MARGIN = 24;
-const UNLABELED = ["orchestration-hub-v3"];
+const UNLABELED = ["orchestration-hub-v3", "orchestration-hub-v4"];
 
 const THEMES = {
   light: { background: "#f6f7fb", vars: "" },
@@ -34,6 +36,8 @@ const THEMES = {
     background: "#0f131c",
     vars: `--iso-top:#232a3a;--iso-left:#1a2030;--iso-right:#141927;--iso-stroke:#c9d2e6;
            --iso-detail:#6f7a93;--iso-accent:#7c93ff;--iso-text:#e7ecf7;--iso-grid:#2a3244;--iso-shadow:#000000;`,
+    // Schema 1.3 SVGs resolve their own dark ramp from the page's color scheme.
+    ramp: "color-scheme:dark;",
   },
 };
 
@@ -96,9 +100,10 @@ for (const { name, output, extra, themes } of jobs) {
   const width = manifest.width + 2 * MARGIN;
   const height = manifest.height + 2 * MARGIN;
   for (const theme of themes) {
-    const { background, vars } = THEMES[theme];
+    const { background, vars, ramp } = THEMES[theme];
+    const own = manifest.ramp !== undefined && ramp !== undefined;
     const html = `<!doctype html><meta charset="utf-8"><style>html,body{margin:0;background:${background}}
-      body{padding:${MARGIN}px;${vars}}svg{display:block}</style>${svg}`;
+      ${own ? `:root{${ramp}}` : ""}body{padding:${MARGIN}px;${own ? "" : vars}}svg{display:block}</style>${svg}`;
     for (const scale of [1, 2]) {
       const suffix = theme === "light" ? "" : `-${theme}`;
       const target = join(HERE, `${output}${suffix}@${scale}x.png`);
