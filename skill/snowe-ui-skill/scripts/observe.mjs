@@ -231,6 +231,8 @@ export async function capture({workspace, planPath, output, audit, noSandbox=fal
     client.on('Network.requestWillBeSent',e=>pending.add(e.requestId));
     client.on('Network.loadingFinished',e=>pending.delete(e.requestId));
     client.on('Network.loadingFailed',e=>{pending.delete(e.requestId);if(!e.canceled)diagnostics.push(e.errorText);});
+    // An unsaved-changes guard would otherwise block the navigation to the next independent case.
+    client.on('Page.javascriptDialogOpening',e=>{if(e.type==='beforeunload')client.send('Page.handleJavaScriptDialog',{accept:true}).catch(()=>{});});
     client.on('Network.responseReceived',e=>{
       if(e.response.status===204)return;
       const url=new URL(e.response.url);

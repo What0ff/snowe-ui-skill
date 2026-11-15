@@ -33,6 +33,9 @@ from typing import Any, Iterable
 
 # Isolated interpreters (python -I, PYTHONSAFEPATH) drop the script directory
 # from sys.path; the validator below belongs to this skill.
+if __name__ == "__main__":
+    # An installed skill may be shared or read-only: never write __pycache__ into it.
+    sys.dont_write_bytecode = True
 _SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 if _SCRIPT_DIR not in sys.path:
     sys.path.insert(0, _SCRIPT_DIR)

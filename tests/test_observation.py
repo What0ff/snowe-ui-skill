@@ -238,6 +238,29 @@ class ReplayKeyTests(unittest.TestCase):
             self.assertEqual(["true", True], [item["actual"] for item in proof])
             inspect_capture(root, binding(root, "captures/receipt.json"), binding(root, "plan.json"))
 
+    def test_unsaved_changes_guard_does_not_block_the_next_case(self):
+        if not browser_observation_available():
+            self.skipTest("Node 22+ and a system Chrome/Chromium/Edge are unavailable")
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "page").mkdir()
+            guarded = TOGGLE_PAGE.replace("</script>", "let dirty = false;\n"
+                "toggle.addEventListener('click', () => { dirty = true; });\n"
+                "window.addEventListener('beforeunload', event => { if (dirty) { event.preventDefault(); event.returnValue = ''; } });\n"
+                "</script>")
+            (root / "page/index.html").write_text(guarded, encoding="utf-8")
+            plan = self.plan([{"action": "key", "key": "Tab"}, {"action": "key", "key": "Space"}])
+            fresh = dict(plan["cases"][0], id="fresh", state="default", steps=[],
+                         expect=[{"selector": "#toggle", "property": "attribute:aria-pressed", "equals": "false"}])
+            plan["cases"].append(fresh)
+            validate_plan(plan)
+            write(root, "plan.json", plan)
+            result = subprocess.run([node_executable(), str(OBSERVER), "capture", str(root), "plan.json", "captures"],
+                                    capture_output=True, text=True, timeout=180)
+            self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+            receipt = json.loads((root / "captures/receipt.json").read_text(encoding="utf-8"))
+            self.assertEqual(["space", "fresh"], [item["id"] for item in receipt["observations"]])
+
 
 class ObserverAdapterTests(unittest.TestCase):
     """Browser discovery, sandbox policy and CLI errors of the optional Node adapter."""

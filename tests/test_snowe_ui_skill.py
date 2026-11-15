@@ -7,6 +7,7 @@ import os
 import re
 import subprocess
 import sys
+import shutil
 import tempfile
 import unittest
 from pathlib import Path
@@ -467,6 +468,17 @@ class PersistenceTests(unittest.TestCase):
             result = subprocess.run([sys.executable, "-I", str(SCRIPTS / script), "--help"],
                 capture_output=True, text=True, timeout=60)
             self.assertEqual(0, result.returncode, f"{script}: {result.stderr}")
+
+    def test_entry_scripts_leave_no_bytecode_in_the_installed_skill(self):
+        # An installed skill may be shared or read-only; running a script must not write __pycache__ into it.
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            copy = Path(temporary_directory) / "snowe-ui-skill"
+            shutil.copytree(SCRIPTS.parent, copy, ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
+            for script in ("search.py", "corrections.py", "visual_review.py", "icon_review.py", "glyph.py"):
+                result = subprocess.run([sys.executable, "-I", str(copy / "scripts" / script), "--help"],
+                    capture_output=True, text=True, timeout=60)
+                self.assertEqual(0, result.returncode, f"{script}: {result.stderr}")
+            self.assertEqual([], [str(path) for path in copy.rglob("__pycache__")])
 
     def test_sensitive_markers_flag_secrets_without_flagging_ordinary_briefs(self):
         from decision_packet import sensitive_markers
