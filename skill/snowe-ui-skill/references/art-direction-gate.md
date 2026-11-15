@@ -4,6 +4,12 @@ Use this reference to build a visual direction once the page job and real conten
 
 Construct before subtracting: removing pills, spacing and color is cleanup, not a direction. Accepted quiet utility and exact supplied targets gain no novelty obligation; let the quiet direction win when it fits.
 
+## Speak the Category's Present
+
+Distinct is not dated. The audience meets a product among its current competitors, and their present visual language is how competence and trust read. For software and AI products it usually means a well-set sans family, the real product or its mechanism as the hero, restrained color with one accent, crisp hairlines and sparing depth. Treat that language as the baseline vernacular: execute it more precisely than the category median and put the distinctiveness in one owned move ([signature](#one-signature-move)), not in a costume.
+
+A print, ledger, newspaper or other period frame is a deliberate departure. Record why this audience reads that period as a promise rather than as staleness: a publication, an archive, a heritage brand, a product that is that artifact. Before sketching, name three to five products or sites the audience compares against and describe their type, color, imagery, controls and density now. Your sense of the web is older than the present, so prefer supplied or verified current references over memory, and mark recalled ones as recalled.
+
 ## Source the Direction From the Subject
 
 Start from the subject, not adjectives. Inventory what the audience already sees and handles:
@@ -12,7 +18,8 @@ Start from the subject, not adjectives. Inventory what the audience already sees
 |---|---|---|
 | Materials | paper, metal, glass, wood, textile | canvas tone, edges, rules, texture, radius |
 | Artifacts | labels, receipts, forms, maps, packaging, instruments | grid, data blocks, type roles, the signature move |
-| Era and vernacular | print, signage and lettering the audience reads | type construction, case, numerals, rule weight |
+| Category present | the products and sites this audience compares against now | baseline conventions and the finish bar; departures are deliberate ([present](#speak-the-categorys-present)) |
+| Era and vernacular | print, signage and lettering the audience reads | type construction, case, numerals, rule weight; a whole-page period look only when chosen |
 | Working conditions | distance, light, posture, hands, frequency, stress | type-size floor, contrast, density, motion |
 | Content shape | name lengths, numbers, scripts, image aspect | columns, measure, image frame |
 | Verified brand | accepted marks, colors and voice | fixed constraints |
@@ -132,19 +139,21 @@ Type scale: size(n) = base × ratio^n, rounded to whole pixels. Base 16 at ratio
 
 ## Generate Two or Three Directions
 
-Default: three directions for an open identity, two for a bounded visual thesis, on fixed brief, content, page job and viewport. Directions differ in signature move and at least one loud axis; a palette, radius or icon swap is the same direction renamed. Use three generators:
+Default: three directions for an open identity, two for a bounded visual thesis, on fixed brief, content, page job and viewport. Directions differ in signature move and at least one loud axis; a palette, radius or icon swap is the same direction renamed. Use these generators; when the audience meets the product among current software, one direction is always Category present:
 
 | Generator | How |
 |---|---|
-| Vernacular | take one of the subject's own artifacts and make it the frame |
-| Transfer | apply a principle from an adjacent medium: print, signage, instrument, map, packaging |
+| Category present | the category's current language set more precisely than its leaders, plus one owned move |
+| Vernacular | take one of the subject's own artifacts and make it the signature, inside a current frame |
+| Transfer | apply a principle from an adjacent medium: another software genre, an instrument, a map, signage, print, packaging |
 | Reduction | hierarchy by type, space and order alone, no motif; every other direction must beat it |
 
 Record each as `thesis | source | signature move and boundary | loud axes | pairing strategy | color proportions | image and material | motion posture | risk`.
 
 Sketch each at the primary surface with real content at one width; judge the thumbnail before reading its rationale. Kill a direction that:
 
-- resembles another direction or a common template at thumbnail size;
+- resembles another direction, or is the category's median template with nothing the product owns, at thumbnail size;
+- reads as an earlier period the direction did not choose ([dated output](failure-patterns.md#dated-output));
 - needs placeholder-short copy, a perfect image or an unavailable asset;
 - lets its loud axes compete with the primary task;
 - fails legibility or contrast in its own palette;
@@ -172,6 +181,13 @@ Render survivors with a secondary context and select with [exploration-protocol.
 - Type: one family with width and weight axes: heavy condensed item names, regular normal-width tabular timers.
 - Tokens: dark steel `--canvas`, slip-paper `--surface`, three-step heat ramp, red `--accent-modifier`; item names 32 px and nothing under 26 px at 96 ppi (20 and 16 arcmin at 1 m); ratio 1.25; radius 0; new orders slide in over 200 ms, instantly under reduced motion.
 
+**String translation platform** (a site for product teams shipping an app in twelve languages)
+- Subject: string keys, source text, locale variants of very different lengths and scripts, review states. The audience works in current developer and product tools every day.
+- Present: the category's language as the frame: a sans family set tight at display sizes, a lightly tinted canvas, hairline rules, the product interface as the hero, one accent. It must be executed more precisely than the competitors, not replaced by a print metaphor.
+- Move: one key fans out into its locales in place, the lines visibly differing in length and script, with the variant that overflows its button flagged; the fan-out recurs in the hero, each feature row and the plan limits. Loud: image (the live interface) and type scale.
+- Type: one sans family with tabular figures, a mono for keys; the Arabic, Japanese and Cyrillic samples set in faces that cover them.
+- Tokens: `--canvas: oklch(98.5% 0.004 250)`, `--ink: oklch(22% 0.015 255)`, `--accent: oklch(60% 0.19 35)` for the primary action only, `--status-warn` for overflow; ratio 1.25 from 16 px, display tracking −2%; `--radius-control: 8px`; one elevation, for the product frame.
+
 ## Hand Off the Direction
 
 Record in the existing decision record: thesis and perceptual job, subject sources, signature move and boundary, contrast budget, token sheet, forbidden drift ("no second accent"), the strongest rejected direction with its decisive weakness, and a revisit trigger. Before scaling, pass the [early gate](quality-gates.md#early-gate-for-a-visual-system). Keep a material successful invention as a conditional project hypothesis (source, mechanism, comparison, outcome, counterexample), not a global taste rule. Reopen the direction when real content, rendered behavior, assets or platform constraints break its premise. A user-rejected proposal stays rejected until a materially changed one is reviewed.
@@ -179,6 +195,7 @@ Record in the existing decision record: thesis and perceptual job, subject sourc
 ## Check
 
 - Subject observations, not adjectives, drive every decision.
+- The direction reads as current for its category, or names the period it evokes and why.
 - One signature move with a written boundary survives the subtraction test.
 - One or two loud axes; the rest quiet.
 - Each family has a role, within the two-plus-mono default or with a stated reason, checked at real sizes, scripts covered, fallbacks written.

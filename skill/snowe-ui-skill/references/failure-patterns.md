@@ -1,25 +1,31 @@
 # Failure Patterns
 
-Use before accepting an original visual design, and whenever a result looks generic, templated or "AI-made". Each pattern is a symptom to inspect in the render, not a ban: apply the replacement or record why this product is the exception. Fewer patterns alone do not make a design good; pair this check with a positive direction from [art-direction-gate.md](art-direction-gate.md).
+Use before accepting an original visual design, and whenever a result looks generic, templated, "AI-made" or dated. Each pattern is a symptom to inspect in the render, not a ban: apply the replacement or record why this product is the exception. Fewer patterns alone do not make a design good; pair this check with a positive direction from [art-direction-gate.md](art-direction-gate.md).
 
 ## Generic Output
 
+AI slop is not a modern look. It is the median page nobody decided: framework defaults left untuned, decoration standing in for the product, copy and proof that would fit any company, effects stacked without a reason, and uneven execution. A category's current conventions, such as a well-set sans family, a centered launch hero, pill buttons, one small tag above the headline or fine frame lines on the canvas, are its living vernacular. Judge them by precision and fit, never by presence. Running from them for distinctiveness alone produces a dated or eccentric page, which fails as surely ([dated output](#dated-output)).
+
 | Symptom | Usual cause | What to check | Constructive replacement | Legitimate when |
 |---|---|---|---|---|
+| Framework defaults left as found: stock grays, `rounded-xl` cards with `shadow-lg`, indigo or violet primary buttons, default focus rings | No value was chosen | Can each color, radius and shadow name the decision behind it? | Role tokens derived from the direction ([tokens](art-direction-gate.md#translate-the-direction-into-tokens)) | An accepted design system ships those values |
 | Purple-to-blue gradient hero, gradient headline text | Model default for "modern" | Does the hue come from the product, brand or content? | A palette from product evidence: one accent with a clear role, neutrals tinted toward it | The verified brand uses that gradient |
-| One sans family at one or two weights everywhere (Inter, system UI) | No type decision | Do headings, body, data and labels read as different roles? | Assign type roles; hierarchy through size and weight; a display face for identity work | An accepted system or dense utility uses it deliberately |
+| Gradient, glow, glass and shadow stacked on one element | Adding effects instead of deciding | Which single treatment carries the element's role? | One treatment per role; remove the rest and compare | A signature surface whose material is the move |
+| Headings, body, labels and data at one size and weight | No type decision | Do the roles read as different at a glance? | Assign type roles; hierarchy through size, weight and tracking within one family; a display face only for a role the family cannot carry | — |
+| Display type at the text face's default tracking and leading | Type enlarged, not set | Does the headline look set or merely scaled up? | Tighten tracking and leading for display sizes, judged on the real words | A face drawn for display at its default settings |
 | Every block in a card, often in a uniform grid | Container-first layout | Is each item an independent object or action? | Group with proximity, alignment, dividers and type; cards for independent, comparable objects | A collection of peer objects (products, files, people) |
-| Centered hero, three feature cards, centered CTA | Landing-page template | Does the order follow the visitor's decision? | Map the page first; lead with the offer and its proof | — |
+| The template sequence whatever the offer: hero, three identical feature cards, CTA | Landing-page template | Does the order follow the visitor's decision, and does each block show something different? | Map the page first; lead with the offer and its proof; shape each block by what it must show | — |
 | Icon in a tinted circle or tile above every feature | Decoration default | Does the icon add meaning the heading lacks? | Remove it, place a bare icon by its label, or use a real image or diagram | Platform app grids and launchers |
 | Emoji as interface icons | Convenience | Is there a consistent icon family? | A family chosen with [iconography-system.md](iconography-system.md) | Casual user content such as reactions and chat |
-| Pills around metadata, eyebrows and plain labels | Styling short strings | Is the capsule selectable, removable or a status? | Plain text with weight, color or position | Filters, removable tokens, status chips |
-| Uppercase tracked eyebrow above every heading | Template rhythm | Does it add orientation the heading lacks? | Remove it, or use a real category or breadcrumb | Editorial sections with a real taxonomy |
+| Pills around passive metadata and plain labels | Styling short strings | Is the capsule selectable, removable or a status? | Plain text with weight, color or position | Filters, removable tokens, status chips; pill buttons in a shape system that chose them |
+| Uppercase tracked eyebrow above every heading | Template rhythm | Does it add orientation the heading lacks? | Remove it, or use a real category or breadcrumb | One tag naming a real release, category or audience, such as above the hero; editorial sections with a real taxonomy |
 | Light gray body text (for example `#9ca3af` on white) | "Elegant" restraint | Is body contrast at least 4.5:1? | Darker text; hierarchy through size and weight | Disabled controls (exempt, but still legible) |
 | Shadows or glows on most elements | Default depth | What is actually above what? | One or two elevation levels; siblings separated by borders or tone | Floating overlays: menus, dialogs, toasts |
 | Glass panels with backdrop blur by default | Trend | Does content behind the panel matter to the task? | Solid surfaces with a clear tone step | Over media where context matters, with a contrast-safe scrim |
 | Many accent colors, a rainbow of categories | Coloring everything | Which colors carry a role: action, status, data? | One accent plus semantic status colors; data colors from a validated palette | Charts that need categorical hues |
 | Large radii on everything (24 px and up) | "Friendly" default | Do edges differ by role (control, container, overlay)? | Edge logic by role ([design-foundations.md](design-foundations.md#shape-and-edge-language)) | A verified soft brand language applied consistently |
-| Decorative blobs, orbs, noise or grid backgrounds | Filling empty space | Would the page lose meaning without them? | Content, product imagery or deliberate whitespace | A brand motif with a defined role and boundary |
+| Decorative blobs, orbs or noise | Filling empty space | Would the page lose meaning without them? | Content, product imagery or deliberate whitespace | A brand motif with a defined role and boundary. Fine frame lines or a quiet grid aligned to the layout grid are a convention, not filler |
+| Uneven execution: three radii, two icon families, gaps that drift, edges that almost align | Parts assembled without a system | Does each role use one value everywhere? | Role tokens and one icon family; fix the outliers, then rerender | — |
 | Invented stats, testimonials, client logos ("10k+ teams") | Filler social proof | Is each claim supplied or verified? | Omit unverified proof; show real facts | Real data provided by the user |
 | Generic marketing copy ("Unlock the power of…", "seamless") | Template language | Could the sentence describe any product? | Specific claims from product facts, in the audience's words | — |
 | Interface text describing itself ("This dashboard helps you…") | Model narrating its work | Does the line help the next action? | Remove it; let headings and labels name things | — |
@@ -32,11 +38,24 @@ Use before accepting an original visual design, and whenever a result looks gene
 
 ![Generic landing page for a squad availability app](figures/landing-generic.png)
 
-**Generic:** a purple gradient, one system sans, a centered hero whose copy fits any product, invented metrics, and three identical feature cards with emoji icons.
+**Generic:** a purple-to-blue gradient nobody chose, a sparkle "AI-powered" badge, a headline that fits any product, invented metrics, and three identical cards with emoji in tinted circles. The centered layout and the sans are not the fault; the defaults and the filler are.
 
 ![Authored landing page for the same offer](figures/landing-authored.png)
 
 **Authored:** the same offer, led by the question it answers, set in a condensed display face on pitch green and chalk, with the real availability sheet as the hero image, the price stated, and orange used only on the action.
+
+## Dated Output
+
+A page that reads as an earlier period nobody chose fails like slop: the audience reads it as a stale or careless company. Ask whether it would sit naturally beside what the category's leaders shipped in the last two years, and if it evokes a period, whether the direction chose that period and recorded why. A model's sense of "a website" leans toward the older web it learned from, so check this deliberately ([category present](art-direction-gate.md#speak-the-categorys-present)).
+
+| Symptom | Usual cause | Constructive replacement | Legitimate when |
+|---|---|---|---|
+| Serif or typewriter faces in the navigation, buttons and body text of a software product's site | Distinctiveness sought through a print metaphor | A current sans for interface and text; a serif only as a chosen display role | A publication, archive or heritage brand whose direction chose print |
+| Square primary buttons outlined in 1 px, controls that look browser-default | Shape removed rather than designed | Controls from the shape system: a considered radius, a filled primary, clear states | A stated brutalist or utilitarian direction applied consistently |
+| Highlighter marks, ledger rules, drop caps or newspaper columns as the frame of a software company | One paper artifact turned into the whole page | Keep the artifact inside the product visual it explains; frame the page in the category's present language | The product is that paper artifact |
+| Full-width bands alternating dark and cream, walls of text, no product or mechanism visual | Content laid out as a document | Show the product or the mechanism ([hero visual](imagery-and-assets.md#choose-the-hero-visual-by-what-must-be-shown)); vary density by what each section must prove | Long-form editorial reading |
+| Stock photos of people at laptops, big-limbed flat figures, bevels, glossy buttons, heavy drop shadows | Habits of a past web | The real product, supplied photography, or a mechanism illustration | A deliberate period homage |
+| A hero carousel or auto-rotating slider | Several messages competing | One message and its proof | — |
 
 ## How to Use
 
