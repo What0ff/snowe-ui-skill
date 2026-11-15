@@ -10,6 +10,14 @@ secondary fill). Every SVG is written with companion metadata in the
 ``asset_quality.py`` schema and validated by it before anything reaches the
 output directory. Identical input produces byte-identical output.
 
+Optional character tokens give the family a product voice: angled terminals,
+stroke contrast, an aperture and junction gaps (open forms), chamfered, sharp or
+leaf corners, narrow or wide keylines, and a filled accent. Angled terminals,
+contrast and miter joins expand strokes into exact filled outlines; open-form
+gaps under 1 CSS px close in an optical small set. A spec without character
+tokens builds byte-identically to one written before they existed, and
+``compare`` puts a family beside its plain monoline baseline.
+
 The builder guarantees consistent geometry, not good drawing: recognition,
 metaphor and optical balance still need the contact sheet and the real host.
 """
@@ -40,7 +48,7 @@ _SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 if _SCRIPT_DIR not in sys.path:
     sys.path.insert(0, _SCRIPT_DIR)
 
-from asset_quality import validate_svg_asset  # noqa: E402
+from asset_quality import _path_geometry, validate_svg_asset  # noqa: E402
 
 
 SCHEMA = "1.0"
@@ -49,8 +57,19 @@ GRID_PADDING = {16: 1.0, 20: 2.0, 24: 2.0, 32: 3.0}
 LINECAPS = ("round", "square", "butt")
 LINEJOINS = ("round", "bevel")
 DETAIL_LEVELS = ("low", "medium", "high")
-ROLES = ("body", "detail", "stroke")
+ROLES = ("body", "detail", "stroke", "accent")
 KEYLINES = ("circle", "square", "portrait", "landscape")
+# Character tokens: all optional; a spec without them builds byte-identically to one written before they existed.
+TERMINALS = ("cap", "angled")
+CORNERS = ("round", "chamfer", "sharp", "leaf")
+PROPORTIONS = ("narrow", "regular", "wide")
+ASPECT = {"narrow": 7 / 8, "regular": 1.0, "wide": 8 / 7}  # rectangular keyline width/height factor at constant area
+KEYLINE_RATIOS = {"circle": (1.0, 1.0), "square": (0.9, 0.9), "portrait": (0.8, 1.0), "landscape": (1.0, 0.8)}
+CONTRAST_RANGE = (0.5, 1.0)
+FILL_RANGE = (0.75, 1.0)
+ANGLE_RANGE = (10, 60)
+ACCENT_SPAN = 1 / 3  # an accent spans at most a third of the live area in each direction
+MITER_LIMIT = 2.0  # expanded miter joins: corners sharper than 60 degrees bevel instead of growing horns
 SNAP_STEPS = (0.125, 0.25, 0.5, 1.0)
 CHEVRON_DIRECTIONS = ("up", "down", "left", "right")
 TONE_RANGE = (0.12, 0.6)  # asset_quality's accepted duotone secondary opacity
@@ -200,6 +219,15 @@ class Dot:
     r: float
 
 
+@dataclass(frozen=True)
+class Opened:
+    """A closed contour drawn with an aperture: ``drawn`` is painted, ``gap`` is the removed piece (same direction)."""
+
+    contour: Chain
+    drawn: Chain
+    gap: Chain
+
+
 Shape = Chain | Circle | Ellipse | Dot
 
 
@@ -319,10 +347,18 @@ def _point_segment_distance(p: Point, a: Point, b: Point) -> float:
 
 
 def _boundary_distance(points: list[Point], polygon: list[Point]) -> float:
+    """Smallest distance from any point to the polygon's edges; edges whose box is already farther are skipped,
+    which leaves the exact minimum unchanged."""
+    edges = []
+    for index in range(len(polygon)):
+        a, b = polygon[index - 1], polygon[index]
+        edges.append((a, b, min(a[0], b[0]), min(a[1], b[1]), max(a[0], b[0]), max(a[1], b[1])))
     best = math.inf
-    for point in points:
-        for index in range(len(polygon)):
-            best = min(best, _point_segment_distance(point, polygon[index - 1], polygon[index]))
+    for x, y in points:
+        for a, b, x0, y0, x1, y1 in edges:
+            if math.hypot(max(x0 - x, 0.0, x - x1), max(y0 - y, 0.0, y - y1)) >= best:
+                continue
+            best = min(best, _point_segment_distance((x, y), a, b))
     return best
 
 
@@ -455,6 +491,8 @@ def _offset_side(segs: tuple[Segment, ...], closed: bool, distance: float, join:
             if join == "round":
                 start_angle = _angle(_sub(pa, vertex))
                 connectors[k] = [Arc(vertex, abs(distance), start_angle, start_angle + theta)]
+            elif join == "miter":
+                connectors[k] = _miter(pa, pb, t_in, t_out, vertex, abs(distance))
             else:
                 connectors[k] = [Line(pa, pb)]
             continue
@@ -473,6 +511,16 @@ def _offset_side(segs: tuple[Segment, ...], closed: bool, distance: float, join:
     return result
 
 
+def _miter(pa: Point, pb: Point, t_in: Point, t_out: Point, vertex: Point, half: float) -> list[Segment]:
+    """Exact miter join of two offset edges; past MITER_LIMIT x half it falls back to a bevel."""
+    denominator = _cross(t_in, t_out)
+    if abs(denominator) > 1e-12:
+        apex = _add(pa, _mul(t_in, _cross(_sub(pb, pa), t_out) / denominator))
+        if _length(_sub(apex, vertex)) <= MITER_LIMIT * half:
+            return [Line(pa, apex), Line(apex, pb)]
+    return [Line(pa, pb)]
+
+
 def _cap(point: Point, tangent: Point, origin: Point, target: Point, half: float, cap: str) -> list[Segment]:
     if cap == "round":
         start_angle = _angle(_sub(origin, point))
@@ -483,12 +531,85 @@ def _cap(point: Point, tangent: Point, origin: Point, target: Point, half: float
     return [Line(origin, target)]
 
 
-def _stroke_outline(chain: Chain, half: float, cap: str, join: str) -> Chain:
-    """Closed outline of an open stroked chain, matching its caps and joins."""
+def _cap_toward(point: Point, tangent: Point, origin: Point, target: Point, half: float, cap: str) -> list[Segment]:
+    """A cap from either offset side to the other, bulging along ``tangent`` (round and square caps)."""
+    if cap == "round":
+        start_angle = _angle(_sub(origin, point))
+        sweep = math.pi if _cross(_sub(origin, point), tangent) > 0 else -math.pi
+        return [Arc(point, half, start_angle, start_angle + sweep)]
+    return _cap(point, tangent, origin, target, half, cap)
+
+
+def _wrap(angle: float) -> float:
+    return (angle + math.pi) % math.tau - math.pi
+
+
+def _cut_direction(tangent: Point, angle: float) -> Point:
+    """An angled terminal's cut: the perpendicular to the outward ``tangent`` turned ``angle`` toward it.
+
+    The start and end of a straight stroke get parallel cuts (a parallelogram), the chisel
+    terminal of a humanist face, and the cut keeps the stroke's area: length x width.
+    """
+    n = _normal(tangent)
+    return _add(_mul(n, math.cos(angle)), _mul(tangent, math.sin(angle)))
+
+
+def _meet(segment: Segment, at_end: bool, point: Point, direction: Point) -> Segment:
+    """Extend or trim one end of an offset segment exactly onto the line through ``point`` along ``direction``."""
+    if isinstance(segment, Line):
+        d = _sub(segment.p1, segment.p0)
+        denominator = _cross(d, direction)
+        if abs(denominator) < 1e-12:
+            raise _Refusal("an angled cut runs parallel to its stroke")
+        hit = _add(segment.p0, _mul(d, _cross(_sub(point, segment.p0), direction) / denominator))
+        result = Line(segment.p0, hit) if at_end else Line(hit, segment.p1)
+        if _dot(_sub(result.p1, result.p0), d) <= EPS:
+            raise _Refusal("a stroke end is too short for its angled cut; lengthen it or lower tokens.terminal_angle")
+        return result
+    current = _end(segment) if at_end else _start(segment)
+    hits = _line_circle(point, _add(point, direction), segment.c, segment.r)
+    if not hits:
+        raise _Refusal("an angled cut misses its curved stroke end; lower tokens.terminal_angle")
+    hit = min(hits, key=lambda p: (_length(_sub(p, current)), p))
+    angle = _angle(_sub(hit, segment.c))
+    if at_end:
+        result = Arc(segment.c, segment.r, segment.a0, segment.a1 + _wrap(angle - segment.a1))
+    else:
+        result = Arc(segment.c, segment.r, segment.a0 + _wrap(angle - segment.a0), segment.a1)
+    if (result.a1 - result.a0) * (segment.a1 - segment.a0) <= EPS:
+        raise _Refusal("a curved stroke end is too short for its angled cut; lengthen it or lower tokens.terminal_angle")
+    return result
+
+
+def _angled_outline(chain: Chain, half: float, join: str, angle: float) -> Chain:
+    """Exact filled outline of an open chain whose ends are cut at ``angle`` from the perpendicular."""
+    first, last = chain.segs[0], chain.segs[-1]
+    for terminal in (first, last):
+        if _offset_segment(terminal, half) is None or _offset_segment(terminal, -half) is None:
+            raise _Refusal("a stroke end curves tighter than half the stroke and cannot take an angled cut")
+    left = _offset_side(chain.segs, False, half, join)
+    right = _offset_side(chain.segs, False, -half, join)
+    end, start = _end(last), _start(first)
+    end_cut = _cut_direction(_tan_end(last), angle)
+    start_cut = _cut_direction(_mul(_tan_start(first), -1.0), angle)
+    for side in (left, right):
+        side[-1] = _meet(side[-1], True, end, end_cut)
+        side[0] = _meet(side[0], False, start, start_cut)
+    out: list[Segment] = list(left)
+    out.append(Line(_end(left[-1]), _end(right[-1])))
+    out += [_reverse(segment) for segment in reversed(right)]
+    out.append(Line(_start(right[0]), _start(left[0])))
+    return Chain(tuple(out), True)
+
+
+def _stroke_outline(chain: Chain, half: float, cap: str, join: str, angle: float = 0.0) -> Chain:
+    """Closed outline of an open stroked chain, matching its caps (or angled terminals) and joins."""
     left = _offset_side(chain.segs, False, half, join)
     right = _offset_side(chain.segs, False, -half, join)
     if not left or not right:
         raise _Refusal("a curve is tighter than half the stroke and cannot be outlined; enlarge its radius")
+    if angle:
+        return _angled_outline(chain, half, join, angle)
     first, last = chain.segs[0], chain.segs[-1]
     out: list[Segment] = list(left)
     out += _cap(_end(last), _tan_end(last), _end(left[-1]), _end(right[-1]), half, cap)
@@ -534,6 +655,170 @@ def _shrink(shape: Shape, half: float, join: str) -> Shape | None:
     return Circle(shape.c, radius) if radius > 1e-6 else None
 
 
+def _notched_mass(opened: Opened, half: float, cap: str, join: str, angle: float) -> Chain:
+    """Solid mass of a body drawn with an aperture: its outer edge, notched by exactly the outline's gap.
+
+    The notch is the stroke band the aperture removes, ends shaped like the outline's terminals,
+    so the solid keeps the outline's silhouette and its signature break.
+    """
+    sign = _outer_sign(opened.contour)
+    outer = _offset_side(opened.drawn.segs, False, sign * half, join)
+    inner = _offset_side(opened.gap.segs, False, -sign * half, join)
+    if not outer or not inner:
+        raise _Refusal("the aperture's solid notch cannot be outlined; enlarge the curve it sits on")
+    drawn = opened.drawn.segs
+    end_point, start_point = _end(drawn[-1]), _start(drawn[0])
+    end_tangent, start_tangent = _tan_end(drawn[-1]), _mul(_tan_start(drawn[0]), -1.0)
+    if angle:
+        end_cut, start_cut = _cut_direction(end_tangent, angle), _cut_direction(start_tangent, angle)
+        outer[-1] = _meet(outer[-1], True, end_point, end_cut)
+        inner[0] = _meet(inner[0], False, end_point, end_cut)
+        inner[-1] = _meet(inner[-1], True, start_point, start_cut)
+        outer[0] = _meet(outer[0], False, start_point, start_cut)
+        into = [Line(_end(outer[-1]), _start(inner[0]))]
+        back = [Line(_end(inner[-1]), _start(outer[0]))]
+    else:
+        into = _cap_toward(end_point, end_tangent, _end(outer[-1]), _start(inner[0]), half, cap)
+        back = _cap_toward(start_point, start_tangent, _end(inner[-1]), _start(outer[0]), half, cap)
+    return Chain(tuple(outer + into + inner + back), True)
+
+
+# --------------------------------------------------------------------------
+# Arc-length geometry for open forms: slicing chains and measuring distance
+
+
+def _segment_length(s: Segment) -> float:
+    return _length(_sub(s.p1, s.p0)) if isinstance(s, Line) else s.r * abs(s.a1 - s.a0)
+
+
+def _segment_at(s: Segment, t: float) -> Point:
+    if isinstance(s, Line):
+        return _add(s.p0, _mul(_sub(s.p1, s.p0), t))
+    return _polar(s.c, s.r, s.a0 + (s.a1 - s.a0) * t)
+
+
+def _segment_part(s: Segment, t0: float, t1: float) -> Segment:
+    if isinstance(s, Line):
+        return Line(_segment_at(s, t0), _segment_at(s, t1))
+    sweep = s.a1 - s.a0
+    return Arc(s.c, s.r, s.a0 + sweep * t0, s.a0 + sweep * t1)
+
+
+def _chain_length(chain: Chain) -> float:
+    return sum(_segment_length(s) for s in chain.segs)
+
+
+def _chain_point(chain: Chain, s: float) -> Point:
+    for segment in chain.segs:
+        size = _segment_length(segment)
+        if s <= size or segment is chain.segs[-1]:
+            return _segment_at(segment, min(1.0, max(0.0, s / size)) if size > EPS else 0.0)
+        s -= size
+    return _end(chain.segs[-1])
+
+
+def _chain_tangent(chain: Chain, s: float) -> Point:
+    for segment in chain.segs:
+        size = _segment_length(segment)
+        if s <= size or segment is chain.segs[-1]:
+            if isinstance(segment, Line):
+                return _tan_start(segment)
+            t = min(1.0, max(0.0, s / size)) if size > EPS else 0.0
+            return _tan_start(Arc(segment.c, segment.r, segment.a0 + (segment.a1 - segment.a0) * t, segment.a1))
+        s -= size
+    return _tan_end(chain.segs[-1])
+
+
+def _end_probe(tokens: Tokens, half: float) -> list[Point]:
+    """Points of a painted stroke end as (across, along) offsets: corners, plus the cap outline for round caps."""
+    if tokens.terminal == "cap" and tokens.linecap == "round":
+        return [(half * math.cos(k * math.pi / 4), half * math.sin(k * math.pi / 4)) for k in range(8)]
+    along = tokens.cap_extension(half)
+    return [(side * half, lean * along) for side in (-1.0, 1.0) for lean in ((-1.0, 1.0) if along else (0.0,))]
+
+
+def _chain_slice(chain: Chain, start: float, end: float) -> Chain:
+    """The open piece of ``chain`` between two arc lengths; a closed chain wraps past its seam."""
+    total = _chain_length(chain)
+    if chain.closed:
+        start %= total
+        end %= total
+        if end <= start + 1e-9:
+            end += total
+        laps = [(chain.segs, 0.0), (chain.segs, total)]
+    else:
+        start, end = max(0.0, start), min(total, end)
+        laps = [(chain.segs, 0.0)]
+    pieces: list[Segment] = []
+    for segs, offset in laps:
+        position = offset
+        for segment in segs:
+            size = _segment_length(segment)
+            low, high = max(start, position), min(end, position + size)
+            if high - low > 1e-9 and size > EPS:
+                pieces.append(_segment_part(segment, (low - position) / size, (high - position) / size))
+            position += size
+    return Chain(tuple(pieces), False)
+
+
+def _as_chain(shape: Shape, seam: float = 0.0) -> Chain | None:
+    """A closed contour as a chain (a circle becomes two half arcs from ``seam``); None for ellipses and dots."""
+    if isinstance(shape, Chain):
+        return shape
+    if isinstance(shape, Circle):
+        return Chain((Arc(shape.c, shape.r, seam, seam + math.pi), Arc(shape.c, shape.r, seam + math.pi, seam + math.tau)), True)
+    return None
+
+
+def _segment_distance(p: Point, s: Segment) -> float:
+    if isinstance(s, Line):
+        return _point_segment_distance(p, s.p0, s.p1)
+    if _arc_delta(s, p) is not None:
+        return abs(_length(_sub(p, s.c)) - s.r)
+    return min(_length(_sub(p, _start(s))), _length(_sub(p, _end(s))))
+
+
+def _shape_distance(p: Point, shape: Shape) -> float:
+    """Distance from a point to a shape's centerline (a dot's center)."""
+    if isinstance(shape, Chain):
+        return min(_segment_distance(p, s) for s in shape.segs)
+    if isinstance(shape, Circle):
+        return abs(_length(_sub(p, shape.c)) - shape.r)
+    if isinstance(shape, Dot):
+        return _length(_sub(p, shape.c))
+    polygon = _shape_points(shape, 0.1)
+    return min(_point_segment_distance(p, polygon[index - 1], polygon[index]) for index in range(len(polygon)))
+
+
+def _below_windows(length: float, f: Any) -> list[tuple[float, float]]:
+    """Arc-length intervals in [0, length] where ``f`` is negative, edges refined by bisection."""
+    steps = max(8, math.ceil(length / 0.1))
+    samples = [length * index / steps for index in range(steps + 1)]
+    values = [f(s) for s in samples]
+    windows: list[tuple[float, float]] = []
+    opened_at = 0.0 if values[0] < 0 else None
+    for index in range(1, len(samples)):
+        before, after = values[index - 1] < 0, values[index] < 0
+        if before == after:
+            continue
+        low, high = samples[index - 1], samples[index]
+        for _ in range(48):
+            middle = (low + high) / 2
+            if (f(middle) < 0) == before:
+                low = middle
+            else:
+                high = middle
+        edge = (low + high) / 2
+        if after:
+            opened_at = edge
+        else:
+            windows.append((opened_at if opened_at is not None else 0.0, edge))
+            opened_at = None
+    if opened_at is not None:
+        windows.append((opened_at, length))
+    return windows
+
+
 # --------------------------------------------------------------------------
 # Spec parsing
 
@@ -551,10 +836,47 @@ class Tokens:
     snap: float
     crisp: bool
     secondary_opacity: float | None
+    # Character tokens; the defaults reproduce the plain monoline family exactly.
+    terminal: str = "cap"
+    terminal_angle: int = 0
+    contrast: float = 1.0
+    aperture: float = 0.0
+    aperture_at: int = 2
+    junction_gap: float = 0.0
+    corner: str = "round"
+    proportion: str = "regular"
+    fill: float = 1.0
+    accent: str | None = None
 
     @property
     def half(self) -> float:
         return self.stroke / 2
+
+    @property
+    def expanded(self) -> bool:
+        """Outline strokes are drawn as exact filled outlines: SVG strokes cannot cut at an angle or vary in width."""
+        return self.terminal != "cap" or self.contrast < 1
+
+    @property
+    def cut(self) -> float:
+        """Angled-terminal cut in radians (0 for cap terminals)."""
+        return math.radians(self.terminal_angle) if self.terminal == "angled" else 0.0
+
+    @property
+    def detail_stroke(self) -> float:
+        return round(self.stroke * self.contrast / 0.125) * 0.125 if self.contrast < 1 else self.stroke
+
+    @property
+    def character(self) -> bool:
+        return (self.terminal != "cap" or self.contrast < 1 or bool(self.aperture) or bool(self.junction_gap)
+                or self.corner != "round" or self.proportion != "regular" or self.fill != 1.0
+                or self.accent is not None)
+
+    def cap_extension(self, half: float) -> float:
+        """How far a painted terminal reaches past its centerline end, along the stroke."""
+        if self.terminal == "angled":
+            return half * abs(math.tan(self.cut))
+        return half if self.linecap in {"round", "square"} else 0.0
 
     @property
     def center(self) -> Point:
@@ -577,10 +899,14 @@ class Tokens:
         return (self.stroke / 2) % 1.0
 
     def keyline(self, kind: str) -> tuple[float, float, float, float]:
+        """Keyline box: circles stay round; narrow and wide reshape rectangles at constant area within the live area."""
         live = self.grid - 2 * self.padding
-        ratio = {"circle": (1.0, 1.0), "square": (0.9, 0.9), "portrait": (0.8, 1.0), "landscape": (1.0, 0.8)}[kind]
-        width = round(live * ratio[0] / self.snap) * self.snap
-        height = round(live * ratio[1] / self.snap) * self.snap
+        ratio = KEYLINE_RATIOS[kind]
+        if kind != "circle" and self.proportion != "regular":
+            root = math.sqrt(ASPECT[self.proportion])
+            ratio = (min(1.0, ratio[0] * root), min(1.0, ratio[1] / root))
+        width = round(live * ratio[0] * self.fill / self.snap) * self.snap
+        height = round(live * ratio[1] * self.fill / self.snap) * self.snap
         cx, cy = self.center
         return cx - width / 2, cy - height / 2, cx + width / 2, cy + height / 2
 
@@ -630,6 +956,8 @@ class Item:
     variants: tuple[str, ...]
     duotone_fill: bool
     shapes: list[Shape]
+    aperture: bool | None = None  # True hosts the family aperture, False never does
+    junction: bool = True  # False keeps this shape out of junction gaps
 
 
 @dataclass
@@ -639,6 +967,8 @@ class Glyph:
     keyline: str | None
     detail_budget: str | None
     items: list[Item]
+    aperture: tuple[int, int, Opened] | None = None  # (item index, shape index, opened contour)
+    cache: dict = field(default_factory=dict, repr=False, compare=False)  # deterministic constructions, built once
 
 
 @dataclass
@@ -655,6 +985,19 @@ class Family:
     glyphs: list[Glyph]
     tabs: list[str]
     warnings: list[str] = field(default_factory=list)
+    open_from: int | None = None  # smallest target size that shows open-form gaps; smaller ones get the closed optical set
+
+    @property
+    def main_sizes(self) -> list[int]:
+        return [size for size in self.target_sizes if self.open_from is None or size >= self.open_from]
+
+    @property
+    def small_sizes(self) -> list[int]:
+        return [size for size in self.target_sizes if self.open_from is not None and size < self.open_from]
+
+    def sets(self) -> list[bool]:
+        """Optical sets to build: the main set, then the small set (open forms closed) when sizes need one."""
+        return [False, True] if self.small_sizes else [False]
 
 
 def _reject_duplicate_keys(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
@@ -781,10 +1124,68 @@ def _name(value: Any, where: str) -> str:
     return value
 
 
+CHARACTER_TOKENS = (
+    "terminal", "terminal_angle", "contrast", "aperture", "aperture_at", "junction_gap",
+    "corner", "proportion", "fill", "accent",
+)
+
+
+def _decimals(value: float, places: int, where: str, low: float, high: float) -> float:
+    if not low <= value <= high or abs(round(value, places) - value) > 1e-12:
+        raise _Refusal(f"{where} must be from {low:g} to {high:g} with at most {places} decimals")
+    return value
+
+
+def _parse_character(value: dict[str, Any], tokens: Tokens) -> None:
+    """Validate the optional character tokens into ``tokens``; every refusal names the token and its range."""
+    tokens.terminal = _choice(value.get("terminal", "cap"), "tokens.terminal", TERMINALS)
+    if tokens.terminal == "angled":
+        if tokens.linecap != "butt":
+            raise _Refusal('tokens.terminal "angled" replaces the cap; set tokens.linecap to "butt"')
+        angle = value.get("terminal_angle", 30)
+        if (isinstance(angle, bool) or not isinstance(angle, int) or angle % 5
+                or not ANGLE_RANGE[0] <= abs(angle) <= ANGLE_RANGE[1]):
+            raise _Refusal(
+                f"tokens.terminal_angle must be a multiple of 5 degrees from {ANGLE_RANGE[0]} to {ANGLE_RANGE[1]} "
+                "(negative mirrors the lean)"
+            )
+        tokens.terminal_angle = angle
+    elif "terminal_angle" in value:
+        raise _Refusal('tokens.terminal_angle applies only to tokens.terminal "angled"')
+    if "contrast" in value:
+        tokens.contrast = _decimals(_number(value["contrast"], "tokens.contrast"), 2, "tokens.contrast", *CONTRAST_RANGE)
+        if tokens.contrast < 1 and tokens.detail_stroke >= tokens.stroke:
+            raise _Refusal(
+                f"tokens.contrast {tokens.contrast:g} rounds the detail stroke back to {tokens.stroke:g} on the 0.125 step; lower it"
+            )
+    if tokens.linejoin == "miter" and not tokens.expanded:
+        raise _Refusal(
+            "tokens.linejoin must be one of: round, bevel; miter joins need expanded outlines "
+            '(tokens.terminal "angled" or tokens.contrast below 1), because a stroked miter cannot be bounded'
+        )
+    if "aperture" in value:
+        tokens.aperture = _on_snap(_number(value["aperture"], "tokens.aperture"), tokens.snap, "tokens.aperture")
+        if not 0.5 <= tokens.aperture <= tokens.grid / 6:
+            raise _Refusal(f"tokens.aperture must be a visible gap from 0.5 to {tokens.grid / 6:g} units")
+        tokens.aperture_at = _integer(value.get("aperture_at", 2), "tokens.aperture_at", 1, 12)
+    elif "aperture_at" in value:
+        raise _Refusal("tokens.aperture_at applies only with tokens.aperture")
+    if "junction_gap" in value:
+        tokens.junction_gap = _on_snap(_number(value["junction_gap"], "tokens.junction_gap"), tokens.snap, "tokens.junction_gap")
+        if not 0.25 <= tokens.junction_gap <= tokens.grid / 12:
+            raise _Refusal(f"tokens.junction_gap must be from 0.25 to {tokens.grid / 12:g} units")
+    tokens.corner = _choice(value.get("corner", "round"), "tokens.corner", CORNERS)
+    tokens.proportion = _choice(value.get("proportion", "regular"), "tokens.proportion", PROPORTIONS)
+    if "fill" in value:
+        tokens.fill = _decimals(_number(value["fill"], "tokens.fill"), 2, "tokens.fill", *FILL_RANGE)
+    if "accent" in value:
+        tokens.accent = _text(value["accent"], "tokens.accent")
+
+
 def _parse_tokens(raw: Any) -> Tokens:
     value = _fields(
         raw, "tokens", ("stroke", "linecap", "linejoin", "radius"),
-        ("grid", "padding", "detail", "dot", "snap", "crisp", "secondary_opacity"),
+        ("grid", "padding", "detail", "dot", "snap", "crisp", "secondary_opacity", *CHARACTER_TOKENS),
     )
     grid = value.get("grid", 24)
     if grid not in GRID_PADDING or isinstance(grid, bool):
@@ -816,13 +1217,15 @@ def _parse_tokens(raw: Any) -> Tokens:
         tone = _number(tone, "tokens.secondary_opacity")
         if not TONE_RANGE[0] <= tone <= TONE_RANGE[1] or abs(round(tone, 3) - tone) > 1e-12:
             raise _Refusal(f"tokens.secondary_opacity must be {TONE_RANGE[0]:g}-{TONE_RANGE[1]:g} with at most three decimals")
-    return Tokens(
+    tokens = Tokens(
         grid=grid, padding=padding, stroke=stroke,
         linecap=_choice(value["linecap"], "tokens.linecap", LINECAPS),
-        linejoin=_choice(value["linejoin"], "tokens.linejoin", LINEJOINS),
+        linejoin="miter" if value["linejoin"] == "miter" else _choice(value["linejoin"], "tokens.linejoin", LINEJOINS),
         radius=radius, detail=_choice(value.get("detail", "medium"), "tokens.detail", DETAIL_LEVELS),
         dot=dot, snap=snap, crisp=crisp, secondary_opacity=tone,
     )
+    _parse_character(value, tokens)
+    return tokens
 
 
 # Shape grammar: required fields, optional fields, default role ("auto": body when closed, else stroke).
@@ -841,7 +1244,10 @@ PRIMITIVES: dict[str, tuple[set[str], set[str], str]] = {
     "arrow": ({"from", "to"}, {"head"}, "stroke"),
     "dot": ({"at"}, {"d"}, "detail"),
 }
-COMMON_FIELDS = {"type", "id", "role", "variants", "min_detail", "rotate", "repeat", "radial", "mirror", "about", "duotone_fill"}
+COMMON_FIELDS = {
+    "type", "id", "role", "variants", "min_detail", "rotate", "repeat", "radial", "mirror", "about", "duotone_fill",
+    "aperture", "junction",
+}
 
 
 def _crisp(value: float, phase: float | None, center: float) -> float:
@@ -1197,7 +1603,16 @@ def _fillet(vertex: Point, incoming: Point, outgoing: Point, radius: float, limi
     return tangent, Arc(center, effective, start, end)
 
 
-def _path_chain(form: PathForm) -> Chain:
+def _leaf_sharp(incoming: Point, outgoing: Point) -> bool:
+    """Leaf corners: a corner pointing up-right or down-left stays sharp; up-left and down-right round."""
+    inside = _add(_mul(incoming, -1.0), outgoing)  # toward the fillet center
+    if _length(inside) < 1e-9:
+        return False
+    pointing = _angle(_mul(inside, -1.0))
+    return math.sin(2 * pointing) < -1e-9
+
+
+def _path_chain(form: PathForm, corner: str = "round") -> Chain:
     points, kinds, closed = form.points, form.kinds, form.closed
     count = len(points)
     segment_count = len(kinds)
@@ -1211,6 +1626,10 @@ def _path_chain(form: PathForm) -> Chain:
             continue
         before %= segment_count
         filleted[vertex] = form.radius > 0 and straight[before] and straight[after]
+        if filleted[vertex] and corner != "round":
+            incoming = _unit(_sub(ends[before][1], ends[before][0]))
+            outgoing = _unit(_sub(ends[after][1], ends[after][0]))
+            filleted[vertex] = corner == "chamfer" or (corner == "leaf" and not _leaf_sharp(incoming, outgoing))
     tangents: dict[int, float] = {}
     arcs: dict[int, Arc] = {}
     for vertex, eligible in filleted.items():
@@ -1238,13 +1657,14 @@ def _path_chain(form: PathForm) -> Chain:
             segments.append(_endpoint_arc(start, end, kinds[index][1], kinds[index][2], kinds[index][3]))
         next_vertex = (index + 1) % count
         if next_vertex in arcs and (closed or index + 1 < segment_count):
-            segments.append(arcs[next_vertex])
+            arc = arcs[next_vertex]
+            segments.append(Line(_start(arc), _end(arc)) if corner == "chamfer" else arc)
     return Chain(tuple(segments), closed)
 
 
-def _form_shape(form: Form) -> Shape:
+def _form_shape(form: Form, corner: str = "round") -> Shape:
     if isinstance(form, PathForm):
-        return _path_chain(form)
+        return _path_chain(form, corner)
     if isinstance(form, ArcForm):
         return Chain((Arc(form.center, form.r, form.a0, form.a1),), False)
     if isinstance(form, CircleForm):
@@ -1282,17 +1702,49 @@ def _parse_item(shape: Any, where: str, index: int, tokens: Tokens, variants: tu
         item_variants = tuple(variant for variant in variants if variant in raw)
     minimum = _choice(shape.get("min_detail", "low"), f"{where}.min_detail", DETAIL_LEVELS)
     forms = _transform(shape, _primitive_forms(shape, kind, where, tokens), where, tokens)
-    shapes = [_form_shape(form) for form in forms]
+    shapes = [_form_shape(form, tokens.corner) for form in forms]
     if role == "auto":
         role = "body" if all(_is_closed(item) for item in shapes) else "stroke"
-    duotone_fill = shape.get("duotone_fill", role == "body")
+    duotone_fill = shape.get("duotone_fill", role in {"body", "accent"})
     if not isinstance(duotone_fill, bool):
         raise _Refusal(f"{where}.duotone_fill must be true or false")
+    aperture = shape.get("aperture")
+    if aperture is not None and (not isinstance(aperture, bool) or not tokens.aperture):
+        raise _Refusal(f"{where}.aperture must be true or false, and applies only with tokens.aperture")
+    junction = shape.get("junction", True)
+    if not isinstance(junction, bool) or ("junction" in shape and not tokens.junction_gap):
+        raise _Refusal(f"{where}.junction must be true or false, and applies only with tokens.junction_gap")
+    if role == "accent":
+        if not all(_is_closed(item) for item in shapes):
+            raise _Refusal(f"{where}: an accent must be a closed shape or a dot")
+        if aperture:
+            raise _Refusal(f"{where}: an accent cannot host the aperture")
+    if aperture and not all(_as_chain(item) is not None and _is_closed(item) for item in shapes):
+        raise _Refusal(f"{where}: only closed paths, polygons, rects and circles can host the aperture")
     if DETAIL_LEVELS.index(minimum) > DETAIL_LEVELS.index(tokens.detail):
         return None
     if role == "body" and any(isinstance(item, Dot) for item in shapes):
         raise _Refusal(f"{where}: a dot cannot be a body; use a circle")
-    return Item(label, role, item_variants, duotone_fill, shapes)
+    return Item(label, role, item_variants, duotone_fill, shapes, aperture, junction)
+
+
+def _open_from(tokens: Tokens, sizes: list[int]) -> int | None:
+    """Smallest target size at which every open-form gap paints at least 1 CSS px.
+
+    Smaller targets get an optical set with the gaps closed: a sub-pixel gap blurs into a
+    broken-looking stroke, and recognition outranks voice.
+    """
+    gaps = [gap for gap in (tokens.aperture, tokens.junction_gap) if gap]
+    if not gaps:
+        return None
+    narrowest = min(gaps)
+    visible = [size for size in sizes if narrowest * size / tokens.grid >= 1 - 1e-9]
+    if not visible:
+        raise _Refusal(
+            f"open-form gaps of {narrowest:g} units paint under 1 CSS px at every target size up to {sizes[-1]} px; "
+            f"widen them to at least {math.ceil(tokens.grid / sizes[-1] / tokens.snap) * tokens.snap:g} units"
+        )
+    return visible[0] if visible[0] > sizes[0] else None
 
 
 def compile_family(spec: dict[str, Any]) -> Family:
@@ -1326,6 +1778,11 @@ def compile_family(spec: dict[str, Any]) -> Family:
             raise _Refusal(
                 f"stroke {tokens.stroke:g} renders below 0.5 CSS px at {sizes[0]} px; raise the stroke or the smallest target"
             )
+        if tokens.detail_stroke * sizes[0] / tokens.grid < 0.5:
+            raise _Refusal(
+                f"tokens.contrast leaves {tokens.detail_stroke:g}-unit details, below 0.5 CSS px at {sizes[0]} px; raise it"
+            )
+        open_from = _open_from(tokens, sizes)
         meta = _fields(top["metadata"], "metadata", ("creator", "reviewed"), ("license", "source", "accessibility_owner"))
         creator = _text(meta["creator"], "metadata.creator")
         reviewed = meta["reviewed"]
@@ -1394,6 +1851,17 @@ def compile_family(spec: dict[str, Any]) -> Family:
         for variant in variants:
             if not any(variant in item.variants for item in items):
                 problems.append(f"{where} draws nothing in the {variant} variant")
+        accents = [(item, shape) for item in items if item.role == "accent" for shape in item.shapes]
+        if accents and tokens.accent is None:
+            problems.append(f"{where} uses role \"accent\"; declare tokens.accent, the one meaning every accent carries")
+        if len(accents) > 1:
+            problems.append(f"{where} has {len(accents)} accent shapes; the family accent is one small element per glyph")
+        for item, shape in accents:
+            box = _shape_bounds(shape)
+            reach = 0.0 if isinstance(shape, Dot) else 2 * tokens.half
+            span = (tokens.grid - 2 * tokens.padding) * ACCENT_SPAN
+            if max(box[2] - box[0], box[3] - box[1]) + reach > span + 1e-9:
+                problems.append(f"{where} {item.label}: an accent spans at most a third of the live area ({span:g} units)")
         glyphs.append(Glyph(name, role, keyline, budget, items))
 
     tabs: list[str] = []
@@ -1413,13 +1881,16 @@ def compile_family(spec: dict[str, Any]) -> Family:
         raise SpecError(problems)
     family = Family(
         family_name, tokens, variants, sizes, creator, reviewed, license_text, source, owner, glyphs,
-        tabs or [glyph.name for glyph in glyphs[:5]],
+        tabs or [glyph.name for glyph in glyphs[:5]], open_from=open_from,
     )
     for glyph in glyphs:
         try:
+            if tokens.aperture:
+                glyph.aperture = _plan_aperture(family, glyph)
             _check_glyph(family, glyph)
         except _Refusal as refusal:
-            problems.append(str(refusal))
+            message = str(refusal)
+            problems.append(message if message.startswith("glyph '") else f"glyph '{glyph.name}': {message}")
         except (ArithmeticError, ValueError, IndexError) as error:
             problems.append(f"glyph '{glyph.name}': geometry cannot be constructed ({error})")
     if problems:
@@ -1433,64 +1904,338 @@ def compile_family(spec: dict[str, Any]) -> Family:
 
 @dataclass(frozen=True)
 class Element:
-    kind: str  # stroke | dot | fill
+    kind: str  # stroke | dot | fill | ring (expanded closed stroke: outer edge, then inner edges reversed)
     shapes: tuple[Shape, ...]  # fill: outer first, then even-odd cut-outs
 
 
-def _outline_elements(glyph: Glyph, variant: str) -> list[Element]:
-    elements: list[Element] = []
-    for item in glyph.items:
-        if variant not in item.variants:
+RANK = {"body": 3, "accent": 3, "stroke": 2, "detail": 1}
+
+
+def _item_half(tokens: Tokens, item: Item, variant: str) -> float:
+    """Half stroke of an item: inner details draw lighter under tokens.contrast, except as solid cut-outs."""
+    if item.role == "detail" and tokens.contrast < 1 and variant != "solid":
+        return tokens.detail_stroke / 2
+    return tokens.half
+
+
+def _accent_region(shape: Shape, tokens: Tokens) -> Shape:
+    """An accent fills the area its outline would paint: the closed shape grown by half a stroke."""
+    if isinstance(shape, Dot):
+        return Circle(shape.c, shape.r)
+    grown = _grow(shape, tokens.half, tokens.linejoin)
+    if grown is None:
+        raise _Refusal("an accent outline cannot be grown; enlarge it")
+    return grown
+
+
+def _apply_junctions(family: Family, glyph: Glyph, present: list[tuple[int, Item]],
+                     pieces: dict[int, list[list[Shape | Opened]]], variant: str) -> None:
+    """Open strokes stop ``junction_gap`` short of the strokes they meet or cross; contours stay whole.
+
+    At a T the stroke whose end touches gives way; at a crossing or a shared end the stroke
+    behind gives way (detail behind stroke behind body and accent, later behind earlier).
+    """
+    tokens = family.tokens
+    entries = [
+        (index, item, shape_index, shape)
+        for index, item in present if item.junction
+        for shape_index, shape in enumerate(item.shapes)
+    ]
+    for index, item, shape_index, shape in entries:
+        if not isinstance(shape, Chain) or shape.closed:
             continue
-        for shape in item.shapes:
-            elements.append(Element("dot" if isinstance(shape, Dot) else "stroke", (shape,)))
+        half_a = _item_half(tokens, item, variant)
+        length = _chain_length(shape)
+        box_a = _shape_bounds(shape)
+        windows: list[tuple[float, float]] = []
+        for other_index, other, _, obstacle in entries:
+            if other_index == index:
+                continue
+            half_b = obstacle.r if isinstance(obstacle, Dot) else _item_half(tokens, other, variant)
+            reach = half_b + tokens.junction_gap + max(half_a, tokens.cap_extension(half_a))
+            limit = half_b + tokens.junction_gap
+            touch = half_a + half_b + 1e-6
+            probe = _end_probe(tokens, half_a)
+            box_b = _shape_bounds(obstacle)
+            if (box_a[0] - reach > box_b[2] or box_b[0] - reach > box_a[2]
+                    or box_a[1] - reach > box_b[3] or box_b[1] - reach > box_a[3]):
+                continue
+
+            def clearance(s: float, chain: Chain = shape, target: Shape = obstacle, limit: float = limit,
+                          probe: list[Point] = probe) -> float:
+                """Clearance of a stroke end cut at ``s``, measured from its painted corners and cap, not its centerline."""
+                point, along = _chain_point(chain, s), _chain_tangent(chain, s)
+                across = _normal(along)
+                return min(
+                    _shape_distance(_add(point, _add(_mul(across, a), _mul(along, b))), target) for a, b in probe
+                ) - limit
+
+            for low, high in _below_windows(length, clearance):
+                steps = max(4, math.ceil((high - low) / 0.02))
+                distance, contact = min(
+                    (_shape_distance(_chain_point(shape, low + (high - low) * k / steps), obstacle), low + (high - low) * k / steps)
+                    for k in range(steps + 1)
+                )
+                if distance > touch:
+                    continue  # near but not touching: the gap lint's business, not a junction
+                # The contact sits at an end when the closest approach is within the other stroke's half width of it.
+                a_end = min(contact, length - contact) <= half_b + 1e-6
+                if isinstance(obstacle, Chain) and not obstacle.closed:
+                    point = _chain_point(shape, contact)
+                    b_end = any(
+                        _length(_sub(end, point)) <= half_a + 1e-6
+                        for end in (_start(obstacle.segs[0]), _end(obstacle.segs[-1]))
+                    )
+                    behind = (RANK[item.role], -index) < (RANK[other.role], -other_index)
+                    gives_way = a_end if a_end != b_end else behind
+                else:
+                    gives_way = True
+                if gives_way:
+                    windows.append(_settle_window(tokens, shape, length, half_a, obstacle, limit, low, high))
+        if not windows:
+            continue
+        windows.sort()
+        kept: list[Shape | Opened] = []
+        position = 0.0
+        for low, high in windows + [(length, length)]:
+            if low - position >= tokens.stroke - 1e-9:
+                kept.append(_chain_slice(shape, position, low))
+            position = max(position, high)
+        if not kept:
+            raise _Refusal(
+                f"glyph '{glyph.name}' {item.label}: the junction gap removes this stroke entirely; "
+                "lengthen it or give it \"junction\": false"
+            )
+        pieces[index][shape_index] = kept
+
+
+def _settle_window(tokens: Tokens, chain: Chain, length: float, half: float, obstacle: Shape, limit: float,
+                   low: float, high: float) -> tuple[float, float]:
+    """Widen a junction window until the painted stroke beside each cut, joins and neighbouring segments
+    included, keeps the full gap; a cut just past a corner otherwise lets the next segment's band reach in."""
+    step = 0.05
+
+    def tight(start: float, end: float) -> bool:
+        if end - start < 1e-6:
+            return False
+        try:
+            outline = _stroke_outline(_chain_slice(chain, start, end), half, tokens.linecap, tokens.linejoin, tokens.cut)
+        except _Refusal:
+            return True
+        return min(_shape_distance(point, obstacle) for point in _shape_points(outline, 0.05)) < limit - 1e-6
+
+    reach = 2 * tokens.stroke + half
+    while low > 1e-9 and tight(max(0.0, low - reach), low):
+        low = max(0.0, low - step)
+    while high < length - 1e-9 and tight(high, min(length, high + reach)):
+        high = min(length, high + step)
+    return low, high
+
+
+def _clock_position(contour: Chain, hour: int) -> float:
+    """Arc length where a ray from the contour's box center toward ``hour`` o'clock leaves the contour."""
+    box = _shape_bounds(contour)
+    center = ((box[0] + box[2]) / 2, (box[1] + box[3]) / 2)
+    angle = math.radians(30 * hour - 90)
+    direction = (math.cos(angle), math.sin(angle))
+    best: tuple[float, float] | None = None
+    position = 0.0
+    for segment in contour.segs:
+        size = _segment_length(segment)
+        samples = _segment_points(segment, 0.05)
+        for index in range(len(samples) - 1):
+            p, q = samples[index], samples[index + 1]
+            edge = _sub(q, p)
+            denominator = _cross(direction, edge)
+            if abs(denominator) < 1e-12:
+                continue
+            t = _cross(_sub(p, center), edge) / denominator
+            u = _cross(_sub(p, center), direction) / denominator
+            if t > 0 and -1e-9 <= u <= 1 + 1e-9 and (best is None or t > best[0] + 1e-9):
+                best = (t, position + size * (index + u) / (len(samples) - 1))
+        position += size
+    return best[1] if best is not None else 0.0
+
+
+def _within_one_segment(contour: Chain, low: float, high: float, straight: bool) -> bool:
+    """Whether arc lengths low..high lie inside one segment (one straight run when ``straight``), never across a corner."""
+    total = _chain_length(contour)
+    start = low % total
+    end = start + (high - low)
+    position = 0.0
+    for segment in contour.segs:
+        size = _segment_length(segment)
+        if isinstance(segment, Line) or not straight:
+            for shift in (0.0, total):
+                if position + shift - 1e-9 <= start and end <= position + shift + size + 1e-9:
+                    return True
+        position += size
+    return False
+
+
+def _plan_aperture(family: Family, glyph: Glyph) -> tuple[int, int, Opened] | None:
+    """Place the family's one signature break on the glyph's largest closed body.
+
+    The gap centers where the ``aperture_at`` clock direction leaves the contour, slides to the
+    nearest straight run that holds it (within a quarter turn) or else the nearest single curve,
+    never straddles a corner, and never sits within a stroke of another shape, so it cannot read
+    as a junction or break a recognizable attachment.
+    """
+    tokens = family.tokens
+    hosts = []
+    for item_index, item in enumerate(glyph.items):
+        if item.aperture is False or item.role == "accent" or (item.aperture is None and item.role != "body"):
+            continue
+        for shape_index, shape in enumerate(item.shapes):
+            # A circle's half arcs meet a quarter turn either side of the clock position, so the gap never straddles a seam.
+            contour = _as_chain(shape, math.radians(30 * tokens.aperture_at - 180))
+            if contour is not None and contour.closed:
+                area = abs(_signed_area(_shape_points(contour)))
+                hosts.append(((not item.aperture, -round(area, 6), item_index, shape_index), contour))
+    if not hosts:
+        return None
+    (_, _, item_index, shape_index), contour = min(hosts, key=lambda host: host[0])
+    half = tokens.half
+    total = _chain_length(contour)
+    span = tokens.aperture / math.cos(tokens.cut) + (2 * half if tokens.cap_extension(half) == half else 0.0)
+    margin = half * abs(math.tan(tokens.cut))
+    if span + 2 * margin >= total / 3:
+        family.warnings.append(f"{glyph.name}: its contour is too small for a {_fmt(tokens.aperture)}-unit aperture")
+        return None
+    others = [
+        (shape, shape.r if isinstance(shape, Dot) else _item_half(tokens, item, "outline"))
+        for index, item in enumerate(glyph.items)
+        for position, shape in enumerate(item.shapes)
+        if (index, position) != (item_index, shape_index)
+    ]
+    target = _clock_position(contour, tokens.aperture_at)
+    step = tokens.snap / 2
+    deltas = [0.0] + [sign * k * step for k in range(1, int(total / 2 / step) + 1) for sign in (1, -1)]
+    for straight, limit in ((True, total / 4), (False, total / 2)):
+        for delta in deltas:
+            if abs(delta) > limit:
+                break
+            low = target + delta - span / 2
+            high = low + span
+            if not _within_one_segment(contour, low - margin, high + margin, straight):
+                continue
+            region = _chain_slice(contour, low - tokens.stroke, high + tokens.stroke)
+            samples = _shape_points(region, 0.1)
+            if any(min(_shape_distance(p, shape) for p in samples) < half + other_half + tokens.stroke - 1e-9
+                   for shape, other_half in others):
+                continue
+            opened = Opened(contour, _chain_slice(contour, high, low + total), _chain_slice(contour, low, high))
+            return item_index, shape_index, opened
+    family.warnings.append(
+        f"{glyph.name}: no clear place for the aperture near {tokens.aperture_at} o'clock; its contour stays closed"
+    )
+    return None
+
+
+def _voiced_items(family: Family, glyph: Glyph, variant: str,
+                  open_forms: bool = True) -> list[tuple[Item, list[Shape | Opened]]]:
+    """Each item present in ``variant`` with its shapes after junction gaps and the aperture."""
+    key = ("voiced", variant, open_forms)
+    if key not in glyph.cache:
+        glyph.cache[key] = _voice_items(family, glyph, variant, open_forms)
+    return glyph.cache[key]
+
+
+def _voice_items(family: Family, glyph: Glyph, variant: str, open_forms: bool) -> list[tuple[Item, list[Shape | Opened]]]:
+    present = [(index, item) for index, item in enumerate(glyph.items) if variant in item.variants]
+    pieces: dict[int, list[list[Shape | Opened]]] = {index: [[shape] for shape in item.shapes] for index, item in present}
+    if open_forms and family.tokens.junction_gap:
+        _apply_junctions(family, glyph, present, pieces, variant)
+    if open_forms and glyph.aperture is not None and glyph.aperture[0] in pieces:
+        item_index, shape_index, opened = glyph.aperture
+        pieces[item_index][shape_index] = [opened]
+    return [(item, [shape for group in pieces[index] for shape in group]) for index, item in present]
+
+
+def _outline_elements(family: Family, glyph: Glyph, variant: str, open_forms: bool = True) -> list[Element]:
+    tokens = family.tokens
+    elements: list[Element] = []
+    for item, shapes in _voiced_items(family, glyph, variant, open_forms):
+        half = _item_half(tokens, item, variant)
+        for shape in shapes:
+            if item.role == "accent" and variant == "outline":
+                elements.append(Element("fill", (_accent_region(shape, tokens),)))  # type: ignore[arg-type]
+                continue
+            if isinstance(shape, Opened):
+                shape = shape.drawn
+            if isinstance(shape, Dot):
+                elements.append(Element("fill", (Circle(shape.c, shape.r),)) if tokens.expanded else Element("dot", (shape,)))
+            elif not tokens.expanded:
+                elements.append(Element("stroke", (shape,)))
+            elif isinstance(shape, Chain) and not shape.closed:
+                outline = _stroke_outline(shape, half, tokens.linecap, tokens.linejoin, tokens.cut)
+                elements.append(Element("fill", (outline,)))
+            else:
+                # One nonzero path, inner edge reversed: the hole winds to zero, and a loop the inner
+                # offset makes at a tight corner winds to two and stays painted instead of punching a hole.
+                ring = (_grow(shape, half, tokens.linejoin), _shrink(shape, half, tokens.linejoin))
+                elements.append(Element("ring", tuple(part for part in ring if part is not None)))
     return elements
 
 
-def _solid_elements(family: Family, glyph: Glyph) -> list[Element]:
+def _solid_elements(family: Family, glyph: Glyph, open_forms: bool = True) -> list[Element]:
+    key = ("solid", open_forms)
+    if key not in glyph.cache:
+        glyph.cache[key] = _build_solid(family, glyph, open_forms)
+    return list(glyph.cache[key])
+
+
+def _build_solid(family: Family, glyph: Glyph, open_forms: bool) -> list[Element]:
     tokens = family.tokens
-    half, cap, join = tokens.half, tokens.linecap, tokens.linejoin
+    half, cap, join, cut = tokens.half, tokens.linecap, tokens.linejoin, tokens.cut
     masses: list[tuple[str, Shape, list[tuple[str, Shape]]]] = []  # (label, outer, cut-outs)
     positives: list[tuple[str, Element]] = []
-    details: list[tuple[str, Shape]] = []
+    details: list[tuple[str, Shape, bool]] = []  # (label, cut-out, is accent)
     order: list[tuple[str, int]] = []
-    for item in glyph.items:
-        if "solid" not in item.variants:
-            continue
-        for shape in item.shapes:
+    for item, shapes in _voiced_items(family, glyph, "solid", open_forms):
+        for shape in shapes:
             if item.role == "body":
-                closed = shape if _is_closed(shape) else _closed_by_chord(shape)  # type: ignore[arg-type]
-                outer = _grow(closed, half, join)
+                if isinstance(shape, Opened):
+                    outer: Shape | None = _notched_mass(shape, half, cap, join, cut)
+                else:
+                    closed = shape if _is_closed(shape) else _closed_by_chord(shape)  # type: ignore[arg-type]
+                    outer = _grow(closed, half, join)
                 if outer is None:
                     raise _Refusal(f"glyph '{glyph.name}' {item.label}: the solid outline collapses")
                 masses.append((item.label, outer, []))
                 order.append(("mass", len(masses) - 1))
+                continue
+            if isinstance(shape, Opened):
+                shape = shape.drawn
+            if item.role == "accent":
+                details.append((item.label, _accent_region(shape, tokens), True))
             elif item.role == "detail":
                 if isinstance(shape, Dot):
-                    cut: Shape | None = Circle(shape.c, shape.r)
+                    cut_out: Shape | None = Circle(shape.c, shape.r)
                 elif _is_closed(shape):
-                    cut = _grow(shape, half, join)
+                    cut_out = _grow(shape, half, join)
                 else:
-                    cut = _stroke_outline(shape, half, cap, join)  # type: ignore[arg-type]
-                if cut is None:
+                    cut_out = _stroke_outline(shape, half, cap, join, cut)  # type: ignore[arg-type]
+                if cut_out is None:
                     raise _Refusal(f"glyph '{glyph.name}' {item.label}: the solid cut-out collapses")
-                details.append((item.label, cut))
+                details.append((item.label, cut_out, False))
             else:
                 if isinstance(shape, Dot):
                     element = Element("fill", (Circle(shape.c, shape.r),))
                 elif isinstance(shape, Chain) and not shape.closed:
-                    element = Element("fill", (_stroke_outline(shape, half, cap, join),))
+                    element = Element("fill", (_stroke_outline(shape, half, cap, join, cut),))
                 else:
-                    outer = _grow(shape, half, join)
+                    grown = _grow(shape, half, join)
                     inner = _shrink(shape, half, join)
-                    element = Element("fill", tuple(part for part in (outer, inner) if part is not None))
+                    element = Element("fill", tuple(part for part in (grown, inner) if part is not None))
                 positives.append((item.label, element))
                 order.append(("positive", len(positives) - 1))
     polygons = [_shape_points(outer) for _, outer, _ in masses]
     areas = [abs(_signed_area(points)) for points in polygons]
     threshold = tokens.grid / family.target_sizes[0]
-    for label, cut in details:
-        cut_points = _shape_points(cut)
+    accents: list[Element] = []
+    for label, cut_out, accent in details:
+        cut_points = _shape_points(cut_out)
         containing = [
             index for index, polygon in enumerate(polygons)
             if all(_inside(point, polygon) for point in cut_points)
@@ -1502,6 +2247,9 @@ def _solid_elements(family: Family, glyph: Glyph) -> list[Element]:
                     f"glyph '{glyph.name}' {label}: its solid cut-out crosses the edge of {touching[0]}; "
                     "shorten it or limit it with \"variants\""
                 )
+            if accent:
+                accents.append(Element("fill", (cut_out,)))  # an accent on open ground stays a positive mark
+                continue
             raise _Refusal(
                 f"glyph '{glyph.name}' {label}: this detail lies outside every body in the solid variant; "
                 "give it role \"stroke\" or limit it with \"variants\""
@@ -1523,7 +2271,7 @@ def _solid_elements(family: Family, glyph: Glyph) -> list[Element]:
                     f"glyph '{glyph.name}': solid cut-outs {other_label} and {label} overlap; even-odd would refill "
                     "the overlap, so merge them into one shape or separate them"
                 )
-        masses[host][2].append((label, cut))
+        masses[host][2].append((label, cut_out))
     elements: list[Element] = []
     for kind, index in order:
         if kind == "mass":
@@ -1531,7 +2279,7 @@ def _solid_elements(family: Family, glyph: Glyph) -> list[Element]:
             elements.append(Element("fill", (outer, *(cut for _, cut in cuts))))
         else:
             elements.append(positives[index][1])
-    return elements
+    return elements + accents
 
 
 def _duotone_secondary(glyph: Glyph) -> list[Element]:
@@ -1554,6 +2302,14 @@ def _duotone_secondary(glyph: Glyph) -> list[Element]:
                 regions[index][1].append(hole)
                 break
     return [Element("fill", (region, *cuts)) for region, cuts in regions]
+
+
+def _variant_elements(family: Family, glyph: Glyph, variant: str, small: bool = False) -> list[Element]:
+    if variant == "outline":
+        return _outline_elements(family, glyph, "outline", not small)
+    if variant == "solid":
+        return _solid_elements(family, glyph, not small)
+    return _duotone_secondary(glyph) + _outline_elements(family, glyph, "duotone", not small)
 
 
 def _check_glyph(family: Family, glyph: Glyph) -> None:
@@ -1580,23 +2336,69 @@ def _check_glyph(family: Family, glyph: Glyph) -> None:
                 )
     if "solid" in family.variants:
         _solid_elements(family, glyph)
+    if tokens.character:
+        _check_painted(family, glyph)
     _lint_glyph(family, glyph)
+
+
+def _painted_bounds(element: Element, tokens: Tokens) -> tuple[float, float, float, float]:
+    """An element's bounds exactly as asset_quality.py measures the serialized SVG (3-decimal coordinates)."""
+    shape = element.shapes[0]
+    if len(element.shapes) == 1 and isinstance(shape, (Circle, Ellipse, Dot)):
+        rx, ry = (shape.rx, shape.ry) if isinstance(shape, Ellipse) else (shape.r, shape.r)
+        cx, cy, rx, ry = (float(_fmt(value)) for value in (shape.c[0], shape.c[1], rx, ry))
+        box = (cx - rx, cy - ry, cx + rx, cy + ry)
+    else:
+        _, measured, error = _path_geometry("".join(_shape_d(part) for part in element.shapes))
+        if error or measured is None:
+            raise _Refusal(f"painted geometry cannot be bounded ({error})")
+        box = measured
+    reach = tokens.reach if element.kind == "stroke" else 0.0
+    return box[0] - reach, box[1] - reach, box[2] + reach, box[3] + reach
+
+
+def _check_painted(family: Family, glyph: Glyph) -> None:
+    """Character geometry is bounded as painted: angled cuts, miters and expanded curves can pass the centerline check."""
+    tokens = family.tokens
+    live = tokens.live
+    where = f"{_fmt(live[0])}..{_fmt(live[2])}"
+    for small in family.sets():
+        for variant in family.variants:
+            for element in _variant_elements(family, glyph, variant, small):
+                box = _painted_bounds(element, tokens)
+                over = max(live[0] - box[0], live[1] - box[1], box[2] - live[2], box[3] - live[3])
+                if over > 1e-7:
+                    raise _Refusal(
+                        f"glyph '{glyph.name}' {variant}{' small' if small else ''}: painted geometry reaches "
+                        f"{over:.3g} units past the live area {where}; angled terminals and miter joins reach past "
+                        "their endpoints and corners, and expanded curves are rebuilt from rounded endpoints"
+                    )
 
 
 def _lint_glyph(family: Family, glyph: Glyph) -> None:
     """Optical warnings the validator cannot see: keyline size and near-miss gaps, on painted outlines."""
+    for small in family.sets():
+        _lint_set(family, glyph, small)
+
+
+def _lint_set(family: Family, glyph: Glyph, small: bool) -> None:
+    """Lint one optical set as drawn: open forms on in the main set, closed in the small set."""
     tokens = family.tokens
     scale = tokens.grid / 24
+    smallest = (family.small_sizes if small else family.main_sizes)[0]
     painted = []
-    for item in glyph.items:
-        if "outline" not in item.variants:
-            continue
-        for shape in item.shapes:
-            loops = _painted_loops(shape, tokens)
+    for item, shapes in _voiced_items(family, glyph, "outline", not small):
+        for shape in shapes:
+            if isinstance(shape, Opened):
+                shape = shape.drawn
+            if item.role == "accent":
+                loops = [_shape_points(_accent_region(shape, tokens), 0.3)]
+            else:
+                loops = _painted_loops(shape, tokens, _item_half(tokens, item, "outline"))
             points = [point for loop in loops for point in loop]
             xs, ys = [p[0] for p in points], [p[1] for p in points]
             painted.append((item.label, loops, points, (min(xs), min(ys), max(xs), max(ys))))
-    if glyph.keyline and painted:
+    if glyph.keyline and painted and not small:
         width = max(box[2] for *_, box in painted) - min(box[0] for *_, box in painted)
         height = max(box[3] for *_, box in painted) - min(box[1] for *_, box in painted)
         key = tokens.keyline(glyph.keyline)
@@ -1609,7 +2411,7 @@ def _lint_glyph(family: Family, glyph: Glyph) -> None:
                 f"{glyph.name}: paints {_fmt(width)}x{_fmt(height)} against its {glyph.keyline} keyline "
                 f"{_fmt(key_width)}x{_fmt(key_height)}; it will read {'larger' if larger else 'smaller'} than its neighbours"
             )
-    threshold = tokens.grid / family.target_sizes[0]
+    threshold = tokens.grid / smallest
     for i in range(len(painted)):
         for j in range(i + 1, len(painted)):
             label_a, loops_a, points_a, box_a = painted[i]
@@ -1622,19 +2424,20 @@ def _lint_glyph(family: Family, glyph: Glyph) -> None:
             gap = min(_length(_sub(p, q)) for p in points_a for q in points_b)
             if 0.12 * scale < gap < threshold - 0.05 * scale:
                 family.warnings.append(
-                    f"{glyph.name}: {label_a} and {label_b} leave a {gap * family.target_sizes[0] / tokens.grid:.2f} px gap "
-                    f"at {family.target_sizes[0]} px; join them or open the gap to at least 1 px"
+                    f"{glyph.name}: {label_a} and {label_b} leave a {gap * smallest / tokens.grid:.2f} px gap "
+                    f"at {smallest} px; join them or open the gap to at least 1 px"
                 )
 
 
-def _painted_loops(shape: Shape, tokens: Tokens, step: float = 0.3) -> list[list[Point]]:
+def _painted_loops(shape: Shape, tokens: Tokens, half: float | None = None, step: float = 0.3) -> list[list[Point]]:
     """Boundary loops of a shape's painted outline-variant area (even-odd)."""
+    half = tokens.half if half is None else half
     if isinstance(shape, Dot):
         return [_shape_points(Circle(shape.c, shape.r), step)]
     if isinstance(shape, Chain) and not shape.closed:
-        return [_shape_points(_stroke_outline(shape, tokens.half, tokens.linecap, tokens.linejoin), step)]
-    outer = _grow(shape, tokens.half, tokens.linejoin)
-    inner = _shrink(shape, tokens.half, tokens.linejoin)
+        return [_shape_points(_stroke_outline(shape, half, tokens.linecap, tokens.linejoin), step)]
+    outer = _grow(shape, half, tokens.linejoin)
+    inner = _shrink(shape, half, tokens.linejoin)
     return [_shape_points(loop, step) for loop in (outer, inner) if loop is not None]
 
 
@@ -1663,7 +2466,15 @@ def _segment_d(segment: Segment) -> str:
     return f"A{radius} {radius} 0 {large} {flag} {_fmt(end[0])} {_fmt(end[1])}"
 
 
-def _shape_d(shape: Shape) -> str:
+def _shape_d(shape: Shape, reverse: bool = False) -> str:
+    """Path data for a shape; ``reverse`` traverses it the other way (the inner edge of a nonzero ring)."""
+    if reverse and isinstance(shape, Chain):
+        shape = Chain(tuple(_reverse(segment) for segment in reversed(shape.segs)), shape.closed)
+    elif reverse:
+        cx, cy = shape.c
+        rx, ry = (shape.rx, shape.ry) if isinstance(shape, Ellipse) else (shape.r, shape.r)
+        return (f"M{_fmt(cx + rx)} {_fmt(cy)}A{_fmt(rx)} {_fmt(ry)} 0 1 0 {_fmt(cx - rx)} {_fmt(cy)}"
+                f"A{_fmt(rx)} {_fmt(ry)} 0 1 0 {_fmt(cx + rx)} {_fmt(cy)}Z")
     if isinstance(shape, Chain):
         start = _start(shape.segs[0])
         parts = [f"M{_fmt(start[0])} {_fmt(start[1])}"]
@@ -1692,20 +2503,25 @@ def _shape_d(shape: Shape) -> str:
             f"A{r} {r} 0 1 1 {_fmt(cx + shape.r)} {_fmt(cy)}Z")
 
 
-def _element_svg(element: Element) -> str:
+def _element_svg(element: Element, own_paint: bool = False) -> str:
+    """One element; ``own_paint`` marks a fill drawn inside a stroked outline (an accent)."""
     if element.kind == "dot":
         dot = element.shapes[0]
         assert isinstance(dot, Dot)
         return f'<circle cx="{_fmt(dot.c[0])}" cy="{_fmt(dot.c[1])}" r="{_fmt(dot.r)}" fill="currentColor" stroke="none"/>'
+    paint = ' fill="currentColor" stroke="none"' if own_paint else ""
+    if element.kind == "ring":
+        outer, *inner = element.shapes
+        return f'<path{paint} d="{_shape_d(outer)}{"".join(_shape_d(part, reverse=True) for part in inner)}"/>'
     if len(element.shapes) == 1:
         shape = element.shapes[0]
         if isinstance(shape, Circle):
-            return f'<circle cx="{_fmt(shape.c[0])}" cy="{_fmt(shape.c[1])}" r="{_fmt(shape.r)}"/>'
+            return f'<circle cx="{_fmt(shape.c[0])}" cy="{_fmt(shape.c[1])}" r="{_fmt(shape.r)}"{paint}/>'
         if isinstance(shape, Ellipse):
-            return f'<ellipse cx="{_fmt(shape.c[0])}" cy="{_fmt(shape.c[1])}" rx="{_fmt(shape.rx)}" ry="{_fmt(shape.ry)}"/>'
-        return f'<path d="{_shape_d(shape)}"/>'
+            return f'<ellipse cx="{_fmt(shape.c[0])}" cy="{_fmt(shape.c[1])}" rx="{_fmt(shape.rx)}" ry="{_fmt(shape.ry)}"{paint}/>'
+        return f'<path{paint} d="{_shape_d(shape)}"/>'
     d = "".join(_shape_d(shape) for shape in element.shapes)
-    return f'<path fill-rule="evenodd" d="{d}"/>'
+    return f'<path{paint} fill-rule="evenodd" d="{d}"/>'
 
 
 def _stroke_attributes(tokens: Tokens) -> str:
@@ -1717,35 +2533,37 @@ def _svg(tokens: Tokens, variant: str, body: list[str]) -> str:
     grid = tokens.grid
     opening = (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {grid} {grid}" '
                f'width="{grid}" height="{grid}"')
-    if variant == "outline":
+    if variant == "outline" and not tokens.expanded:
         opening += f' fill="none" {_stroke_attributes(tokens)}'
-    elif variant == "solid":
+    elif variant in {"solid", "outline"}:
         opening += ' fill="currentColor"'
     else:
         opening += ' fill="none"'
     return opening + ' aria-hidden="true">\n' + "".join(line + "\n" for line in body) + "</svg>\n"
 
 
-def render_variant(family: Family, glyph: Glyph, variant: str) -> tuple[str, str]:
-    """Return (svg text, drawing mode) for one glyph variant."""
+def render_variant(family: Family, glyph: Glyph, variant: str, small: bool = False) -> tuple[str, str]:
+    """Return (svg text, drawing mode) for one glyph variant; ``small`` is the optical set with open forms closed."""
     tokens = family.tokens
     if variant == "outline":
-        elements = _outline_elements(glyph, "outline")
+        elements = _variant_elements(family, glyph, variant, small)
         kinds = {element.kind for element in elements}
-        mode = "mixed" if kinds == {"stroke", "dot"} else "stroke" if "stroke" in kinds else "fill"
-        return _svg(tokens, variant, [_element_svg(element) for element in elements]), mode
+        mode = ("mixed" if kinds - {"stroke"} else "stroke") if "stroke" in kinds else "fill"
+        stroked = not tokens.expanded
+        return _svg(tokens, variant, [_element_svg(element, stroked and element.kind != "stroke") for element in elements]), mode
     if variant == "solid":
-        return _svg(tokens, variant, [_element_svg(element) for element in _solid_elements(family, glyph)]), "fill"
+        return _svg(tokens, variant, [_element_svg(element) for element in _variant_elements(family, glyph, variant, small)]), "fill"
     secondary = _duotone_secondary(glyph)
-    primary = _outline_elements(glyph, "duotone")
+    primary = _outline_elements(family, glyph, "duotone", not small)
     body: list[str] = []
     if secondary:
         body.append(f'<g data-icon-layer="secondary" fill="currentColor" fill-opacity="{_fmt(tokens.secondary_opacity or 0)}">')
         body += [_element_svg(element) for element in secondary]
         body.append("</g>")
     stroked = any(element.kind == "stroke" for element in primary)
-    body.append(f'<g data-icon-layer="primary"{" " + _stroke_attributes(tokens) if stroked else ""}>')
-    body += [_element_svg(element) for element in primary]
+    filled = ' fill="currentColor"' if tokens.expanded else ""
+    body.append(f'<g data-icon-layer="primary"{" " + _stroke_attributes(tokens) if stroked else ""}{filled}>')
+    body += [_element_svg(element, not tokens.expanded and element.kind == "fill") for element in primary]
     body.append("</g>")
     return _svg(tokens, variant, body), "duotone"
 
@@ -1754,7 +2572,39 @@ def _json_number(value: float) -> int | float:
     return int(value) if float(value).is_integer() else value
 
 
-def render_metadata(family: Family, glyph: Glyph, variant: str, mode: str, svg_bytes: bytes) -> dict[str, Any]:
+def _corner_language(family: Family, variant: str, small: bool) -> str:
+    """The drawing language in words: corners and terminals, then any character tokens."""
+    tokens = family.tokens
+    radius = _fmt(tokens.radius)
+    corner = {
+        "round": f"{radius}-unit corner radius",
+        "chamfer": f"{radius}-unit chamfered corners",
+        "sharp": "sharp corners",
+        "leaf": f"{radius}-unit leaf corners (rounded upper left and lower right, sharp upper right and lower left)",
+    }[tokens.corner]
+    ends = f"{tokens.linecap} caps" if tokens.terminal == "cap" else f"{tokens.terminal_angle}-degree angled terminals"
+    text = f"{corner}, {ends}, {tokens.linejoin} joins on a {tokens.grid}-unit grid"
+    extras = []
+    if tokens.expanded and variant != "solid":
+        extras.append("strokes expanded to exact filled outlines")
+    if tokens.contrast < 1 and variant != "solid":
+        extras.append(f"inner details at stroke {_fmt(tokens.detail_stroke)} against {_fmt(tokens.stroke)}")
+    if tokens.aperture or tokens.junction_gap:
+        gaps = []
+        if tokens.aperture:
+            gaps.append(f"one {_fmt(tokens.aperture)}-unit aperture near {tokens.aperture_at} o'clock")
+        if tokens.junction_gap:
+            gaps.append(f"{_fmt(tokens.junction_gap)}-unit junction gaps")
+        extras.append(" and ".join(gaps) + (f", closed in this optical set below {family.open_from} px" if small else ""))
+    if tokens.proportion != "regular" or tokens.fill != 1.0:
+        extras.append(f"{tokens.proportion} keylines at {_fmt(tokens.fill)} live-area fill")
+    if tokens.accent is not None:
+        extras.append(f"accent: {tokens.accent}")
+    return "; ".join([text, *extras])
+
+
+def render_metadata(family: Family, glyph: Glyph, variant: str, mode: str, svg_bytes: bytes,
+                    small: bool = False) -> dict[str, Any]:
     """Companion metadata in the exact asset_quality.py interface-icon schema."""
     tokens = family.tokens
     stroked = mode in {"stroke", "mixed"} or (mode == "duotone" and 'stroke-width="' in svg_bytes.decode("utf-8"))
@@ -1766,17 +2616,18 @@ def render_metadata(family: Family, glyph: Glyph, variant: str, mode: str, svg_b
     }
     if mode == "duotone":
         language["tones"] = {"secondary_opacity": _json_number(tokens.secondary_opacity or 0)}
-    corner = f"{_fmt(tokens.radius)}-unit corner radius, {tokens.linecap} caps, {tokens.linejoin} joins on a {tokens.grid}-unit grid"
+    corner = _corner_language(family, variant, small)
     if variant == "solid":
         corner = f"filled from the outline's outer edge; {corner}; details cut out even-odd"
     language["corner_language"] = corner
     shapes = sum(len(item.shapes) for item in glyph.items if variant in item.variants)
+    sizes = family.small_sizes if small else family.main_sizes
     language["detail_budget"] = glyph.detail_budget or (
         f"{shapes} construction shapes at {tokens.detail} detail density; gaps checked at {family.target_sizes[0]} px"
     )
     live = tokens.live
     return {
-        "name": f"{glyph.name}-{variant}",
+        "name": f"{glyph.name}-{variant}{'-small' if small else ''}",
         "asset_type": "interface-icon",
         "role": glyph.role,
         "grid": tokens.grid,
@@ -1785,7 +2636,7 @@ def render_metadata(family: Family, glyph: Glyph, variant: str, mode: str, svg_b
             "max_x": _json_number(live[2]), "max_y": _json_number(live[3]),
         },
         "drawing_language": language,
-        "target_sizes": list(family.target_sizes),
+        "target_sizes": list(sizes),
         "source": family.source,
         "license": family.license,
         "accessibility_owner": family.accessibility_owner,
@@ -1803,20 +2654,26 @@ def render_metadata(family: Family, glyph: Glyph, variant: str, mode: str, svg_b
     }
 
 
+def _variant_dir(variant: str, small: bool) -> str:
+    return f"{variant}-small" if small else variant
+
+
 def render_family(family: Family, spec_bytes: bytes) -> dict[str, bytes]:
     """Every output file as relative POSIX path -> exact bytes."""
     spec_digest = hashlib.sha256(spec_bytes).hexdigest()
     files: dict[str, bytes] = {f"{family.name}.spec.json": spec_bytes}
     for glyph in family.glyphs:
-        for variant in family.variants:
-            svg_text, mode = render_variant(family, glyph, variant)
-            svg_bytes = svg_text.encode("utf-8")
-            metadata = render_metadata(family, glyph, variant, mode, svg_bytes)
-            metadata["evidence"]["source"]["sha256"] = spec_digest
-            files[f"{variant}/{glyph.name}.svg"] = svg_bytes
-            files[f"{variant}/{glyph.name}.metadata.json"] = (
-                json.dumps(metadata, indent=2, ensure_ascii=False) + "\n"
-            ).encode("utf-8")
+        for small in family.sets():
+            for variant in family.variants:
+                svg_text, mode = render_variant(family, glyph, variant, small)
+                svg_bytes = svg_text.encode("utf-8")
+                metadata = render_metadata(family, glyph, variant, mode, svg_bytes, small)
+                metadata["evidence"]["source"]["sha256"] = spec_digest
+                folder = _variant_dir(variant, small)
+                files[f"{folder}/{glyph.name}.svg"] = svg_bytes
+                files[f"{folder}/{glyph.name}.metadata.json"] = (
+                    json.dumps(metadata, indent=2, ensure_ascii=False) + "\n"
+                ).encode("utf-8")
     return files
 
 
@@ -1858,18 +2715,43 @@ def _inline_svg(svg: str, size: int) -> str:
     return f'<span class="i" style="width:{size}px;height:{size}px">{svg.strip()}</span>'
 
 
-def render_sheet(family: Family, files: dict[str, bytes]) -> str:
-    """Self-contained HTML contact sheet: every glyph x variant x size in light and dark, plus tab bars."""
+def _token_summary(family: Family) -> str:
+    """One line of the family's tokens for sheet headers; character tokens appear only when set."""
     tokens = family.tokens
-
-    def svg(glyph: str, variant: str) -> str:
-        return files[f"{variant}/{glyph}.svg"].decode("utf-8")
-
     summary = (
         f"{tokens.grid}-unit grid · {_fmt(tokens.padding)} padding · stroke {_fmt(tokens.stroke)} · "
         f"{tokens.linecap} caps · {tokens.linejoin} joins · radius {_fmt(tokens.radius)} · {tokens.detail} detail"
         + (f" · duotone {_fmt(tokens.secondary_opacity)}" if tokens.secondary_opacity is not None else "")
     )
+    voice = []
+    if tokens.terminal == "angled":
+        voice.append(f"{tokens.terminal_angle}° angled terminals")
+    if tokens.contrast < 1:
+        voice.append(f"details {_fmt(tokens.detail_stroke)}")
+    if tokens.corner != "round":
+        voice.append(f"{tokens.corner} corners")
+    if tokens.proportion != "regular" or tokens.fill != 1.0:
+        voice.append(f"{tokens.proportion} keylines at {_fmt(tokens.fill)} fill")
+    if tokens.aperture:
+        voice.append(f"{_fmt(tokens.aperture)} aperture at {tokens.aperture_at} o'clock")
+    if tokens.junction_gap:
+        voice.append(f"{_fmt(tokens.junction_gap)} junction gaps")
+    if family.open_from is not None:
+        voice.append(f"gaps closed below {family.open_from} px")
+    if tokens.accent is not None:
+        voice.append(f"accent: {tokens.accent}")
+    return summary + "".join(f" · {part}" for part in voice)
+
+
+def render_sheet(family: Family, files: dict[str, bytes]) -> str:
+    """Self-contained HTML contact sheet: every glyph x variant x size in light and dark, plus tab bars."""
+    tokens = family.tokens
+
+    def svg(glyph: str, variant: str, size: int) -> str:
+        small = family.open_from is not None and size < family.open_from
+        return files[f"{_variant_dir(variant, small)}/{glyph}.svg"].decode("utf-8")
+
+    summary = _token_summary(family)
     parts = [
         "<!doctype html>",
         '<html lang="en">',
@@ -1899,15 +2781,15 @@ def render_sheet(family: Family, files: dict[str, bytes]) -> str:
             for variant in family.variants:
                 for size_index, size in enumerate(SHEET_SIZES):
                     first = ' class="first"' if size_index == 0 else ""
-                    parts.append(f"<div{first}>{_inline_svg(svg(glyph.name, variant), size)}</div>")
+                    parts.append(f"<div{first}>{_inline_svg(svg(glyph.name, variant, size), size)}</div>")
         parts.append("</div></section>")
     parts.append("</div>")
     parts.append('<div class="strips">')
     for theme in ("light", "dark"):
         parts.append(f'<section class="panel {theme}"><h2>Label-less at 16 px, then squinted at 24 px</h2>')
         for variant in family.variants:
-            parts.append('<div class="strip">' + "".join(_inline_svg(svg(glyph.name, variant), 16) for glyph in family.glyphs) + "</div>")
-        parts.append('<div class="strip blur">' + "".join(_inline_svg(svg(glyph.name, family.variants[0]), 24) for glyph in family.glyphs) + "</div>")
+            parts.append('<div class="strip">' + "".join(_inline_svg(svg(glyph.name, variant, 16), 16) for glyph in family.glyphs) + "</div>")
+        parts.append('<div class="strip blur">' + "".join(_inline_svg(svg(glyph.name, family.variants[0], 24), 24) for glyph in family.glyphs) + "</div>")
         parts.append("</section>")
     parts.append("</div>")
     if "solid" in family.variants:
@@ -1921,7 +2803,7 @@ def render_sheet(family: Family, files: dict[str, bytes]) -> str:
                     variant = "solid" if state else "outline"
                     current = ' aria-current="page"' if state else ""
                     parts.append(
-                        f'<span class="tab{" on" if state else ""}"{current}>{_inline_svg(svg(tab, variant), 24)}'
+                        f'<span class="tab{" on" if state else ""}"{current}>{_inline_svg(svg(tab, variant, 24), 24)}'
                         f"{html.escape(tab.replace('-', ' '))}</span>"
                     )
                 parts.append("</nav>")
@@ -1929,6 +2811,161 @@ def render_sheet(family: Family, files: dict[str, bytes]) -> str:
         parts.append("</div>")
     parts += ["</body>", "</html>"]
     return "\n".join(parts) + "\n"
+
+
+# --------------------------------------------------------------------------
+# Voice comparison: does the family read as its own, or as a stock monoline set?
+
+
+COMPARE_SIZES = (20, 32)
+MAX_COMPARED = 8
+COMPARE_CSS = """
+:root{--paper:#e8e7e3;--ink:#1c1c1f;--muted:#5f5f66}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:14px/20px system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{padding:24px 32px 4px}
+h1{font-size:20px;line-height:28px;margin:0}
+h2{font-size:13px;line-height:20px;margin:0 0 8px;font-weight:600;letter-spacing:.02em}
+.note{margin:0;color:var(--muted);font-size:13px}
+.panel{margin:16px 32px 0;border-radius:12px;padding:16px 16px 8px}
+.panel:last-child{margin-bottom:32px}
+.light{background:#fff;color:#18181b;--line:#e4e4e7;--soft:#71717a}
+.dark{background:#161618;color:#ececef;--line:#2e2e33;--soft:#9b9ba3}
+.cmp{display:grid;align-items:center}
+.cmp>div{padding:6px 12px;border-left:1px solid var(--line)}
+.cmp>.name,.cmp>.corner{border-left:0;padding-left:0;font-size:12px;color:var(--soft)}
+.fam{align-self:end;font-size:12px;line-height:16px;padding-bottom:10px}
+.fam b{display:block;font-size:13px;line-height:18px}
+.fam span{display:block;color:var(--soft)}
+.cell{display:flex;gap:14px;align-items:center;height:48px}
+.i{display:block;flex:none}
+.i svg{display:block;width:100%;height:100%}
+"""
+
+
+def baseline_spec(spec: dict[str, Any]) -> dict[str, Any]:
+    """The plain monoline baseline of a spec, the stock-library recipe at the family's own weight: same
+    construction, stroke and keylines; round caps and joins; a 2-unit radius (per 24-unit grid); and no
+    terminal, contrast, open-form, corner or accent character. A family that reads like its baseline has
+    no voice beyond its stroke weight."""
+    base = json.loads(json.dumps(spec))
+    tokens = base["tokens"]
+    for key in CHARACTER_TOKENS:
+        if key not in {"proportion", "fill"}:
+            tokens.pop(key, None)
+    tokens["linecap"] = "round"
+    tokens["linejoin"] = "round"
+    grid = tokens.get("grid", 24)
+    tokens["radius"] = _json_number(2 * grid / 24) if grid in GRID_PADDING else 2
+    base["family"] = f"{spec['family']}-baseline"[:64].rstrip("-")
+    for glyph_spec in base["glyphs"]:
+        for shape in glyph_spec.get("shapes", []):
+            if isinstance(shape, dict):
+                shape.pop("aperture", None)
+                shape.pop("junction", None)
+                if shape.get("role") == "accent":
+                    shape["role"] = "stroke"
+    return base
+
+
+def _voice_line(family: Family) -> str:
+    tokens = family.tokens
+    parts = [f"stroke {_fmt(tokens.stroke)}"]
+    parts.append(f"{tokens.terminal_angle}° cuts" if tokens.terminal == "angled" else f"{tokens.linecap} caps")
+    parts.append(f"{tokens.corner} {_fmt(tokens.radius)}" if tokens.corner in {"round", "chamfer", "leaf"} else "sharp")
+    if tokens.contrast < 1:
+        parts.append(f"details {_fmt(tokens.detail_stroke)}")
+    if tokens.aperture:
+        parts.append(f"aperture {_fmt(tokens.aperture)}")
+    if tokens.junction_gap:
+        parts.append(f"junctions {_fmt(tokens.junction_gap)}")
+    if tokens.proportion != "regular" or tokens.fill != 1.0:
+        parts.append(f"{tokens.proportion} {_fmt(tokens.fill)}")
+    if tokens.accent is not None:
+        parts.append("accent")
+    return " · ".join(parts)
+
+
+def render_comparison(families: list[Family], names: list[str], variant: str = "outline",
+                      sizes: Iterable[int] = COMPARE_SIZES) -> str:
+    """Self-contained HTML: the same glyphs in several families side by side, light and dark."""
+    sizes = list(sizes)
+    columns = f"112px repeat({len(families)}, minmax(0, auto))"
+    parts = [
+        "<!doctype html>",
+        '<html lang="en">',
+        "<head>",
+        '<meta charset="utf-8">',
+        '<meta name="viewport" content="width=device-width, initial-scale=1">',
+        "<title>Glyph voice comparison</title>",
+        f"<style>{COMPARE_CSS.strip()}</style>",
+        "</head>",
+        "<body>",
+        "<header><h1>Voice comparison</h1>"
+        f"<p class=\"note\">{html.escape(variant)} at {', '.join(str(size) for size in sizes)} px; one row per glyph, "
+        "one column per family</p></header>",
+    ]
+    cache: dict[tuple[int, str, int], str] = {}
+    for theme in ("light", "dark"):
+        parts.append(f'<section class="panel {theme}"><h2>{theme.title()}</h2>')
+        parts.append(f'<div class="cmp" style="grid-template-columns:{columns}">')
+        parts.append('<div class="corner"></div>')
+        for family in families:
+            parts.append(f'<div class="fam"><b>{html.escape(family.name)}</b><span>{html.escape(_voice_line(family))}</span></div>')
+        for name in names:
+            parts.append(f'<div class="name">{html.escape(name)}</div>')
+            for index, family in enumerate(families):
+                glyph = next(item for item in family.glyphs if item.name == name)
+                icons = []
+                for size in sizes:
+                    small = family.open_from is not None and size < family.open_from
+                    key = (index, name, int(small))
+                    if key not in cache:
+                        cache[key] = render_variant(family, glyph, variant, small)[0]
+                    icons.append(_inline_svg(cache[key], size))
+                parts.append(f'<div class="cell">{"".join(icons)}</div>')
+        parts.append("</div></section>")
+    parts += ["</body>", "</html>"]
+    return "\n".join(parts) + "\n"
+
+
+def compare_families(spec_paths: list[str | Path], sheet_path: str | Path, glyphs: list[str] | None = None,
+                     variant: str = "outline", sizes: Iterable[int] = COMPARE_SIZES) -> dict[str, Any]:
+    """Compile each spec (one spec gains its monoline baseline) and write the comparison sheet."""
+    families: list[Family] = []
+    problems: list[str] = []
+    for path in spec_paths:
+        try:
+            spec = load_spec(path)
+            families.append(compile_family(spec))
+        except SpecError as error:
+            problems += [f"{path}: {problem}" for problem in error.problems]
+            continue
+        if len(spec_paths) == 1:
+            try:
+                families.append(compile_family(baseline_spec(spec)))
+            except SpecError as error:
+                problems += [f"{path} baseline: {problem}" for problem in error.problems]
+    if problems:
+        raise SpecError(problems)
+    if variant not in families[0].variants or any(variant not in family.variants for family in families):
+        raise SpecError([f"every compared family must build the {variant} variant"])
+    common = [glyph.name for glyph in families[0].glyphs if all(any(g.name == glyph.name for g in f.glyphs) for f in families)]
+    names = list(glyphs) if glyphs else common[:MAX_COMPARED]
+    missing = [name for name in names if name not in common]
+    if missing:
+        raise SpecError([f"glyph {name!r} is not in every compared family" for name in missing])
+    if not names or len(names) > MAX_COMPARED * 2:
+        raise SpecError([f"compare 1 to {MAX_COMPARED * 2} glyphs at a time"])
+    _write_bytes(Path(sheet_path), render_comparison(families, names, variant, sizes).encode("utf-8"))
+    return {
+        "families": [family.name for family in families],
+        "glyphs": names,
+        "variant": variant,
+        "sizes": list(sizes),
+        "sheet": str(sheet_path),
+        "warnings": list(dict.fromkeys(warning for family in families for warning in family.warnings)),
+    }
 
 
 # --------------------------------------------------------------------------
@@ -2003,14 +3040,32 @@ def check_family(spec_path: str | Path) -> dict[str, Any]:
     """Validate a spec and construct every variant without writing anything."""
     family = compile_family(load_spec(spec_path))
     for glyph in family.glyphs:
-        for variant in family.variants:
-            render_variant(family, glyph, variant)
+        for small in family.sets():
+            for variant in family.variants:
+                render_variant(family, glyph, variant, small)
     return {
         "family": family.name,
         "variants": list(family.variants),
         "glyphs": [glyph.name for glyph in family.glyphs],
         "warnings": list(dict.fromkeys(family.warnings)),
     }
+
+
+def _name_list(text: str) -> list[str]:
+    names = [part.strip() for part in text.split(",") if part.strip()]
+    if not names or any(not NAME_RE.fullmatch(name) for name in names):
+        raise argparse.ArgumentTypeError("expected comma-separated glyph names")
+    return names
+
+
+def _size_list(text: str) -> list[int]:
+    try:
+        sizes = [int(part) for part in text.split(",")]
+    except ValueError:
+        raise argparse.ArgumentTypeError("expected comma-separated integer sizes") from None
+    if not sizes or len(sizes) > 4 or any(not 8 <= size <= 256 for size in sizes):
+        raise argparse.ArgumentTypeError("expected one to four sizes from 8 to 256 px")
+    return sizes
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -2026,10 +3081,21 @@ def main(argv: list[str] | None = None) -> int:
     check = commands.add_parser("check", help="validate the spec and construct every variant without writing")
     check.add_argument("spec", help="family spec JSON")
     check.add_argument("--json", action="store_true", help="emit a machine-readable report")
+    compare = commands.add_parser(
+        "compare", help="render the same glyphs of several families side by side (one spec: beside its monoline baseline)",
+    )
+    compare.add_argument("specs", nargs="+", help="family spec JSON files")
+    compare.add_argument("--sheet", required=True, help="write the self-contained comparison HTML here")
+    compare.add_argument("--glyphs", type=_name_list, help="comma-separated glyph names (default: the first eight shared)")
+    compare.add_argument("--variant", choices=VARIANTS, default="outline", help="variant to compare (default outline)")
+    compare.add_argument("--sizes", type=_size_list, default=list(COMPARE_SIZES), help="comma-separated CSS px sizes (default 20,32)")
+    compare.add_argument("--json", action="store_true", help="emit a machine-readable report")
     args = parser.parse_args(argv)
     try:
         if args.command == "build":
             report = build_family(args.spec, args.output, args.sheet)
+        elif args.command == "compare":
+            report = compare_families(args.specs, args.sheet, args.glyphs, args.variant, args.sizes)
         else:
             report = check_family(args.spec)
     except (SpecError, BuildError) as error:
@@ -2053,11 +3119,18 @@ def main(argv: list[str] | None = None) -> int:
             print(f"VALIDATED: {report['validated']} SVGs passed asset_quality.py")
             if "sheet" in report:
                 print(f"SHEET: {report['sheet']}")
+        elif args.command == "compare":
+            print(f"COMPARED: {', '.join(report['families'])} ({len(report['glyphs'])} glyphs, {report['variant']} at "
+                  f"{', '.join(str(size) for size in report['sizes'])} px)")
+            print(f"SHEET: {report['sheet']}")
         else:
             print(f"OK: {report['family']} ({len(report['glyphs'])} glyphs x {', '.join(report['variants'])})")
         for warning in report["warnings"]:
             print(f"WARNING: {warning}")
-        print("NEXT: inspect the contact sheet at 16 px and in the real host; a PASS is structural, not optical.")
+        if args.command == "compare":
+            print("NEXT: if a family reads like its baseline or a stock library at these sizes, its voice is not there yet.")
+        else:
+            print("NEXT: inspect the contact sheet at 16 px and in the real host; a PASS is structural, not optical.")
     return 0
 
 
