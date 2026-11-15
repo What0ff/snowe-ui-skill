@@ -44,6 +44,21 @@ Classify visible text by its job: domain data, state, action, useful guidance, o
 
 Technical products keep legitimate technical content: IDs, command aliases, API concepts and parameters can be essential data. Move occasional reference material into an accessible disclosure without hiding the primary task's evidence. Explain errors in user language, keep recovery, and put diagnostic detail outside the main flow. Never use a global forbidden-word list. Keep fixture notices, hashes, test results and disclaimers out of the target surface ([incident](failure-patterns.md#report-notes-inside-the-product-screen)).
 
+## Keep Marketing Copy Scannable
+
+A landing or marketing page is scanned, not read: visitors take in the headline, the hero visual and the section headings, then act or leave, and every extra sentence competes with the product for that glance. Default budgets, starting points to beat only with a reason such as long-form editorial, documentation or a regulated product's required disclosure:
+
+| Part | Default |
+|---|---|
+| Hero | a headline of about 10 words or fewer, one or two supporting sentences (30 words or fewer), one primary action |
+| Section | one idea: a heading of about 8 words, then one short paragraph (about 40 words) or three to four one-line points, beside the visual that proves it |
+| Page | about five to seven sections and 600–1,200 words of prose outside product visuals |
+| Product visual | readable at a glance: a few states with short labels and realistic sample content; a visual that must be read line by line is prose in disguise |
+
+Show before telling: a paragraph that describes what the product does gives way to the product doing it, as a UI state, a mechanism illustration or a chart, with a few words of label. A sentence earns its place by changing a decision: what this is, who it is for, why to believe it, what it costs, what to do next. Cut repetition between hero, sections and FAQ, and move depth into FAQ disclosures or deeper pages instead of the main scroll.
+
+Check the render: count visible words, prose and product visuals separately, and run the skim test. From headings, hero sentences and visual labels alone, a visitor can say what it is, for whom, why to believe it and what to do next; cutting words must leave a page that still says so.
+
 ## Audit Actions by Meaning
 
 For each action record `operation + target object + outcome + context`, verify it against the handler/destination, and choose its placement. Different labels do not make identical operations distinct. Default: one primary entry to the same outcome in the same context; a contextual shortcut, long-form repeat, bulk action or responsive alternative needs its own benefit and state boundary.
