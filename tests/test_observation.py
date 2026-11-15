@@ -209,7 +209,7 @@ class ReplayKeyTests(unittest.TestCase):
         return {"schema": "1.0", "scope": "Keyboard toggle", "sourceRoots": ["page"], "cases": [case]}
 
     def test_space_is_a_supported_key_name(self):
-        for key in ("Space", "space", "Tab", "Enter", "Escape", "ArrowDown", "ArrowUp"):
+        for key in ("Space", "space", "Tab", "Enter", "Escape", "ArrowDown", "ArrowUp", "ArrowLeft", "ArrowRight", "Home", "End"):
             with self.subTest(key=key):
                 validate_plan(self.plan([{"action": "key", "key": key}]))
 
@@ -237,6 +237,37 @@ class ReplayKeyTests(unittest.TestCase):
             proof = receipt["observations"][0]["stateProof"]
             self.assertEqual(["true", True], [item["actual"] for item in proof])
             inspect_capture(root, binding(root, "captures/receipt.json"), binding(root, "plan.json"))
+
+    def test_arrow_keys_move_between_tabs_in_a_capture(self):
+        if not browser_observation_available():
+            self.skipTest("Node 22+ and a system Chrome/Chromium/Edge are unavailable")
+        tabs_page = """<!doctype html><meta charset="utf-8"><title>Tabs</title>
+<main><div role="tablist"><button id="toggle" role="tab" aria-selected="true">One</button><button id="two" role="tab" aria-selected="false" tabindex="-1">Two</button></div></main>
+<script>
+const tabs = [...document.querySelectorAll('[role=tab]')];
+document.querySelector('[role=tablist]').addEventListener('keydown', event => {
+  const index = tabs.indexOf(document.activeElement);
+  const next = {ArrowRight: index + 1, ArrowLeft: index - 1, Home: 0, End: tabs.length - 1}[event.key];
+  if (next === undefined) return;
+  const target = tabs[(next + tabs.length) % tabs.length];
+  tabs.forEach(tab => { tab.setAttribute('aria-selected', String(tab === target)); tab.tabIndex = tab === target ? 0 : -1; });
+  target.focus();
+});
+</script>"""
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "page").mkdir()
+            (root / "page/index.html").write_text(tabs_page, encoding="utf-8")
+            plan = self.plan([{"action": "key", "key": "Tab"}, {"action": "key", "key": "ArrowRight"}])
+            plan["cases"][0]["expect"] = [{"selector": "#two", "property": "attribute:aria-selected", "equals": "true"},
+                                          {"selector": "#two", "property": "focused", "equals": True}]
+            validate_plan(plan)
+            write(root, "plan.json", plan)
+            result = subprocess.run([node_executable(), str(OBSERVER), "capture", str(root), "plan.json", "captures"],
+                                    capture_output=True, text=True, timeout=180)
+            self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+            receipt = json.loads((root / "captures/receipt.json").read_text(encoding="utf-8"))
+            self.assertEqual(["true", True], [item["actual"] for item in receipt["observations"][0]["stateProof"]])
 
     def test_unsaved_changes_guard_does_not_block_the_next_case(self):
         if not browser_observation_available():

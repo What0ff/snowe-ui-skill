@@ -12,7 +12,7 @@ from decision_packet import _reject_reparse_chain
 
 DIMENSIONS = ("state", "viewport", "theme", "input", "motion", "context")
 # Keys observe.mjs can replay. Space is named because a literal " " is not printable plan text.
-REPLAY_KEYS = ("Tab", "Enter", "Escape", "ArrowDown", "ArrowUp", "Space", "space")
+REPLAY_KEYS = ("Tab", "Enter", "Escape", "ArrowDown", "ArrowUp", "ArrowLeft", "ArrowRight", "Home", "End", "Space", "space")
 
 
 def pixel_round(value):

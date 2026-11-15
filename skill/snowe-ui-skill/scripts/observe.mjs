@@ -22,6 +22,10 @@ const keyEvents = {
   Escape:{key:'Escape',code:'Escape',keyCode:27},
   ArrowDown:{key:'ArrowDown',code:'ArrowDown',keyCode:40},
   ArrowUp:{key:'ArrowUp',code:'ArrowUp',keyCode:38},
+  ArrowLeft:{key:'ArrowLeft',code:'ArrowLeft',keyCode:37},
+  ArrowRight:{key:'ArrowRight',code:'ArrowRight',keyCode:39},
+  Home:{key:'Home',code:'Home',keyCode:36},
+  End:{key:'End',code:'End',keyCode:35},
   Space:{key:' ',code:'Space',keyCode:32,text:' '},
 };
 const replayKeys = [...Object.keys(keyEvents), 'space'];
