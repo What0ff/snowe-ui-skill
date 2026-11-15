@@ -293,6 +293,18 @@ document.querySelector('[role=tablist]').addEventListener('keydown', event => {
             self.assertEqual(["space", "fresh"], [item["id"] for item in receipt["observations"]])
 
 
+class ObserverStartupTests(unittest.TestCase):
+    """Source-level startup budget; runs without Node or a browser."""
+
+    def test_browser_start_wait_tolerates_a_slow_cold_start(self):
+        # A cold Chrome on a hosted Windows runner took over 15 s to write DevToolsActivePort.
+        source = OBSERVER.read_text(encoding="utf-8")
+        budget = next((int(line.split("=")[1].strip(" ;")) for line in source.splitlines()
+                       if line.startswith("const BROWSER_START_MS =")), 0)
+        self.assertGreaterEqual(budget, 30000)
+        self.assertIn("+sandboxHint,BROWSER_START_MS);", source)
+
+
 class ObserverAdapterTests(unittest.TestCase):
     """Browser discovery, sandbox policy and CLI errors of the optional Node adapter."""
 

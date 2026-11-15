@@ -74,6 +74,7 @@
 
 - All five businesses are fictional. Their artifacts are rendered/browser regressions, not observed-agent or causal model evidence. Goodturn generated imagery is not engineering truth; keep its disclosure, local font licenses, original-asset metadata, and pinned Lucide source/license metadata distinct.
 - Forward-test screenshot filenames are a manifest/test contract. Rerun `node scripts/browser-smoke.mjs --capture` after material visual changes.
+- A cold browser can take more than 15 s to expose DevTools on a hosted Windows runner (a CI job failed that way), so `observe.mjs` waits up to 45 s (`BROWSER_START_MS`) before reporting that it did not start; a browser that exits early still fails at once.
 - Browser smoke uses system Chrome CDP and catches runtime/interaction failures, not taste. Manual in-app review remains necessary for composition and optical hierarchy.
 - Measure final component geometry only after the scoped owning transition has stopped and its bounds are stable; ancestor transforms make otherwise correct descendants appear fractionally smaller during entry motion.
 - Keep selector scopes specific: the warehouse first pass showed how shared `[data-filter]` attributes on controls and rows can corrupt state.

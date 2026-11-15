@@ -11,6 +11,8 @@ import {fileURLToPath} from 'node:url';
 
 const digest = bytes => createHash('sha256').update(bytes).digest('hex');
 const pause = ms => new Promise(resolve => setTimeout(resolve, ms));
+// A cold browser on a busy or scanned Windows host took over 15 s to open DevTools; a hang still fails, only later.
+const BROWSER_START_MS = 45000;
 const script = fileURLToPath(import.meta.url);
 const mime = {'.html':'text/html', '.css':'text/css', '.js':'text/javascript', '.mjs':'text/javascript', '.svg':'image/svg+xml', '.png':'image/png', '.jpg':'image/jpeg', '.webp':'image/webp', '.woff2':'font/woff2', '.json':'application/json', '.mp4':'video/mp4'};
 const assert = (condition, message) => { if (!condition) throw new Error(message); };
@@ -220,7 +222,7 @@ export async function capture({workspace, planPath, output, audit, noSandbox=fal
         throw new Error(`Browser exited before DevTools became available (${child.exitCode??child.signalCode})${sandboxHint}${detail?': '+detail:''}`);
       }
       try{port=Number((await readFile(path.join(profile,'DevToolsActivePort'),'utf8')).split('\n')[0]);return !!port;}catch{return false;}
-    },'Browser did not expose DevTools within 15 s'+sandboxHint,15000);
+    },`Browser did not expose DevTools within ${BROWSER_START_MS/1000} s`+sandboxHint,BROWSER_START_MS);
     const targets=await (await fetch(`http://127.0.0.1:${port}/json/list`)).json();
     const target=targets.find(t=>t.type==='page');assert(target,'No browser page');
     client=new CDP(target.webSocketDebuggerUrl);await client.connect();
