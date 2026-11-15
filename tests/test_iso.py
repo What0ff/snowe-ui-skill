@@ -1749,7 +1749,11 @@ class BuildingV13Tests(unittest.TestCase):
         classes = classes_of(svg, "office")
         for cls in ("iso-rail", "iso-pave"):
             self.assertIn(cls, classes)
-        self.assertGreaterEqual(classes.count("iso-leaf2"), 2, "planted terraces")
+        # Fewer, larger props: per terrace at most one planter box with a clipped shrub and one parasol.
+        self.assertIn("iso-t iso-hedge", classes, "planted terraces")
+        self.assertLessEqual(classes.count("iso-hedgehi"), 2)
+        self.assertLessEqual(classes.count("iso-trunk"), 2)
+        self.assertNotIn("iso-leaf2", classes)
         for data in (v13(SITE, office(terraces=False)), v13(SITE, office(massing="block"))):
             self.assertNotIn("iso-rail", classes_of(iso.render(data)[0], "office"))
         item = normalized_item(v13(SITE, office()), 1)
@@ -1806,8 +1810,17 @@ class BuildingV13Tests(unittest.TestCase):
         self.assertEqual("9", signs[0].get("font-size"))
         item = normalized_item(v13(SITE, office()), 1)
         self.assertEqual("canopy", item["sign_mount"])
-        portal = item["portal"]
-        self.assertGreater(portal[5] - portal[4], item["entry"]["lobby"] + 0.15)
+        # The portal keeps the proportions it has without a sign; a long sign is set smaller to fit the fascia.
+        plain = normalized_item(v12(SITE, office(sign_mount="plaque")), 1)["portal"]
+        long_sign = normalized_item(v13(SITE, office(sign="Relay Co")), 1)
+        for portal in (item["portal"], long_sign["portal"]):
+            self.assertEqual([round(v, 9) for v in plain], [round(v, 9) for v in portal])
+        self.assertLess(long_sign["sign_fit"], 9)
+        self.assertGreaterEqual(long_sign["sign_fit"], iso.SIGN_MIN)
+        svg, manifest = iso.render(v13(SITE, office(sign="Relay Co")))
+        self.assertEqual([], manifest["warnings"])
+        sign = [t for t in solid_of(svg, "office").iter(SVG + "text") if t.get("class") == "iso-sign"][0]
+        self.assertEqual(iso._fmt(long_sign["sign_fit"]), sign.get("font-size"))
         closed = {k: v for k, v in office().items() if k != "entrance"}
         self.assertEqual("plaque", normalized_item(v13(SITE, closed), 1)["sign_mount"])
         _, manifest = iso.render(v13(SITE, office(sign="Relay Supply Logistics Co", sign_size=14)))
@@ -1894,6 +1907,131 @@ class PlatformOverlapTests(unittest.TestCase):
             with self.subTest(target=target), self.assertRaises(iso.SceneError) as caught:
                 iso.render(v13(self.CORE, dict(self.SCREEN, attach=target)))
             self.assertIn(message, str(caught.exception))
+
+
+
+class RefinementV13Tests(unittest.TestCase):
+    """The second 1.3 pass: clipped hedges, shrub mounds, readable street furniture, engineered boards, silhouette
+    overlaps, a proportioned portal, glass reflections and fewer terrace props."""
+
+    def test_hedges_are_clipped_boxes_on_a_bed_with_gaps_where_a_walk_crosses(self):
+        hedge = {"id": "h", "type": "hedge", "x": 4.0, "y": 0.3, "z": 0.16, "w": 0.26, "d": 3.6, "h": 0.24}
+        data = v13(dict(SITE, w=4.6), office(), hedge)
+        item = normalized_item(data, 2)
+        svg, manifest = iso.render(data)
+        self.assertEqual([], [w for w in manifest["warnings"] if "'h'" in w])
+        classes = classes_of(svg, "h")
+        for cls in ("iso-soil", "iso-hedgehi", "iso-t iso-hedge", "iso-l iso-hedge", "iso-r iso-hedge"):
+            self.assertIn(cls, classes)
+        self.assertNotIn("iso-leaf2", classes, "no ball volumes")
+        # Rebuild the supports render() computes, then check the gap clears the walk.
+        solids = iso.normalize_scene(data)["items"]
+        for one in solids:
+            one["carried"] = [o for o in solids if o is not one and iso._support_of(o, [one]) is one]
+        hedge_item = [o for o in solids if o["id"] == "h"][0]
+        hedge_item["support"] = iso._support_of(hedge_item, solids)
+        walks = iso._walk_rects(hedge_item["support"])
+        self.assertEqual(1, len(walks))
+        pieces = iso._hedge_segments(hedge_item)
+        self.assertEqual(2, len(pieces))
+        self.assertLessEqual(pieces[0][3], walks[0][2])
+        self.assertGreaterEqual(pieces[1][2], walks[0][3])
+        self.assertEqual(item["space"], hedge_item["space"], "the volume stays whole; only the drawing opens")
+
+    def test_shrubs_are_planted_mounds_with_a_shaded_side_and_a_contact_shadow(self):
+        shrubs = {"id": "s", "type": "trees", "x": 0.4, "y": 0.4, "z": 0.16, "w": 1.0, "d": 0.6, "count": 2,
+                  "size": 0.48, "shape": "shrub"}
+        svg, manifest = iso.render(v13(SITE, shrubs))
+        self.assertEqual([], manifest["warnings"])
+        classes = classes_of(svg, "s")
+        for cls in ("iso-leaf3", "iso-leaf2", "iso-leaf1", "iso-under", "iso-leafline", "iso-ao"):
+            self.assertIn(cls, classes)
+        for cls in ("iso-silh", "iso-trunk", "iso-patch"):
+            self.assertNotIn(cls, classes)
+        self.assertEqual(4, classes.count("iso-leaf3"), "two clustered mounds per shrub")
+
+    def test_lamps_have_a_lantern_head_about_one_floor_tall_and_benches_are_not_black(self):
+        height = iso.STREET_PIECES["lamp"][0]
+        self.assertTrue(0.46 <= height <= 0.6, height)
+        lamp = {"id": "l", "type": "street", "x": 0, "y": 0, "w": 0.3, "d": 0.3, "count": 1, "item": "lamp"}
+        bench = {"id": "b", "type": "street", "x": 1, "y": 0, "w": 1.2, "d": 0.3, "count": 2, "item": "bench"}
+        svg, manifest = iso.render(v13(lamp, bench))
+        self.assertEqual([], manifest["warnings"])
+        lamp_classes = classes_of(svg, "l")
+        self.assertIn("iso-pole", lamp_classes)
+        self.assertEqual(2, lamp_classes.count("iso-lit"), "two lit lantern panes")
+        bench_classes = classes_of(svg, "b")
+        self.assertNotIn("iso-o", bench_classes)
+        self.assertIn("iso-d iso-faint", bench_classes)
+        for tone in ("iso-t", "iso-l", "iso-r"):
+            self.assertIn(tone, bench_classes)
+
+    def test_boards_read_as_engineered_clusters_not_sprinkled_pegs(self):
+        for detail in (1, 2, 3):
+            placed, routes, leads = board_routes(detail)
+            kinds = [kind for kind, _ in placed]
+            with self.subTest(detail=detail):
+                self.assertLessEqual(kinds.count("cap"), 3)
+                tips = [q for _, pins in leads for q in pins]
+                hole = (min(q[0] for q in tips), max(q[0] for q in tips), min(q[1] for q in tips), max(q[1] for q in tips))
+                hugging = [rect for kind, rect in placed if kind == "smd" and iso._pt_rect(
+                    ((rect[0] + rect[1]) / 2, (rect[2] + rect[3]) / 2), hole) < 0.2]
+                self.assertGreaterEqual(len(hugging), 2, "decoupling caps hug the package")
+                if detail >= 2:
+                    for kind in ("qfp", "crystal", "inductor", "so", "heatsink"):
+                        self.assertIn(kind, kinds)
+                    self.assertTrue({"header", "socket"} & set(kinds))
+        svg, _ = iso.render(v13({"id": "c", "type": "core", "x": 0, "y": 0, "w": 5.4, "d": 5.4, "h": 0.42, "seed": 4,
+                                 "glyph": "spark"}))
+        classes = classes_of(svg, "c")
+        self.assertIn("iso-pad", classes)
+
+    def test_overlapping_silhouettes_warn_unless_related(self):
+        back = box("back", 0, 0, w=1, d=1, h=2)
+        front = box("front", 1.2, 1.2, w=1, d=1, h=1)
+        _, manifest = iso.render(v13(back, front))
+        warning = [w for w in manifest["warnings"] if "overlap in the drawing" in w]
+        self.assertEqual(1, len(warning))
+        self.assertIn("'back'", warning[0])
+        self.assertIn("'front'", warning[0])
+        for data in (v13(back, dict(front, attach="back")), v13(back, box("front", 3.4, 3.4, w=1, d=1, h=1))):
+            _, manifest = iso.render(data)
+            self.assertEqual([], [w for w in manifest["warnings"] if "overlap in the drawing" in w])
+        # Siblings on one platform are a composed site, not a collision.
+        pad = {"id": "pad", "type": "slab", "x": -0.2, "y": -0.2, "w": 2.8, "d": 2.8, "h": 0.2}
+        _, manifest = iso.render(v13(pad, box("back", 0, 0, z=0.2, w=1, d=1, h=2), box("front", 1.2, 1.2, z=0.2, w=1, d=1)))
+        self.assertEqual([], [w for w in manifest["warnings"] if "overlap in the drawing" in w])
+        legacy = iso.render(v12(back, front))[1]
+        self.assertEqual([], [w for w in legacy["warnings"] if "overlap in the drawing" in w])
+
+    def test_glazed_faces_carry_sparse_seeded_reflection_bands(self):
+        svg, _ = iso.render(v13(SITE, office()))
+        self.assertIn("iso-sheen", classes_of(svg, "office"))
+        style = ET.fromstring(svg).find(SVG + "style").text
+        self.assertIn(".iso-sheen{fill:var(--iso-top,var(--iso-_top))", style)
+        frame = iso.Frame(iso.Projection(), (0, 0, 2), (1, 0, 0), (0, 0, -1), 3, 2)
+        panes = [(0.2, 0.2, 2.8, 1.8)]
+        counts = []
+        for seed in range(300):
+            batch = iso._Batch()
+            iso._sheen(batch, frame, panes, iso._Rand(seed, 53))
+            again = iso._Batch()
+            iso._sheen(again, frame, panes, iso._Rand(seed, 53))
+            self.assertEqual(batch.parts, again.parts)
+            counts.append(sum(1 for seg in batch.parts.get("iso-sheen", []) if seg[0] == "M"))
+        self.assertTrue(set(counts) <= {0, 1, 2})
+        # Bands are clipped to the panes: no reflection point leaves the glass.
+        batch = iso._Batch()
+        iso._sheen(batch, frame, panes, iso._Rand(counts.index(2), 53))
+        corners = [frame.at(u, v) for u, v in ((0.2, 0.2), (2.8, 0.2), (2.8, 1.8), (0.2, 1.8))]
+        xs, ys = [c[0] for c in corners], [c[1] for c in corners]
+        for seg in batch.parts["iso-sheen"]:
+            if seg[0] in ("M", "L"):
+                self.assertTrue(min(xs) - 1e-6 <= seg[1][0] <= max(xs) + 1e-6)
+                self.assertTrue(min(ys) - 1e-6 <= seg[1][1] <= max(ys) + 1e-6)
+        self.assertTrue(0.25 <= counts.count(0) / len(counts) <= 0.45, counts.count(0))
+        legacy = iso.render(v12(SITE, office(sign_mount="plaque")))[0]
+        self.assertNotIn("iso-sheen", legacy)
 
 
 if __name__ == "__main__":

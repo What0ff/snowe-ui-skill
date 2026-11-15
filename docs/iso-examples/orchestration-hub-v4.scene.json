@@ -22,25 +22,26 @@
     {"id": "office", "type": "building", "x": 1.5, "y": 7.8, "z": 0.16, "w": 3.0, "d": 3.2, "floors": 5, "floor_h": 0.46, "massing": "stepped", "windows": "fins", "entrance": "x+", "sign": "Relay", "glyph": "bars", "role": "office", "order": 1, "seed": 3},
     {"id": "grove-front", "type": "trees", "x": 1.3, "y": 11.35, "z": 0.16, "w": 3.6, "d": 0.8, "count": 5, "size": 0.36, "shape": "mixed", "seed": 5},
     {"id": "hedge-front", "type": "hedge", "x": 1.35, "y": 12.16, "z": 0.16, "w": 3.5, "d": 0.3, "h": 0.24},
-    {"id": "grove-side", "type": "trees", "x": 5.45, "y": 10.35, "z": 0.16, "w": 0.7, "d": 1.0, "count": 2, "size": 0.4, "seed": 2},
-    {"id": "shrubs", "type": "trees", "x": 4.95, "y": 11.45, "z": 0.16, "w": 1.2, "d": 0.9, "count": 3, "size": 0.36, "shape": "shrub", "layout": "scatter", "seed": 4},
-    {"id": "lamps", "type": "street", "x": 5.1, "y": 7.7, "z": 0.16, "w": 1.1, "d": 0.3, "count": 2, "item": "lamp"},
-    {"id": "bollards", "type": "street", "x": 5.1, "y": 10.05, "z": 0.16, "w": 1.1, "d": 0.2, "count": 4, "item": "bollard"},
+    {"id": "grove-side", "type": "trees", "x": 5.15, "y": 10.4, "z": 0.16, "w": 0.7, "d": 1.0, "count": 2, "size": 0.4, "seed": 2},
+    {"id": "shrubs", "type": "trees", "x": 4.9, "y": 11.45, "z": 0.16, "w": 1.0, "d": 0.75, "count": 2, "size": 0.48, "shape": "shrub", "seed": 4},
+    {"id": "lamp-north", "type": "street", "x": 5.35, "y": 7.8, "z": 0.16, "w": 0.3, "d": 0.3, "count": 1, "item": "lamp"},
+    {"id": "lamp-south", "type": "street", "x": 5.35, "y": 10.02, "z": 0.16, "w": 0.3, "d": 0.3, "count": 1, "item": "lamp"},
+    {"id": "hedge-east", "type": "hedge", "x": 5.9, "y": 7.65, "z": 0.16, "w": 0.26, "d": 3.6, "h": 0.24, "seed": 6},
 
     {"id": "core", "type": "core", "x": 6.9, "y": 2.3, "w": 5.4, "d": 5.4, "h": 0.42, "layers": 2, "spacing": 1.05, "icon": "hub", "label": "Orchestrator", "role": "core", "order": 2, "seed": 4},
 
-    {"id": "intake", "type": "tile", "x": 10.6, "y": -2.6, "w": 1.0, "d": 3.2, "h": 0.42, "radius": 0.22, "layout": "row", "label_axis": "y", "icon": "intake", "label": "Intake agent", "role": "agent", "order": 3},
-    {"id": "billing", "type": "tile", "x": 12.0, "y": -2.6, "w": 1.0, "d": 3.2, "h": 0.42, "radius": 0.22, "layout": "row", "label_axis": "y", "icon": "billing", "label": "Billing agent", "role": "agent", "order": 3, "accent": true},
+    {"id": "intake", "type": "tile", "x": 10.4, "y": -2.6, "w": 1.0, "d": 3.2, "h": 0.42, "radius": 0.22, "layout": "row", "label_axis": "y", "icon": "intake", "label": "Intake agent", "role": "agent", "order": 3},
+    {"id": "billing", "type": "tile", "x": 11.9, "y": -2.6, "w": 1.0, "d": 3.2, "h": 0.42, "radius": 0.22, "layout": "row", "label_axis": "y", "icon": "billing", "label": "Billing agent", "role": "agent", "order": 3, "accent": true},
     {"id": "dispatch", "type": "tile", "x": 13.4, "y": -2.6, "w": 1.0, "d": 3.2, "h": 0.42, "radius": 0.22, "layout": "row", "label_axis": "y", "icon": "dispatch", "label": "Dispatch agent", "role": "agent", "order": 3},
 
-    {"id": "board", "type": "dashboard", "x": 12.8, "y": 9.6, "w": 3.3, "h": 1.9, "orient": "x+", "label": "Resolved today", "chart": "both", "rows": 3, "role": "report", "order": 4},
+    {"id": "board", "type": "dashboard", "x": 13.2, "y": 10.2, "w": 3.3, "h": 1.9, "orient": "x+", "label": "Resolved today", "chart": "both", "rows": 3, "role": "report", "order": 4},
 
     {"type": "connector", "from": "records", "to": "core", "from_side": "x+", "to_side": "x-", "from_z": 0.16, "route": "ground", "start": "port", "end": "none", "order": 1},
     {"type": "connector", "from": "contracts", "to": "plaza", "from_side": "x+", "to_side": "y-", "to_offset": 1.5, "from_z": 0.16, "route": "ground", "start": "port", "end": "none", "accent": true, "order": 1},
     {"type": "connector", "from": "apps", "to": "plaza", "from_side": "x+", "to_side": "y-", "to_offset": 1.0, "from_z": 0.16, "route": "ground", "start": "port", "end": "none", "order": 1},
     {"type": "connector", "from": "plaza", "to": "core", "from_side": "x+", "to_side": "y+", "from_offset": -1.9, "to_offset": -0.6, "from_z": 0.08, "to_z": 0.18, "route": "ground", "end": "port", "accent": true, "order": 2},
-    {"type": "connector", "from": "core", "to": "intake", "from_side": "y-", "to_side": "y+", "from_offset": -1.0, "via": [[11.1, 1.4]], "route": "ground", "to_z": 0.21, "end": "port", "order": 3},
-    {"type": "connector", "from": "core", "to": "billing", "from_side": "y-", "to_side": "y+", "from_offset": 0.0, "via": [[12.5, 1.8]], "route": "ground", "to_z": 0.21, "end": "port", "accent": true, "order": 3},
+    {"type": "connector", "from": "core", "to": "intake", "from_side": "y-", "to_side": "y+", "from_offset": -1.0, "via": [[10.9, 1.4]], "route": "ground", "to_z": 0.21, "end": "port", "order": 3},
+    {"type": "connector", "from": "core", "to": "billing", "from_side": "y-", "to_side": "y+", "from_offset": 0.0, "via": [[12.4, 1.8]], "route": "ground", "to_z": 0.21, "end": "port", "accent": true, "order": 3},
     {"type": "connector", "from": "core", "to": "dispatch", "from_side": "y-", "to_side": "y+", "from_offset": 1.0, "via": [[13.9, 2.2]], "route": "ground", "to_z": 0.21, "end": "port", "order": 3}
   ]
 }

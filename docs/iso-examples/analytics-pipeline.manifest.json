@@ -3,13 +3,13 @@
   "projection": "isometric",
   "style": "technical",
   "unit": 36.0,
-  "width": 991,
-  "height": 522,
+  "width": 1029,
+  "height": 540,
   "viewBox": [
     0,
     0,
-    991,
-    522
+    1029,
+    540
   ],
   "elements": [
     {
@@ -21,10 +21,10 @@
       "paint": 0,
       "accent": false,
       "bbox": {
-        "x": 129.85,
-        "y": 16.5,
-        "width": 844.78,
-        "height": 489.0
+        "x": 136.08,
+        "y": 16.9,
+        "width": 875.95,
+        "height": 507.0
       }
     },
     {
@@ -37,9 +37,9 @@
       "accent": false,
       "bbox": {
         "x": 16.72,
-        "y": 81.84,
-        "width": 900.8,
-        "height": 348.39
+        "y": 85.84,
+        "width": 907.03,
+        "height": 330.39
       }
     },
     {
@@ -52,7 +52,7 @@
       "accent": false,
       "bbox": {
         "x": 414.46,
-        "y": 72.1,
+        "y": 76.1,
         "width": 94.73,
         "height": 67.48
       }
@@ -67,7 +67,7 @@
       "accent": false,
       "bbox": {
         "x": 480.59,
-        "y": 112.99,
+        "y": 116.99,
         "width": 41.97,
         "height": 81.11
       },
@@ -89,7 +89,7 @@
       "accent": true,
       "bbox": {
         "x": 348.99,
-        "y": 109.9,
+        "y": 113.9,
         "width": 94.73,
         "height": 67.48
       }
@@ -104,7 +104,7 @@
       "accent": true,
       "bbox": {
         "x": 415.12,
-        "y": 150.79,
+        "y": 154.79,
         "width": 41.97,
         "height": 81.11
       },
@@ -126,7 +126,7 @@
       "accent": false,
       "bbox": {
         "x": 283.52,
-        "y": 143.63,
+        "y": 147.63,
         "width": 94.73,
         "height": 71.55
       }
@@ -141,7 +141,7 @@
       "accent": false,
       "bbox": {
         "x": 349.65,
-        "y": 188.59,
+        "y": 192.59,
         "width": 63.79,
         "height": 68.51
       },
@@ -162,8 +162,8 @@
       "paint": 8,
       "accent": true,
       "bbox": {
-        "x": 797.94,
-        "y": 230.29,
+        "x": 804.17,
+        "y": 223.49,
         "width": 113.44,
         "height": 82.09
       }
@@ -178,16 +178,38 @@
       "accent": true,
       "bbox": {
         "x": 681.68,
-        "y": 239.79,
-        "width": 149.53,
-        "height": 62.9
+        "y": 238.39,
+        "width": 155.77,
+        "height": 58.77
       },
       "from": "ap-stream",
       "to": "ap-warehouse",
       "from_side": "y-",
       "to_side": "y+",
-      "length": 4.71,
+      "length": 4.91,
       "path": "ap-stream-to-warehouse-path",
+      "level": 0.0
+    },
+    {
+      "id": "ap-warehouse-to-insights",
+      "source_id": "warehouse-to-insights",
+      "kind": "connector",
+      "role": "connector",
+      "order": 3,
+      "paint": 10,
+      "accent": true,
+      "bbox": {
+        "x": 889.01,
+        "y": 282.04,
+        "width": 76.62,
+        "height": 79.37
+      },
+      "from": "ap-warehouse",
+      "to": "ap-insights",
+      "from_side": "x+",
+      "to_side": "y-",
+      "length": 5.01,
+      "path": "ap-warehouse-to-insights-path",
       "level": 0.0
     },
     {
@@ -196,36 +218,14 @@
       "kind": "core",
       "role": "core",
       "order": 1,
-      "paint": 10,
+      "paint": 11,
       "accent": false,
       "bbox": {
         "x": 388.42,
-        "y": 157.87,
+        "y": 161.87,
         "width": 333.87,
         "height": 209.15
       }
-    },
-    {
-      "id": "ap-warehouse-to-insights",
-      "source_id": "warehouse-to-insights",
-      "kind": "connector",
-      "role": "connector",
-      "order": 3,
-      "paint": 11,
-      "accent": true,
-      "bbox": {
-        "x": 785.81,
-        "y": 288.84,
-        "width": 123.69,
-        "height": 86.57
-      },
-      "from": "ap-warehouse",
-      "to": "ap-insights",
-      "from_side": "x+",
-      "to_side": "y-",
-      "length": 5.41,
-      "path": "ap-warehouse-to-insights-path",
-      "level": 0.0
     },
     {
       "id": "ap-campus",
@@ -237,7 +237,7 @@
       "accent": false,
       "bbox": {
         "x": 19.8,
-        "y": 199.21,
+        "y": 203.21,
         "width": 347.8,
         "height": 207.83
       }
@@ -252,7 +252,7 @@
       "accent": false,
       "bbox": {
         "x": 75.61,
-        "y": 128.64,
+        "y": 132.64,
         "width": 238.7,
         "height": 223.33
       }
@@ -266,10 +266,10 @@
       "paint": 14,
       "accent": false,
       "bbox": {
-        "x": 74.2,
-        "y": 255.61,
-        "width": 14.94,
-        "height": 34.47
+        "x": 72.61,
+        "y": 264.0,
+        "width": 16.53,
+        "height": 30.07
       }
     },
     {
@@ -282,7 +282,7 @@
       "accent": false,
       "bbox": {
         "x": 47.62,
-        "y": 270.54,
+        "y": 274.54,
         "width": 21.41,
         "height": 31.11
       }
@@ -297,7 +297,7 @@
       "accent": false,
       "bbox": {
         "x": 302.88,
-        "y": 291.9,
+        "y": 295.9,
         "width": 126.15,
         "height": 59.76
       },
@@ -319,9 +319,69 @@
       "accent": false,
       "bbox": {
         "x": 223.1,
-        "y": 267.94,
+        "y": 271.94,
         "width": 91.08,
         "height": 71.06
+      }
+    },
+    {
+      "id": "ap-lamp-right",
+      "source_id": "lamp-right",
+      "kind": "street",
+      "role": "street",
+      "order": null,
+      "paint": 18,
+      "accent": false,
+      "bbox": {
+        "x": 144.32,
+        "y": 305.4,
+        "width": 16.53,
+        "height": 30.07
+      }
+    },
+    {
+      "id": "ap-hedge-east",
+      "source_id": "hedge-east",
+      "kind": "hedge",
+      "role": "hedge",
+      "order": null,
+      "paint": 19,
+      "accent": false,
+      "bbox": {
+        "x": 241.47,
+        "y": 291.05,
+        "width": 111.53,
+        "height": 73.9
+      }
+    },
+    {
+      "id": "ap-shrubs",
+      "source_id": "shrubs",
+      "kind": "trees",
+      "role": "trees",
+      "order": null,
+      "paint": 20,
+      "accent": false,
+      "bbox": {
+        "x": 196.5,
+        "y": 333.79,
+        "width": 39.31,
+        "height": 29.84
+      }
+    },
+    {
+      "id": "ap-front-right",
+      "source_id": "front-right",
+      "kind": "trees",
+      "role": "trees",
+      "order": null,
+      "paint": 21,
+      "accent": false,
+      "bbox": {
+        "x": 149.84,
+        "y": 326.64,
+        "width": 43.05,
+        "height": 45.4
       }
     },
     {
@@ -330,11 +390,11 @@
       "kind": "rack",
       "role": "store",
       "order": 2,
-      "paint": 18,
+      "paint": 22,
       "accent": false,
       "bbox": {
-        "x": 710.84,
-        "y": 247.53,
+        "x": 717.07,
+        "y": 294.73,
         "width": 84.99,
         "height": 93.53
       }
@@ -345,81 +405,21 @@
       "kind": "connector",
       "role": "connector",
       "order": 2,
-      "paint": 19,
+      "paint": 23,
       "accent": false,
       "bbox": {
-        "x": 634.92,
-        "y": 310.45,
-        "width": 102.77,
-        "height": 39.26
+        "x": 622.44,
+        "y": 330.1,
+        "width": 121.47,
+        "height": 54.74
       },
       "from": "ap-stream",
       "to": "ap-lake",
       "from_side": "x+",
       "to_side": "y+",
-      "length": 3.35,
+      "length": 3.95,
       "path": "ap-stream-to-lake-path",
       "level": 0.0
-    },
-    {
-      "id": "ap-hedge-east",
-      "source_id": "hedge-east",
-      "kind": "hedge",
-      "role": "hedge",
-      "order": null,
-      "paint": 20,
-      "accent": false,
-      "bbox": {
-        "x": 241.47,
-        "y": 290.88,
-        "width": 111.53,
-        "height": 70.07
-      }
-    },
-    {
-      "id": "ap-lamp-right",
-      "source_id": "lamp-right",
-      "kind": "street",
-      "role": "street",
-      "order": null,
-      "paint": 21,
-      "accent": false,
-      "bbox": {
-        "x": 145.91,
-        "y": 297.01,
-        "width": 14.94,
-        "height": 34.47
-      }
-    },
-    {
-      "id": "ap-shrubs",
-      "source_id": "shrubs",
-      "kind": "trees",
-      "role": "trees",
-      "order": null,
-      "paint": 22,
-      "accent": false,
-      "bbox": {
-        "x": 196.91,
-        "y": 333.66,
-        "width": 46.43,
-        "height": 31.21
-      }
-    },
-    {
-      "id": "ap-front-right",
-      "source_id": "front-right",
-      "kind": "trees",
-      "role": "trees",
-      "order": null,
-      "paint": 23,
-      "accent": false,
-      "bbox": {
-        "x": 149.84,
-        "y": 322.64,
-        "width": 43.05,
-        "height": 45.4
-      }
     },
     {
       "id": "ap-benches",
@@ -430,10 +430,10 @@
       "paint": 24,
       "accent": false,
       "bbox": {
-        "x": 183.32,
-        "y": 354.09,
-        "width": 36.18,
-        "height": 27.57
+        "x": 179.11,
+        "y": 357.1,
+        "width": 41.57,
+        "height": 31.06
       }
     },
     {
@@ -445,8 +445,8 @@
       "paint": 25,
       "accent": true,
       "bbox": {
-        "x": 684.8,
-        "y": 305.88,
+        "x": 803.27,
+        "y": 291.88,
         "width": 107.13,
         "height": 121.57
       }

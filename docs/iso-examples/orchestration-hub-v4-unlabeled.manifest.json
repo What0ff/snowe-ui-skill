@@ -39,7 +39,7 @@
         "x": 16.95,
         "y": 74.44,
         "width": 898.74,
-        "height": 424.89
+        "height": 442.89
       }
     },
     {
@@ -162,8 +162,8 @@
       "paint": "s",
       "accent": false,
       "bbox": {
-        "x": 695.29,
-        "y": 172.7,
+        "x": 689.05,
+        "y": 169.1,
         "width": 125.91,
         "height": 89.08
       }
@@ -179,14 +179,14 @@
       "bbox": {
         "x": 575.91,
         "y": 225.19,
-        "width": 138.62,
-        "height": 40.62
+        "width": 132.38,
+        "height": 37.02
       },
       "from": "hub4-core",
       "to": "hub4-intake",
       "from_side": "y-",
       "to_side": "y+",
-      "length": 4.41,
+      "length": 4.21,
       "path": "hub4-core-to-intake-path",
       "level": 0.0
     },
@@ -199,8 +199,8 @@
       "paint": "s",
       "accent": true,
       "bbox": {
-        "x": 738.93,
-        "y": 197.9,
+        "x": 735.82,
+        "y": 196.1,
         "width": 125.91,
         "height": 89.08
       }
@@ -216,14 +216,14 @@
       "bbox": {
         "x": 607.09,
         "y": 250.39,
-        "width": 151.09,
-        "height": 47.82
+        "width": 147.97,
+        "height": 46.02
       },
       "from": "hub4-core",
       "to": "hub4-billing",
       "from_side": "y-",
       "to_side": "y+",
-      "length": 4.81,
+      "length": 4.71,
       "path": "hub4-core-to-billing-path",
       "level": 0.0
     },
@@ -280,33 +280,33 @@
       }
     },
     {
+      "id": "hub4-lamp-north",
+      "source_id": "lamp-north",
+      "kind": "street",
+      "role": "street",
+      "order": null,
+      "paint": 15,
+      "accent": false,
+      "bbox": {
+        "x": 298.88,
+        "y": 257.1,
+        "width": 16.53,
+        "height": 30.07
+      }
+    },
+    {
       "id": "hub4-office",
       "source_id": "office",
       "kind": "building",
       "role": "office",
       "order": 1,
-      "paint": 15,
+      "paint": 16,
       "accent": false,
       "bbox": {
         "x": 78.8,
         "y": 109.29,
         "width": 239.65,
         "height": 234.03
-      }
-    },
-    {
-      "id": "hub4-lamps",
-      "source_id": "lamps",
-      "kind": "street",
-      "role": "street",
-      "order": null,
-      "paint": 16,
-      "accent": false,
-      "bbox": {
-        "x": 299.69,
-        "y": 248.66,
-        "width": 32.08,
-        "height": 44.37
       }
     },
     {
@@ -334,24 +334,24 @@
       "accent": false,
       "bbox": {
         "x": 30.95,
-        "y": 273.97,
+        "y": 269.77,
         "width": 127.12,
-        "height": 78.87
+        "height": 83.06
       }
     },
     {
-      "id": "hub4-bollards",
-      "source_id": "bollards",
+      "id": "hub4-lamp-south",
+      "source_id": "lamp-south",
       "kind": "street",
       "role": "street",
       "order": null,
       "paint": 19,
       "accent": false,
       "bbox": {
-        "x": 223.7,
-        "y": 306.96,
-        "width": 36.17,
-        "height": 26.7
+        "x": 229.66,
+        "y": 297.06,
+        "width": 16.53,
+        "height": 30.07
       }
     },
     {
@@ -400,10 +400,25 @@
       "paint": 22,
       "accent": false,
       "bbox": {
-        "x": 207.32,
-        "y": 310.2,
+        "x": 196.4,
+        "y": 305.7,
         "width": 36.43,
         "height": 39.48
+      }
+    },
+    {
+      "id": "hub4-hedge-east",
+      "source_id": "hedge-east",
+      "kind": "hedge",
+      "role": "hedge",
+      "order": null,
+      "paint": 23,
+      "accent": false,
+      "bbox": {
+        "x": 210.53,
+        "y": 270.81,
+        "width": 128.99,
+        "height": 83.83
       }
     },
     {
@@ -412,13 +427,13 @@
       "kind": "trees",
       "role": "trees",
       "order": null,
-      "paint": 23,
+      "paint": 24,
       "accent": false,
       "bbox": {
-        "x": 157.3,
-        "y": 335.04,
-        "width": 55.25,
-        "height": 24.93
+        "x": 162.04,
+        "y": 330.57,
+        "width": 38.69,
+        "height": 29.58
       }
     },
     {
@@ -427,11 +442,11 @@
       "kind": "dashboard",
       "role": "report",
       "order": 4,
-      "paint": 24,
+      "paint": 25,
       "accent": false,
       "bbox": {
-        "x": 376.38,
-        "y": 366.88,
+        "x": 370.15,
+        "y": 384.88,
         "width": 110.25,
         "height": 130.57
       }

@@ -37,8 +37,9 @@ Schema 1.3 adds tonal depth and life: a deeper face ramp with darker reveals,
 recesses and glass and its own dark-scheme ramp, board traces routed in bundles
 from package leads to edge fingers, vias and connectors, terraces with railings,
 paving and planters, interiors behind the glazing, small canopy signage, plaza
-paving with a walk to the entrance, street furniture, hedges and shrubs, shaded
-canopies and a warning when an object cuts into another object's platform. 1.0,
+paving with a walk to the entrance, street furniture, clipped hedges and shrub
+mounds, shaded canopies, glass reflections, engineered board clusters, and
+warnings when an object cuts into a platform or two silhouettes overlap. 1.0,
 1.1 and 1.2 scenes keep their exact bytes.
 
     python iso.py render scene.json -o scene.svg --manifest scene.json
@@ -999,11 +1000,14 @@ def _geometry_building_v12(item: dict[str, Any], where: str, errors: list[str]) 
         width = min(1.3, span * 0.5)
         height = entry["lobby"] + 0.16
         if item.get("v13") and item.get("sign") and item["sign_mount"] == "canopy":
-            # The portal widens to carry its sign on the fascia and rises so the fascia holds the lettering.
-            width = min(max(width, _sign_need(item)), span * 0.86)
-            fascia = max(0.2, item["sign_size"] * 1.6 / item["unit"])
-            item["fascia"] = fascia
-            height = entry["lobby"] + max(0.16, fascia - 0.06)
+            # The portal keeps its proportions; the lettering is set to fit the canopy fascia over the doors.
+            room = width
+            size = item["sign_size"]
+            need = _sign_width(item, size)
+            if need > room:
+                size = max(SIGN_MIN, math.floor(size * room / need * 2) / 2)
+            item["sign_fit"] = size
+            item["fascia"] = max(0.2, size * 1.3 / item["unit"] + 0.06)
         mid = (ey0 + ey1) / 2 if face == "x+" else (ex0 + ex1) / 2
         reach = PORTAL_DEPTH + PORTAL_LIP
         if face == "x+":
@@ -1118,7 +1122,7 @@ DOC_SHIFT = 0.07
 # Schema 1.3 geometry: street furniture, hedges and the signed portal.
 
 # Street pieces: height, footprint along the row and across it (grid units, against a 0.46-0.55 floor).
-STREET_PIECES = {"lamp": (0.66, 0.16, 0.16), "bench": (0.13, 0.44, 0.16), "bollard": (0.14, 0.09, 0.09)}
+STREET_PIECES = {"lamp": (0.52, 0.16, 0.16), "bench": (0.18, 0.5, 0.18), "bollard": (0.14, 0.09, 0.09)}
 STREET_MIX = ("lamp", "bench", "bollard", "bollard")
 SHRUB_FLOORS = (0.3, 1.0)
 
@@ -1129,11 +1133,14 @@ def _v13_defaults(item: dict[str, Any]) -> None:
         item["sign_mount"] = "canopy" if item.get("entrance") else "plaque"
 
 
-def _sign_need(item: dict[str, Any]) -> float:
-    """Grid units a canopy sign needs along the fascia: its mark, a gap and the lettering, plus the portal jambs."""
-    size, unit = item["sign_size"], item["unit"]
+SIGN_MIN = 7.0
+
+
+def _sign_width(item: dict[str, Any], size: float) -> float:
+    """Grid units a sign set at ``size`` px needs: its mark, a gap and the lettering."""
+    unit = item["unit"]
     mark = size * 1.3 / unit + 0.08 if (item.get("glyph") or item.get("icon")) else 0.0
-    return _text_width(item["sign"], size) / unit + mark + 0.44
+    return _text_width(item["sign"], size) / unit + mark
 
 
 def _street_plan(item: dict[str, Any], where: str, errors: list[str]) -> list[dict[str, Any]] | None:
@@ -2981,6 +2988,8 @@ def _tree_v12(proj: Projection, tree: dict[str, Any], z0: float, style: str, pla
     rng = _Rand(tree["seed"], 11)
     ops: list[tuple[Any, ...]] = []
     ground = Frame(proj, (0.0, 0.0, z0), (1, 0, 0), (0, 1, 0), 0, 0)
+    if proj.v13 and species == SHRUB and not planter:
+        return _shrub_mounds(proj, tree, z0, style, rng)
     if planter:
         half = w * 0.32
         pot = _box(cx - half, cx + half, cy - half, cy + half, z0, z0 + 0.1)
@@ -3053,6 +3062,54 @@ def _tree_v12(proj: Projection, tree: dict[str, Any], z0: float, style: str, pla
     return ops + (_canopy_ops_v13(volumes, style) if proj.v13 else _canopy_ops(volumes, style))
 
 
+def _mound(proj: Projection, cx: float, cy: float, z0: float, r: float, h: float, style: str
+           ) -> list[tuple[Any, ...]]:
+    """One domed shrub mound standing on the ground: a shaded body, a lit face toward the light, a crown highlight
+    and a darker band where it meets the ground."""
+    c = proj(cx, cy, z0)
+    rx = proj.k * r
+    ry = rx * proj.sin
+    top = h * proj.k * proj.cos
+
+    def dome(dx: float, sx: float, st: float, sg: float, lift: float = 0.0) -> list[tuple[Any, ...]]:
+        cc = (c[0] + dx * rx, c[1] - lift * top)
+        return [("M", (cc[0] - rx * sx, cc[1])), ("E", cc, (rx * sx, 0.0), (0.0, top * st), math.pi, 2 * math.pi),
+                ("E", cc, (rx * sx, 0.0), (0.0, ry * sg), 0.0, math.pi), ("Z",)]
+
+    ops: list[tuple[Any, ...]] = [("path", "iso-leaf3", dome(0.0, 1.0, 1.0, 1.0)),
+                                  ("path", "iso-leaf2", dome(-0.2, 0.8, 0.97, 0.8))]
+    hi = (c[0] - 0.32 * rx, c[1] - 0.6 * top)
+    ops.append(("path", "iso-leaf1", _ellipse_segs(hi, rx * 0.3, top * 0.2)))
+    band = [("M", (c[0] + rx, c[1])), ("E", c, (rx, 0.0), (0.0, ry), 0.0, math.pi),
+            ("E", (c[0], c[1] - 0.14 * top), (rx * 0.96, 0.0), (0.0, ry * 0.9), math.pi, 0.0), ("Z",)]
+    ops.append(("path", "iso-under", band))
+    # Leaf texture: a few short open arcs over the body, so the mound reads as foliage rather than as stone.
+    leaves: list[tuple[Any, ...]] = []
+    for fx, fy in ((-0.45, -0.25), (0.05, -0.55), (0.42, -0.2), (-0.12, 0.0), (0.3, 0.12)):
+        lc = (c[0] + fx * rx, c[1] + fy * top)
+        lr = rx * 0.17
+        leaves += [("M", (lc[0] - lr, lc[1])), ("E", lc, (lr, 0.0), (0.0, lr * 0.7), math.pi, 2 * math.pi)]
+    if style != "solid":
+        ops.append(("path", "iso-leafline", leaves))
+    if style != "solid":
+        ops.append(("path", "iso-o", dome(0.0, 1.0, 1.0, 1.0)))
+    return ops
+
+
+def _shrub_mounds(proj: Projection, tree: dict[str, Any], z0: float, style: str, rng: _Rand) -> list[tuple[Any, ...]]:
+    """A shrub as two clustered mounds of different sizes with a contact shadow, read as one planted mass."""
+    cx, cy, w, h = tree["cx"], tree["cy"], tree["w"], tree["h"]
+    side = -1.0 if tree["mirror"] else 1.0
+    ground = Frame(proj, (0.0, 0.0, z0), (1, 0, 0), (0, 1, 0), 0, 0)
+    ops: list[tuple[Any, ...]] = [("path", "iso-ao", ground.ellipse(cx + w * 0.08, cy + w * 0.04, w * 0.56, w * 0.46))]
+    r = w * 0.42 * rng.uniform(0.95, 1.05)
+    small = r * rng.uniform(0.58, 0.68)
+    mounds = [(cx - side * w * 0.06, cy - w * 0.06, r, h), (cx + side * w * 0.2, cy + w * 0.26, small, h * 0.68)]
+    for mx, my, mr, mh in sorted(mounds, key=lambda m: (round(m[0] + m[1], 9), m[0])):
+        ops += _mound(proj, mx, my, z0, mr, mh, style)
+    return ops
+
+
 def _paint_order(boxes: list[tuple[float, ...]], view: tuple[float, float, float]) -> list[int]:
     """Back-to-front order of a few boxes inside one object; ties and cycles fall back to the depth key."""
     count = len(boxes)
@@ -3090,7 +3147,8 @@ def _paint_order(boxes: list[tuple[float, ...]], view: tuple[float, float, float
 
 # Buildings -----------------------------------------------------------------
 
-FACADE_ORDER = ("iso-hole", "iso-glass", "iso-lit", "iso-blind", "iso-int", "iso-intl", "iso-ceil", "iso-dim", "iso-deck",
+FACADE_ORDER = ("iso-hole", "iso-glass", "iso-lit", "iso-blind", "iso-int", "iso-intl", "iso-ceil", "iso-sheen", "iso-dim",
+                "iso-deck",
                 "iso-pave", "iso-l", "iso-r", "iso-t", "iso-l iso-rv", "iso-r iso-rv", "iso-t iso-rv", "iso-mull",
                 "iso-d iso-faint", "iso-d", "iso-o")
 
@@ -3134,6 +3192,7 @@ def _facade_v12(batch: _Batch, frame: Frame, item: dict[str, Any], vol: dict[str
     life = None
     if frame.proj.v13 and item.get("interiors"):
         life = _Rand(item["seed"] * 31 + item["volumes"].index(vol) * 7 + (1 if frame.u[1] else 0), 19)
+    panes: list[tuple[float, float, float, float]] = []
     lobby_top = fh - lobby
     rows = [(cap + i * floor_h, cap + (i + 1) * floor_h) for i in range(floors - 1)]
     if sign_band and rows:
@@ -3147,6 +3206,7 @@ def _facade_v12(batch: _Batch, frame: Frame, item: dict[str, Any], vol: dict[str
                 left = margin + col * cell + cell * 0.2
                 right = margin + (col + 1) * cell - cell * 0.2
                 seen = _recess(batch, frame, left, top + floor_h * 0.24, right, bottom - floor_h * 0.18, depth)
+                panes.append(seen)
                 if life:
                     _interior(batch, frame, seen, life)
     elif kind in ("ribbon", "bands"):
@@ -3154,6 +3214,7 @@ def _facade_v12(batch: _Batch, frame: Frame, item: dict[str, Any], vol: dict[str
         for top, bottom in rows:
             opening = (margin, top + floor_h * 0.22, fw - margin, bottom - floor_h * 0.16)
             seen = _recess(batch, frame, *opening, 0.05)
+            panes.append(seen)
             _mullions(batch, frame, seen, (su * 0.05, sv * 0.05), opening, 0.3)
             if life:
                 bays = max(1, int(round((opening[2] - opening[0]) / 0.3)))
@@ -3165,6 +3226,7 @@ def _facade_v12(batch: _Batch, frame: Frame, item: dict[str, Any], vol: dict[str
     elif kind in ("curtain", "fins") and rows:
         top, bottom = rows[0][0] + 0.04, rows[-1][1] - 0.04
         batch.add("iso-glass", frame.poly([(margin, top), (fw - margin, top), (fw - margin, bottom), (margin, bottom)]))
+        panes.append((margin, top, fw - margin, bottom))
         for row_top, _ in rows[1:]:
             batch.add("iso-mull", frame.poly([(margin, row_top), (fw - margin, row_top)], False))
         pitch = 0.17 if kind == "fins" else 0.3
@@ -3191,6 +3253,7 @@ def _facade_v12(batch: _Batch, frame: Frame, item: dict[str, Any], vol: dict[str
         if glazed:
             opening = (left, lobby_top + 0.1, right, fh - 0.05)
             seen = _recess(batch, frame, *opening, 0.07)
+            panes.append(seen)
             if life:
                 bays = max(1, int(round((opening[2] - opening[0]) / 0.34)))
                 for b in range(bays):
@@ -3205,6 +3268,33 @@ def _facade_v12(batch: _Batch, frame: Frame, item: dict[str, Any], vol: dict[str
             for col in range(cols):
                 _recess(batch, frame, left + col * cell + cell * 0.2, lobby_top + floor_h * 0.24,
                         left + (col + 1) * cell - cell * 0.2, fh - floor_h * 0.18, 0.05)
+    if frame.proj.v13 and panes:
+        face = 1 if frame.u[1] else 0
+        _sheen(batch, frame, panes, _Rand(item["seed"] * 37 + item["volumes"].index(vol) * 5 + face, 53))
+
+
+SHEEN_LEAN = 0.55
+
+
+def _sheen(batch: _Batch, frame: Frame, panes: list[tuple[float, float, float, float]], rng: _Rand) -> None:
+    """The flat-tone glass cue of isometric drawings: on some facades one or two diagonal lighter bands sweep across
+    the glazing, clipped to every pane they cross. Seeded, and sparse by design: about a third of facades get none."""
+    roll = rng.random()
+    count = 0 if roll < 0.35 else (1 if roll < 0.8 else 2)
+    centre = rng.uniform(0.2, 0.8) * frame.w
+    widths = (rng.uniform(0.26, 0.42), rng.uniform(0.07, 0.12))
+    if not count:
+        return
+    rise = SHEEN_LEAN * frame.h / 2
+    for i in range(count):
+        width = widths[i]
+        c = centre if i == 0 else centre + widths[0] / 2 + 0.07 + width / 2
+        band = [(c - width / 2 + rise, 0.0), (c + width / 2 + rise, 0.0), (c + width / 2 - rise, frame.h),
+                (c - width / 2 - rise, frame.h)]
+        for u0, v0, u1, v1 in panes:
+            clipped = _clip_rect(band, u0, v0, u1, v1)
+            if len(clipped) >= 3:
+                batch.add("iso-sheen", frame.poly(clipped))
 
 
 def _place_rects(area: tuple[float, float, float, float], sizes: list[tuple[str, float, float]], rng: _Rand,
@@ -3304,14 +3394,13 @@ def _wall_sign(proj: Projection, item: dict[str, Any], frame: Frame, top: float,
 def _portal_ops(proj: Projection, item: dict[str, Any], style: str, warnings: list[str] | None = None
                 ) -> list[tuple[Any, ...]]:
     """A deep entrance portal: a framed box standing out of the facade, glazed doors set deep inside it, and a
-    thin canopy slab over it. Under 1.3 a canopy sign sits small on the fascia."""
+    thin canopy slab over it. Under 1.3 a signed portal carries a fascia band in front of its head instead, with
+    small lettering fitted to it."""
     portal, face = item["portal"], item["entrance"]
     ops = _prism(proj, portal, 0.0).ops(style)
     frame = _face(proj, portal, face)
     side, fascia = min(0.13, frame.w * 0.12), min(0.2, frame.h * 0.2)
     signed = bool(item.get("v13") and item.get("sign") and item["sign_mount"] == "canopy")
-    if signed:
-        fascia = item["fascia"]
     opening = (side, fascia, frame.w - side, frame.h)
     depth = PORTAL_DEPTH + 0.06
     batch = _Batch()
@@ -3324,21 +3413,31 @@ def _portal_ops(proj: Projection, item: dict[str, Any], style: str, warnings: li
         if seen[0] < mid + du < seen[2]:
             batch.add("iso-d", frame.poly([(mid + du, frame.h * 0.55 + sv * depth), (mid + du, frame.h * 0.72 + sv * depth)], False))
     ops += batch.ops(FACADE_ORDER)
+    x0, x1, y0, y1, _, z1 = portal
     if signed:
-        size = item["sign_size"]
+        band = item["fascia"]
+        lo, hi = z1 - fascia, z1 - fascia + band
+        if face == "x+":
+            canopy = _box(x0, x1 + PORTAL_LIP, y0 - 0.08, y1 + 0.08, lo, hi)
+        else:
+            canopy = _box(x0 - 0.08, x1 + 0.08, y0, y1 + PORTAL_LIP, lo, hi)
+        ops += _prism(proj, canopy, 0.0).ops(style)
+        front = _face(proj, canopy, face)
+        ops.append(("path", "iso-d iso-faint", front.poly([(0.03, front.h - 0.035), (front.w - 0.03, front.h - 0.035)], False)))
+        size = item["sign_fit"]
         mark = bool(item.get("glyph") or item.get("icon_data"))
-        text_w = _text_width(item["sign"], size) / proj.unit
         g = size * 1.3 / proj.unit if mark else 0.0
         gap = 0.08 if mark else 0.0
-        total = g + gap + text_w
-        if warnings is not None and total > frame.w - 2 * side + EPS:
-            warnings.append(f"{item['where']}: sign {item['sign']!r} needs about {_fmt(total)} grid units but the "
-                            f"canopy fascia offers {_fmt(frame.w - 2 * side)}; shorten it or widen the building")
-        start = (frame.w - total) / 2
+        total = g + gap + _text_width(item["sign"], size) / proj.unit
+        if warnings is not None and total > front.w - 0.16 + EPS:
+            warnings.append(f"{item['where']}: sign {item['sign']!r} needs about {_fmt(total)} grid units even at "
+                            f"{_fmt(SIGN_MIN)} px but the canopy fascia offers {_fmt(front.w - 0.16)}; shorten it")
+        start = (front.w - total) / 2
+        middle = (front.h - 0.035) / 2
         if mark:
-            ops += _mark(frame, item, start + g / 2, fascia / 2, g, "iso-g")
-        ops.append(frame.text("iso-sign", item["sign"], start + g + gap, fascia / 2, size, "start"))
-    x0, x1, y0, y1, _, z1 = portal
+            ops += _mark(front, item, start + g / 2, middle, g, "iso-g")
+        ops.append(front.text("iso-sign", item["sign"], start + g + gap, middle, size, "start"))
+        return ops
     if face == "x+":
         canopy = _box(x0, x1 + PORTAL_LIP, y0 - 0.08, y1 + 0.08, z1, z1 + 0.06)
     else:
@@ -3456,7 +3555,25 @@ PARTS = {
     "ic": (0.44, 0.3, 0.06), "chip": (0.24, 0.24, 0.05), "cap": (0.13, 0.13, 0.15), "socket": (0.46, 0.17, 0.1),
     "header": (0.5, 0.1, 0.04), "vent": (0.46, 0.18, 0.0), "plate": (0.58, 0.26, 0.012),
     "mcu": (1.0, 1.0, 0.06), "conn": (0.6, 0.2, 0.08),
+    "smd": (0.1, 0.055, 0.03), "qfp": (0.56, 0.56, 0.05), "so": (0.44, 0.24, 0.05), "inductor": (0.3, 0.3, 0.12),
+    "crystal": (0.24, 0.12, 0.06), "heatsink": (0.48, 0.4, 0.14),
 }
+# How far leads stand out of a part's body, for clearance checks.
+PART_REACH = {"ic": 0.05, "chip": 0.05, "so": 0.05, "qfp": 0.05, "mcu": 0.05}
+# Functional clusters in local grid units (kind, x, y, w, d): a logic block with its clock and decoupling, and a
+# power stage with an inductor, a bulk capacitor, a regulator and small caps.
+BOARD_CLUSTERS = {
+    "logic": (("qfp", (0.05, 0.05, 0.56, 0.56)), ("crystal", (0.78, 0.08, 0.24, 0.12)),
+              ("smd", (0.8, 0.3, 0.1, 0.055)), ("smd", (0.8, 0.44, 0.1, 0.055))),
+    "power": (("inductor", (0.0, 0.0, 0.3, 0.3)), ("cap", (0.4, 0.07, 0.16, 0.16)),
+              ("so", (0.0, 0.46, 0.44, 0.24)), ("smd", (0.56, 0.5, 0.1, 0.055)), ("smd", (0.56, 0.62, 0.1, 0.055))),
+    "io": (("socket", (0.0, 0.0, 0.46, 0.17)), ("chip", (0.07, 0.3, 0.24, 0.24)), ("smd", (0.38, 0.3, 0.1, 0.055)),
+           ("smd", (0.38, 0.42, 0.1, 0.055))),
+}
+
+
+def _grow(rect: tuple[float, ...], reach: float) -> tuple[float, float, float, float]:
+    return (rect[0] - reach, rect[1] + reach, rect[2] - reach, rect[3] + reach)
 PART_MIX = {
     1: ("ic", "cap", "socket", "cap"),
     2: ("ic", "cap", "socket", "chip", "cap", "header", "vent", "ic", "cap"),
@@ -3546,7 +3663,32 @@ def _part_ops(proj: Projection, kind: str, rect: tuple[float, float, float, floa
     body = _box(x0, x1, y0, y1, zb, zb + h)
     pins_back: list[tuple[Any, ...]] = []
     pins_front: list[tuple[Any, ...]] = []
-    if kind == "mcu":
+    if kind == "smd":
+        body = _box(x0, x1, y0, y1, zb, zb + h)
+        ops = _soft(_prism(proj, body, 0.005).ops(style))
+        lid = _face(proj, body, "top")
+        end = 0.022
+        if lid.w >= lid.h:
+            ends = lid.poly([(0, 0), (end, 0), (end, lid.h), (0, lid.h)]) + lid.poly([(lid.w - end, 0), (lid.w, 0), (lid.w, lid.h), (lid.w - end, lid.h)])
+        else:
+            ends = lid.poly([(0, 0), (lid.w, 0), (lid.w, end), (0, end)]) + lid.poly([(0, lid.h - end), (lid.w, lid.h - end), (lid.w, lid.h), (0, lid.h)])
+        return ops + [("path", "iso-pad", ends)]
+    if kind == "heatsink":
+        base = _box(x0, x1, y0, y1, zb, zb + 0.03)
+        ops = _prism(proj, base, 0.01).ops(style)
+        along_x = x1 - x0 <= y1 - y0
+        count = max(3, int(((x1 - x0) if along_x else (y1 - y0)) / 0.065))
+        for i in range(count):
+            t = (i + 0.5) / count
+            if along_x:
+                fx = x0 + (x1 - x0) * t
+                fin = _box(fx - 0.011, fx + 0.011, y0 + 0.02, y1 - 0.02, zb + 0.03, zb + h)
+            else:
+                fy = y0 + (y1 - y0) * t
+                fin = _box(x0 + 0.02, x1 - 0.02, fy - 0.011, fy + 0.011, zb + 0.03, zb + h)
+            ops += _prism(proj, fin, 0.0).ops(style)
+        return ops
+    if kind in ("mcu", "qfp"):
         for side, tips in _qfp_pins(rect, 0.045, 0.065):
             target = pins_back if side.endswith("-") else pins_front
             for tx, ty in tips:
@@ -3554,9 +3696,9 @@ def _part_ops(proj: Projection, kind: str, rect: tuple[float, float, float, floa
                     target += ground.poly([(x1 if side == "x+" else x0, ty), (tx, ty)], False)
                 else:
                     target += ground.poly([(tx, y1 if side == "y+" else y0), (tx, ty)], False)
-    if kind in ("ic", "chip"):
+    if kind in ("ic", "chip", "so"):
         along_x = x1 - x0 >= y1 - y0
-        sides = (("y-", "y+") if along_x else ("x-", "x+")) if kind == "ic" else ("x-", "y-", "x+", "y+")
+        sides = (("y-", "y+") if along_x else ("x-", "x+")) if kind in ("ic", "so") else ("x-", "y-", "x+", "y+")
         for side in sides:
             target = pins_back if side.endswith("-") else pins_front
             span = (x0, x1) if side[0] == "y" else (y0, y1)
@@ -3573,9 +3715,17 @@ def _part_ops(proj: Projection, kind: str, rect: tuple[float, float, float, floa
                     target += ground.poly([(x1, t), (x1 + 0.045, t)], False)
     if pins_back:
         ops.append(("path", "iso-tick", pins_back))
-    radius = (x1 - x0) / 2 if kind == "cap" else 0.02
+    radius = (x1 - x0) / 2 if kind == "cap" else (min(x1 - x0, y1 - y0) / 2 if kind == "crystal" else 0.02)
     ops += _prism(proj, body, radius).ops(style)
     lid = _face(proj, body, "top")
+    if kind == "inductor":
+        ops.append(("path", "iso-d", lid.circle(lid.w / 2, lid.h / 2, min(lid.w, lid.h) * 0.38)))
+        ops.append(("path", "iso-hole", lid.circle(lid.w / 2, lid.h / 2, min(lid.w, lid.h) * 0.12)))
+        return ops
+    if kind == "crystal":
+        r = min(lid.w, lid.h) / 2 - 0.025
+        ops.append(("path", "iso-d iso-faint", lid.rrect(0.025, 0.025, lid.w - 0.025, lid.h - 0.025, r)))
+        return ops
     if kind == "cap":
         cx, cy = lid.w / 2, lid.h / 2
         ops.append(("path", "iso-d", lid.poly([(cx - 0.035, cy), (cx + 0.035, cy)], False)
@@ -4294,13 +4444,17 @@ def _route_ops(ground: Frame, routes: dict[str, Any]) -> tuple[list[tuple[Any, .
 
 
 def _trace_clear_of(rect: tuple[float, ...], routes: dict[str, Any], gap: float) -> bool:
+    reach = gap + TRACE_HALF
     for bundle in routes["bundles"]:
         box = bundle["terminal"]["housing"] or bundle["terminal"]["rect"]
         if not _rects_clear(rect, box, gap):
             return False
         for trace in bundle["traces"]:
             for a, b in zip(trace, trace[1:]):
-                if _seg_rect(a, b, rect) < gap + TRACE_HALF:
+                if (max(a[0], b[0]) < rect[0] - reach or min(a[0], b[0]) > rect[1] + reach
+                        or max(a[1], b[1]) < rect[2] - reach or min(a[1], b[1]) > rect[3] + reach):
+                    continue
+                if _seg_rect(a, b, rect) < reach:
                     return False
     return True
 
@@ -4356,55 +4510,72 @@ def _populate_v13(proj: Projection, area: tuple[float, float, float, float], zb:
         placed += anchors
     obstacles = [r for kind, r in placed if kind != "mcu"] + list(blocked) + screw_rects
     routes = _route_board(area, sources, obstacles, density, seed)
-    # Rows of parts in the strips around the package, kept only where the routing left room.
-    clear = 0.16
-    if package is not None:
-        hole2 = (package[0] - clear, package[1] + clear, package[2] - clear, package[3] + clear)
-        strips = [((ax0 + corner, ax1 - corner, ay0, hole2[2]), "y+"), ((ax0 + corner, ax1 - corner, hole2[3], ay1), "y-"),
-                  ((ax0, hole2[0], hole2[2], hole2[3]), "x+"), ((hole2[1], ax1, hole2[2], hole2[3]), "x-")]
-    else:
-        rows = max(1, int((ay1 - ay0) / 0.5))
-        pitch = (ay1 - ay0) / rows
-        strips = [((ax0 + corner, ax1 - corner, ay0 + i * pitch, ay0 + (i + 1) * pitch), None) for i in range(rows)]
-    first = "plate" if density >= 2 else None
-    for strip, toward in strips:
-        for hole3 in blocked:
-            strip = _subtract(strip, hole3) if strip else None
-        if strip is None or strip[1] - strip[0] < 0.2 or strip[3] - strip[2] < 0.2:
-            continue
-        parts = _pack_strip(strip, rng, density, toward, first)
-        if first and any(kind == first for kind, _ in parts):
-            first = None
-        for kind, rect in parts:
-            reach = 0.05 if kind in ("ic", "chip") else 0.0
-            grown = (rect[0] - reach, rect[1] + reach, rect[2] - reach, rect[3] + reach)
-            if all(_rects_clear(rect, b, 0.02) for b in blocked + screw_rects) \
-                    and all(_rects_clear(rect, r, 0.04) for _, r in placed) \
-                    and all(_rects_clear(grown, h, 0.02) for h in keep_out) \
-                    and _trace_clear_of(grown, routes, TRACE_CLEAR):
-                placed.append((kind, rect))
-    fill = {1: 4, 2: 12, 3: 20}[density]
-    mix = PART_MIX[density]
-    for _ in range(fill * 10):
-        if fill <= 0:
-            break
-        kind = mix[int(rng.random() * len(mix)) % len(mix)]
-        if kind in ("plate", "vent", "header"):
-            continue
-        along, across, _ = PARTS[kind]
-        if rng.random() < 0.5:
-            along, across = across, along
-        x = ax0 + corner + round(rng.random() * max(0.0, ax1 - ax0 - 2 * corner - along) / 0.02) * 0.02
-        y = ay0 + corner + round(rng.random() * max(0.0, ay1 - ay0 - 2 * corner - across) / 0.02) * 0.02
-        rect = (x, x + along, y, y + across)
-        reach = 0.05 if kind in ("ic", "chip") else 0.0
-        grown = (rect[0] - reach, rect[1] + reach, rect[2] - reach, rect[3] + reach)
-        if all(_rects_clear(rect, b, 0.02) for b in blocked + screw_rects) \
-                and all(_rects_clear(grown, r, 0.08) for _, r in placed) \
-                and all(_rects_clear(grown, h, 0.06) for h in keep_out) \
-                and _trace_clear_of(grown, routes, TRACE_CLEAR):
-            placed.append((kind, rect))
-            fill -= 1
+    # Engineered placement: decoupling caps hugging the lead rows, functional clusters beside the routes, a header
+    # row and a heat sink near the edge. Electrolytic cans only come with power clusters, so they stay few.
+    segments = [(p, q) for bundle in routes["bundles"] for trace in bundle["traces"] for p, q in zip(trace, trace[1:])]
+
+    def free(rect: tuple[float, ...], gap: float) -> bool:
+        return (area[0] + 0.02 <= rect[0] and rect[1] <= area[1] - 0.02 and area[2] + 0.02 <= rect[2]
+                and rect[3] <= area[3] - 0.02
+                and all(_rects_clear(rect, other, 0.02) for other in list(blocked) + screw_rects)
+                and all(_rects_clear(rect, other, gap) for _, other in placed)
+                and all(_rects_clear(rect, hole, 0.03) for hole in keep_out)
+                and _trace_clear_of(rect, routes, TRACE_CLEAR))
+
+    for side, pins in rows_of_pins:
+        dx, dy = HEADINGS[SIDE_OUT[side]]
+        quota = {1: 2, 2: 4, 3: 5}[density]
+        order = sorted(range(len(pins)), key=lambda i: (min(i, len(pins) - 1 - i), i))
+        for i in order:
+            if quota <= 0:
+                break
+            px, py = pins[i][0] + dx * 0.065, pins[i][1] + dy * 0.065
+            along, across = (0.055, 0.1) if dx else (0.1, 0.055)
+            rect = (px - along / 2 + dx * along / 2, px + along / 2 + dx * along / 2,
+                    py - across / 2 + dy * across / 2, py + across / 2 + dy * across / 2)
+            if free(rect, 0.05):
+                placed.append(("smd", rect))
+                quota -= 1
+
+    def nearest(rect: tuple[float, ...]) -> float:
+        if segments:
+            return min(_seg_rect(p, q, rect) for p, q in segments)
+        return min((_pt_rect(((rect[0] + rect[1]) / 2, (rect[2] + rect[3]) / 2), hole) for hole in keep_out), default=0.0)
+
+    wanted = {1: ("power", "io"), 2: ("logic", "power", "io", "logic"), 3: ("logic", "power", "io", "logic", "power", "io")}[density]
+    for name in wanted:
+        turn = rng.random() < 0.5
+        parts = [(kind, (y, x, d, w) if turn else (x, y, w, d)) for kind, (x, y, w, d) in BOARD_CLUSTERS[name]]
+        cw = max(x + w for _, (x, y, w, d) in parts)
+        cd = max(y + d for _, (x, y, w, d) in parts)
+        best = None
+        for _ in range(80):
+            ox = ax0 + corner + round(rng.random() * max(0.0, ax1 - ax0 - 2 * corner - cw) / 0.02) * 0.02
+            oy = ay0 + corner + round(rng.random() * max(0.0, ay1 - ay0 - 2 * corner - cd) / 0.02) * 0.02
+            rects = [(kind, (ox + x, ox + x + w, oy + y, oy + y + d)) for kind, (x, y, w, d) in parts]
+            if all(free(_grow(rect, PART_REACH.get(kind, 0.0)), 0.08) for kind, rect in rects):
+                score = nearest((ox, ox + cw, oy, oy + cd))
+                if best is None or score < best[0] - EPS:
+                    best = (score, rects)
+        if best is not None:
+            placed.extend(best[1])
+    if density >= 2:
+        edge_parts = [("header", 0.62, 0.1), ("heatsink", 0.48, 0.4)] + ([("header", 0.5, 0.1)] if density >= 3 else [])
+        for kind, w, d in edge_parts:
+            for _ in range(80):
+                edge = int(rng.random() * 4)
+                ew, ed = (w, d) if edge in (0, 1) else (d, w)
+                t = rng.random()
+                if edge in (0, 1):
+                    x = ax0 + corner + t * max(0.0, ax1 - ax0 - 2 * corner - ew)
+                    y = ay0 + 0.08 if edge == 0 else ay1 - 0.08 - ed
+                else:
+                    y = ay0 + corner + t * max(0.0, ay1 - ay0 - 2 * corner - ed)
+                    x = ax0 + 0.08 if edge == 2 else ax1 - 0.08 - ew
+                rect = (round(x / 0.02) * 0.02, round(x / 0.02) * 0.02 + ew, round(y / 0.02) * 0.02, round(y / 0.02) * 0.02 + ed)
+                if free(rect, 0.08):
+                    placed.append((kind, rect))
+                    break
     route_ops, housings = _route_ops(ground, routes)
     ops: list[tuple[Any, ...]] = list(route_ops)
     ops += [("path", "iso-node", screws), ("path", "iso-d", slots)]
@@ -4529,32 +4700,70 @@ def _railing(proj: Projection, edge: str, span: tuple[float, float], fixed: floa
     return [("path", "iso-rail", pane), ("path", "iso-d", stems), ("path", "iso-o" if style != "solid" else "iso-d", rail)]
 
 
-def _small_canopy(proj: Projection, cx: float, cy: float, z: float, w: float, h: float, rng: _Rand,
-                  style: str) -> list[tuple[Any, ...]]:
-    """Shrub volumes over a point, for planters and hedges."""
-    base = proj(cx, cy, z)
-    top_y = proj(cx, cy, z + h)[1]
-    span = base[1] - top_y
-    radius = proj.k * w / 2
-    volumes = []
-    lobes = LOBES[SHRUB]
-    top = min(dy - ry for _, dy, _, ry in lobes)
-    bottom = max(dy + ry for _, dy, _, ry in lobes)
-    left = min(dx - rx for dx, _, rx, _ in lobes)
-    right = max(dx + rx for dx, _, rx, _ in lobes)
-    sy, sx = span / (bottom - top), 2 * radius / (right - left)
-    for dx, dy, rx, ry in lobes:
-        j = rng.uniform(0.94, 1.04)
-        volumes.append(((base[0] + (dx - (left + right) / 2) * sx, top_y + (dy - top) * sy), rx * sx * j, ry * sy * j))
-    return _canopy_ops_v13(volumes, style)
+HEDGE_BED = 0.035
+
+
+def _soft(ops: list[tuple[Any, ...]]) -> list[tuple[Any, ...]]:
+    """Small furniture keeps tone fills but trades the dark outline for the detail tone, so a bench or a lamp base
+    reads as an object rather than a black bracket at 1x."""
+    return [(op[0], "iso-d", op[2]) if op[0] == "path" and op[1] == "iso-o" else op for op in ops]
+
+
+def _hedge_box(proj: Projection, box: tuple[float, ...], rng: _Rand, style: str, bed: bool = True
+               ) -> list[tuple[Any, ...]]:
+    """A clipped box hedge: an optional soil bed, a block in leaf tones with a lighter top and a softened rim, a
+    softly scalloped far silhouette and a sparse foliage texture on the sides."""
+    x0, x1, y0, y1, z0, z1 = box
+    ops: list[tuple[Any, ...]] = []
+    if bed:
+        soil = _box(x0 - 0.03, x1 + 0.03, y0 - 0.03, y1 + 0.03, z0, z0 + HEDGE_BED)
+        ops += _prism(proj, soil, 0.02).ops(style)
+        top = _face(proj, soil, "top")
+        ops.append(("path", "iso-soil", top.rrect(0.015, 0.015, top.w - 0.015, top.h - 0.015, 0.012)))
+        z0 += HEDGE_BED
+    body = _box(x0, x1, y0, y1, z0, z1)
+    prism = _prism(proj, body, min(0.035, (x1 - x0) / 2, (y1 - y0) / 2))
+    ops += prism.ops(style, " iso-hedge")
+    ops.append(("path", "iso-hedgehi", prism.band(z1 - min(0.03, (z1 - z0) * 0.18))))
+    texture: list[tuple[Any, ...]] = []
+    for face in ("x+", "y+"):
+        frame = _face(proj, body, face)
+        marks = min(40, int(frame.w * frame.h / 0.014))
+        for _ in range(marks):
+            u = rng.uniform(0.04, frame.w - 0.04)
+            v = rng.uniform(0.07, frame.h - 0.03)
+            texture += [("M", frame.at(u - 0.022, v)), frame.earc(u, v, 0.022, 0.016, math.pi, 2 * math.pi)]
+    if texture and style != "solid":
+        ops.append(("path", "iso-leafline iso-faint", texture))
+    # Far silhouette: rounded tufts along the two back top edges break the straight line of a box.
+    fills: list[tuple[Any, ...]] = []
+    arcs: list[tuple[Any, ...]] = []
+    k = proj.k
+    for a, b, along in (((x0, y0), (x1, y0), 0), ((x0, y0), (x0, y1), 1)):
+        length = (b[along] - a[along])
+        count = max(2, int(length / 0.075))
+        for i in range(count):
+            t = (i + 0.5) / count
+            px, py = (a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t)
+            cxy = proj(px, py, z1)
+            rx = k * 0.042 * rng.uniform(0.85, 1.1)
+            ry = rx * rng.uniform(0.45, 0.6)
+            fills += _ellipse_segs(cxy, rx, ry)
+            arcs += [("M", (cxy[0] - rx, cxy[1])), ("E", cxy, (rx, 0.0), (0.0, ry), math.pi, 2 * math.pi)]
+    ops.append(("path", "iso-t iso-hedge", fills))
+    if style != "solid":
+        ops.append(("path", "iso-leafline", arcs))
+    return ops
 
 
 def _parasol(proj: Projection, cx: float, cy: float, z: float, style: str) -> list[tuple[Any, ...]]:
-    """A café parasol: a pole and a shallow eight-sided canopy."""
-    ops: list[tuple[Any, ...]] = [("path", "iso-trunk", [("M", proj(cx, cy, z)), ("L", proj(cx, cy, z + 0.26))])]
-    r, rise = 0.17, 0.07
-    apex = proj(cx, cy, z + 0.26 + rise)
-    rim = [proj(cx + r * math.cos(math.pi * k / 4), cy + r * math.sin(math.pi * k / 4), z + 0.26) for k in range(8)]
+    """A café parasol: a pole, a small table under it and a shallow eight-sided canopy."""
+    ops: list[tuple[Any, ...]] = _soft(_prism(proj, _box(cx - 0.09, cx + 0.09, cy - 0.09, cy + 0.09, z + 0.1, z + 0.12),
+                                              0.09).ops(style))
+    ops.append(("path", "iso-trunk", [("M", proj(cx, cy, z)), ("L", proj(cx, cy, z + 0.32))]))
+    r, rise = 0.25, 0.08
+    apex = proj(cx, cy, z + 0.32 + rise)
+    rim = [proj(cx + r * math.cos(math.pi * k / 4), cy + r * math.sin(math.pi * k / 4), z + 0.32) for k in range(8)]
     for k in range(8):
         a, b = rim[k], rim[(k + 1) % 8]
         mid = math.pi * (k + 0.5) / 4
@@ -4565,9 +4774,12 @@ def _parasol(proj: Projection, cx: float, cy: float, z: float, style: str) -> li
     return ops
 
 
+TERRACE_PROPS = {"planter": (0.66, 0.22), "parasol": (0.54, 0.54)}
+
+
 def _terrace_ops(proj: Projection, item: dict[str, Any], vol: dict[str, Any], style: str) -> list[tuple[Any, ...]]:
-    """A setback roof as a terrace: deck paving, glass railings on the open edges, planters with shrubs or a small
-    tree and, now and then, a parasol."""
+    """A setback roof as a terrace: deck paving, glass railings on the open edges and at most two props large enough
+    to read at 1x, a planter box with a clipped shrub and, now and then, a parasol over a table."""
     x0, x1, y0, y1, _, z1 = vol["box"]
     deck = z1 - vol["cap"]
     t = PARAPET_T
@@ -4589,36 +4801,48 @@ def _terrace_ops(proj: Projection, item: dict[str, Any], vol: dict[str, Any], st
     for edge in ("y-", "x-"):
         for span in spans[edge]:
             ops += _railing(proj, edge, span, fixed[edge], z1, style)
-    area = (x0 + t + 0.06, x1 - t - 0.06, y0 + t + 0.06, y1 - t - 0.06)
-    wanted = [("planter", 0.44, 0.16), ("planter", 0.36, 0.16), ("tree", 0.26, 0.26)]
-    if rng.random() < 0.6:
-        wanted.insert(1, ("parasol", 0.36, 0.36))
-    placed = _place_rects(area, wanted, rng, 0.1)
-    boxes = [_box(r[0], r[1], r[2], r[3], deck, deck + 0.3) for _, r in placed]
+    area = (x0 + t + 0.08, x1 - t - 0.08, y0 + t + 0.08, y1 - t - 0.08)
+    aw, ad = area[1] - area[0], area[3] - area[2]
+    wanted = []
+    if max(aw, ad) >= 0.8 and min(aw, ad) >= 0.3:
+        wanted.append(("planter",) + TERRACE_PROPS["planter"])
+    if aw * ad >= 1.0 and min(aw, ad) >= 0.6 and rng.random() < 0.7:
+        wanted.append(("parasol",) + TERRACE_PROPS["parasol"])
+    placed = _place_rects(area, wanted, rng, 0.14)
+    boxes = [_box(r[0], r[1], r[2], r[3], deck, deck + 0.4) for _, r in placed]
     for index in _paint_order(boxes, proj.view):
         kind, (px0, px1, py0, py1) = placed[index]
-        cx, cy = (px0 + px1) / 2, (py0 + py1) / 2
         if kind == "parasol":
-            ops += _parasol(proj, cx, cy, deck, style)
+            ops += _parasol(proj, (px0 + px1) / 2, (py0 + py1) / 2, deck, style)
             continue
-        pot = _box(px0, px1, py0, py1, deck, deck + 0.08)
+        pot = _box(px0, px1, py0, py1, deck, deck + 0.09)
         ops += _prism(proj, pot, 0.02).ops(style)
-        ops.append(("path", "iso-hole", _face(proj, pot, "top").rrect(0.025, 0.025, px1 - px0 - 0.025, py1 - py0 - 0.025, 0.015)))
-        if kind == "tree":
-            tree = {"cx": cx, "cy": cy, "species": "broadleaf", "w": 0.3, "h": 0.42, "mirror": rng.random() < 0.5,
-                    "seed": item["seed"] + index}
-            ops += [op for op in _tree_v12(proj, tree, deck + 0.08, style, False) if op[1] not in ("iso-patch", "iso-d iso-faint")]
-        else:
-            long_x = px1 - px0 >= py1 - py0
-            count = max(2, int(round(max(px1 - px0, py1 - py0) / 0.15)))
-            for k in range(count):
-                f = (k + 0.5) / count
-                sx_, sy_ = (px0 + (px1 - px0) * f, cy) if long_x else (cx, py0 + (py1 - py0) * f)
-                ops += _small_canopy(proj, sx_, sy_, deck + 0.08, 0.17, 0.13, rng, style)
+        ops += _hedge_box(proj, _box(px0 + 0.035, px1 - 0.035, py0 + 0.035, py1 - 0.035, deck + 0.09, deck + 0.21), rng,
+                          style, bed=False)
     for edge in ("y+", "x+"):
         for span in spans[edge]:
             ops += _railing(proj, edge, span, fixed[edge], z1, style)
     return ops
+
+
+def _walk_rects(slab: dict[str, Any]) -> list[tuple[float, float, float, float]]:
+    """The walk from each building that a slab carries, from its entrance portal to the paved edge."""
+    x0, x1, y0, y1, _, _ = slab["body"]
+    edge = max(slab.get("inset") or 0.0, 0.12) + 0.06
+    out = []
+    for other in slab.get("carried", []):
+        portal = other.get("portal") if other["type"] == "building" else None
+        if not portal:
+            continue
+        if other["entrance"] == "x+":
+            start, stop = portal[1] + PORTAL_LIP, x1 - edge
+            if stop - start >= 0.2:
+                out.append((start, stop, portal[2] - 0.1, portal[3] + 0.1))
+        else:
+            start, stop = portal[3] + PORTAL_LIP, y1 - edge
+            if stop - start >= 0.2:
+                out.append((portal[0] - 0.1, portal[1] + 0.1, start, stop))
+    return out
 
 
 def _plaza_ops(proj: Projection, item: dict[str, Any], box: tuple[float, ...]) -> list[tuple[Any, ...]]:
@@ -4631,7 +4855,6 @@ def _plaza_ops(proj: Projection, item: dict[str, Any], box: tuple[float, ...]) -
     joints: list[tuple[Any, ...]] = []
     row, col = 0.3, 0.5
     v = iy0 + row
-    k = 0
     while v < iy1 - 0.04:
         joints += ground.poly([(ix0, v), (ix1, v)], False)
         v += row
@@ -4648,32 +4871,19 @@ def _plaza_ops(proj: Projection, item: dict[str, Any], box: tuple[float, ...]) -
     walks: list[tuple[Any, ...]] = []
     lines: list[tuple[Any, ...]] = []
     cross: list[tuple[Any, ...]] = []
-    for other in item.get("carried", []):
-        portal = other.get("portal") if other["type"] == "building" else None
-        if not portal:
-            continue
-        face = other["entrance"]
-        if face == "x+":
-            a, b = portal[2] - 0.1, portal[3] + 0.1
-            start, stop = portal[1] + PORTAL_LIP, ix1
-            if stop - start < 0.2:
-                continue
-            walks += ground.poly([(start, a), (stop, a), (stop, b), (start, b)])
-            lines += ground.poly([(start, a), (stop, a)], False) + ground.poly([(start, b), (stop, b)], False)
-            u = start + 0.18
-            while u < stop - 0.05:
-                cross += ground.poly([(u, a), (u, b)], False)
+    for wx0, wx1, wy0, wy1 in _walk_rects(item):
+        walks += ground.poly([(wx0, wy0), (wx1, wy0), (wx1, wy1), (wx0, wy1)])
+        if wx1 - wx0 >= wy1 - wy0:
+            lines += ground.poly([(wx0, wy0), (wx1, wy0)], False) + ground.poly([(wx0, wy1), (wx1, wy1)], False)
+            u = wx0 + 0.18
+            while u < wx1 - 0.05:
+                cross += ground.poly([(u, wy0), (u, wy1)], False)
                 u += 0.18
         else:
-            a, b = portal[0] - 0.1, portal[1] + 0.1
-            start, stop = portal[3] + PORTAL_LIP, iy1
-            if stop - start < 0.2:
-                continue
-            walks += ground.poly([(a, start), (a, stop), (b, stop), (b, start)])
-            lines += ground.poly([(a, start), (a, stop)], False) + ground.poly([(b, start), (b, stop)], False)
-            v = start + 0.18
-            while v < stop - 0.05:
-                cross += ground.poly([(a, v), (b, v)], False)
+            lines += ground.poly([(wx0, wy0), (wx0, wy1)], False) + ground.poly([(wx1, wy0), (wx1, wy1)], False)
+            v = wy0 + 0.18
+            while v < wy1 - 0.05:
+                cross += ground.poly([(wx0, v), (wx1, v)], False)
                 v += 0.18
     if walks:
         ops += [("path", "iso-walk", walks), ("path", "iso-pave", cross), ("path", "iso-d iso-faint", lines)]
@@ -4704,30 +4914,37 @@ def _canopy_ops_v13(volumes: list[tuple[Point, float, float]], style: str, clipp
     return ops
 
 
-def _render_hedge(proj: Projection, item: dict[str, Any], style: str, warnings: list[str]) -> list[tuple[Any, ...]]:
-    """A clipped hedge on a low curb: a soft-cornered mass in leaf tones whose top breaks into seeded rounded
-    tufts, so it reads as foliage rather than as a box."""
+def _hedge_segments(item: dict[str, Any]) -> list[tuple[float, ...]]:
+    """The hedge's boxes, broken where a walk on the slab that carries it crosses it."""
     x0, x1, y0, y1, z0, z1 = item["body"]
-    ops = _prism(proj, _box(x0, x1, y0, y1, z0, z0 + 0.04), 0.02).ops(style)
-    inset = 0.02
     along_x = x1 - x0 >= y1 - y0
-    depth = (y1 - y0) if along_x else (x1 - x0)
-    crown = min(depth * 0.45, (z1 - z0) * 0.45)
-    body = _box(x0 + inset, x1 - inset, y0 + inset, y1 - inset, z0 + 0.04, z1 - crown * 0.6)
-    ops += _prism(proj, body, min(0.06, depth / 2 - inset)).ops(style, " iso-hedge")
+    pieces = [(x0, x1) if along_x else (y0, y1)]
+    support = item.get("support")
+    for walk in (_walk_rects(support) if support is not None else []):
+        if not (walk[0] < x1 and walk[1] > x0 and walk[2] < y1 and walk[3] > y0):
+            continue
+        a, b = (walk[0] - 0.08, walk[1] + 0.08) if along_x else (walk[2] - 0.08, walk[3] + 0.08)
+        kept = []
+        for s0, s1 in pieces:
+            if b <= s0 or a >= s1:
+                kept.append((s0, s1))
+                continue
+            if a > s0:
+                kept.append((s0, a))
+            if b < s1:
+                kept.append((b, s1))
+        pieces = kept
+    return [_box(a, b, y0, y1, z0, z1) if along_x else _box(x0, x1, a, b, z0, z1) for a, b in pieces if b - a > 0.12]
+
+
+def _render_hedge(proj: Projection, item: dict[str, Any], style: str, warnings: list[str]) -> list[tuple[Any, ...]]:
+    """A clipped box hedge on a soil bed, with gaps where a walk crosses it."""
     rng = _Rand(item["seed"], 31)
-    length = (x1 - x0) if along_x else (y1 - y0)
-    count = max(2, int(round(length / (depth * 0.85))))
-    k = proj.k
-    volumes = []
-    for i in range(count):
-        t = (i + 0.5) / count
-        cx, cy = (x0 + (x1 - x0) * t, (y0 + y1) / 2) if along_x else ((x0 + x1) / 2, y0 + (y1 - y0) * t)
-        center = proj(cx, cy, z1 - crown * rng.uniform(0.7, 0.95))
-        rx = k * depth * 0.52 * rng.uniform(0.94, 1.1)
-        ry = rx * rng.uniform(0.6, 0.7)
-        volumes.append(((round(cx + cy, 9), cx), (center, rx, ry)))
-    return ops + _canopy_ops_v13([v for _, v in sorted(volumes, key=lambda v: v[0])], style, clipped=True)
+    boxes = _hedge_segments(item)
+    ops: list[tuple[Any, ...]] = []
+    for index in _paint_order(boxes, proj.view):
+        ops += _hedge_box(proj, boxes[index], rng, style)
+    return ops
 
 
 def _street_piece(proj: Projection, piece: dict[str, Any], z: float, style: str) -> list[tuple[Any, ...]]:
@@ -4735,33 +4952,55 @@ def _street_piece(proj: Projection, piece: dict[str, Any], z: float, style: str)
     ops: list[tuple[Any, ...]] = []
     if kind == "bollard":
         r = 0.04
-        ops += _prism(proj, _box(cx - r, cx + r, cy - r, cy + r, z, z + 0.12), r).ops(style)
+        ops += _soft(_prism(proj, _box(cx - r, cx + r, cy - r, cy + r, z, z + 0.12), r).ops(style))
         band = _prism(proj, _box(cx - r, cx + r, cy - r, cy + r, z, z + 0.1), r)
         ops.append(("path", "iso-d", band.band(z + 0.1)))
-        ops += _prism(proj, _box(cx - r * 0.7, cx + r * 0.7, cy - r * 0.7, cy + r * 0.7, z + 0.12, z + 0.14), r * 0.7).ops(style)
+        ops += _soft(_prism(proj, _box(cx - r * 0.7, cx + r * 0.7, cy - r * 0.7, cy + r * 0.7, z + 0.12, z + 0.14),
+                            r * 0.7).ops(style))
         return ops
     if kind == "lamp":
-        ops += _prism(proj, _box(cx - 0.045, cx + 0.045, cy - 0.045, cy + 0.045, z, z + 0.04), 0.01).ops(style)
-        ops += _prism(proj, _box(cx - 0.017, cx + 0.017, cy - 0.017, cy + 0.017, z + 0.04, z + 0.62), 0.017).ops(style)
-        head = _box(cx - 0.05, cx + 0.07, cy - 0.035, cy + 0.035, z + 0.62, z + 0.66)
-        ops += _prism(proj, head, 0.015).ops(style)
-        lens = _face(proj, head, "x+")
-        ops.append(("path", "iso-lit", lens.rrect(0.01, 0.008, lens.w - 0.01, lens.h - 0.008, 0.005)))
+        # A post lantern about one floor tall: a base, a slim pole, a glazed lantern with warm panes and a cap.
+        height = STREET_PIECES["lamp"][0]
+        ops += _soft(_prism(proj, _box(cx - 0.04, cx + 0.04, cy - 0.04, cy + 0.04, z, z + 0.035), 0.01).ops(style))
+        ops.append(("path", "iso-pole", [("M", proj(cx, cy, z + 0.035)), ("L", proj(cx, cy, z + height - 0.13))]))
+        body = _box(cx - 0.05, cx + 0.05, cy - 0.05, cy + 0.05, z + height - 0.13, z + height - 0.035)
+        ops += _prism(proj, body, 0.0).ops(style)
+        for face in ("x+", "y+"):
+            pane = _face(proj, body, face)
+            ops.append(("path", "iso-lit", pane.poly([(0.018, 0.018), (pane.w - 0.018, 0.018), (pane.w - 0.018, pane.h - 0.012),
+                                                       (0.018, pane.h - 0.012)])))
+        ops += _prism(proj, _box(cx - 0.068, cx + 0.068, cy - 0.068, cy + 0.068, z + height - 0.035, z + height - 0.012),
+                      0.0).ops(style)
+        ops.append(("path", "iso-trunk", [("M", proj(cx, cy, z + height - 0.012)), ("L", proj(cx, cy, z + height))]))
         return ops
+    # A park bench: end frames, a slatted seat and a slatted back, in tone with grey edges.
     along_x = piece["along_x"]
-    half_l, half_d = 0.22, 0.065
+    half_l, half_d = 0.24, 0.08
     if along_x:
-        seat = _box(cx - half_l, cx + half_l, cy - half_d, cy + half_d, z + 0.07, z + 0.095)
-        back = _box(cx - half_l, cx + half_l, cy - half_d, cy - half_d + 0.025, z + 0.095, z + 0.17)
-        legs = [_box(x - 0.015, x + 0.015, cy - half_d + 0.01, cy + half_d - 0.01, z, z + 0.07) for x in (cx - half_l + 0.05, cx + half_l - 0.05)]
+        seat = _box(cx - half_l, cx + half_l, cy - half_d, cy + half_d, z + 0.07, z + 0.09)
+        back = _box(cx - half_l, cx + half_l, cy - half_d, cy - half_d + 0.025, z + 0.09, z + 0.18)
+        legs = [_box(x - 0.014, x + 0.014, cy - half_d + 0.005, cy + half_d - 0.005, z, z + 0.07)
+                for x in (cx - half_l + 0.05, cx + half_l - 0.05)]
     else:
-        seat = _box(cx - half_d, cx + half_d, cy - half_l, cy + half_l, z + 0.07, z + 0.095)
-        back = _box(cx - half_d, cx - half_d + 0.025, cy - half_l, cy + half_l, z + 0.095, z + 0.17)
-        legs = [_box(cx - half_d + 0.01, cx + half_d - 0.01, y - 0.015, y + 0.015, z, z + 0.07) for y in (cy - half_l + 0.05, cy + half_l - 0.05)]
+        seat = _box(cx - half_d, cx + half_d, cy - half_l, cy + half_l, z + 0.07, z + 0.09)
+        back = _box(cx - half_d, cx - half_d + 0.025, cy - half_l, cy + half_l, z + 0.09, z + 0.18)
+        legs = [_box(cx - half_d + 0.005, cx + half_d - 0.005, y - 0.014, y + 0.014, z, z + 0.07)
+                for y in (cy - half_l + 0.05, cy + half_l - 0.05)]
     for box in legs:
-        ops += _prism(proj, box, 0.0).ops(style)
-    ops += _prism(proj, back, 0.0).ops(style)
-    ops += _prism(proj, seat, 0.01).ops(style)
+        ops += _soft(_prism(proj, box, 0.0).ops(style))
+    ops += _soft(_prism(proj, back, 0.0).ops(style))
+    lid = _face(proj, back, "x+" if not along_x else "y+")
+    ops.append(("path", "iso-d iso-faint", lid.poly([(0.02, lid.h * 0.45), (lid.w - 0.02, lid.h * 0.45)], False)))
+    ops += _soft(_prism(proj, seat, 0.005).ops(style))
+    top = _face(proj, seat, "top")
+    slats: list[tuple[Any, ...]] = []
+    if along_x:
+        for f in (0.36, 0.68):
+            slats += top.poly([(0.02, top.h * f), (top.w - 0.02, top.h * f)], False)
+    else:
+        for f in (0.36, 0.68):
+            slats += top.poly([(top.w * f, 0.02), (top.w * f, top.h - 0.02)], False)
+    ops.append(("path", "iso-d iso-faint", slats))
     return ops
 
 
@@ -4786,6 +5025,7 @@ def _attach_check(solids: list[dict[str, Any]], by_id: dict[str, dict[str, Any]]
 PLATFORMS = ("slab", "tile", "core")
 FACE_CLASSES = ("iso-t", "iso-l", "iso-r", "iso-silh", "iso-under", "iso-leaf1", "iso-leaf2", "iso-leaf3")
 OVERLAP_PX = 4.0
+SILHOUETTE_PX = 16.0
 
 
 def _clip_convex(subject: list[Point], clip: list[Point]) -> list[Point]:
@@ -4825,8 +5065,69 @@ def _poly_area(poly: list[Point]) -> float:
                    for i in range(len(poly)))) / 2 if len(poly) >= 3 else 0.0
 
 
-def _platform_overlaps(proj: Projection, groups: dict[int, dict[str, Any]], ordered: list[int],
-                       solids: list[dict[str, Any]]) -> list[str]:
+def _related(a: dict[str, Any], b: dict[str, Any]) -> bool:
+    """Pairs whose overlap is layering by construction: one stands on the other, both stand on the same platform, or
+    either names the other in ``attach``."""
+    return (a in b["carried"] or b in a["carried"] or a.get("attach") == b["id"] or b.get("attach") == a["id"]
+            or (a.get("support") is not None and a.get("support") is b.get("support")))
+
+
+def _face_hulls(group: dict[str, Any]) -> list[tuple[tuple[float, float, float, float], list[Point]]]:
+    """Convex hulls of an object's filled faces, each with its screen bounding box."""
+    out = []
+    for op in group["ops"]:
+        if op[0] != "path" or op[1].split()[0] not in FACE_CLASSES:
+            continue
+        for run in _sample(op[2], 6):
+            if len(run) < 3:
+                continue
+            hull = _hull(run)
+            if len(hull) >= 3:
+                xs, ys = [q[0] for q in hull], [q[1] for q in hull]
+                out.append(((min(xs), min(ys), max(xs), max(ys)), hull))
+    return out
+
+
+def _silhouette_overlaps(hulls: dict[int, list[tuple[tuple[float, float, float, float], list[Point]]]],
+                         solids: list[dict[str, Any]], reported: set[tuple[int, int]]) -> list[str]:
+    """Warn when two unrelated objects' drawn silhouettes overlap beyond a small margin: one would read as standing in
+    or on the other. Pairs that stand on one another, share a platform or name each other in ``attach`` pass."""
+    boxes = {}
+    for index, faces in hulls.items():
+        if faces:
+            boxes[index] = (min(f[0][0] for f in faces), min(f[0][1] for f in faces), max(f[0][2] for f in faces),
+                            max(f[0][3] for f in faces))
+    out: list[str] = []
+    for i, a in enumerate(solids):
+        for b in solids[i + 1:]:
+            ia, ib = a["index"], b["index"]
+            if ia not in boxes or ib not in boxes or (ia, ib) in reported or _related(a, b):
+                continue
+            ba, bb = boxes[ia], boxes[ib]
+            if ba[2] <= bb[0] or bb[2] <= ba[0] or ba[3] <= bb[1] or bb[3] <= ba[1]:
+                continue
+            worst = 0.0
+            for box_a, hull_a in hulls[ia]:
+                if box_a[2] <= bb[0] or bb[2] <= box_a[0] or box_a[3] <= bb[1] or bb[3] <= box_a[1]:
+                    continue
+                for box_b, hull_b in hulls[ib]:
+                    if box_a[2] <= box_b[0] or box_b[2] <= box_a[0] or box_a[3] <= box_b[1] or box_b[3] <= box_a[1]:
+                        continue
+                    worst = max(worst, _poly_area(_clip_convex(hull_a, hull_b)))
+                    if worst > SILHOUETTE_PX:
+                        break
+                if worst > SILHOUETTE_PX:
+                    break
+            if worst > SILHOUETTE_PX:
+                out.append(f"{a['where']} and {b['where']} overlap in the drawing (more than {int(SILHOUETTE_PX)} "
+                           f"square px); move them apart, or set \"attach\" when one deliberately stands against "
+                           f"the other")
+    return out
+
+
+def _platform_overlaps(proj: Projection, hulls: dict[int, list[tuple[tuple[float, float, float, float], list[Point]]]],
+                       ordered: list[int], solids: list[dict[str, Any]],
+                       reported: set[tuple[int, int]] | None = None) -> list[str]:
     """Warn when an object painted after a platform (slab, tile or core) covers part of the platform's top in the
     drawing, unless one stands on the other or either declares ``attach`` to the other."""
     position = {index: pos for pos, index in enumerate(ordered)}
@@ -4836,6 +5137,7 @@ def _platform_overlaps(proj: Projection, groups: dict[int, dict[str, Any]], orde
             continue
         x0, x1, y0, y1, _, z1 = platform["body"]
         top = [proj(x0, y0, z1), proj(x1, y0, z1), proj(x1, y1, z1), proj(x0, y1, z1)]
+        tb = (min(q[0] for q in top), min(q[1] for q in top), max(q[0] for q in top), max(q[1] for q in top))
         mine = position[platform["index"]]
         for other in solids:
             if other is platform or position[other["index"]] <= mine:
@@ -4845,13 +5147,15 @@ def _platform_overlaps(proj: Projection, groups: dict[int, dict[str, Any]], orde
             if other.get("attach") == platform["id"] or platform.get("attach") == other["id"]:
                 continue
             worst = 0.0
-            for op in groups[other["index"]]["ops"]:
-                if op[0] != "path" or op[1].split()[0] not in FACE_CLASSES:
+            for box, hull in hulls[other["index"]]:
+                if box[2] <= tb[0] or tb[2] <= box[0] or box[3] <= tb[1] or tb[3] <= box[1]:
                     continue
-                for run in _sample(op[2], 6):
-                    if len(run) >= 3:
-                        worst = max(worst, _poly_area(_clip_convex(_hull(run), top)))
+                worst = max(worst, _poly_area(_clip_convex(hull, top)))
+                if worst > OVERLAP_PX:
+                    break
             if worst > OVERLAP_PX:
+                if reported is not None:
+                    reported.add((min(platform["index"], other["index"]), max(platform["index"], other["index"])))
                 out.append(f"{other['where']}: it cuts into the top of platform {platform['id']!r} in the drawing "
                            f"(about {int(round(worst))} square px); move it clear, stand it on the platform or set "
                            f"\"attach\": \"{platform['id']}\" when the overlap is intended")
@@ -5148,7 +5452,8 @@ def _shadow_ops_v12(proj: Projection, item: dict[str, Any], solids: list[dict[st
             if radius > 0.02:
                 ops.append(("path", "iso-sh", ground.ellipse(sx, sy, radius * 1.1, radius * 0.8)))
                 ops.append(("path", "iso-sh", ground.ellipse((sx + cx) / 2, (sy + cy) / 2, radius * 0.8, radius * 0.6)))
-            ops.append(("path", "iso-ao", ground.circle(cx, cy, w * 0.14)))
+            if not (item.get("v13") and tree["species"] == SHRUB):
+                ops.append(("path", "iso-ao", ground.circle(cx, cy, w * 0.14)))
         return ops
     if kind == "street":
         for piece in item["plan"]:
@@ -6168,9 +6473,15 @@ def _style(style: str, colors: dict[str, str], outline: float, detail: float, ex
             f"{s}.iso-leaf2{{fill:{mix('recess', 28, 'right')}}}",
             f"{s}.iso-leaf3{{fill:{mix('recess', 62, 'right')}}}",
             f"{s}.iso-under{{fill:{var('recess')}}}",
-            f"{s}.iso-hedge.iso-t{{fill:{mix('recess', 10, 'left')}}}",
-            f"{s}.iso-hedge.iso-l{{fill:{mix('recess', 28, 'right')}}}",
-            f"{s}.iso-hedge.iso-r{{fill:{mix('recess', 62, 'right')}}}",
+            f"{s}.iso-hedge.iso-t{{fill:{mix('recess', 18, 'left')}}}",
+            f"{s}.iso-hedgehi{{fill:none;stroke:{var('left')};stroke-width:{hair};stroke-opacity:.9;"
+            f"vector-effect:non-scaling-stroke}}",
+            f"{s}.iso-soil{{fill:{mix('stroke', 34, 'recess')}}}",
+            f"{s}.iso-pole{{fill:none;stroke:{mix('stroke', 78, 'detail')};stroke-width:{_fmt(outline * 1.5)};"
+            f"stroke-linecap:round;vector-effect:non-scaling-stroke}}",
+            f"{s}.iso-sheen{{fill:{var('top')};fill-opacity:.5}}",
+            f"{s}.iso-hedge.iso-l{{fill:{mix('recess', 46, 'right')}}}",
+            f"{s}.iso-hedge.iso-r{{fill:{mix('recess', 82, 'right')}}}",
             f"{s}.iso-pad{{fill:{mix('detail', 62, 'top')}}}",
             f"{s}.iso-finger{{fill:{mix('detail', 34, 'top')};stroke:{var('detail')};stroke-width:{hair}}}",
             f"{s}.iso-via{{fill:{var('top')};stroke:{var('detail')};stroke-width:{hair}}}",
@@ -6234,6 +6545,7 @@ def render(raw_scene: dict[str, Any], base: str | Path | None = None,
         _attach_check(solids, by_id, errors)
         for item in solids:
             item["carried"] = [other for other in solids if other is not item and _support_of(other, [item]) is item]
+            item["support"] = _support_of(item, solids) if item["space"][4] > EPS else None
 
     groups: dict[int, dict[str, Any]] = {}
     shadow_layer: list[tuple[Any, ...]] = []
@@ -6298,7 +6610,10 @@ def render(raw_scene: dict[str, Any], base: str | Path | None = None,
         ordered.append(-1)
     ordered += [node["index"] for node in depth_order(nodes, proj.view)]
     if v13:
-        warnings += _platform_overlaps(proj, groups, ordered, solids)
+        reported: set[tuple[int, int]] = set()
+        hulls = {item["index"]: _face_hulls(groups[item["index"]]) for item in solids}
+        warnings += _platform_overlaps(proj, hulls, ordered, solids, reported)
+        warnings += _silhouette_overlaps(hulls, solids, reported)
 
     element_count = sum(len(op[2]["elements"]) if op[0] == "icon" else 1 for i in ordered for op in groups[i]["ops"])
     if element_count > MAX_ELEMENTS:
