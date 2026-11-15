@@ -33,6 +33,14 @@ implausible relative sizes or labels that collide with lines and marks. It
 applies only to scenes that declare it or use one of its fields, so 1.0 and 1.1
 scenes keep their exact bytes.
 
+Schema 1.3 adds tonal depth and life: a deeper face ramp with darker reveals,
+recesses and glass and its own dark-scheme ramp, board traces routed in bundles
+from package leads to edge fingers, vias and connectors, terraces with railings,
+paving and planters, interiors behind the glazing, small canopy signage, plaza
+paving with a walk to the entrance, street furniture, hedges and shrubs, shaded
+canopies and a warning when an object cuts into another object's platform. 1.0,
+1.1 and 1.2 scenes keep their exact bytes.
+
     python iso.py render scene.json -o scene.svg --manifest scene.json
 """
 
@@ -50,8 +58,8 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import Any, Callable
 
-SCHEMA = "1.2"
-SCHEMAS = ("1.0", "1.1", "1.2")
+SCHEMA = "1.3"
+SCHEMAS = ("1.0", "1.1", "1.2", "1.3")
 MAX_SCENE_BYTES = 1_000_000
 MAX_ITEMS = 200
 MAX_COORD = 100.0
@@ -80,8 +88,10 @@ GLYPHS = GLYPHS_V10 + GLYPHS_V11
 TREE_SHAPES = ("round", "cone", "oval", "pine")
 SPECIES = ("broadleaf", "columnar", "conifer")
 TREE_SHAPES_V12 = SPECIES + ("mixed",)
+SHRUB = "shrub"
 LABEL_MODES = ("face", "upright", "hidden")
-COLOR_ROLES = ("top", "left", "right", "stroke", "detail", "accent", "text", "grid", "shadow")
+COLOR_ROLES = ("top", "left", "right", "stroke", "detail", "accent", "text", "grid", "shadow", "recess", "glass", "lit")
+COLOR_ROLES_V13 = ("recess", "glass", "lit")
 DEFAULT_COLORS = {
     "line": {
         "top": "#ffffff", "left": "#eef1f7", "right": "#dce2ec", "stroke": "#1b2232",
@@ -94,6 +104,44 @@ DEFAULT_COLORS = {
     "technical": {
         "top": "#ffffff", "left": "#f3f4f7", "right": "#e3e6ec", "stroke": "#2a303c",
         "detail": "#9aa2b1", "accent": "#3d5afe", "text": "#262c38", "grid": "#dadee6", "shadow": "#1b2232",
+    },
+}
+# Schema 1.3 face ramps. One light from the upper left: tops lightest, left faces a clear light gray, right faces a
+# denser mid gray, and reveals, ports and holes darker still (``recess``). ``glass`` is laid at half opacity over the
+# wall it sits in, so glazing follows the face tone; ``lit`` is the warm tint of the few lit windows. The dark ramp is
+# its own set of values, not an inversion: the same light, lower values, light strokes.
+DEFAULT_COLORS_V13 = {
+    "line": {
+        "top": "#ffffff", "left": "#e3e7ed", "right": "#c6cdd8", "stroke": "#1b2232", "detail": "#7f899b",
+        "accent": "#3d5afe", "text": "#1b2232", "grid": "#d3d9e4", "shadow": "#1b2232", "recess": "#9fa7b5",
+        "glass": "#5d6b84", "lit": "#f6dfae",
+    },
+    "solid": {
+        "top": "#e9edf6", "left": "#c5cde0", "right": "#a0abc6", "stroke": "#1b2232", "detail": "#56617d",
+        "accent": "#3d5afe", "text": "#1b2232", "grid": "#d3d9e4", "shadow": "#1b2232", "recess": "#7a86a3",
+        "glass": "#3f4a63", "lit": "#f6dfae",
+    },
+    "technical": {
+        "top": "#ffffff", "left": "#e3e7ed", "right": "#c6cdd8", "stroke": "#2a303c", "detail": "#858ea0",
+        "accent": "#3d5afe", "text": "#262c38", "grid": "#dadee6", "shadow": "#1b2232", "recess": "#9fa7b5",
+        "glass": "#5f6c86", "lit": "#f5dba6",
+    },
+}
+DARK_COLORS_V13 = {
+    "line": {
+        "top": "#2c3344", "left": "#222837", "right": "#191e2a", "stroke": "#b4bdd0", "detail": "#6d788f",
+        "accent": "#8196ff", "text": "#e6ebf5", "grid": "#262d3c", "shadow": "#000000", "recess": "#10141c",
+        "glass": "#04060a", "lit": "#e8c06a",
+    },
+    "solid": {
+        "top": "#343c50", "left": "#262d3e", "right": "#1b2130", "stroke": "#0b0e14", "detail": "#7a85a0",
+        "accent": "#8196ff", "text": "#e6ebf5", "grid": "#262d3c", "shadow": "#000000", "recess": "#10141c",
+        "glass": "#04060a", "lit": "#e8c06a",
+    },
+    "technical": {
+        "top": "#2b3242", "left": "#212736", "right": "#181d29", "stroke": "#aeb8cc", "detail": "#7884a0",
+        "accent": "#8196ff", "text": "#e6ebf5", "grid": "#252c3b", "shadow": "#000000", "recess": "#0e1219",
+        "glass": "#04060a", "lit": "#e9c46a",
     },
 }
 # Outline and detail stroke widths (px) and connector gap (grid units) when the scene does not set them.
@@ -160,6 +208,8 @@ class Projection:
         self.k = self.unit / math.sqrt(0.5 + 0.5 * self.sin * self.sin)
         # Direction toward the viewer; every component is positive.
         self.view = (self.cos / SQRT2, self.cos / SQRT2, self.sin)
+        # Schema 1.3 drawing rules (darker reveals, interiors); set by render() for 1.3 scenes only.
+        self.v13 = False
 
     def vec(self, dx: float, dy: float, dz: float) -> tuple[float, float]:
         k = self.k
@@ -210,12 +260,18 @@ def _v12_values(values: tuple[str, ...]) -> dict[str, str]:
     return dict.fromkeys(values, "1.2")
 
 
+def _v13(field: Field) -> Field:
+    field.since = "1.3"
+    return field
+
+
 COMMON = {
     "id": Field("token"),
     "type": Field("type"),
     "role": Field("token", None),
     "order": Field("int", None, 0, 999),
     "accent": Field("bool", False),
+    "attach": _v13(Field("token", None)),
 }
 PLACED = {
     "x": Field("num", REQUIRED, -MAX_COORD, MAX_COORD),
@@ -244,7 +300,8 @@ TYPES: dict[str, dict[str, Field]] = {
             "radius": Field("num", 0.0, 0.0, MAX_SIZE), "bands": Field("int", 0, 0, 24)},
     "slab": {**COMMON, **PLACED, **FACE_LABEL, **GLYPH, **ICON, "w": _size(), "d": _size(), "h": _size(0.25),
              "radius": Field("num", 0.2, 0.0, MAX_SIZE), "inset": Field("num", 0.0, 0.0, MAX_SIZE),
-             "detail": _v12(Field("int", 0, 0, 3)), "seed": _v12(Field("int", 1, 0, 9999))},
+             "detail": _v12(Field("int", 0, 0, 3)), "seed": _v12(Field("int", 1, 0, 9999)),
+             "paving": _v13(Field("enum", "auto", choices=("auto", "none", "plaza")))},
     "stack": {**COMMON, **PLACED, **FACE_LABEL, "w": _size(), "d": _size(), "count": Field("int", REQUIRED, 2, 12),
               "h": _size(0.3), "gap": Field("num", 0.16, 0.0, 4.0), "radius": Field("num", 0.12, 0.0, MAX_SIZE),
               "leds": Field("bool", True), "front": Field("enum", "x+", choices=("x+", "y+"))},
@@ -265,8 +322,12 @@ TYPES: dict[str, dict[str, Field]] = {
                  "lobby": _v12(Field("bool", True)),
                  "parapet": _v12(Field("bool", True)),
                  "rooftop": _v12(Field("enum", "plant", choices=("none", "plant"))),
-                 "sign_mount": _v12(Field("enum", "wall", choices=("wall", "plaque", "roof"))),
-                 "seed": _v12(Field("int", 1, 0, 9999))},
+                 "sign_mount": _v12(Field("enum", "wall", choices=("wall", "plaque", "roof", "canopy"),
+                                          new={"canopy": "1.3"})),
+                 "seed": _v12(Field("int", 1, 0, 9999)),
+                 "sign_size": _v13(Field("num", 9.0, 6.0, 36.0)),
+                 "terraces": _v13(Field("bool", True)),
+                 "interiors": _v13(Field("bool", True))},
     "card": {**COMMON, **PLACED, **LABEL, **GLYPH, **ICON, "w": _size(), "d": _size(None), "h": _size(None),
              "orient": Field("enum", "flat", choices=("flat", "x+", "y+")), "t": _size(0.12, 0.0, 2.0),
              "radius": Field("num", 0.16, 0.0, MAX_SIZE), "lines": Field("int", 0, 0, 4)},
@@ -274,13 +335,13 @@ TYPES: dict[str, dict[str, Field]] = {
                "t": _size(0.14, 0.0, 2.0), "radius": Field("num", 0.08, 0.0, MAX_SIZE), "lines": Field("int", 3, 0, 6),
                "stand": Field("bool", False)},
     "tree": {**COMMON, **PLACED, "w": _size(), "h": _size(),
-             "shape": Field("enum", "round", choices=TREE_SHAPES + SPECIES,
-                            new={"oval": "1.1", "pine": "1.1", **_v12_values(SPECIES)}),
+             "shape": Field("enum", "round", choices=TREE_SHAPES + SPECIES + (SHRUB,),
+                            new={"oval": "1.1", "pine": "1.1", **_v12_values(SPECIES), SHRUB: "1.3"}),
              "planter": _v11(Field("bool", False)), "seed": _v12(Field("int", 1, 0, 9999))},
     "trees": {**COMMON, **PLACED, "w": _size(), "d": _size(), "count": Field("int", REQUIRED, 1, 24),
               "layout": Field("enum", "row", choices=("row", "grid", "scatter")), "size": _size(0.6, 0.0, 4.0),
-              "h": _size(None, 0.0, 12.0), "shape": Field("enum", "oval", choices=TREE_SHAPES + TREE_SHAPES_V12,
-                                                         new=TREE_SHAPE_NEW),
+              "h": _size(None, 0.0, 12.0), "shape": Field("enum", "oval", choices=TREE_SHAPES + TREE_SHAPES_V12 + (SHRUB,),
+                                                         new={**TREE_SHAPE_NEW, SHRUB: "1.3"}),
               "planter": Field("bool", False), "seed": Field("int", 1, 0, 9999), "vary": _v12(Field("bool", True))},
     "tile": {**COMMON, **PLACED, **LABEL, **AXIS, **MARK, "w": _size(), "d": _size(), "h": _size(0.35),
              "radius": Field("num", 0.22, 0.0, MAX_SIZE), "inset": Field("num", 0.0, 0.0, MAX_SIZE),
@@ -301,6 +362,11 @@ TYPES: dict[str, dict[str, Field]] = {
                   "rows": Field("int", 3, 0, 5), "series": Field("series", None), "header": Field("bool", True)},
     "database": {**COMMON, **PLACED, **LABEL, **MARK, "w": _size(), "h": _size(),
                  "drums": Field("int", 3, 1, 6), "leds": Field("bool", True)},
+    "street": {**COMMON, **PLACED, "w": _size(), "d": _size(), "count": Field("int", REQUIRED, 1, 24),
+               "item": Field("enum", "lamp", choices=("lamp", "bench", "bollard", "mixed")),
+               "seed": Field("int", 1, 0, 9999)},
+    "hedge": {**COMMON, **PLACED, "w": _size(), "d": _size(), "h": _size(0.3, 0.0, 4.0),
+              "seed": Field("int", 1, 0, 9999)},
     "documents": {**COMMON, **PLACED, **LABEL, "w": _size(), "d": _size(None), "h": _size(None),
                   "orient": Field("enum", "y+", choices=("flat", "x+", "y+")), "sheets": Field("int", 3, 1, 5),
                   "lines": Field("int", 4, 0, 6)},
@@ -324,6 +390,7 @@ TYPES: dict[str, dict[str, Field]] = {
 }
 V11_TYPES = ("trees", "tile", "core", "rack", "dashboard")
 V12_TYPES = ("database", "documents")
+V13_TYPES = ("street", "hedge")
 SCENE_FIELDS = {
     "schema": Field("enum", None, choices=SCHEMAS),
     "projection": Field("enum", "isometric", choices=PROJECTIONS),
@@ -339,6 +406,7 @@ SCENE_FIELDS = {
     "icons": _v11(Field("icons", {})),
     "shadows": _v11(Field("bool", None)),
     "labels": _v12(Field("enum", "face", choices=LABEL_MODES)),
+    "dark_colors": _v13(Field("colors", {})),
     "objects": Field("objects"),
 }
 
@@ -462,10 +530,14 @@ def _read_fields(raw: dict[str, Any], spec: dict[str, Field], where: str, errors
                 value = raw[key]
                 if field.since:
                     features.append((field.since, f"{where}.{key}"))
-                elif field.new and isinstance(value, str) and value in field.new:
+                if field.new and isinstance(value, str) and value in field.new:
                     features.append((field.new[value], f"{where}.{key} {value!r}"))
-                elif field.kind == "colors" and isinstance(value, dict) and "shadow" in value:
-                    features.append(("1.1", f"{where}.shadow"))
+                if field.kind == "colors" and isinstance(value, dict):
+                    if "shadow" in value:
+                        features.append(("1.1", f"{where}.shadow"))
+                    for role in COLOR_ROLES_V13:
+                        if role in value:
+                            features.append(("1.3", f"{where}.{role}"))
         elif field.default is REQUIRED:
             errors.append(f"{where}: missing required field {key!r}")
             out[key] = None
@@ -788,8 +860,8 @@ def _tree_positions(item: dict[str, Any], where: str, errors: list[str]) -> list
 # Schema 1.2 geometry: relative sizes, species, building massing and stands.
 
 # Canopy diameter to height: a species reads by its proportions before its outline.
-SPECIES_RATIO = {"broadleaf": 1.6, "columnar": 2.3, "conifer": 1.9}
-SPECIES_MIN = {"broadleaf": 1.2, "columnar": 1.8, "conifer": 1.5}
+SPECIES_RATIO = {"broadleaf": 1.6, "columnar": 2.3, "conifer": 1.9, SHRUB: 0.62}
+SPECIES_MIN = {"broadleaf": 1.2, "columnar": 1.8, "conifer": 1.5, SHRUB: 0.4}
 SPECIES_OF = {"round": "broadleaf", "oval": "broadleaf", "cone": "conifer", "pine": "conifer"}
 TREE_SIZE_V12 = 0.5
 LOBBY_RATIO = 1.45
@@ -926,6 +998,12 @@ def _geometry_building_v12(item: dict[str, Any], where: str, errors: list[str]) 
         span = (ey1 - ey0) if face == "x+" else (ex1 - ex0)
         width = min(1.3, span * 0.5)
         height = entry["lobby"] + 0.16
+        if item.get("v13") and item.get("sign") and item["sign_mount"] == "canopy":
+            # The portal widens to carry its sign on the fascia and rises so the fascia holds the lettering.
+            width = min(max(width, _sign_need(item)), span * 0.86)
+            fascia = max(0.2, item["sign_size"] * 1.6 / item["unit"])
+            item["fascia"] = fascia
+            height = entry["lobby"] + max(0.16, fascia - 0.06)
         mid = (ey0 + ey1) / 2 if face == "x+" else (ex0 + ex1) / 2
         reach = PORTAL_DEPTH + PORTAL_LIP
         if face == "x+":
@@ -1006,6 +1084,10 @@ def _geometry_v12(item: dict[str, Any], where: str, errors: list[str]) -> bool |
             errors.append(f"{where}: {item['drums']} drums need h >= {_fmt(item['drums'] * 0.12)}")
             return False
         return True
+    if item.get("v13"):
+        handled = _geometry_v13(item, where, errors)
+        if handled is not None:
+            return handled
     if kind == "documents":
         orient = item["orient"]
         need, other = ("d", "h") if orient == "flat" else ("h", "d")
@@ -1030,6 +1112,82 @@ def _geometry_v12(item: dict[str, Any], where: str, errors: list[str]) -> bool |
 DOC_T = 0.025
 DOC_GAP = 0.09
 DOC_SHIFT = 0.07
+
+
+# --------------------------------------------------------------------------
+# Schema 1.3 geometry: street furniture, hedges and the signed portal.
+
+# Street pieces: height, footprint along the row and across it (grid units, against a 0.46-0.55 floor).
+STREET_PIECES = {"lamp": (0.66, 0.16, 0.16), "bench": (0.13, 0.44, 0.16), "bollard": (0.14, 0.09, 0.09)}
+STREET_MIX = ("lamp", "bench", "bollard", "bollard")
+SHRUB_FLOORS = (0.3, 1.0)
+
+
+def _v13_defaults(item: dict[str, Any]) -> None:
+    """Defaults that schema 1.3 changes: building signage goes small, onto the entrance canopy or a plaque."""
+    if item["type"] == "building" and "sign_mount" not in item["given"]:
+        item["sign_mount"] = "canopy" if item.get("entrance") else "plaque"
+
+
+def _sign_need(item: dict[str, Any]) -> float:
+    """Grid units a canopy sign needs along the fascia: its mark, a gap and the lettering, plus the portal jambs."""
+    size, unit = item["sign_size"], item["unit"]
+    mark = size * 1.3 / unit + 0.08 if (item.get("glyph") or item.get("icon")) else 0.0
+    return _text_width(item["sign"], size) / unit + mark + 0.44
+
+
+def _street_plan(item: dict[str, Any], where: str, errors: list[str]) -> list[dict[str, Any]] | None:
+    """Pieces of a street group spaced evenly along the area's long axis; ``mixed`` cycles lamps, benches and
+    bollards from the seed."""
+    x, y, w, d, count = item["x"], item["y"], item["w"], item["d"], item["count"]
+    along_x = w >= d - EPS
+    length, across = (w, d) if along_x else (d, w)
+    pitch = length / count
+    rng = _Rand(item["seed"], 13)
+    offset = int(rng.random() * len(STREET_MIX))
+    plan = []
+    for i in range(count):
+        kind = item["item"] if item["item"] != "mixed" else STREET_MIX[(i + offset) % len(STREET_MIX)]
+        _, foot_along, foot_across = STREET_PIECES[kind]
+        if foot_along > pitch - 0.04 + EPS or foot_across > across + EPS:
+            errors.append(f"{where}: {count} pieces leave {_fmt(pitch)} grid units each along the row; a {kind} needs "
+                          f"{_fmt(foot_along + 0.04)} along and {_fmt(foot_across)} across")
+            return None
+        t = pitch * (i + 0.5)
+        cx, cy = (x + t, y + d / 2) if along_x else (x + w / 2, y + t)
+        plan.append({"kind": kind, "cx": cx, "cy": cy, "along_x": along_x})
+    return plan
+
+
+def _geometry_v13(item: dict[str, Any], where: str, errors: list[str]) -> bool | None:
+    kind = item["type"]
+    x, y, z = item["x"], item["y"], item["z"]
+    if kind == "street":
+        plan = _street_plan(item, where, errors)
+        if plan is None:
+            return False
+        item["plan"] = plan
+        top = z + max(STREET_PIECES[piece["kind"]][0] for piece in plan)
+        body = _box(x, x + item["w"], y, y + item["d"], z, top)
+        item["body"], item["space"] = body, body
+        return True
+    if kind == "hedge":
+        if item["h"] > max(item["w"], item["d"]) + EPS:
+            errors.append(f"{where}: a hedge is a long low mass; make h at most its longer side")
+            return False
+        body = _box(x, x + item["w"], y, y + item["d"], z, z + item["h"])
+        item["body"], item["space"] = body, body
+        return True
+    return None
+
+
+def _package_margin(w: float, d: float, dense: int, v13: bool | None) -> float:
+    """Board margin around a core's package; schema 1.3 leaves a wider margin so traces can route around it."""
+    if not dense:
+        return max(0.24, min(w, d) * 0.14)
+    if v13:
+        return max(0.5, min(w, d) * 0.28)
+    return max(0.4, min(w, d) * 0.2)
 
 
 def _object_geometry(item: dict[str, Any], where: str, errors: list[str]) -> None:
@@ -1123,7 +1281,7 @@ def _object_geometry(item: dict[str, Any], where: str, errors: list[str]) -> Non
         if item.get("v12"):
             # The package, plates and cap stand on an inset column; occlusion tests use it instead of the full box.
             dense = item["detail"] if item["parts"] else 0
-            margin = (max(0.4, min(w, item["d"]) * 0.2) if dense else max(0.24, min(w, item["d"]) * 0.14)) - 0.1
+            margin = _package_margin(w, item["d"], dense, item.get("v13")) - 0.1
             item["column"] = _box(x + margin, x + w - margin, y + margin, y + item["d"] - margin, board_top, top)
     elif kind == "rack":
         body = _box(x, x + w, y, y + item["d"], z, z + item["units"] * item["unit_h"])
@@ -1203,6 +1361,8 @@ def normalize_scene(raw: dict[str, Any], base: str | Path | None = None) -> dict
             features.append(("1.1", f"{where} type {kind!r}"))
         if kind in V12_TYPES:
             features.append(("1.2", f"{where} type {kind!r}"))
+        if kind in V13_TYPES:
+            features.append(("1.3", f"{where} type {kind!r}"))
         item["type"] = kind
         item["index"] = index
         item["given"] = frozenset(raw_item)
@@ -1239,18 +1399,24 @@ def normalize_scene(raw: dict[str, Any], base: str | Path | None = None) -> dict
         errors.append(f"scene: schema {declared} does not include {shown}; declare \"schema\": \"{needed}\" "
                       f"or remove them")
     level = max(declared or "1.0", needed)
-    v11, v12 = level >= "1.1", level >= "1.2"
+    v11, v12, v13 = level >= "1.1", level >= "1.2", level >= "1.3"
     for item in items:
         item["v12"] = v12
+        if v13:
+            item["v13"] = True
+            item["unit"] = scene["unit"]
         if item["ok"] and item["type"] not in ("connector", "ground-grid"):
             if v12:
                 _v12_defaults(item)
+            if v13:
+                _v13_defaults(item)
             _object_geometry(item, item["where"], errors)
     if errors:
         raise SceneError(errors)
 
     scene["v11"] = v11
     scene["v12"] = v12
+    scene["v13"] = v13
     scene["schema"] = level
     style_defaults = (STYLE_DEFAULTS_V12 if v12 else STYLE_DEFAULTS)[scene["style"]]
     for key in ("stroke", "detail_stroke"):
@@ -1795,9 +1961,18 @@ def _render_box(proj: Projection, item: dict[str, Any], style: str, warnings: li
             frame = _face(proj, box, "top", _label_axis(item, box))
             band = item["label_size"] / proj.unit + 0.24
             blocked.append(_frame_box(frame, 0.0, frame.h / 2 - band / 2, frame.w, frame.h / 2 + band / 2, box[5], box[5])[:4])
-        detail, _ = _populate(proj, (box[0] + edge, box[1] - edge, box[2] + edge, box[3] - edge), box[5], None, blocked,
-                              item["detail"], item["seed"], style)
+        area = (box[0] + edge, box[1] - edge, box[2] + edge, box[3] - edge)
+        if item.get("v13"):
+            detail, _, _ = _populate_v13(proj, area, box[5], None, blocked, item["detail"], item["seed"], style)
+        else:
+            detail, _ = _populate(proj, area, box[5], None, blocked, item["detail"], item["seed"], style)
         ops += detail
+    if item.get("v13") and item["type"] == "slab":
+        paving = item["paving"]
+        if paving == "auto":
+            paving = "plaza" if any(o["type"] == "building" for o in item.get("carried", [])) else "none"
+        if paving == "plaza":
+            ops += _plaza_ops(proj, item, box)
     return ops + _labelled_faces(proj, item, box, warnings)
 
 
@@ -2704,8 +2879,8 @@ class _Batch:
         return [("path", cls, self.parts[cls]) for cls in order if self.parts.get(cls)]
 
 
-RECESS_ORDER = ("iso-hole", "iso-glass", "iso-deck", "iso-l", "iso-r", "iso-t", "iso-mull", "iso-d iso-faint",
-                "iso-d", "iso-o")
+RECESS_ORDER = ("iso-hole", "iso-glass", "iso-deck", "iso-l", "iso-r", "iso-t", "iso-l iso-rv", "iso-r iso-rv",
+                "iso-t iso-rv", "iso-mull", "iso-d iso-faint", "iso-d", "iso-o")
 
 
 def _recess(batch: _Batch, frame: Frame, u0: float, v0: float, u1: float, v1: float, depth: float,
@@ -2730,10 +2905,11 @@ def _recess(batch: _Batch, frame: Frame, u0: float, v0: float, u1: float, v1: fl
         walls.append(((u0, v0), (u1, v0), frame.v))
     elif facing_v < -EPS:
         walls.append(((u0, v1), (u1, v1), frame.v))
+    reveal = " iso-rv" if frame.proj.v13 else ""
     for a, b, normal in walls:
         quad = _clip_rect([a, b, (b[0] + su, b[1] + sv), (a[0] + su, a[1] + sv)], u0, v0, u1, v1)
         if len(quad) >= 3:
-            batch.add(AXIS_TONE[_axis_of(normal)], frame.poly(quad))
+            batch.add(AXIS_TONE[_axis_of(normal)] + reveal, frame.poly(quad))
     if inner and len(seen) >= 3:
         batch.add(inner, frame.poly(seen))
     if edge:
@@ -2754,8 +2930,9 @@ def _rrect_ground(proj: Projection, z: float, x0: float, x1: float, y0: float, y
 LOBES = {
     "broadleaf": ((0.0, -0.22, 0.72, 0.74), (-0.36, 0.22, 0.5, 0.5), (0.34, 0.3, 0.52, 0.5)),
     "columnar": ((0.0, -0.14, 0.6, 1.0), (-0.2, 0.36, 0.42, 0.62), (0.22, 0.54, 0.42, 0.56)),
+    SHRUB: ((0.02, -0.12, 0.56, 0.5), (-0.44, 0.16, 0.5, 0.44), (0.42, 0.2, 0.52, 0.42)),
 }
-TRUNK_SHARE = {"broadleaf": 0.3, "columnar": 0.18, "conifer": 0.2}
+TRUNK_SHARE = {"broadleaf": 0.3, "columnar": 0.18, "conifer": 0.2, SHRUB: 0.0}
 
 
 def _ellipse_segs(center: Point, rx: float, ry: float) -> list[tuple[Any, ...]]:
@@ -2838,15 +3015,26 @@ def _tree_v12(proj: Projection, tree: dict[str, Any], z0: float, style: str, pla
                 return (c[0] + rr * math.cos(t), c[1] + yy * math.sin(t))
 
             pu, pv = (r, 0.0), (0.0, ry)
-            ops += [("path", "iso-l iso-leaf", [("M", apex), ("L", ell(left_t)), ("E", center, pu, pv, left_t, math.pi / 2), ("Z",)]),
-                    ("path", "iso-r iso-leaf", [("M", apex), ("L", ell(math.pi / 2)), ("E", center, pu, pv, math.pi / 2, right_t), ("Z",)])]
+            lit_half, dark_half = ("iso-leaf2", "iso-leaf3") if proj.v13 else ("iso-l iso-leaf", "iso-r iso-leaf")
+            ops += [("path", lit_half, [("M", apex), ("L", ell(left_t)), ("E", center, pu, pv, left_t, math.pi / 2), ("Z",)]),
+                    ("path", dark_half, [("M", apex), ("L", ell(math.pi / 2)), ("E", center, pu, pv, math.pi / 2, right_t), ("Z",)])]
+            if proj.v13:
+                # The lower rim of each tier sits in its own shade: a band between the rim and a section higher up.
+                lift = (b_y - apex[1]) * 0.2
+                inner_c = (center[0] + (apex[0] - center[0]) * 0.2, b_y - lift)
+                qu, qv = (r * 0.8, 0.0), (0.0, ry * 0.8)
+                ops.append(("path", "iso-under", [("M", ell(left_t)), ("E", center, pu, pv, left_t, right_t),
+                                                  ("L", (inner_c[0] + qu[0] * math.cos(right_t), inner_c[1] + qv[1] * math.sin(right_t))),
+                                                  ("E", inner_c, qu, qv, right_t, left_t), ("Z",)]))
+                ops.append(("path", "iso-leaf1", [("M", apex), ("L", ell(left_t)),
+                                                       ("L", (center[0] - r * 0.45, b_y - (b_y - apex[1]) * 0.35)), ("Z",)]))
             if style != "solid":
                 ops.append(("path", "iso-o", [("M", apex), ("L", ell(left_t)), ("E", center, pu, pv, left_t, right_t), ("Z",)]))
         return ops
     trunk_share = TRUNK_SHARE[species]
     canopy_h = span * (1 - trunk_share)
     lobes = LOBES[species]
-    width = radius * (0.88 if species == "broadleaf" else 0.7)
+    width = radius * {"broadleaf": 0.88, SHRUB: 1.0}.get(species, 0.7)
     top = min(dy - ry for _, dy, _, ry in lobes)
     bottom = max(dy + ry for _, dy, _, ry in lobes)
     left = min(dx - rx for dx, _, rx, _ in lobes)
@@ -2860,8 +3048,9 @@ def _tree_v12(proj: Projection, tree: dict[str, Any], z0: float, style: str, pla
         px = base[0] + mirror * (dx - (left + right) / 2 + jx) * scale_x
         py = top_y + (dy - top + jy) * scale_y
         volumes.append(((px, py), rx * scale_x * jr, ry * scale_y * jr))
-    ops.append(("path", "iso-trunk", [("M", base), ("L", (base[0], trunk_top - canopy_h * 0.1))]))
-    return ops + _canopy_ops(volumes, style)
+    if trunk_share:
+        ops.append(("path", "iso-trunk", [("M", base), ("L", (base[0], trunk_top - canopy_h * 0.1))]))
+    return ops + (_canopy_ops_v13(volumes, style) if proj.v13 else _canopy_ops(volumes, style))
 
 
 def _paint_order(boxes: list[tuple[float, ...]], view: tuple[float, float, float]) -> list[int]:
@@ -2901,8 +3090,9 @@ def _paint_order(boxes: list[tuple[float, ...]], view: tuple[float, float, float
 
 # Buildings -----------------------------------------------------------------
 
-FACADE_ORDER = ("iso-hole", "iso-glass", "iso-dim", "iso-deck", "iso-l", "iso-r", "iso-t", "iso-mull", "iso-d iso-faint",
-                "iso-d", "iso-o")
+FACADE_ORDER = ("iso-hole", "iso-glass", "iso-lit", "iso-blind", "iso-int", "iso-intl", "iso-ceil", "iso-dim", "iso-deck",
+                "iso-pave", "iso-l", "iso-r", "iso-t", "iso-l iso-rv", "iso-r iso-rv", "iso-t iso-rv", "iso-mull",
+                "iso-d iso-faint", "iso-d", "iso-o")
 
 
 def _fins(batch: _Batch, frame: Frame, us: list[float], v0: float, v1: float, reach: float) -> None:
@@ -2941,6 +3131,9 @@ def _facade_v12(batch: _Batch, frame: Frame, item: dict[str, Any], vol: dict[str
     floors, lobby = vol["floors"], vol["lobby"]
     fw, fh = frame.w, frame.h
     margin = min(0.16, fw * 0.08)
+    life = None
+    if frame.proj.v13 and item.get("interiors"):
+        life = _Rand(item["seed"] * 31 + item["volumes"].index(vol) * 7 + (1 if frame.u[1] else 0), 19)
     lobby_top = fh - lobby
     rows = [(cap + i * floor_h, cap + (i + 1) * floor_h) for i in range(floors - 1)]
     if sign_band and rows:
@@ -2953,13 +3146,22 @@ def _facade_v12(batch: _Batch, frame: Frame, item: dict[str, Any], vol: dict[str
             for col in range(cols):
                 left = margin + col * cell + cell * 0.2
                 right = margin + (col + 1) * cell - cell * 0.2
-                _recess(batch, frame, left, top + floor_h * 0.24, right, bottom - floor_h * 0.18, depth)
+                seen = _recess(batch, frame, left, top + floor_h * 0.24, right, bottom - floor_h * 0.18, depth)
+                if life:
+                    _interior(batch, frame, seen, life)
     elif kind in ("ribbon", "bands"):
         su, sv = _depth_shift(frame)
         for top, bottom in rows:
             opening = (margin, top + floor_h * 0.22, fw - margin, bottom - floor_h * 0.16)
             seen = _recess(batch, frame, *opening, 0.05)
             _mullions(batch, frame, seen, (su * 0.05, sv * 0.05), opening, 0.3)
+            if life:
+                bays = max(1, int(round((opening[2] - opening[0]) / 0.3)))
+                for b in range(bays):
+                    lo = max(seen[0], opening[0] + (opening[2] - opening[0]) * b / bays + su * 0.05)
+                    hi = min(seen[2], opening[0] + (opening[2] - opening[0]) * (b + 1) / bays + su * 0.05)
+                    if hi - lo > 0.04:
+                        _interior(batch, frame, (lo + 0.01, seen[1], hi - 0.01, seen[3]), life)
     elif kind in ("curtain", "fins") and rows:
         top, bottom = rows[0][0] + 0.04, rows[-1][1] - 0.04
         batch.add("iso-glass", frame.poly([(margin, top), (fw - margin, top), (fw - margin, bottom), (margin, bottom)]))
@@ -2968,6 +3170,11 @@ def _facade_v12(batch: _Batch, frame: Frame, item: dict[str, Any], vol: dict[str
         pitch = 0.17 if kind == "fins" else 0.3
         count = max(2, int(round((fw - 2 * margin) / pitch)))
         us = [margin + (fw - 2 * margin) * i / count for i in range(count + 1)]
+        if life:
+            for row_top, row_bottom in rows:
+                for a, b in zip(us, us[1:]):
+                    _interior(batch, frame, (a + 0.012, max(row_top, top) + 0.02, b - 0.012, min(row_bottom, bottom) - 0.02),
+                              life)
         _fins(batch, frame, us, top, bottom, 0.08 if kind == "fins" else 0.035)
         batch.add("iso-d", frame.poly([(margin, top), (fw - margin, top), (fw - margin, bottom), (margin, bottom)]))
     # A slab edge between the upper floors and the lobby, then the lobby glazing around the door.
@@ -2984,6 +3191,13 @@ def _facade_v12(batch: _Batch, frame: Frame, item: dict[str, Any], vol: dict[str
         if glazed:
             opening = (left, lobby_top + 0.1, right, fh - 0.05)
             seen = _recess(batch, frame, *opening, 0.07)
+            if life:
+                bays = max(1, int(round((opening[2] - opening[0]) / 0.34)))
+                for b in range(bays):
+                    lo = max(seen[0], opening[0] + (opening[2] - opening[0]) * b / bays + su * 0.07)
+                    hi = min(seen[2], opening[0] + (opening[2] - opening[0]) * (b + 1) / bays + su * 0.07)
+                    if hi - lo > 0.04:
+                        _interior(batch, frame, (lo + 0.01, seen[1], hi - 0.01, seen[3]), life)
             _mullions(batch, frame, seen, (su * 0.07, sv * 0.07), opening, 0.34, 0.68)
         elif kind not in ("none",):
             cols = max(1, int((right - left) / 0.42))
@@ -3067,7 +3281,7 @@ def _wall_sign(proj: Projection, item: dict[str, Any], frame: Frame, top: float,
                warnings: list[str]) -> list[tuple[Any, ...]]:
     """Lettering set into a facade band, with the building's mark as a logo before it."""
     sign = item["sign"]
-    size = max(MIN_LABEL_PX, item["label_size"])
+    size = item["sign_size"] if item.get("v13") else max(MIN_LABEL_PX, item["label_size"])
     mark = bool(item.get("glyph") or item.get("icon_data"))
     text_w = _text_width(sign, size) / proj.unit
     g = min((bottom - top) * 0.7, size * 1.3 / proj.unit) if mark else 0.0
@@ -3087,13 +3301,17 @@ def _wall_sign(proj: Projection, item: dict[str, Any], frame: Frame, top: float,
     return ops
 
 
-def _portal_ops(proj: Projection, item: dict[str, Any], style: str) -> list[tuple[Any, ...]]:
+def _portal_ops(proj: Projection, item: dict[str, Any], style: str, warnings: list[str] | None = None
+                ) -> list[tuple[Any, ...]]:
     """A deep entrance portal: a framed box standing out of the facade, glazed doors set deep inside it, and a
-    thin canopy slab over it."""
+    thin canopy slab over it. Under 1.3 a canopy sign sits small on the fascia."""
     portal, face = item["portal"], item["entrance"]
     ops = _prism(proj, portal, 0.0).ops(style)
     frame = _face(proj, portal, face)
     side, fascia = min(0.13, frame.w * 0.12), min(0.2, frame.h * 0.2)
+    signed = bool(item.get("v13") and item.get("sign") and item["sign_mount"] == "canopy")
+    if signed:
+        fascia = item["fascia"]
     opening = (side, fascia, frame.w - side, frame.h)
     depth = PORTAL_DEPTH + 0.06
     batch = _Batch()
@@ -3106,6 +3324,20 @@ def _portal_ops(proj: Projection, item: dict[str, Any], style: str) -> list[tupl
         if seen[0] < mid + du < seen[2]:
             batch.add("iso-d", frame.poly([(mid + du, frame.h * 0.55 + sv * depth), (mid + du, frame.h * 0.72 + sv * depth)], False))
     ops += batch.ops(FACADE_ORDER)
+    if signed:
+        size = item["sign_size"]
+        mark = bool(item.get("glyph") or item.get("icon_data"))
+        text_w = _text_width(item["sign"], size) / proj.unit
+        g = size * 1.3 / proj.unit if mark else 0.0
+        gap = 0.08 if mark else 0.0
+        total = g + gap + text_w
+        if warnings is not None and total > frame.w - 2 * side + EPS:
+            warnings.append(f"{item['where']}: sign {item['sign']!r} needs about {_fmt(total)} grid units but the "
+                            f"canopy fascia offers {_fmt(frame.w - 2 * side)}; shorten it or widen the building")
+        start = (frame.w - total) / 2
+        if mark:
+            ops += _mark(frame, item, start + g / 2, fascia / 2, g, "iso-g")
+        ops.append(frame.text("iso-sign", item["sign"], start + g + gap, fascia / 2, size, "start"))
     x0, x1, y0, y1, _, z1 = portal
     if face == "x+":
         canopy = _box(x0, x1 + PORTAL_LIP, y0 - 0.08, y1 + 0.08, z1, z1 + 0.06)
@@ -3162,8 +3394,10 @@ def _render_building_v12(proj: Projection, item: dict[str, Any], style: str, war
         ops += batch.ops(FACADE_ORDER) + texts
         if vol["role"] == "main" and item["rooftop"] == "plant":
             ops += _rooftop_ops(proj, vol, item, style)
+        if item.get("v13") and item["terraces"] and vol["role"] != "main" and vol["cap"] > 0:
+            ops += _terrace_ops(proj, item, vol, style)
         if vol is entry and item["portal"] is not None:
-            ops += _portal_ops(proj, item, style)
+            ops += _portal_ops(proj, item, style, warnings)
     if item.get("sign") and item["sign_mount"] == "roof":
         ops += _roof_sign(proj, item, volumes[0]["box"], style, warnings)
     label_item = {**item, "glyph": None, "icon_data": None} if item.get("sign") else item
@@ -3175,7 +3409,7 @@ def _roof_sign(proj: Projection, item: dict[str, Any], box: tuple[float, ...], s
     """The schema 1.1 sign board on two legs above the roof edge, kept as the ``roof`` mount."""
     x0, x1, y0, y1, _, z1 = box
     face = item.get("sign_face") or item.get("entrance") or "y+"
-    size = max(MIN_LABEL_PX, item["label_size"])
+    size = item["sign_size"] if item.get("v13") else max(MIN_LABEL_PX, item["label_size"])
     mark = 0.34 if (item.get("glyph") or item.get("icon_data")) else 0.0
     length = (_text_width(item["sign"], size) / proj.unit + mark + (0.12 if mark else 0.0)) / 0.88 + 0.12
     span = (x1 - x0) if face == "y+" else (y1 - y0)
@@ -3198,7 +3432,7 @@ def _plaque(proj: Projection, item: dict[str, Any], frame: Frame, vol: dict[str,
             warnings: list[str]) -> list[tuple[Any, ...]]:
     """A small name plate on the lobby wall beside the door."""
     sign = item["sign"]
-    size = max(MIN_LABEL_PX, item["label_size"])
+    size = item["sign_size"] if item.get("v13") else max(MIN_LABEL_PX, item["label_size"])
     width = _text_width(sign, size) / proj.unit + 0.2
     height = size / proj.unit * 1.5
     lobby_top = frame.h - vol["lobby"]
@@ -3221,6 +3455,7 @@ def _plaque(proj: Projection, item: dict[str, Any], frame: Frame, vol: dict[str,
 PARTS = {
     "ic": (0.44, 0.3, 0.06), "chip": (0.24, 0.24, 0.05), "cap": (0.13, 0.13, 0.15), "socket": (0.46, 0.17, 0.1),
     "header": (0.5, 0.1, 0.04), "vent": (0.46, 0.18, 0.0), "plate": (0.58, 0.26, 0.012),
+    "mcu": (1.0, 1.0, 0.06), "conn": (0.6, 0.2, 0.08),
 }
 PART_MIX = {
     1: ("ic", "cap", "socket", "cap"),
@@ -3311,6 +3546,14 @@ def _part_ops(proj: Projection, kind: str, rect: tuple[float, float, float, floa
     body = _box(x0, x1, y0, y1, zb, zb + h)
     pins_back: list[tuple[Any, ...]] = []
     pins_front: list[tuple[Any, ...]] = []
+    if kind == "mcu":
+        for side, tips in _qfp_pins(rect, 0.045, 0.065):
+            target = pins_back if side.endswith("-") else pins_front
+            for tx, ty in tips:
+                if side[0] == "x":
+                    target += ground.poly([(x1 if side == "x+" else x0, ty), (tx, ty)], False)
+                else:
+                    target += ground.poly([(tx, y1 if side == "y+" else y0), (tx, ty)], False)
     if kind in ("ic", "chip"):
         along_x = x1 - x0 >= y1 - y0
         sides = (("y-", "y+") if along_x else ("x-", "x+")) if kind == "ic" else ("x-", "y-", "x+", "y+")
@@ -3341,6 +3584,17 @@ def _part_ops(proj: Projection, kind: str, rect: tuple[float, float, float, floa
         batch = _Batch()
         _recess(batch, lid, 0.05, 0.045, lid.w - 0.05, lid.h - 0.045, 0.07, back="iso-hole", edge="iso-d", inner=None)
         ops += batch.ops(FACADE_ORDER)
+    elif kind == "conn":
+        batch = _Batch()
+        long_u = lid.w >= lid.h
+        if long_u:
+            _recess(batch, lid, 0.04, lid.h * 0.3, lid.w - 0.04, lid.h * 0.7, 0.05, back="iso-hole", edge="iso-d", inner=None)
+        else:
+            _recess(batch, lid, lid.w * 0.3, 0.04, lid.w * 0.7, lid.h - 0.04, 0.05, back="iso-hole", edge="iso-d", inner=None)
+        ops += batch.ops(FACADE_ORDER)
+    elif kind == "mcu":
+        ops.append(("path", "iso-d iso-faint", lid.rrect(0.06, 0.06, lid.w - 0.06, lid.h - 0.06, 0.03)))
+        ops.append(("path", "iso-dotf", lid.circle(0.13, 0.13, 0.03)))
     elif kind == "header":
         posts: list[tuple[Any, ...]] = []
         along_x = x1 - x0 >= y1 - y0
@@ -3476,7 +3730,7 @@ def _render_core_v12(proj: Projection, item: dict[str, Any], style: str, warning
     ops.append(("path", "iso-d iso-faint", top.rrect(0.1, 0.1, top.w - 0.1, top.h - 0.1, max(0.0, r - 0.06))))
     label = item.get("label")
     strip = max(0.44, item["label_size"] / proj.unit + 0.26) if label and item["label_face"] == "top" else 0.0
-    margin = max(0.4, min(x1 - x0, y1 - y0) * 0.2) if density else max(0.24, min(x1 - x0, y1 - y0) * 0.14)
+    margin = _package_margin(x1 - x0, y1 - y0, density, item.get("v13"))
     pu0, pv0, pu1, pv1 = margin, margin, top.w - margin, top.h - margin - strip
     if pv1 - pv0 < 0.5:
         warnings.append(f"{item['where']}: the label strip leaves the package only {_fmt(max(0.0, pv1 - pv0))} grid "
@@ -3489,12 +3743,17 @@ def _render_core_v12(proj: Projection, item: dict[str, Any], style: str, warning
     if strip:
         blocked.append(_frame_box(top, 0.0, top.h - strip - 0.04, top.w, top.h, zb, zb)[:4])
     lip = 0.16
-    detail_ops, _ = _populate(proj, (x0 + lip, x1 - lip, y0 + lip, y1 - lip), zb, package, blocked, density,
-                              item["seed"], style)
+    substrate = _box(px0 - 0.06, px1 + 0.06, py0 - 0.06, py1 + 0.06, zb, zb + 0.045)
+    if item.get("v13"):
+        leads = _qfp_pins(substrate[:4], LEAD_REACH, 0.065) if item["pins"] else []
+        detail_ops, _, _ = _populate_v13(proj, (x0 + lip, x1 - lip, y0 + lip, y1 - lip), zb, package, blocked,
+                                         density, item["seed"], style, leads)
+    else:
+        detail_ops, _ = _populate(proj, (x0 + lip, x1 - lip, y0 + lip, y1 - lip), zb, package, blocked, density,
+                                  item["seed"], style)
     ops += detail_ops
     # The package: a substrate ringed by leads, then a lid with a fin comb on its sides and a die window.
     ground = Frame(proj, (0.0, 0.0, zb), (1, 0, 0), (0, 1, 0), 0, 0)
-    substrate = _box(px0 - 0.06, px1 + 0.06, py0 - 0.06, py1 + 0.06, zb, zb + 0.045)
     leads_back: list[tuple[Any, ...]] = []
     leads_front: list[tuple[Any, ...]] = []
     if item["pins"]:
@@ -3558,13 +3817,15 @@ def _render_core_v12(proj: Projection, item: dict[str, Any], style: str, warning
                     layer.add("iso-d", face.rrect(u + 0.04, v, u + cell - 0.04, v + 0.3, 0.03))
                     layer.add("iso-trace", face.poly([(u + cell / 2, v), (u + cell / 2, v - 0.16)], False))
             layer.add("iso-trace", face.poly([(0.3, face.h * 0.55 - 0.16), (face.w - 0.3, face.h * 0.55 - 0.16)], False))
-        else:
+        elif not item.get("v13"):
             traces, nodes = _trace_pattern(i % 2 == 1)
             for trace in traces:
                 layer.add("iso-d", face.poly([(0.16 + u * (face.w - 0.32), 0.16 + v * (face.h - 0.32)) for u, v in trace], False))
             for u, v in nodes:
                 layer.add("iso-node", face.circle(0.16 + u * (face.w - 0.32), 0.16 + v * (face.h - 0.32), 0.055))
         ops += layer.ops(("iso-l", "iso-trace", "iso-d iso-faint", "iso-d", "iso-node"))
+        if item.get("v13") and not (i == 0 and item["layers"] > 1 and density) and density:
+            ops += _plate_routes(proj, plate, density, item["seed"] * 7 + i, 0.16)
         level, surface = zp + CORE_PLATE_H, plate
     if item["cap"]:
         sx0, sx1, sy0, sy1 = surface[:4]
@@ -3581,13 +3842,1020 @@ def _render_core_v12(proj: Projection, item: dict[str, Any], style: str, warning
         ops += _mark(mark_frame, item, mark_frame.w / 2, mark_frame.h / 2, min(mark_frame.w, mark_frame.h) * 0.4)
     if label:
         if item["label_face"] == "top":
-            band = _subframe(top, margin, top.h - strip, top.w - margin, top.h - 0.06)
+            side = 0.36 if item.get("v13") else margin
+            band = _subframe(top, side, top.h - strip, top.w - side, top.h - 0.06)
             _label_fits(band, item, band.w, warnings, "the label strip")
             ops.append(band.text("iso-txt", label, band.w / 2, band.h / 2, item["label_size"], "middle"))
         else:
             frame = _face(proj, board, item["label_face"])
             ops += _face_content(frame, {**item, "glyph": None, "icon_data": None}, warnings)
     return ops
+
+
+# Schema 1.3 board routing -----------------------------------------------------
+#
+# Traces leave a package's lead rows in bundles of parallel lines at twice the lead pitch and run to an edge
+# connector, a board connector or a via field. Each bundle's centerline is found by A* on a grid aligned to its
+# start, moving in the eight 45-degree headings, turning at most 45 degrees at a time and only after a straight run
+# long enough that the offset traces never fold. Placed parts, the package, blocked areas and earlier bundles are
+# inflated by the bundle's half width plus clearance, so a bundle never runs under a part and never crosses or
+# touches another. Every trace starts on a lead tip and ends on a pad, finger or via. Integer costs and a FIFO
+# tie-break keep the result identical on every platform.
+
+ROUTE_STEP = 0.1
+TRACE_CLEAR = 0.06
+TRACE_HALF = 0.015
+BUNDLE_GAP = 0.12
+ROUTE_TURN = 50
+ROUTE_LIMIT = 150_000
+HEADINGS = ((1, 0), (1, 1), (0, 1), (-1, 1), (-1, 0), (-1, -1), (0, -1), (1, -1))
+SIDE_OUT = {"x+": 0, "y+": 2, "x-": 4, "y-": 6}
+# Bundles routed from each lead row by detail level; every bundle carries 3 to 5 traces. A higher detail routes the
+# same bundles first and then adds more, so detail never lowers the trace count.
+ROUTE_RANKS = {1: 1, 2: 2, 3: 3}
+ROUTE_TRACES = (3, 5)
+FINGER_LEN = 0.2
+VIA_R = 0.032
+CONN_DEPTH = 0.2
+LEAD_REACH = 0.07
+
+
+def _pt_seg(p: Point, a: Point, b: Point) -> float:
+    dx, dy = b[0] - a[0], b[1] - a[1]
+    length = dx * dx + dy * dy
+    t = 0.0 if length < 1e-12 else max(0.0, min(1.0, ((p[0] - a[0]) * dx + (p[1] - a[1]) * dy) / length))
+    return math.hypot(p[0] - a[0] - t * dx, p[1] - a[1] - t * dy)
+
+
+def _pt_rect(p: Point, rect: tuple[float, ...]) -> float:
+    dx = max(rect[0] - p[0], 0.0, p[0] - rect[1])
+    dy = max(rect[2] - p[1], 0.0, p[1] - rect[3])
+    return math.hypot(dx, dy)
+
+
+def _segs_cross(a: Point, b: Point, c: Point, d: Point) -> bool:
+    def orient(p: Point, q: Point, r: Point) -> float:
+        return (q[0] - p[0]) * (r[1] - p[1]) - (q[1] - p[1]) * (r[0] - p[0])
+
+    o1, o2, o3, o4 = orient(a, b, c), orient(a, b, d), orient(c, d, a), orient(c, d, b)
+    return (o1 > 0) != (o2 > 0) and (o3 > 0) != (o4 > 0) and abs(o1) > 1e-12 and abs(o2) > 1e-12 \
+        and abs(o3) > 1e-12 and abs(o4) > 1e-12
+
+
+def _seg_seg(a: Point, b: Point, c: Point, d: Point) -> float:
+    """Distance between segments ab and cd; 0 when they cross."""
+    if _segs_cross(a, b, c, d):
+        return 0.0
+    return min(_pt_seg(a, c, d), _pt_seg(b, c, d), _pt_seg(c, a, b), _pt_seg(d, a, b))
+
+
+def _seg_rect(a: Point, b: Point, rect: tuple[float, ...]) -> float:
+    """Distance between segment ab and an axis-aligned rectangle (x0, x1, y0, y1); 0 when they meet."""
+    x0, x1, y0, y1 = rect[:4]
+    if _pt_rect(a, rect) == 0.0 or _pt_rect(b, rect) == 0.0:
+        return 0.0
+    corners = ((x0, y0), (x1, y0), (x1, y1), (x0, y1))
+    for i in range(4):
+        if _segs_cross(a, b, corners[i], corners[(i + 1) % 4]):
+            return 0.0
+    return min(_pt_rect(a, rect), _pt_rect(b, rect), *(_pt_seg(c, a, b) for c in corners))
+
+
+def _unit2(dx: float, dy: float) -> Point:
+    length = math.hypot(dx, dy)
+    return (dx / length, dy / length)
+
+
+def _offset_line(points: list[Point], offset: float) -> list[Point]:
+    """A polyline moved ``offset`` to its left with mitred corners, so parallel traces keep their pitch through bends."""
+    dirs = [_unit2(b[0] - a[0], b[1] - a[1]) for a, b in zip(points, points[1:])]
+    out = []
+    for i, (px, py) in enumerate(points):
+        if i == 0 or i == len(points) - 1:
+            dx, dy = dirs[0] if i == 0 else dirs[-1]
+            out.append((px - dy * offset, py + dx * offset))
+            continue
+        n1, n2 = (-dirs[i - 1][1], dirs[i - 1][0]), (-dirs[i][1], dirs[i][0])
+        k = offset / (1.0 + n1[0] * n2[0] + n1[1] * n2[1])
+        out.append((px + k * (n1[0] + n2[0]), py + k * (n1[1] + n2[1])))
+    return out
+
+
+def _simplify(points: list[Point]) -> list[Point]:
+    """Drop repeated and collinear points."""
+    out: list[Point] = []
+    for p in points:
+        if out and math.dist(out[-1], p) < 1e-9:
+            continue
+        if len(out) >= 2:
+            a, b = out[-2], out[-1]
+            cross = (b[0] - a[0]) * (p[1] - b[1]) - (b[1] - a[1]) * (p[0] - b[0])
+            dot = (b[0] - a[0]) * (p[0] - b[0]) + (b[1] - a[1]) * (p[1] - b[1])
+            if abs(cross) < 1e-9 and dot > 0:
+                out[-1] = p
+                continue
+        out.append(p)
+    return out
+
+
+def _astar(start: Point, heading: int, goal: Point, goal_heading: int, half: float,
+           rects: list[tuple[float, ...]], others: list[tuple[list[Point], float]],
+           bounds: tuple[float, float, float, float], min_run: int) -> list[Point] | None:
+    """The corner points of a bundle centerline from ``start`` to ``goal``, or None when no route exists."""
+    step = ROUTE_STEP
+    sx, sy = start
+    bx0, bx1, by0, by1 = bounds
+    i0, i1 = math.ceil((bx0 - sx) / step - 1e-9), math.floor((bx1 - sx) / step + 1e-9)
+    j0, j1 = math.ceil((by0 - sy) / step - 1e-9), math.floor((by1 - sy) / step + 1e-9)
+    gi, gj = int(round((goal[0] - sx) / step)), int(round((goal[1] - sy) / step))
+    if not (i0 <= 0 <= i1 and j0 <= 0 <= j1 and i0 <= gi <= i1 and j0 <= gj <= j1):
+        return None
+    rows = j1 - j0 + 1
+    blocked = bytearray((i1 - i0 + 1) * rows)
+
+    def index(i: int, j: int) -> int:
+        return (i - i0) * rows + (j - j0)
+
+    margin = half + TRACE_CLEAR + TRACE_HALF + step * 0.5
+    for rect in rects:
+        x0, x1, y0, y1 = rect[:4]
+        for i in range(max(i0, math.floor((x0 - margin - sx) / step)), min(i1, math.ceil((x1 + margin - sx) / step)) + 1):
+            px = sx + i * step
+            dx = max(x0 - px, 0.0, px - x1)
+            if dx >= margin:
+                continue
+            for j in range(max(j0, math.floor((y0 - margin - sy) / step)), min(j1, math.ceil((y1 + margin - sy) / step)) + 1):
+                py = sy + j * step
+                dy = max(y0 - py, 0.0, py - y1)
+                if dx * dx + dy * dy < margin * margin:
+                    blocked[index(i, j)] = 1
+    for points, other_half in others:
+        reach = half + other_half + BUNDLE_GAP + 2 * TRACE_HALF + step * 0.5
+        for a, b in zip(points, points[1:]):
+            lo_i = max(i0, math.floor((min(a[0], b[0]) - reach - sx) / step))
+            hi_i = min(i1, math.ceil((max(a[0], b[0]) + reach - sx) / step))
+            lo_j = max(j0, math.floor((min(a[1], b[1]) - reach - sy) / step))
+            hi_j = min(j1, math.ceil((max(a[1], b[1]) + reach - sy) / step))
+            for i in range(lo_i, hi_i + 1):
+                for j in range(lo_j, hi_j + 1):
+                    if not blocked[index(i, j)] and _pt_seg((sx + i * step, sy + j * step), a, b) < reach:
+                        blocked[index(i, j)] = 1
+    if blocked[index(0, 0)] or blocked[index(gi, gj)]:
+        return None
+
+    def estimate(i: int, j: int) -> int:
+        dx, dy = abs(gi - i), abs(gj - j)
+        return 10 * max(dx, dy) + 4 * min(dx, dy)
+
+    first = (0, 0, heading, min_run)
+    best = {first: 0}
+    parent: dict[tuple[int, int, int, int], tuple[int, int, int, int]] = {}
+    heap = [(estimate(0, 0), 0, 0, first)]
+    counter = 0
+    pushes = 0
+    found = None
+    while heap:
+        _, _, cost, state = heapq.heappop(heap)
+        if cost > best[state]:
+            continue
+        i, j, hd, run = state
+        if i == gi and j == gj and hd == goal_heading:
+            found = state
+            break
+        counter += 1
+        if counter > ROUTE_LIMIT:
+            return None
+        for turn in (0, 1, -1):
+            if turn and run < min_run:
+                continue
+            nh = (hd + turn) % 8
+            # Never turn more than 90 degrees away from the start or the arrival heading: no hairpins or loops.
+            if min((nh - heading) % 8, (heading - nh) % 8) > 2 or min((nh - goal_heading) % 8, (goal_heading - nh) % 8) > 2:
+                continue
+            dx, dy = HEADINGS[nh]
+            ni, nj = i + dx, j + dy
+            if not (i0 <= ni <= i1 and j0 <= nj <= j1) or blocked[index(ni, nj)]:
+                continue
+            if dx and dy and (blocked[index(i + dx, j)] or blocked[index(i, j + dy)]):
+                continue
+            new = cost + (14 if dx and dy else 10) + (ROUTE_TURN if turn else 0)
+            nstate = (ni, nj, nh, 1 if turn else min(run + 1, min_run))
+            if new < best.get(nstate, 1 << 60):
+                best[nstate] = new
+                parent[nstate] = state
+                pushes += 1
+                heapq.heappush(heap, (new + estimate(ni, nj), pushes, new, nstate))
+    if found is None:
+        return None
+    chain = [found]
+    while chain[-1] in parent:
+        chain.append(parent[chain[-1]])
+    chain.reverse()
+    points = [(sx + i * step, sy + j * step) for i, j, _, _ in chain]
+    return _simplify(points)
+
+
+def _bundle_groups(pins: list[Point], rng: _Rand, stride: int = 2) -> list[tuple[int, list[Point]]]:
+    """Up to three bundles along a lead row at ``stride`` times the lead pitch, with free leads between them, each
+    with its rank: the middle bundle first, then outward."""
+    low, high = ROUTE_TRACES
+    usable = pins[stride - 1::stride]
+    gap = 2 if stride > 1 else 1
+    count = max(ROUTE_RANKS.values())
+    sizes: list[int] = []
+    while count > 0:
+        sizes = [low + int(rng.random() * (high - low + 1)) for _ in range(count)]
+        need = sum(sizes) + gap * (count + 1)
+        while need > len(usable) and max(sizes) > low:
+            k = sizes.index(max(sizes))
+            sizes[k] -= 1
+            need -= 1
+        if need <= len(usable):
+            break
+        count -= 1
+    if count <= 0:
+        return []
+    slack = len(usable) - sum(sizes) - gap * (count + 1)
+    cursor = gap
+    groups = []
+    for size in sizes:
+        shift = int(rng.random() * (slack // count + 1)) if slack > 0 else 0
+        cursor += shift
+        slack -= shift
+        groups.append(usable[cursor:cursor + size])
+        cursor += size + gap
+    order = sorted(range(len(groups)), key=lambda k: (abs(k - (len(groups) - 1) / 2), k))
+    return [(rank, groups[k]) for rank, k in enumerate(order)]
+
+
+def _terminal(kind: str, end: Point, heading: int, offsets: list[float]) -> dict[str, Any]:
+    """Pads, fingers or vias at the trace ends of a bundle that arrives at ``end`` along ``heading``."""
+    dx, dy = _unit2(*HEADINGS[heading])
+    nx, ny = -dy, dx
+    ends = [(end[0] + nx * o, end[1] + ny * o) for o in offsets]
+    lo, hi = min(offsets) - 0.06, max(offsets) + 0.06
+    if kind == "edge":
+        fingers = []
+        for x, y in ends:
+            tip = (x + dx * FINGER_LEN, y + dy * FINGER_LEN)
+            half = (nx * 0.028, ny * 0.028)
+            fingers.append([(x + half[0], y + half[1]), (tip[0] + half[0], tip[1] + half[1]),
+                            (tip[0] - half[0], tip[1] - half[1]), (x - half[0], y - half[1])])
+        reach = FINGER_LEN
+    elif kind == "conn":
+        fingers = []
+        reach = CONN_DEPTH + 0.05
+    else:
+        fingers = []
+        reach = 0.16
+    corners = [(end[0] + nx * lo, end[1] + ny * lo), (end[0] + nx * hi, end[1] + ny * hi),
+               (end[0] + nx * hi + dx * reach, end[1] + ny * hi + dy * reach),
+               (end[0] + nx * lo + dx * reach, end[1] + ny * lo + dy * reach)]
+    rect = (min(p[0] for p in corners), max(p[0] for p in corners), min(p[1] for p in corners), max(p[1] for p in corners))
+    housing = None
+    if kind == "conn":
+        a = (end[0] + dx * 0.05, end[1] + dy * 0.05)
+        b = (a[0] + dx * CONN_DEPTH, a[1] + dy * CONN_DEPTH)
+        pts = [(a[0] + nx * (lo - 0.04), a[1] + ny * (lo - 0.04)), (b[0] + nx * (hi + 0.04), b[1] + ny * (hi + 0.04))]
+        housing = (min(p[0] for p in pts), max(p[0] for p in pts), min(p[1] for p in pts), max(p[1] for p in pts))
+    vias = []
+    if kind == "via":
+        vias = [(x + dx * (0.05 + 0.08 * (k % 2)), y + dy * (0.05 + 0.08 * (k % 2))) for k, (x, y) in enumerate(ends)]
+    return {"kind": kind, "ends": ends, "fingers": fingers, "rect": rect, "housing": housing, "vias": vias,
+            "heading": heading}
+
+
+def _route_board(area: tuple[float, float, float, float], sources: list[tuple[str, list[Point], tuple[float, ...]]],
+                 rects: list[tuple[float, ...]], density: int, seed: int,
+                 kinds: tuple[str, ...] = ("edge", "conn", "via"), ahead: tuple[float, float] = (0.5, 1.4),
+                 stride: int = 2, compact: bool = False) -> dict[str, Any]:
+    """Route bundles from each source's lead row to edge fingers, connectors or vias inside ``area``.
+
+    ``sources`` lists (side, lead tips ordered along the side, the package rectangle). ``rects`` are obstacles the
+    traces keep clear of. Returns the bundles (each with its traces, start pins, terminal and kind) and every
+    rectangle the routing now occupies."""
+    ax0, ax1, ay0, ay1 = area
+    bundles: list[dict[str, Any]] = []
+    if density <= 0:
+        return {"bundles": bundles}
+    plan = []
+    for order, (side, pins, package) in enumerate(sources):
+        for rank, group in _bundle_groups(pins, _Rand(seed, 41 + order), stride):
+            if rank < ROUTE_RANKS[density] and len(group) >= ROUTE_TRACES[0]:
+                plan.append((rank, order, side, group, package))
+    plan.sort(key=lambda p: (p[0], p[1]))
+    others: list[tuple[list[Point], float]] = []
+    terminals: list[tuple[float, ...]] = []
+    for rank, order, side, group, package in plan:
+        rng = _Rand(seed * 131 + order * 17 + rank, 47)
+        heading = SIDE_OUT[side]
+        dx, dy = HEADINGS[heading]
+        nx, ny = -dy, dx
+        sx = sum(p[0] for p in group) / len(group)
+        sy = sum(p[1] for p in group) / len(group)
+        offsets = [(p[0] - sx) * nx + (p[1] - sy) * ny for p in group]
+        half = max(abs(o) for o in offsets)
+        min_run = max(2, math.ceil((0.83 * half + 0.05) / ROUTE_STEP))
+        escape = half + (0.15 if compact else 0.18)
+        start = (sx + dx * escape, sy + dy * escape)
+        settle = max(0.1, 0.4 * half + 0.06) if compact else max(0.14, 0.45 * half + 0.1)
+        inner = (ax0 + half + 0.06, ax1 - half - 0.06, ay0 + half + 0.06, ay1 - half - 0.06)
+        pick = rng.random()
+        lateral = rng.uniform(0.35, 1.3) * (1 if rng.random() < 0.5 else -1)
+        run_out = rng.uniform(*ahead)
+        turn = 2 if rng.random() < 0.5 else -2
+        bend = rng.uniform(0.6, 1.1)
+        order = ("edge", "conn", "via") if pick < 0.5 else (("conn", "edge", "via") if pick < 0.8 else ("via", "edge", "conn"))
+        options = []
+        for kind in order:
+            if kind not in kinds:
+                continue
+            if kind == "edge":
+                options += [(kind, (heading + turn) % 8, bend), (kind, (heading - turn) % 8, bend)]
+            options += [(kind, heading, shift) for shift in (lateral, -lateral, lateral * 0.4, 0.0)]
+        for kind, arrive, shift in options:
+            ex, ey = HEADINGS[arrive]
+            if arrive != heading:
+                # Turn toward a side edge: run ``shift`` beyond the escape, then out to the fingers on that edge.
+                line = {0: ax1, 2: ay1, 4: ax0, 6: ay0}[arrive] - (FINGER_LEN + 0.03) * (ex or ey)
+                beyond = (sx + dx * (escape + shift), sy + dy * (escape + shift))
+                goal = (line - ex * settle, beyond[1]) if ex else (beyond[0], line - ey * settle)
+            else:
+                if kind == "edge":
+                    reach = ({0: ax1, 2: ay1, 4: ax0, 6: ay0}[heading] - (sx if dx else sy)) * (dx or dy) \
+                        - FINGER_LEN - 0.03
+                else:
+                    reach = escape + run_out
+                if reach - settle < escape + 0.1:
+                    continue
+                goal = (sx + dx * (reach - settle) + nx * shift, sy + dy * (reach - settle) + ny * shift)
+            goal = (start[0] + round((goal[0] - start[0]) / ROUTE_STEP) * ROUTE_STEP,
+                    start[1] + round((goal[1] - start[1]) / ROUTE_STEP) * ROUTE_STEP)
+            if kind == "edge":
+                line = {0: ax1, 2: ay1, 4: ax0, 6: ay0}[arrive] - (FINGER_LEN + 0.03) * (ex or ey)
+                end = (line, goal[1]) if ex else (goal[0], line)
+                if (end[0] - goal[0]) * ex + (end[1] - goal[1]) * ey < 0.08:
+                    continue
+            else:
+                end = (goal[0] + ex * settle, goal[1] + ey * settle)
+            if not (inner[0] - EPS <= goal[0] <= inner[1] + EPS and inner[2] - EPS <= goal[1] <= inner[3] + EPS):
+                continue
+            terminal = _terminal(kind, end, arrive, offsets)
+            if not _terminal_clear(terminal, area, rects + terminals, others):
+                continue
+            path = _astar(start, heading, goal, arrive, half, rects + [package] + terminals, others, inner, min_run)
+            if path is None:
+                continue
+            center = _simplify([(sx, sy)] + path + [end])
+            traces = [_offset_line(center, o) for o in offsets]
+            if kind == "via":
+                traces = [t[:-1] + [terminal["vias"][k]] for k, t in enumerate(traces)]
+            if not _traces_clear(traces, center, area, rects + terminals, others, half):
+                continue
+            bundles.append({"traces": traces, "pins": list(group), "terminal": terminal, "kind": kind,
+                            "center": center, "half": half})
+            others.append((center, half))
+            terminals.append(terminal["housing"] or terminal["rect"])
+            break
+    return {"bundles": bundles}
+
+
+def _terminal_clear(terminal: dict[str, Any], area: tuple[float, ...], rects: list[tuple[float, ...]],
+                    others: list[tuple[list[Point], float]]) -> bool:
+    box = terminal["housing"] or terminal["rect"]
+    if box[0] < area[0] - EPS or box[1] > area[1] + EPS or box[2] < area[2] - EPS or box[3] > area[3] + EPS:
+        return False
+    for rect in rects:
+        if not _rects_clear(box, rect, TRACE_CLEAR):
+            return False
+    for points, half in others:
+        for a, b in zip(points, points[1:]):
+            if _seg_rect(a, b, box) < half + BUNDLE_GAP + TRACE_HALF:
+                return False
+    return True
+
+
+def _traces_clear(traces: list[list[Point]], center: list[Point], area: tuple[float, ...],
+                  rects: list[tuple[float, ...]], others: list[tuple[list[Point], float]], half: float) -> bool:
+    """Offset traces keep their direction through every bend, stay on the board and clear of obstacles and other
+    bundles."""
+    for trace in traces:
+        for (a, b), (c, d) in zip(zip(trace, trace[1:]), zip(center, center[1:])):
+            if (b[0] - a[0]) * (d[0] - c[0]) + (b[1] - a[1]) * (d[1] - c[1]) <= 1e-6:
+                return False
+        for x, y in trace:
+            if not (area[0] - EPS <= x <= area[1] + EPS and area[2] - EPS <= y <= area[3] + EPS):
+                return False
+        for a, b in zip(trace, trace[1:]):
+            for rect in rects:
+                if _seg_rect(a, b, rect) < TRACE_CLEAR + TRACE_HALF:
+                    return False
+    for points, other_half in others:
+        for a, b in zip(center, center[1:]):
+            for c, d in zip(points, points[1:]):
+                if _seg_seg(a, b, c, d) < half + other_half + BUNDLE_GAP + 2 * TRACE_HALF - 1e-6:
+                    return False
+    return True
+
+
+def _qfp_pins(rect: tuple[float, float, float, float], reach: float, pitch: float = 0.065
+              ) -> list[tuple[str, list[Point]]]:
+    """Lead tips on the four sides of a square package, ordered along each side."""
+    x0, x1, y0, y1 = rect
+    out = []
+    for side, lo, hi, fixed in (("x+", y0, y1, x1 + reach), ("y+", x0, x1, y1 + reach), ("x-", y0, y1, x0 - reach),
+                                ("y-", x0, x1, y0 - reach)):
+        count = int((hi - lo - 0.2) / pitch)
+        ts = [lo + 0.1 + (hi - lo - 0.2) * (i + 0.5) / count for i in range(count)]
+        pins = [(fixed, t) if side[0] == "x" else (t, fixed) for t in ts]
+        out.append((side, pins))
+    return out
+
+
+def _route_ops(ground: Frame, routes: dict[str, Any]) -> tuple[list[tuple[Any, ...]], list[tuple[str, tuple[float, ...]]]]:
+    """Trace, finger, via and contact ops for routed bundles, plus connector housings to draw as parts."""
+    batch = _Batch()
+    housings: list[tuple[str, tuple[float, ...]]] = []
+    for bundle in routes["bundles"]:
+        for trace in bundle["traces"]:
+            batch.add("iso-trace", ground.poly(trace, False))
+        terminal = bundle["terminal"]
+        if terminal["kind"] == "edge":
+            for finger in terminal["fingers"]:
+                batch.add("iso-finger", ground.poly(finger))
+        elif terminal["kind"] == "via":
+            for x, y in terminal["vias"]:
+                batch.add("iso-via", ground.circle(x, y, VIA_R))
+        else:
+            for x, y in terminal["ends"]:
+                batch.add("iso-pad", ground.circle(x, y, 0.026))
+            housings.append(("conn", terminal["housing"]))
+    return batch.ops(("iso-trace", "iso-finger", "iso-pad", "iso-via")), housings
+
+
+def _trace_clear_of(rect: tuple[float, ...], routes: dict[str, Any], gap: float) -> bool:
+    for bundle in routes["bundles"]:
+        box = bundle["terminal"]["housing"] or bundle["terminal"]["rect"]
+        if not _rects_clear(rect, box, gap):
+            return False
+        for trace in bundle["traces"]:
+            for a, b in zip(trace, trace[1:]):
+                if _seg_rect(a, b, rect) < gap + TRACE_HALF:
+                    return False
+    return True
+
+
+def _populate_v13(proj: Projection, area: tuple[float, float, float, float], zb: float,
+                  package: tuple[float, ...] | None, blocked: list[tuple[float, float, float, float]], density: int,
+                  seed: int, style: str, leads: list[tuple[str, list[Point]]] | None = None
+                  ) -> tuple[list[tuple[Any, ...]], list[tuple[str, tuple[float, float, float, float]]], dict[str, Any]]:
+    """A routed board: corner screws, a few anchor parts placed first, bundles routed from the package leads (or from
+    a seeded microcontroller when the board has no package) around them, then rows of parts in the space the
+    routing leaves. Returns the ops, the placed parts and the routes."""
+    ax0, ax1, ay0, ay1 = area
+    rng = _Rand(seed, 5)
+    ground = Frame(proj, (0.0, 0.0, zb), (1, 0, 0), (0, 1, 0), 0, 0)
+    screws: list[tuple[Any, ...]] = []
+    slots: list[tuple[Any, ...]] = []
+    for cx, cy in ((ax0 + 0.08, ay0 + 0.08), (ax1 - 0.08, ay0 + 0.08), (ax0 + 0.08, ay1 - 0.08), (ax1 - 0.08, ay1 - 0.08)):
+        screws += ground.circle(cx, cy, 0.05)
+        slots += ground.poly([(cx - 0.032, cy + 0.02), (cx + 0.032, cy - 0.02)], False)
+    if density <= 0:
+        return [("path", "iso-node", screws), ("path", "iso-d", slots)], [], {"bundles": []}
+    corner = 0.2
+    screw_rects = [(cx - 0.1, cx + 0.1, cy - 0.1, cy + 0.1) for cx, cy in
+                   ((ax0 + 0.08, ay0 + 0.08), (ax1 - 0.08, ay0 + 0.08), (ax0 + 0.08, ay1 - 0.08), (ax1 - 0.08, ay1 - 0.08))]
+    placed: list[tuple[str, tuple[float, float, float, float]]] = []
+    sources: list[tuple[str, list[Point], tuple[float, ...]]] = []
+    rows_of_pins: list[tuple[str, list[Point]]] = []
+    if package is None:
+        side = min(1.4, (ax1 - ax0) * 0.4, (ay1 - ay0) * 0.55)
+        inner = (ax0 + 0.6, ax1 - 0.6, ay0 + 0.6, ay1 - 0.6)
+        fits = inner[1] > inner[0] + side and inner[3] > inner[2] + side
+        free = _place_rects(inner, [("mcu", side, side)], rng, 0.0, list(blocked)) if fits else []
+        if free:
+            placed.append(("mcu", free[0][1]))
+            rows_of_pins = _qfp_pins(free[0][1], 0.045, 0.065)
+    else:
+        rows_of_pins = leads or []
+    keep_out: list[tuple[float, ...]] = []
+    if rows_of_pins:
+        tips = [p for _, pins in rows_of_pins for p in pins]
+        box = package[:4] if package is not None else placed[0][1]
+        hole = (min(min(p[0] for p in tips), box[0]) - 0.01, max(max(p[0] for p in tips), box[1]) + 0.01,
+                min(min(p[1] for p in tips), box[2]) - 0.01, max(max(p[1] for p in tips), box[3]) + 0.01)
+        keep_out = [hole]
+        sources = [(s, pins, hole) for s, pins in rows_of_pins]
+    # Anchor parts, clear of the escape zone around the package so every lead row can leave it.
+    if sources:
+        hole = keep_out[0]
+        zone = (hole[0] - 0.9, hole[1] + 0.9, hole[2] - 0.9, hole[3] + 0.9)
+        anchors = _place_rects((ax0 + corner, ax1 - corner, ay0 + corner, ay1 - corner),
+                               [("socket", 0.46, 0.17), ("ic", 0.44, 0.3)], rng, 0.2,
+                               [zone] + list(blocked) + screw_rects)
+        placed += anchors
+    obstacles = [r for kind, r in placed if kind != "mcu"] + list(blocked) + screw_rects
+    routes = _route_board(area, sources, obstacles, density, seed)
+    # Rows of parts in the strips around the package, kept only where the routing left room.
+    clear = 0.16
+    if package is not None:
+        hole2 = (package[0] - clear, package[1] + clear, package[2] - clear, package[3] + clear)
+        strips = [((ax0 + corner, ax1 - corner, ay0, hole2[2]), "y+"), ((ax0 + corner, ax1 - corner, hole2[3], ay1), "y-"),
+                  ((ax0, hole2[0], hole2[2], hole2[3]), "x+"), ((hole2[1], ax1, hole2[2], hole2[3]), "x-")]
+    else:
+        rows = max(1, int((ay1 - ay0) / 0.5))
+        pitch = (ay1 - ay0) / rows
+        strips = [((ax0 + corner, ax1 - corner, ay0 + i * pitch, ay0 + (i + 1) * pitch), None) for i in range(rows)]
+    first = "plate" if density >= 2 else None
+    for strip, toward in strips:
+        for hole3 in blocked:
+            strip = _subtract(strip, hole3) if strip else None
+        if strip is None or strip[1] - strip[0] < 0.2 or strip[3] - strip[2] < 0.2:
+            continue
+        parts = _pack_strip(strip, rng, density, toward, first)
+        if first and any(kind == first for kind, _ in parts):
+            first = None
+        for kind, rect in parts:
+            reach = 0.05 if kind in ("ic", "chip") else 0.0
+            grown = (rect[0] - reach, rect[1] + reach, rect[2] - reach, rect[3] + reach)
+            if all(_rects_clear(rect, b, 0.02) for b in blocked + screw_rects) \
+                    and all(_rects_clear(rect, r, 0.04) for _, r in placed) \
+                    and all(_rects_clear(grown, h, 0.02) for h in keep_out) \
+                    and _trace_clear_of(grown, routes, TRACE_CLEAR):
+                placed.append((kind, rect))
+    fill = {1: 4, 2: 12, 3: 20}[density]
+    mix = PART_MIX[density]
+    for _ in range(fill * 10):
+        if fill <= 0:
+            break
+        kind = mix[int(rng.random() * len(mix)) % len(mix)]
+        if kind in ("plate", "vent", "header"):
+            continue
+        along, across, _ = PARTS[kind]
+        if rng.random() < 0.5:
+            along, across = across, along
+        x = ax0 + corner + round(rng.random() * max(0.0, ax1 - ax0 - 2 * corner - along) / 0.02) * 0.02
+        y = ay0 + corner + round(rng.random() * max(0.0, ay1 - ay0 - 2 * corner - across) / 0.02) * 0.02
+        rect = (x, x + along, y, y + across)
+        reach = 0.05 if kind in ("ic", "chip") else 0.0
+        grown = (rect[0] - reach, rect[1] + reach, rect[2] - reach, rect[3] + reach)
+        if all(_rects_clear(rect, b, 0.02) for b in blocked + screw_rects) \
+                and all(_rects_clear(grown, r, 0.08) for _, r in placed) \
+                and all(_rects_clear(grown, h, 0.06) for h in keep_out) \
+                and _trace_clear_of(grown, routes, TRACE_CLEAR):
+            placed.append((kind, rect))
+            fill -= 1
+    route_ops, housings = _route_ops(ground, routes)
+    ops: list[tuple[Any, ...]] = list(route_ops)
+    ops += [("path", "iso-node", screws), ("path", "iso-d", slots)]
+    everything = placed + housings
+    boxes = [_box(*rect, zb, zb + max(PARTS[kind][2], 0.001)) for kind, rect in everything]
+    for index in _paint_order(boxes, proj.view):
+        ops += _part_ops(proj, everything[index][0], everything[index][1], zb, style)
+    return ops, placed + housings, routes
+
+
+def _plate_routes(proj: Projection, plate: tuple[float, ...], density: int, seed: int, inset: float
+                  ) -> list[tuple[Any, ...]]:
+    """An exploded circuit layer: a die-attach square ringed by lands, bundles routed from the lands to vias and
+    edge pads."""
+    x0, x1, y0, y1, _, z1 = plate
+    ground = Frame(proj, (0.0, 0.0, z1), (1, 0, 0), (0, 1, 0), 0, 0)
+    area = (x0 + inset, x1 - inset, y0 + inset, y1 - inset)
+    side = min(x1 - x0, y1 - y0) * 0.34
+    cx, cy = (x0 + x1) / 2, (y0 + y1) / 2
+    square = (cx - side / 2, cx + side / 2, cy - side / 2, cy + side / 2)
+    pins = _qfp_pins(square, 0.05, 0.085)
+    hole = (square[0] - 0.06, square[1] + 0.06, square[2] - 0.06, square[3] + 0.06)
+    routes = _route_board(area, [(s, p, hole) for s, p in pins], [], 1, seed * 3 + 23,
+                          kinds=("via", "edge"), ahead=(0.12, 0.4), stride=1, compact=True)
+    batch = _Batch()
+    batch.add("iso-d iso-faint", ground.rrect(square[0], square[2], square[1], square[3], 0.05))
+    lands: list[tuple[Any, ...]] = []
+    for bundle in routes["bundles"]:
+        for x, y in bundle["pins"]:
+            lands += ground.circle(x, y, 0.024)
+    batch.add("iso-pad", lands)
+    route_ops, _ = _route_ops(ground, routes)
+    return batch.ops(("iso-d iso-faint", "iso-pad")) + route_ops
+
+
+# Schema 1.3 life: interiors, terraces, plaza, greenery and street furniture -----------------------------------
+
+LIT_SHARE = 0.09
+RAIL_H = 0.13
+
+
+def _interior(batch: _Batch, frame: Frame, rect: tuple[float, float, float, float], rng: _Rand) -> None:
+    """Life behind one pane: a ceiling light strip, blinds at a seeded height, a rare warm lit window and, where the
+    pane is large enough on screen, a desk edge or a plant."""
+    u0, v0, u1, v1 = rect
+    w, h = u1 - u0, v1 - v0
+    unit = frame.proj.unit
+    if w * unit < 3.0 or h * unit < 6.0:
+        return
+    lit = rng.random() < LIT_SHARE
+    blind = rng.random()
+    drop = rng.uniform(0.22, 0.68)
+    figure = rng.random()
+    if lit:
+        batch.add("iso-lit", frame.poly([(u0, v0), (u1, v0), (u1, v1), (u0, v1)]))
+    if blind < 0.42:
+        bottom = v0 + h * drop
+        batch.add("iso-blind", frame.poly([(u0, v0), (u1, v0), (u1, bottom), (u0, bottom)]))
+    if h * unit >= 8.0:
+        v = v0 + max(0.035, h * 0.14)
+        batch.add("iso-ceil", frame.poly([(u0 + min(0.03, w * 0.15), v), (u1 - min(0.03, w * 0.15), v)], False))
+    if w * unit >= 10.0 and h * unit >= 12.0 and figure < 0.34:
+        if figure < 0.2:
+            desk = v1 - h * 0.3
+            batch.add("iso-intl", frame.poly([(u0 + w * 0.14, desk), (u1 - w * 0.3, desk)], False)
+                      + frame.poly([(u0 + w * 0.22, desk), (u0 + w * 0.22, v1 - 0.01)], False))
+            batch.add("iso-int", frame.poly([(u0 + w * 0.42, desk - h * 0.2), (u0 + w * 0.6, desk - h * 0.2),
+                                             (u0 + w * 0.6, desk - 0.01), (u0 + w * 0.42, desk - 0.01)]))
+        else:
+            r = min(w, h) * 0.13
+            cu = u1 - w * 0.24
+            batch.add("iso-int", frame.ellipse(cu, v1 - h * 0.3, r, r * 1.2)
+                      + frame.poly([(cu - r * 0.6, v1 - h * 0.14), (cu + r * 0.6, v1 - h * 0.14),
+                                    (cu + r * 0.45, v1 - 0.01), (cu - r * 0.45, v1 - 0.01)]))
+
+
+def _edge_spans(vol: dict[str, Any], volumes: list[dict[str, Any]]) -> dict[str, list[tuple[float, float]]]:
+    """For each roof edge of a volume, the intervals not walled in by a taller neighbouring volume."""
+    x0, x1, y0, y1, _, z1 = vol["box"]
+    spans = {}
+    for edge, fixed, lo, hi, axis in (("y-", y0, x0, x1, 0), ("y+", y1, x0, x1, 0), ("x-", x0, y0, y1, 1),
+                                      ("x+", x1, y0, y1, 1)):
+        free = [(lo, hi)]
+        for other in volumes:
+            if other is vol or other["box"][5] <= z1 + EPS:
+                continue
+            ox0, ox1, oy0, oy1 = other["box"][:4]
+            touches = (abs(oy1 - fixed) < EPS or abs(oy0 - fixed) < EPS) if axis == 0 else \
+                (abs(ox1 - fixed) < EPS or abs(ox0 - fixed) < EPS)
+            if not touches:
+                continue
+            a, b = (ox0, ox1) if axis == 0 else (oy0, oy1)
+            cut = []
+            for s0, s1 in free:
+                if b <= s0 or a >= s1:
+                    cut.append((s0, s1))
+                    continue
+                if a > s0:
+                    cut.append((s0, a))
+                if b < s1:
+                    cut.append((b, s1))
+            free = cut
+        spans[edge] = [(a, b) for a, b in free if b - a > 0.12]
+    return spans
+
+
+def _railing(proj: Projection, edge: str, span: tuple[float, float], fixed: float, z: float, style: str
+             ) -> list[tuple[Any, ...]]:
+    """A glass balustrade on a roof edge: a translucent pane, posts and a top rail."""
+    a, b = span
+    if edge[0] == "y":
+        corners = [(a, fixed, z), (b, fixed, z), (b, fixed, z + RAIL_H), (a, fixed, z + RAIL_H)]
+        posts = [(a + (b - a) * k / max(1, round((b - a) / 0.45)), fixed) for k in range(max(1, round((b - a) / 0.45)) + 1)]
+    else:
+        corners = [(fixed, a, z), (fixed, b, z), (fixed, b, z + RAIL_H), (fixed, a, z + RAIL_H)]
+        posts = [(fixed, a + (b - a) * k / max(1, round((b - a) / 0.45))) for k in range(max(1, round((b - a) / 0.45)) + 1)]
+    pane = [("M", proj(*corners[0]))] + [("L", proj(*c)) for c in corners[1:]] + [("Z",)]
+    rail = [("M", proj(*corners[3])), ("L", proj(*corners[2]))]
+    stems: list[tuple[Any, ...]] = []
+    for px, py in posts:
+        stems += [("M", proj(px, py, z)), ("L", proj(px, py, z + RAIL_H))]
+    return [("path", "iso-rail", pane), ("path", "iso-d", stems), ("path", "iso-o" if style != "solid" else "iso-d", rail)]
+
+
+def _small_canopy(proj: Projection, cx: float, cy: float, z: float, w: float, h: float, rng: _Rand,
+                  style: str) -> list[tuple[Any, ...]]:
+    """Shrub volumes over a point, for planters and hedges."""
+    base = proj(cx, cy, z)
+    top_y = proj(cx, cy, z + h)[1]
+    span = base[1] - top_y
+    radius = proj.k * w / 2
+    volumes = []
+    lobes = LOBES[SHRUB]
+    top = min(dy - ry for _, dy, _, ry in lobes)
+    bottom = max(dy + ry for _, dy, _, ry in lobes)
+    left = min(dx - rx for dx, _, rx, _ in lobes)
+    right = max(dx + rx for dx, _, rx, _ in lobes)
+    sy, sx = span / (bottom - top), 2 * radius / (right - left)
+    for dx, dy, rx, ry in lobes:
+        j = rng.uniform(0.94, 1.04)
+        volumes.append(((base[0] + (dx - (left + right) / 2) * sx, top_y + (dy - top) * sy), rx * sx * j, ry * sy * j))
+    return _canopy_ops_v13(volumes, style)
+
+
+def _parasol(proj: Projection, cx: float, cy: float, z: float, style: str) -> list[tuple[Any, ...]]:
+    """A café parasol: a pole and a shallow eight-sided canopy."""
+    ops: list[tuple[Any, ...]] = [("path", "iso-trunk", [("M", proj(cx, cy, z)), ("L", proj(cx, cy, z + 0.26))])]
+    r, rise = 0.17, 0.07
+    apex = proj(cx, cy, z + 0.26 + rise)
+    rim = [proj(cx + r * math.cos(math.pi * k / 4), cy + r * math.sin(math.pi * k / 4), z + 0.26) for k in range(8)]
+    for k in range(8):
+        a, b = rim[k], rim[(k + 1) % 8]
+        mid = math.pi * (k + 0.5) / 4
+        tone = "iso-r" if math.cos(mid) > 0.3 else ("iso-l" if math.sin(mid) > 0.3 else "iso-t")
+        ops.append(("path", tone, [("M", apex), ("L", a), ("L", b), ("Z",)]))
+    if style != "solid":
+        ops.append(("path", "iso-o", [("M", rim[0])] + [("L", p) for p in rim[1:]] + [("Z",)]))
+    return ops
+
+
+def _terrace_ops(proj: Projection, item: dict[str, Any], vol: dict[str, Any], style: str) -> list[tuple[Any, ...]]:
+    """A setback roof as a terrace: deck paving, glass railings on the open edges, planters with shrubs or a small
+    tree and, now and then, a parasol."""
+    x0, x1, y0, y1, _, z1 = vol["box"]
+    deck = z1 - vol["cap"]
+    t = PARAPET_T
+    rng = _Rand(item["seed"] * 13 + len(vol["role"]), 29)
+    ground = Frame(proj, (0.0, 0.0, deck), (1, 0, 0), (0, 1, 0), 0, 0)
+    joints: list[tuple[Any, ...]] = []
+    pitch = 0.22
+    i = 1
+    while x0 + t + i * pitch < x1 - t - 0.02:
+        joints += ground.poly([(x0 + t + i * pitch, y0 + t), (x0 + t + i * pitch, y1 - t)], False)
+        i += 1
+    j = 1
+    while y0 + t + j * pitch < y1 - t - 0.02:
+        joints += ground.poly([(x0 + t, y0 + t + j * pitch), (x1 - t, y0 + t + j * pitch)], False)
+        j += 1
+    ops: list[tuple[Any, ...]] = [("path", "iso-pave", joints)]
+    spans = _edge_spans(vol, item["volumes"])
+    fixed = {"y-": y0 + t / 2, "y+": y1 - t / 2, "x-": x0 + t / 2, "x+": x1 - t / 2}
+    for edge in ("y-", "x-"):
+        for span in spans[edge]:
+            ops += _railing(proj, edge, span, fixed[edge], z1, style)
+    area = (x0 + t + 0.06, x1 - t - 0.06, y0 + t + 0.06, y1 - t - 0.06)
+    wanted = [("planter", 0.44, 0.16), ("planter", 0.36, 0.16), ("tree", 0.26, 0.26)]
+    if rng.random() < 0.6:
+        wanted.insert(1, ("parasol", 0.36, 0.36))
+    placed = _place_rects(area, wanted, rng, 0.1)
+    boxes = [_box(r[0], r[1], r[2], r[3], deck, deck + 0.3) for _, r in placed]
+    for index in _paint_order(boxes, proj.view):
+        kind, (px0, px1, py0, py1) = placed[index]
+        cx, cy = (px0 + px1) / 2, (py0 + py1) / 2
+        if kind == "parasol":
+            ops += _parasol(proj, cx, cy, deck, style)
+            continue
+        pot = _box(px0, px1, py0, py1, deck, deck + 0.08)
+        ops += _prism(proj, pot, 0.02).ops(style)
+        ops.append(("path", "iso-hole", _face(proj, pot, "top").rrect(0.025, 0.025, px1 - px0 - 0.025, py1 - py0 - 0.025, 0.015)))
+        if kind == "tree":
+            tree = {"cx": cx, "cy": cy, "species": "broadleaf", "w": 0.3, "h": 0.42, "mirror": rng.random() < 0.5,
+                    "seed": item["seed"] + index}
+            ops += [op for op in _tree_v12(proj, tree, deck + 0.08, style, False) if op[1] not in ("iso-patch", "iso-d iso-faint")]
+        else:
+            long_x = px1 - px0 >= py1 - py0
+            count = max(2, int(round(max(px1 - px0, py1 - py0) / 0.15)))
+            for k in range(count):
+                f = (k + 0.5) / count
+                sx_, sy_ = (px0 + (px1 - px0) * f, cy) if long_x else (cx, py0 + (py1 - py0) * f)
+                ops += _small_canopy(proj, sx_, sy_, deck + 0.08, 0.17, 0.13, rng, style)
+    for edge in ("y+", "x+"):
+        for span in spans[edge]:
+            ops += _railing(proj, edge, span, fixed[edge], z1, style)
+    return ops
+
+
+def _plaza_ops(proj: Projection, item: dict[str, Any], box: tuple[float, ...]) -> list[tuple[Any, ...]]:
+    """Paving on a site slab: a running-bond paver field inside the border and a walk from every carried building's
+    entrance portal to the slab edge."""
+    x0, x1, y0, y1, _, z1 = box
+    edge = max(item.get("inset") or 0.0, 0.12) + 0.06
+    ix0, ix1, iy0, iy1 = x0 + edge, x1 - edge, y0 + edge, y1 - edge
+    ground = Frame(proj, (0.0, 0.0, z1), (1, 0, 0), (0, 1, 0), 0, 0)
+    joints: list[tuple[Any, ...]] = []
+    row, col = 0.3, 0.5
+    v = iy0 + row
+    k = 0
+    while v < iy1 - 0.04:
+        joints += ground.poly([(ix0, v), (ix1, v)], False)
+        v += row
+    v, k = iy0, 0
+    while v < iy1 - 0.04:
+        top = min(v + row, iy1)
+        u = ix0 + (col / 2 if k % 2 else col)
+        while u < ix1 - 0.04:
+            joints += ground.poly([(u, v), (u, top)], False)
+            u += col
+        v += row
+        k += 1
+    ops: list[tuple[Any, ...]] = [("path", "iso-pave", joints)]
+    walks: list[tuple[Any, ...]] = []
+    lines: list[tuple[Any, ...]] = []
+    cross: list[tuple[Any, ...]] = []
+    for other in item.get("carried", []):
+        portal = other.get("portal") if other["type"] == "building" else None
+        if not portal:
+            continue
+        face = other["entrance"]
+        if face == "x+":
+            a, b = portal[2] - 0.1, portal[3] + 0.1
+            start, stop = portal[1] + PORTAL_LIP, ix1
+            if stop - start < 0.2:
+                continue
+            walks += ground.poly([(start, a), (stop, a), (stop, b), (start, b)])
+            lines += ground.poly([(start, a), (stop, a)], False) + ground.poly([(start, b), (stop, b)], False)
+            u = start + 0.18
+            while u < stop - 0.05:
+                cross += ground.poly([(u, a), (u, b)], False)
+                u += 0.18
+        else:
+            a, b = portal[0] - 0.1, portal[1] + 0.1
+            start, stop = portal[3] + PORTAL_LIP, iy1
+            if stop - start < 0.2:
+                continue
+            walks += ground.poly([(a, start), (a, stop), (b, stop), (b, start)])
+            lines += ground.poly([(a, start), (a, stop)], False) + ground.poly([(b, start), (b, stop)], False)
+            v = start + 0.18
+            while v < stop - 0.05:
+                cross += ground.poly([(a, v), (b, v)], False)
+                v += 0.18
+    if walks:
+        ops += [("path", "iso-walk", walks), ("path", "iso-pave", cross), ("path", "iso-d iso-faint", lines)]
+    return ops
+
+
+def _canopy_ops_v13(volumes: list[tuple[Point, float, float]], style: str, clipped: bool = False
+                    ) -> list[tuple[Any, ...]]:
+    """Canopy volumes shaded by the face ramp under one light from the upper left: a mid body, a lit crown, a
+    shaded right side and a darker underside, with partial contours where front volumes overlap the crown."""
+    ops: list[tuple[Any, ...]] = []
+    if style != "solid":
+        ops.append(("path", "iso-silh", [seg for c, rx, ry in volumes for seg in _ellipse_segs(c, rx, ry)]))
+    for center, rx, ry in volumes:
+        ops += [("path", "iso-leaf2", _ellipse_segs(center, rx, ry)),
+                ("path", "iso-leaf3", _crescent(center, rx, ry, -62.0, 0.42 if not clipped else 0.62))]
+        if not clipped:
+            ops.append(("path", "iso-under", _crescent(center, rx, ry, -8.0, 0.72)))
+        ops.append(("path", "iso-leaf1", _crescent(center, rx, ry, 150.0, 0.56)))
+    contours: list[tuple[Any, ...]] = []
+    if len(volumes) > 1:
+        center, rx, ry = max(volumes[1:], key=lambda v: v[0][1] + v[2])
+        t0, t1 = math.radians(196), math.radians(292)
+        contours += [("M", (center[0] + rx * math.cos(t0), center[1] + ry * math.sin(t0))),
+                     ("E", center, (rx, 0.0), (0.0, ry), t0, t1)]
+    if contours and style != "solid":
+        ops.append(("path", "iso-leafline", contours))
+    return ops
+
+
+def _render_hedge(proj: Projection, item: dict[str, Any], style: str, warnings: list[str]) -> list[tuple[Any, ...]]:
+    """A clipped hedge on a low curb: a soft-cornered mass in leaf tones whose top breaks into seeded rounded
+    tufts, so it reads as foliage rather than as a box."""
+    x0, x1, y0, y1, z0, z1 = item["body"]
+    ops = _prism(proj, _box(x0, x1, y0, y1, z0, z0 + 0.04), 0.02).ops(style)
+    inset = 0.02
+    along_x = x1 - x0 >= y1 - y0
+    depth = (y1 - y0) if along_x else (x1 - x0)
+    crown = min(depth * 0.45, (z1 - z0) * 0.45)
+    body = _box(x0 + inset, x1 - inset, y0 + inset, y1 - inset, z0 + 0.04, z1 - crown * 0.6)
+    ops += _prism(proj, body, min(0.06, depth / 2 - inset)).ops(style, " iso-hedge")
+    rng = _Rand(item["seed"], 31)
+    length = (x1 - x0) if along_x else (y1 - y0)
+    count = max(2, int(round(length / (depth * 0.85))))
+    k = proj.k
+    volumes = []
+    for i in range(count):
+        t = (i + 0.5) / count
+        cx, cy = (x0 + (x1 - x0) * t, (y0 + y1) / 2) if along_x else ((x0 + x1) / 2, y0 + (y1 - y0) * t)
+        center = proj(cx, cy, z1 - crown * rng.uniform(0.7, 0.95))
+        rx = k * depth * 0.52 * rng.uniform(0.94, 1.1)
+        ry = rx * rng.uniform(0.6, 0.7)
+        volumes.append(((round(cx + cy, 9), cx), (center, rx, ry)))
+    return ops + _canopy_ops_v13([v for _, v in sorted(volumes, key=lambda v: v[0])], style, clipped=True)
+
+
+def _street_piece(proj: Projection, piece: dict[str, Any], z: float, style: str) -> list[tuple[Any, ...]]:
+    kind, cx, cy = piece["kind"], piece["cx"], piece["cy"]
+    ops: list[tuple[Any, ...]] = []
+    if kind == "bollard":
+        r = 0.04
+        ops += _prism(proj, _box(cx - r, cx + r, cy - r, cy + r, z, z + 0.12), r).ops(style)
+        band = _prism(proj, _box(cx - r, cx + r, cy - r, cy + r, z, z + 0.1), r)
+        ops.append(("path", "iso-d", band.band(z + 0.1)))
+        ops += _prism(proj, _box(cx - r * 0.7, cx + r * 0.7, cy - r * 0.7, cy + r * 0.7, z + 0.12, z + 0.14), r * 0.7).ops(style)
+        return ops
+    if kind == "lamp":
+        ops += _prism(proj, _box(cx - 0.045, cx + 0.045, cy - 0.045, cy + 0.045, z, z + 0.04), 0.01).ops(style)
+        ops += _prism(proj, _box(cx - 0.017, cx + 0.017, cy - 0.017, cy + 0.017, z + 0.04, z + 0.62), 0.017).ops(style)
+        head = _box(cx - 0.05, cx + 0.07, cy - 0.035, cy + 0.035, z + 0.62, z + 0.66)
+        ops += _prism(proj, head, 0.015).ops(style)
+        lens = _face(proj, head, "x+")
+        ops.append(("path", "iso-lit", lens.rrect(0.01, 0.008, lens.w - 0.01, lens.h - 0.008, 0.005)))
+        return ops
+    along_x = piece["along_x"]
+    half_l, half_d = 0.22, 0.065
+    if along_x:
+        seat = _box(cx - half_l, cx + half_l, cy - half_d, cy + half_d, z + 0.07, z + 0.095)
+        back = _box(cx - half_l, cx + half_l, cy - half_d, cy - half_d + 0.025, z + 0.095, z + 0.17)
+        legs = [_box(x - 0.015, x + 0.015, cy - half_d + 0.01, cy + half_d - 0.01, z, z + 0.07) for x in (cx - half_l + 0.05, cx + half_l - 0.05)]
+    else:
+        seat = _box(cx - half_d, cx + half_d, cy - half_l, cy + half_l, z + 0.07, z + 0.095)
+        back = _box(cx - half_d, cx - half_d + 0.025, cy - half_l, cy + half_l, z + 0.095, z + 0.17)
+        legs = [_box(cx - half_d + 0.01, cx + half_d - 0.01, y - 0.015, y + 0.015, z, z + 0.07) for y in (cy - half_l + 0.05, cy + half_l - 0.05)]
+    for box in legs:
+        ops += _prism(proj, box, 0.0).ops(style)
+    ops += _prism(proj, back, 0.0).ops(style)
+    ops += _prism(proj, seat, 0.01).ops(style)
+    return ops
+
+
+def _render_street(proj: Projection, item: dict[str, Any], style: str, warnings: list[str]) -> list[tuple[Any, ...]]:
+    ops: list[tuple[Any, ...]] = []
+    for piece in sorted(item["plan"], key=lambda p: (round(p["cx"] + p["cy"], 9), p["cx"])):
+        ops += _street_piece(proj, piece, item["z"], style)
+    return ops
+
+
+def _attach_check(solids: list[dict[str, Any]], by_id: dict[str, dict[str, Any]], errors: list[str]) -> None:
+    for item in solids:
+        target = item.get("attach")
+        if target is None:
+            continue
+        if target == item["id"]:
+            errors.append(f"{item['where']}.attach names the object itself")
+        elif target not in by_id:
+            errors.append(f"{item['where']}.attach names unknown object {target!r}")
+
+
+PLATFORMS = ("slab", "tile", "core")
+FACE_CLASSES = ("iso-t", "iso-l", "iso-r", "iso-silh", "iso-under", "iso-leaf1", "iso-leaf2", "iso-leaf3")
+OVERLAP_PX = 4.0
+
+
+def _clip_convex(subject: list[Point], clip: list[Point]) -> list[Point]:
+    """Sutherland-Hodgman clip of a polygon by a convex polygon of either winding."""
+    area = sum(clip[i][0] * clip[(i + 1) % len(clip)][1] - clip[(i + 1) % len(clip)][0] * clip[i][1]
+               for i in range(len(clip)))
+    sign = 1.0 if area > 0 else -1.0
+    out = list(subject)
+    for i in range(len(clip)):
+        a, b = clip[i], clip[(i + 1) % len(clip)]
+
+        def inside(p: Point) -> bool:
+            return sign * ((b[0] - a[0]) * (p[1] - a[1]) - (b[1] - a[1]) * (p[0] - a[0])) >= -1e-9
+
+        def meet(p: Point, q: Point) -> Point:
+            d1 = (b[0] - a[0]) * (p[1] - a[1]) - (b[1] - a[1]) * (p[0] - a[0])
+            d2 = (b[0] - a[0]) * (q[1] - a[1]) - (b[1] - a[1]) * (q[0] - a[0])
+            t = d1 / (d1 - d2) if abs(d1 - d2) > 1e-12 else 0.0
+            return (p[0] + (q[0] - p[0]) * t, p[1] + (q[1] - p[1]) * t)
+
+        if not out:
+            break
+        current, out = out, []
+        for k, p in enumerate(current):
+            q = current[k - 1]
+            if inside(p):
+                if not inside(q):
+                    out.append(meet(q, p))
+                out.append(p)
+            elif inside(q):
+                out.append(meet(q, p))
+    return out
+
+
+def _poly_area(poly: list[Point]) -> float:
+    return abs(sum(poly[i][0] * poly[(i + 1) % len(poly)][1] - poly[(i + 1) % len(poly)][0] * poly[i][1]
+                   for i in range(len(poly)))) / 2 if len(poly) >= 3 else 0.0
+
+
+def _platform_overlaps(proj: Projection, groups: dict[int, dict[str, Any]], ordered: list[int],
+                       solids: list[dict[str, Any]]) -> list[str]:
+    """Warn when an object painted after a platform (slab, tile or core) covers part of the platform's top in the
+    drawing, unless one stands on the other or either declares ``attach`` to the other."""
+    position = {index: pos for pos, index in enumerate(ordered)}
+    out: list[str] = []
+    for platform in solids:
+        if platform["type"] not in PLATFORMS and not (platform["type"] == "card" and platform["orient"] == "flat"):
+            continue
+        x0, x1, y0, y1, _, z1 = platform["body"]
+        top = [proj(x0, y0, z1), proj(x1, y0, z1), proj(x1, y1, z1), proj(x0, y1, z1)]
+        mine = position[platform["index"]]
+        for other in solids:
+            if other is platform or position[other["index"]] <= mine:
+                continue
+            if other in platform["carried"] or platform in other["carried"]:
+                continue
+            if other.get("attach") == platform["id"] or platform.get("attach") == other["id"]:
+                continue
+            worst = 0.0
+            for op in groups[other["index"]]["ops"]:
+                if op[0] != "path" or op[1].split()[0] not in FACE_CLASSES:
+                    continue
+                for run in _sample(op[2], 6):
+                    if len(run) >= 3:
+                        worst = max(worst, _poly_area(_clip_convex(_hull(run), top)))
+            if worst > OVERLAP_PX:
+                out.append(f"{other['where']}: it cuts into the top of platform {platform['id']!r} in the drawing "
+                           f"(about {int(round(worst))} square px); move it clear, stand it on the platform or set "
+                           f"\"attach\": \"{platform['id']}\" when the overlap is intended")
+    return out
 
 
 # Object recipes --------------------------------------------------------------
@@ -3882,6 +5150,12 @@ def _shadow_ops_v12(proj: Projection, item: dict[str, Any], solids: list[dict[st
                 ops.append(("path", "iso-sh", ground.ellipse((sx + cx) / 2, (sy + cy) / 2, radius * 0.8, radius * 0.6)))
             ops.append(("path", "iso-ao", ground.circle(cx, cy, w * 0.14)))
         return ops
+    if kind == "street":
+        for piece in item["plan"]:
+            reach = 0.18 if piece["kind"] == "lamp" else 0.06
+            ops.append(("path", "iso-ao", ground.circle(piece["cx"], piece["cy"], 0.06)))
+            ops.append(("path", "iso-sh", ground.ellipse(piece["cx"] + reach, piece["cy"] + reach * 0.15, 0.06 + reach * 0.4, 0.06)))
+        return ops
     if kind == "building":
         x0, x1, y0, y1 = item["space"][:4]
     elif kind in ("screen", "dashboard") and item.get("stand"):
@@ -3926,8 +5200,12 @@ def _scale_warnings(items: list[dict[str, Any]]) -> list[str]:
     t_lo, t_hi = SCALE["tree_floors"]
     for item in solids:
         if item["type"] in ("tree", "trees"):
-            heights = [tree["h"] / floor for tree in item["plan"]]
-            if min(heights) < t_lo - EPS or max(heights) > t_hi + EPS:
+            shrubs = [tree["h"] / floor for tree in item["plan"] if tree["species"] == SHRUB]
+            if shrubs and (min(shrubs) < SHRUB_FLOORS[0] - EPS or max(shrubs) > SHRUB_FLOORS[1] + EPS):
+                out.append(f"{item['where']}: shrubs are {_fmt(min(shrubs), 1)}-{_fmt(max(shrubs), 1)} floors tall; "
+                           f"plausible shrubs stand {_fmt(SHRUB_FLOORS[0], 1)}-{_fmt(SHRUB_FLOORS[1], 1)} floors")
+            heights = [tree["h"] / floor for tree in item["plan"] if tree["species"] != SHRUB]
+            if heights and (min(heights) < t_lo - EPS or max(heights) > t_hi + EPS):
                 out.append(f"{item['where']}: trees are {_fmt(min(heights), 1)}-{_fmt(max(heights), 1)} floors tall; "
                            f"plausible trees stand 1-1.5 floors ({_fmt(floor * 1.25)} grid units at floor_h {_fmt(floor)})")
     satellites = [item for item in solids if item["type"] == "tile" or (item["type"] == "card" and item["orient"] == "flat")]
@@ -4135,6 +5413,7 @@ RENDERERS: dict[str, Callable[[Projection, dict[str, Any], str, list[str]], list
     "screen": _render_screen, "tree": _render_tree, "ground-grid": _render_grid,
     "trees": _render_trees, "tile": _render_tile, "core": _render_core, "rack": _render_rack,
     "dashboard": _render_dashboard, "database": _render_database, "documents": _render_documents,
+    "street": _render_street, "hedge": _render_hedge,
 }
 
 
@@ -4742,8 +6021,15 @@ def _xml(text: str) -> str:
 
 
 def _style(style: str, colors: dict[str, str], outline: float, detail: float, extended: bool = False,
-           v12: bool = False) -> str:
+           v12: bool = False, dark: dict[str, str] | None = None) -> str:
+    """The embedded stylesheet. Under schema 1.3 (``dark`` given) every paint reads ``var(--iso-<role>)`` with a
+    private ``--iso-_<role>`` fallback set on the scene root; where the browser supports ``light-dark()`` that
+    fallback follows the page's ``color-scheme``, so a dark page gets the dark ramp unless it sets the roles itself."""
+    v13 = dark is not None
+
     def var(name: str) -> str:
+        if v13:
+            return f"var(--iso-{name},var(--iso-_{name}))"
         return f"var(--iso-{name},{colors[name]})"
 
     def tint(name: str, share: int) -> str:
@@ -4859,6 +6145,43 @@ def _style(style: str, colors: dict[str, str], outline: float, detail: float, ex
             f"{s}.iso-mull{{stroke-opacity:.9}}",
             f"{s}.iso-faint{{stroke-opacity:.5}}",
         ]
+    if v13:
+        rules += [
+            f"{s}.iso-pave,{s}.iso-ceil,{s}.iso-intl,{s}.iso-via,{s}.iso-finger,{s}.iso-rail"
+            f"{{stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}}",
+            f"{s}.iso-hole{{fill:{mix('stroke', 34, 'recess')}}}",
+            f"{s}.iso-rv.iso-l{{fill:{mix('recess', 46, 'left')}}}",
+            f"{s}.iso-rv.iso-r{{fill:{mix('recess', 64, 'right')}}}",
+            f"{s}.iso-rv.iso-t{{fill:{mix('recess', 30, 'top')}}}",
+            f"{s}.iso-glass{{fill:{var('glass')};fill-opacity:.4}}",
+            f"{s}.iso-mull{{stroke:{var('left')};stroke-opacity:1}}",
+            f"{s}.iso-lit{{fill:{var('lit')}}}",
+            f"{s}.iso-blind{{fill:{var('top')};fill-opacity:.5}}",
+            f"{s}.iso-int{{fill:{var('stroke')};fill-opacity:.3}}",
+            f"{s}.iso-intl{{fill:none;stroke:{var('stroke')};stroke-opacity:.4;stroke-width:{hair}}}",
+            f"{s}.iso-ceil{{fill:none;stroke:{var('top')};stroke-width:{hair}}}",
+            f"{s}.iso-dim{{fill:{var('recess')};fill-opacity:.55}}",
+            f"{s}.iso-pave{{fill:none;stroke:{var('detail')};stroke-width:{hair};stroke-opacity:.3}}",
+            f"{s}.iso-walk{{fill:{mix('left', 60, 'top')}}}",
+            f"{s}.iso-rail{{fill:{var('glass')};fill-opacity:.16;stroke:{var('detail')};stroke-width:{hair}}}",
+            f"{s}.iso-leaf1{{fill:{var('left')}}}",
+            f"{s}.iso-leaf2{{fill:{mix('recess', 28, 'right')}}}",
+            f"{s}.iso-leaf3{{fill:{mix('recess', 62, 'right')}}}",
+            f"{s}.iso-under{{fill:{var('recess')}}}",
+            f"{s}.iso-hedge.iso-t{{fill:{mix('recess', 10, 'left')}}}",
+            f"{s}.iso-hedge.iso-l{{fill:{mix('recess', 28, 'right')}}}",
+            f"{s}.iso-hedge.iso-r{{fill:{mix('recess', 62, 'right')}}}",
+            f"{s}.iso-pad{{fill:{mix('detail', 62, 'top')}}}",
+            f"{s}.iso-finger{{fill:{mix('detail', 34, 'top')};stroke:{var('detail')};stroke-width:{hair}}}",
+            f"{s}.iso-via{{fill:{var('top')};stroke:{var('detail')};stroke-width:{hair}}}",
+            f"{s}.iso-trace{{stroke-opacity:.9}}",
+            f"{s}.iso-ao{{fill-opacity:.12}}",
+            f"{s}.iso-sign{{letter-spacing:.04em}}",
+        ]
+        light = ";".join(f"--iso-_{role}:{colors[role]}" for role in COLOR_ROLES)
+        both = ";".join(f"--iso-_{role}:light-dark({colors[role]},{dark[role]})" for role in COLOR_ROLES)
+        rules.insert(0, f".iso-scene{{{light}}}")
+        rules.append(f"@supports (color:light-dark(#000,#fff)){{.iso-scene{{{both}}}}}")
     return "".join(rules)
 
 
@@ -4894,17 +6217,23 @@ def render(raw_scene: dict[str, Any], base: str | Path | None = None,
     if labels is not None and labels not in LABEL_MODES:
         raise ValueError(f"labels must be one of {', '.join(LABEL_MODES)}")
     scene = normalize_scene(raw_scene, base)
-    v11, v12 = scene["v11"], scene["v12"]
+    v11, v12, v13 = scene["v11"], scene["v12"], scene["v13"]
     label_mode = labels or scene["labels"]
     proj = Projection(scene["projection"], scene["unit"])
+    proj.v13 = v13
     style = scene["style"]
-    colors = {**DEFAULT_COLORS[style], **scene["colors"]}
+    colors = {**(DEFAULT_COLORS_V13 if v13 else DEFAULT_COLORS)[style], **scene["colors"]}
+    dark = {**DARK_COLORS_V13[style], **scene["dark_colors"]} if v13 else None
     prefix = scene["id_prefix"]
     items = scene["items"]
     warnings: list[str] = []
     errors: list[str] = []
     solids = [item for item in items if item["type"] not in ("connector", "ground-grid")]
     by_id = {item["id"]: item for item in solids}
+    if v13:
+        _attach_check(solids, by_id, errors)
+        for item in solids:
+            item["carried"] = [other for other in solids if other is not item and _support_of(other, [item]) is item]
 
     groups: dict[int, dict[str, Any]] = {}
     shadow_layer: list[tuple[Any, ...]] = []
@@ -4968,6 +6297,8 @@ def render(raw_scene: dict[str, Any], base: str | Path | None = None,
         groups[-1] = {"item": {"id": "shadow-layer", "type": "shadows", "role": "shadows"}, "ops": shadow_layer}
         ordered.append(-1)
     ordered += [node["index"] for node in depth_order(nodes, proj.view)]
+    if v13:
+        warnings += _platform_overlaps(proj, groups, ordered, solids)
 
     element_count = sum(len(op[2]["elements"]) if op[0] == "icon" else 1 for i in ordered for op in groups[i]["ops"])
     if element_count > MAX_ELEMENTS:
@@ -5010,7 +6341,7 @@ def render(raw_scene: dict[str, Any], base: str | Path | None = None,
         lines.append(f'<title id="{prefix}title">{_xml(title)}</title>')
         if desc:
             lines.append(f'<desc id="{prefix}desc">{_xml(desc)}</desc>')
-    lines.append(f"<style>{_style(style, colors, scene['stroke'], scene['detail_stroke'], v11, v12)}</style>")
+    lines.append(f"<style>{_style(style, colors, scene['stroke'], scene['detail_stroke'], v11, v12, dark)}</style>")
 
     manifest_elements = []
     for paint, index in enumerate(ordered):
@@ -5074,6 +6405,9 @@ def render(raw_scene: dict[str, Any], base: str | Path | None = None,
     }
     if label_mode != "face":
         manifest["labels"] = label_mode
+    if dark is not None:
+        manifest["ramp"] = {"light": {role: colors[role] for role in COLOR_ROLES},
+                            "dark": {role: dark[role] for role in COLOR_ROLES}}
     return svg, manifest
 
 

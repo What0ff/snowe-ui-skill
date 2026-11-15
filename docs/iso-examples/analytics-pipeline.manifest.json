@@ -1,0 +1,486 @@
+{
+  "schema": "1.3",
+  "projection": "isometric",
+  "style": "technical",
+  "unit": 36.0,
+  "width": 991,
+  "height": 522,
+  "viewBox": [
+    0,
+    0,
+    991,
+    522
+  ],
+  "elements": [
+    {
+      "id": "ap-floor",
+      "source_id": "floor",
+      "kind": "ground-grid",
+      "role": "ground-grid",
+      "order": null,
+      "paint": 0,
+      "accent": false,
+      "bbox": {
+        "x": 129.85,
+        "y": 16.5,
+        "width": 844.78,
+        "height": 489.0
+      }
+    },
+    {
+      "id": "ap-shadow-layer",
+      "source_id": "shadow-layer",
+      "kind": "shadows",
+      "role": "shadows",
+      "order": null,
+      "paint": 1,
+      "accent": false,
+      "bbox": {
+        "x": 16.72,
+        "y": 81.84,
+        "width": 900.8,
+        "height": 348.39
+      }
+    },
+    {
+      "id": "ap-web",
+      "source_id": "web",
+      "kind": "tile",
+      "role": "source",
+      "order": 0,
+      "paint": 2,
+      "accent": false,
+      "bbox": {
+        "x": 414.46,
+        "y": 72.1,
+        "width": 94.73,
+        "height": 67.48
+      }
+    },
+    {
+      "id": "ap-web-to-stream",
+      "source_id": "web-to-stream",
+      "kind": "connector",
+      "role": "connector",
+      "order": 0,
+      "paint": 3,
+      "accent": false,
+      "bbox": {
+        "x": 480.59,
+        "y": 112.99,
+        "width": 41.97,
+        "height": 81.11
+      },
+      "from": "ap-web",
+      "to": "ap-stream",
+      "from_side": "x+",
+      "to_side": "x-",
+      "length": 3.86,
+      "path": "ap-web-to-stream-path",
+      "level": 0.0
+    },
+    {
+      "id": "ap-app",
+      "source_id": "app",
+      "kind": "tile",
+      "role": "source",
+      "order": 0,
+      "paint": 4,
+      "accent": true,
+      "bbox": {
+        "x": 348.99,
+        "y": 109.9,
+        "width": 94.73,
+        "height": 67.48
+      }
+    },
+    {
+      "id": "ap-app-to-stream",
+      "source_id": "app-to-stream",
+      "kind": "connector",
+      "role": "connector",
+      "order": 0,
+      "paint": 5,
+      "accent": true,
+      "bbox": {
+        "x": 415.12,
+        "y": 150.79,
+        "width": 41.97,
+        "height": 81.11
+      },
+      "from": "ap-app",
+      "to": "ap-stream",
+      "from_side": "x+",
+      "to_side": "x-",
+      "length": 3.86,
+      "path": "ap-app-to-stream-path",
+      "level": 0.0
+    },
+    {
+      "id": "ap-logs",
+      "source_id": "logs",
+      "kind": "tile",
+      "role": "source",
+      "order": 0,
+      "paint": 6,
+      "accent": false,
+      "bbox": {
+        "x": 283.52,
+        "y": 143.63,
+        "width": 94.73,
+        "height": 71.55
+      }
+    },
+    {
+      "id": "ap-logs-to-stream",
+      "source_id": "logs-to-stream",
+      "kind": "connector",
+      "role": "connector",
+      "order": 0,
+      "paint": 7,
+      "accent": false,
+      "bbox": {
+        "x": 349.65,
+        "y": 188.59,
+        "width": 63.79,
+        "height": 68.51
+      },
+      "from": "ap-logs",
+      "to": "ap-stream",
+      "from_side": "x+",
+      "to_side": "x-",
+      "length": 3.16,
+      "path": "ap-logs-to-stream-path",
+      "level": 0.0
+    },
+    {
+      "id": "ap-warehouse",
+      "source_id": "warehouse",
+      "kind": "tile",
+      "role": "store",
+      "order": 2,
+      "paint": 8,
+      "accent": true,
+      "bbox": {
+        "x": 797.94,
+        "y": 230.29,
+        "width": 113.44,
+        "height": 82.09
+      }
+    },
+    {
+      "id": "ap-stream-to-warehouse",
+      "source_id": "stream-to-warehouse",
+      "kind": "connector",
+      "role": "connector",
+      "order": 2,
+      "paint": 9,
+      "accent": true,
+      "bbox": {
+        "x": 681.68,
+        "y": 239.79,
+        "width": 149.53,
+        "height": 62.9
+      },
+      "from": "ap-stream",
+      "to": "ap-warehouse",
+      "from_side": "y-",
+      "to_side": "y+",
+      "length": 4.71,
+      "path": "ap-stream-to-warehouse-path",
+      "level": 0.0
+    },
+    {
+      "id": "ap-stream",
+      "source_id": "stream",
+      "kind": "core",
+      "role": "core",
+      "order": 1,
+      "paint": 10,
+      "accent": false,
+      "bbox": {
+        "x": 388.42,
+        "y": 157.87,
+        "width": 333.87,
+        "height": 209.15
+      }
+    },
+    {
+      "id": "ap-warehouse-to-insights",
+      "source_id": "warehouse-to-insights",
+      "kind": "connector",
+      "role": "connector",
+      "order": 3,
+      "paint": 11,
+      "accent": true,
+      "bbox": {
+        "x": 785.81,
+        "y": 288.84,
+        "width": 123.69,
+        "height": 86.57
+      },
+      "from": "ap-warehouse",
+      "to": "ap-insights",
+      "from_side": "x+",
+      "to_side": "y-",
+      "length": 5.41,
+      "path": "ap-warehouse-to-insights-path",
+      "level": 0.0
+    },
+    {
+      "id": "ap-campus",
+      "source_id": "campus",
+      "kind": "slab",
+      "role": "site",
+      "order": 4,
+      "paint": 12,
+      "accent": false,
+      "bbox": {
+        "x": 19.8,
+        "y": 199.21,
+        "width": 347.8,
+        "height": 207.83
+      }
+    },
+    {
+      "id": "ap-studio",
+      "source_id": "studio",
+      "kind": "building",
+      "role": "office",
+      "order": 4,
+      "paint": 13,
+      "accent": false,
+      "bbox": {
+        "x": 75.61,
+        "y": 128.64,
+        "width": 238.7,
+        "height": 223.33
+      }
+    },
+    {
+      "id": "ap-lamp-left",
+      "source_id": "lamp-left",
+      "kind": "street",
+      "role": "street",
+      "order": null,
+      "paint": 14,
+      "accent": false,
+      "bbox": {
+        "x": 74.2,
+        "y": 255.61,
+        "width": 14.94,
+        "height": 34.47
+      }
+    },
+    {
+      "id": "ap-front-left",
+      "source_id": "front-left",
+      "kind": "trees",
+      "role": "trees",
+      "order": null,
+      "paint": 15,
+      "accent": false,
+      "bbox": {
+        "x": 47.62,
+        "y": 270.54,
+        "width": 21.41,
+        "height": 31.11
+      }
+    },
+    {
+      "id": "ap-stream-to-campus",
+      "source_id": "stream-to-campus",
+      "kind": "connector",
+      "role": "connector",
+      "order": 4,
+      "paint": 16,
+      "accent": false,
+      "bbox": {
+        "x": 302.88,
+        "y": 291.9,
+        "width": 126.15,
+        "height": 59.76
+      },
+      "from": "ap-stream",
+      "to": "ap-campus",
+      "from_side": "y+",
+      "to_side": "x+",
+      "length": 3.88,
+      "path": "ap-stream-to-campus-path",
+      "level": 0.0
+    },
+    {
+      "id": "ap-row-east",
+      "source_id": "row-east",
+      "kind": "trees",
+      "role": "trees",
+      "order": null,
+      "paint": 17,
+      "accent": false,
+      "bbox": {
+        "x": 223.1,
+        "y": 267.94,
+        "width": 91.08,
+        "height": 71.06
+      }
+    },
+    {
+      "id": "ap-lake",
+      "source_id": "lake",
+      "kind": "rack",
+      "role": "store",
+      "order": 2,
+      "paint": 18,
+      "accent": false,
+      "bbox": {
+        "x": 710.84,
+        "y": 247.53,
+        "width": 84.99,
+        "height": 93.53
+      }
+    },
+    {
+      "id": "ap-stream-to-lake",
+      "source_id": "stream-to-lake",
+      "kind": "connector",
+      "role": "connector",
+      "order": 2,
+      "paint": 19,
+      "accent": false,
+      "bbox": {
+        "x": 634.92,
+        "y": 310.45,
+        "width": 102.77,
+        "height": 39.26
+      },
+      "from": "ap-stream",
+      "to": "ap-lake",
+      "from_side": "x+",
+      "to_side": "y+",
+      "length": 3.35,
+      "path": "ap-stream-to-lake-path",
+      "level": 0.0
+    },
+    {
+      "id": "ap-hedge-east",
+      "source_id": "hedge-east",
+      "kind": "hedge",
+      "role": "hedge",
+      "order": null,
+      "paint": 20,
+      "accent": false,
+      "bbox": {
+        "x": 241.47,
+        "y": 290.88,
+        "width": 111.53,
+        "height": 70.07
+      }
+    },
+    {
+      "id": "ap-lamp-right",
+      "source_id": "lamp-right",
+      "kind": "street",
+      "role": "street",
+      "order": null,
+      "paint": 21,
+      "accent": false,
+      "bbox": {
+        "x": 145.91,
+        "y": 297.01,
+        "width": 14.94,
+        "height": 34.47
+      }
+    },
+    {
+      "id": "ap-shrubs",
+      "source_id": "shrubs",
+      "kind": "trees",
+      "role": "trees",
+      "order": null,
+      "paint": 22,
+      "accent": false,
+      "bbox": {
+        "x": 196.91,
+        "y": 333.66,
+        "width": 46.43,
+        "height": 31.21
+      }
+    },
+    {
+      "id": "ap-front-right",
+      "source_id": "front-right",
+      "kind": "trees",
+      "role": "trees",
+      "order": null,
+      "paint": 23,
+      "accent": false,
+      "bbox": {
+        "x": 149.84,
+        "y": 322.64,
+        "width": 43.05,
+        "height": 45.4
+      }
+    },
+    {
+      "id": "ap-benches",
+      "source_id": "benches",
+      "kind": "street",
+      "role": "street",
+      "order": null,
+      "paint": 24,
+      "accent": false,
+      "bbox": {
+        "x": 183.32,
+        "y": 354.09,
+        "width": 36.18,
+        "height": 27.57
+      }
+    },
+    {
+      "id": "ap-insights",
+      "source_id": "insights",
+      "kind": "dashboard",
+      "role": "report",
+      "order": 3,
+      "paint": 25,
+      "accent": true,
+      "bbox": {
+        "x": 684.8,
+        "y": 305.88,
+        "width": 107.13,
+        "height": 121.57
+      }
+    }
+  ],
+  "warnings": [],
+  "ramp": {
+    "light": {
+      "top": "#ffffff",
+      "left": "#e3e7ed",
+      "right": "#c6cdd8",
+      "stroke": "#2a303c",
+      "detail": "#858ea0",
+      "accent": "#3d5afe",
+      "text": "#262c38",
+      "grid": "#dadee6",
+      "shadow": "#1b2232",
+      "recess": "#9fa7b5",
+      "glass": "#5f6c86",
+      "lit": "#f5dba6"
+    },
+    "dark": {
+      "top": "#2b3242",
+      "left": "#212736",
+      "right": "#181d29",
+      "stroke": "#aeb8cc",
+      "detail": "#7884a0",
+      "accent": "#8196ff",
+      "text": "#e6ebf5",
+      "grid": "#252c3b",
+      "shadow": "#000000",
+      "recess": "#0e1219",
+      "glass": "#04060a",
+      "lit": "#e9c46a"
+    }
+  }
+}

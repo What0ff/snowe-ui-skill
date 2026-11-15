@@ -1,0 +1,472 @@
+{
+  "schema": "1.3",
+  "projection": "isometric",
+  "style": "technical",
+  "unit": 36.0,
+  "width": 948,
+  "height": 540,
+  "viewBox": [
+    0,
+    0,
+    948,
+    540
+  ],
+  "elements": [
+    {
+      "id": "hub4-floor",
+      "source_id": "floor",
+      "kind": "ground-grid",
+      "role": "ground-grid",
+      "order": null,
+      "paint": 0,
+      "accent": false,
+      "bbox": {
+        "x": 55.26,
+        "y": 16.3,
+        "width": 875.95,
+        "height": 507.0
+      }
+    },
+    {
+      "id": "hub4-shadow-layer",
+      "source_id": "shadow-layer",
+      "kind": "shadows",
+      "role": "shadows",
+      "order": null,
+      "paint": 1,
+      "accent": false,
+      "bbox": {
+        "x": 16.95,
+        "y": 74.44,
+        "width": 898.74,
+        "height": 424.89
+      }
+    },
+    {
+      "id": "hub4-records",
+      "source_id": "records",
+      "kind": "tile",
+      "role": "source",
+      "order": 0,
+      "paint": 2,
+      "accent": false,
+      "bbox": {
+        "x": 424.05,
+        "y": 60.54,
+        "width": 100.97,
+        "height": 75.24
+      }
+    },
+    {
+      "id": "hub4-records-to-core",
+      "source_id": "records-to-core",
+      "kind": "connector",
+      "role": "connector",
+      "order": 1,
+      "paint": 3,
+      "accent": false,
+      "bbox": {
+        "x": 401.48,
+        "y": 108.29,
+        "width": 138.31,
+        "height": 150.41
+      },
+      "from": "hub4-records",
+      "to": "hub4-core",
+      "from_side": "x+",
+      "to_side": "x-",
+      "length": 7.71,
+      "path": "hub4-records-to-core-path",
+      "level": 0.0
+    },
+    {
+      "id": "hub4-contracts",
+      "source_id": "contracts",
+      "kind": "tile",
+      "role": "source",
+      "order": 0,
+      "paint": 4,
+      "accent": false,
+      "bbox": {
+        "x": 358.58,
+        "y": 98.62,
+        "width": 100.97,
+        "height": 74.97
+      }
+    },
+    {
+      "id": "hub4-contracts-to-plaza",
+      "source_id": "contracts-to-plaza",
+      "kind": "connector",
+      "role": "connector",
+      "order": 1,
+      "paint": 5,
+      "accent": true,
+      "bbox": {
+        "x": 310.91,
+        "y": 146.09,
+        "width": 154.05,
+        "height": 125.21
+      },
+      "from": "hub4-contracts",
+      "to": "hub4-plaza",
+      "from_side": "x+",
+      "to_side": "y-",
+      "length": 6.31,
+      "path": "hub4-contracts-to-plaza-path",
+      "level": 0.0
+    },
+    {
+      "id": "hub4-apps",
+      "source_id": "apps",
+      "kind": "tile",
+      "role": "source",
+      "order": 0,
+      "paint": 6,
+      "accent": false,
+      "bbox": {
+        "x": 293.1,
+        "y": 140.3,
+        "width": 100.97,
+        "height": 71.08
+      }
+    },
+    {
+      "id": "hub4-apps-to-plaza",
+      "source_id": "apps-to-plaza",
+      "kind": "connector",
+      "role": "connector",
+      "order": 1,
+      "paint": 7,
+      "accent": false,
+      "bbox": {
+        "x": 295.32,
+        "y": 183.89,
+        "width": 89.49,
+        "height": 78.41
+      },
+      "from": "hub4-apps",
+      "to": "hub4-plaza",
+      "from_side": "x+",
+      "to_side": "y-",
+      "length": 3.71,
+      "path": "hub4-apps-to-plaza-path",
+      "level": 0.0
+    },
+    {
+      "id": "hub4-intake",
+      "source_id": "intake",
+      "kind": "tile",
+      "role": "agent",
+      "order": 3,
+      "paint": "s",
+      "accent": false,
+      "bbox": {
+        "x": 695.29,
+        "y": 172.7,
+        "width": 125.91,
+        "height": 89.08
+      }
+    },
+    {
+      "id": "hub4-core-to-intake",
+      "source_id": "core-to-intake",
+      "kind": "connector",
+      "role": "connector",
+      "order": 3,
+      "paint": 9,
+      "accent": false,
+      "bbox": {
+        "x": 575.91,
+        "y": 225.19,
+        "width": 138.62,
+        "height": 40.62
+      },
+      "from": "hub4-core",
+      "to": "hub4-intake",
+      "from_side": "y-",
+      "to_side": "y+",
+      "length": 4.41,
+      "path": "hub4-core-to-intake-path",
+      "level": 0.0
+    },
+    {
+      "id": "hub4-billing",
+      "source_id": "billing",
+      "kind": "tile",
+      "role": "agent",
+      "order": 3,
+      "paint": "s",
+      "accent": true,
+      "bbox": {
+        "x": 738.93,
+        "y": 197.9,
+        "width": 125.91,
+        "height": 89.08
+      }
+    },
+    {
+      "id": "hub4-core-to-billing",
+      "source_id": "core-to-billing",
+      "kind": "connector",
+      "role": "connector",
+      "order": 3,
+      "paint": 11,
+      "accent": true,
+      "bbox": {
+        "x": 607.09,
+        "y": 250.39,
+        "width": 151.09,
+        "height": 47.82
+      },
+      "from": "hub4-core",
+      "to": "hub4-billing",
+      "from_side": "y-",
+      "to_side": "y+",
+      "length": 4.81,
+      "path": "hub4-core-to-billing-path",
+      "level": 0.0
+    },
+    {
+      "id": "hub4-dispatch",
+      "source_id": "dispatch",
+      "kind": "tile",
+      "role": "agent",
+      "order": 3,
+      "paint": "s",
+      "accent": false,
+      "bbox": {
+        "x": 782.58,
+        "y": 223.1,
+        "width": 125.91,
+        "height": 89.08
+      }
+    },
+    {
+      "id": "hub4-core-to-dispatch",
+      "source_id": "core-to-dispatch",
+      "kind": "connector",
+      "role": "connector",
+      "order": 3,
+      "paint": 13,
+      "accent": false,
+      "bbox": {
+        "x": 638.27,
+        "y": 272.95,
+        "width": 163.56,
+        "height": 57.66
+      },
+      "from": "hub4-core",
+      "to": "hub4-dispatch",
+      "from_side": "y-",
+      "to_side": "y+",
+      "length": 5.21,
+      "path": "hub4-core-to-dispatch-path",
+      "level": 0.0
+    },
+    {
+      "id": "hub4-plaza",
+      "source_id": "plaza",
+      "kind": "slab",
+      "role": "site",
+      "order": 1,
+      "paint": 14,
+      "accent": false,
+      "bbox": {
+        "x": 20.04,
+        "y": 188.21,
+        "width": 329.09,
+        "height": 197.03
+      }
+    },
+    {
+      "id": "hub4-office",
+      "source_id": "office",
+      "kind": "building",
+      "role": "office",
+      "order": 1,
+      "paint": 15,
+      "accent": false,
+      "bbox": {
+        "x": 78.8,
+        "y": 109.29,
+        "width": 239.65,
+        "height": 234.03
+      }
+    },
+    {
+      "id": "hub4-lamps",
+      "source_id": "lamps",
+      "kind": "street",
+      "role": "street",
+      "order": null,
+      "paint": 16,
+      "accent": false,
+      "bbox": {
+        "x": 299.69,
+        "y": 248.66,
+        "width": 32.08,
+        "height": 44.37
+      }
+    },
+    {
+      "id": "hub4-grove-front",
+      "source_id": "grove-front",
+      "kind": "trees",
+      "role": "trees",
+      "order": null,
+      "paint": 17,
+      "accent": false,
+      "bbox": {
+        "x": 59.45,
+        "y": 247.22,
+        "width": 108.83,
+        "height": 91.57
+      }
+    },
+    {
+      "id": "hub4-hedge-front",
+      "source_id": "hedge-front",
+      "kind": "hedge",
+      "role": "hedge",
+      "order": null,
+      "paint": 18,
+      "accent": false,
+      "bbox": {
+        "x": 30.95,
+        "y": 273.97,
+        "width": 127.12,
+        "height": 78.87
+      }
+    },
+    {
+      "id": "hub4-bollards",
+      "source_id": "bollards",
+      "kind": "street",
+      "role": "street",
+      "order": null,
+      "paint": 19,
+      "accent": false,
+      "bbox": {
+        "x": 223.7,
+        "y": 306.96,
+        "width": 36.17,
+        "height": 26.7
+      }
+    },
+    {
+      "id": "hub4-core",
+      "source_id": "core",
+      "kind": "core",
+      "role": "core",
+      "order": 2,
+      "paint": "s",
+      "accent": false,
+      "bbox": {
+        "x": 357.48,
+        "y": 160.26,
+        "width": 333.87,
+        "height": 242.55
+      }
+    },
+    {
+      "id": "hub4-plaza-to-core",
+      "source_id": "plaza-to-core",
+      "kind": "connector",
+      "role": "connector",
+      "order": 2,
+      "paint": 21,
+      "accent": true,
+      "bbox": {
+        "x": 326.5,
+        "y": 299.62,
+        "width": 101.21,
+        "height": 50.57
+      },
+      "from": "hub4-plaza",
+      "to": "hub4-core",
+      "from_side": "x+",
+      "to_side": "y+",
+      "length": 3.26,
+      "path": "hub4-plaza-to-core-path",
+      "level": 0.0
+    },
+    {
+      "id": "hub4-grove-side",
+      "source_id": "grove-side",
+      "kind": "trees",
+      "role": "trees",
+      "order": null,
+      "paint": 22,
+      "accent": false,
+      "bbox": {
+        "x": 207.32,
+        "y": 310.2,
+        "width": 36.43,
+        "height": 39.48
+      }
+    },
+    {
+      "id": "hub4-shrubs",
+      "source_id": "shrubs",
+      "kind": "trees",
+      "role": "trees",
+      "order": null,
+      "paint": 23,
+      "accent": false,
+      "bbox": {
+        "x": 157.3,
+        "y": 335.04,
+        "width": 55.25,
+        "height": 24.93
+      }
+    },
+    {
+      "id": "hub4-board",
+      "source_id": "board",
+      "kind": "dashboard",
+      "role": "report",
+      "order": 4,
+      "paint": 24,
+      "accent": false,
+      "bbox": {
+        "x": 376.38,
+        "y": 366.88,
+        "width": 110.25,
+        "height": 130.57
+      }
+    }
+  ],
+  "warnings": [],
+  "labels": "hidden",
+  "ramp": {
+    "light": {
+      "top": "#ffffff",
+      "left": "#e3e7ed",
+      "right": "#c6cdd8",
+      "stroke": "#2a303c",
+      "detail": "#858ea0",
+      "accent": "#3d5afe",
+      "text": "#262c38",
+      "grid": "#dadee6",
+      "shadow": "#1b2232",
+      "recess": "#9fa7b5",
+      "glass": "#5f6c86",
+      "lit": "#f5dba6"
+    },
+    "dark": {
+      "top": "#2b3242",
+      "left": "#212736",
+      "right": "#181d29",
+      "stroke": "#aeb8cc",
+      "detail": "#7884a0",
+      "accent": "#8196ff",
+      "text": "#e6ebf5",
+      "grid": "#252c3b",
+      "shadow": "#000000",
+      "recess": "#0e1219",
+      "glass": "#04060a",
+      "lit": "#e9c46a"
+    }
+  }
+}
