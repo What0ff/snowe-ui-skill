@@ -11,16 +11,16 @@ A technical illustration must explain a system, flow or mechanism the reader nee
 - **One focal object** carries the most detail (a populated core, a chip with die and pins) and is the largest mass: the thing the page is about. Put it at the front, uncovered.
 - **Three to seven satellites** sit along the real flow, in the order that data or work actually moves. A chevron (flow arriving along +x, leaving along −y) keeps the focal object at the front vertex.
 - **Group tight.** Cluster satellites within one or two grid units of the focal object and keep whitespace around the cluster rather than inside it. A satellite that floats several units away reads as a separate picture. Upright cards in a row need about 0.6 grid units between them, or they read as dominoes.
-- **Never cut into a platform.** An object in front may hide another's side, never the top of its platform: a monitor covering the edge of a core reads as a collision. 1.3 warns when an object cuts into the top of a slab, tile, core or flat card it does not stand on; move it, stand it on the platform, or declare `attach` when the contact is the point. No overlap may hide a label, port or arrow.
+- **Keep objects apart.** A monitor covering the edge of a core, or a screen in front of a rack, reads as a collision. 1.3 warns when an object cuts into the top of a platform it does not stand on, and when two unrelated silhouettes overlap; things standing on one platform compose freely. Move one, stand it on the other, or declare `attach` when the contact is the point.
 - **One level per link.** Connect objects on the same surface, or route on the ground and rise to a port (`route: "ground"`, `to_z`); flows toward the viewer enter back faces, so leave those ends unmarked.
 
 ## Draw Real Objects
 
 Declare `"schema": "1.3"` for new scenes. It draws constructed objects (openings with depth, stepped buildings with lobbies, portals and rooftop plant, tree species built from overlapping volumes, banded databases, folded document stacks, bezelled screens on stands, rack bays) and gives them life:
 
-- **Boards are wired.** Traces leave the package's lead rows in bundles of 3 to 5 at twice the lead pitch, bend only at 45 degrees and end on edge fingers, connector pads or vias, clear of every part and bundle. `detail` adds bundles and parts. Give the core room: a board too small for its package gets short stubs.
+- **Boards are wired.** Traces leave the package's lead rows in bundles of 3 to 5 at twice the lead pitch, bend only at 45 degrees and end on edge fingers, connector pads or vias, clear of every part and bundle. Parts come as functional clusters beside the routes, not sprinkled pegs. `detail` adds both. Give the core room: a board too small for its package gets short stubs.
 - **Buildings are inhabited.** Setbacks become terraces with railings, paving, planters and a parasol; glazing shows ceiling strips, blinds and a few warm lit windows; signage sits small on the entrance canopy or a plaque, so the building's name belongs in a label or page text.
-- **Sites are furnished.** A slab carrying a building is paved with a walk to the entrance. Frame the building with tree groups, `hedge` rows and `shrub` clusters; add `street` lamps, benches or bollards sparingly. People are left out: at a 16 px floor a figure is clip-art.
+- **Sites are furnished.** A slab carrying a building is paved with a walk to the entrance. Frame it with tree groups, clipped `hedge` rows (they open where the walk crosses) and a few large `shrub` mounds; set `street` lanterns along the walk, sparingly. People are left out: at a 16 px floor a figure is clip-art.
 
 **Recognition test.** Render with `--no-labels` and name every object from its shape alone. A slab you can only identify by its label is a placeholder: give it the features that make it that thing (a monitor's bezel and stand, a database's drum bands, a building's door and floors).
 
