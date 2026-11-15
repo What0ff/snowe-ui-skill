@@ -69,10 +69,10 @@ The role table settles state and size. For the family's base mode, read the [con
 |---|---|---|
 | Weight or mass: heavy display type, solid blocks, filled surfaces | Solid; outline only in dense rows beside text | Icons carry the same mass as the type |
 | Line or texture: rules, hairlines, grids, drawn diagrams | Outline; solid only for selected states | Strokes continue the line language |
-| Color: a saturated dominant field or several data hues | Outline or solid at control size; duotone for pictograms at 32 px and up | The second tone echoes the palette without adding a hue |
-| Scale or space: quiet type with large jumps and generous whitespace | Outline at a light stroke | Icons stay quiet so scale and space do the work |
+| Color: a saturated dominant field or several data hues | Outline or solid at control size, optionally with one filled accent; duotone for pictograms at 32 px and up | The accent and the second tone echo the palette without adding a hue |
+| Scale or space: quiet type with large jumps and generous whitespace | Outline at a light stroke on airy keylines | Icons stay quiet so scale and space do the work |
 
-With two loud axes, the one the signature move uses decides. Platform conventions and a stated user preference override this table; record the choice with its reason.
+With two loud axes, the one the signature move uses decides. Platform conventions and a stated user preference override this table; record the choice with its reason. The base mode is half the decision: the family's terminals, corners and open forms come from the same direction ([give the family a voice](icon-craft.md#give-the-family-a-voice)).
 
 Rules:
 - Peers in one row share a style. A mixed row reads as a state difference, so mix styles only to express state.
@@ -117,7 +117,7 @@ Draw editable SVG geometry or extend the established vector system; raster gener
 
 ## Specify the Drawing Language
 
-Write a family specification before drawing; a `glyph.py` spec records its geometric half (grid, live area, keylines, stroke, caps, joins, corners, detail density, tone), and the rest stays beside it:
+Write a family specification before drawing; a `glyph.py` spec records its geometric half (grid, live area, keylines and proportion, stroke and contrast, terminals, joins, corners, open forms, accent, detail density, tone), and the rest stays beside it:
 
 ```text
 family role and semantic range

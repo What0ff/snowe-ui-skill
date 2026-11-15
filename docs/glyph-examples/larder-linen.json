@@ -1,0 +1,158 @@
+{
+  "schema": "1.0",
+  "family": "larder-linen",
+  "tokens": {
+    "grid": 24,
+    "padding": 2,
+    "stroke": 1.25,
+    "linecap": "butt",
+    "linejoin": "round",
+    "radius": 4,
+    "detail": "low",
+    "secondary_opacity": 0.14,
+    "corner": "leaf",
+    "proportion": "wide",
+    "fill": 0.9
+  },
+  "target_sizes": [16, 20, 24, 32],
+  "metadata": {
+    "creator": "Snowe glyph.py demo (Larder recipe and pantry app, airy linen voice)",
+    "reviewed": "2026-11-15",
+    "license": "project-owned demo family"
+  },
+  "sheet": {"tabs": ["home", "search", "calendar", "bell", "user"]},
+  "glyphs": [
+    {
+      "name": "home",
+      "role": "go to the Larder home screen",
+      "keyline": "square",
+      "shapes": [
+        {"type": "path", "id": "house", "d": "M4 11.5 L12 5 L20 11.5 V19 H14.5 V15 H9.5 V19 H4 Z", "radius": 2}
+      ]
+    },
+    {
+      "name": "search",
+      "role": "search recipes and pantry items",
+      "keyline": "square",
+      "shapes": [
+        {"type": "circle", "id": "lens", "center": [10.5, 10.75], "r": 5.75},
+        {"type": "line", "id": "handle", "from": [14.75, 15], "to": [19, 19.25]}
+      ]
+    },
+    {
+      "name": "settings",
+      "role": "open app preferences",
+      "keyline": "circle",
+      "shapes": [
+        {"type": "gear", "id": "cog", "center": [12, 12], "r": 8.25, "root": 6.5, "teeth": 8, "tooth": 0.36, "radius": 1.25},
+        {"type": "circle", "id": "hub", "center": [12, 12], "r": 2.5, "role": "detail"}
+      ]
+    },
+    {
+      "name": "user",
+      "role": "open the cook's profile",
+      "keyline": "square",
+      "shapes": [
+        {"type": "circle", "id": "head", "center": [12, 8.25], "r": 3.5},
+        {"type": "path", "id": "shoulders", "d": "M4.25 19 A9 9 0 0 1 19.75 19", "role": "body"}
+      ]
+    },
+    {
+      "name": "bell",
+      "role": "show reminders and notifications",
+      "keyline": "square",
+      "shapes": [
+        {"type": "path", "id": "bell", "d": "M4.5 16.5 H19.5 L17.75 14.5 V11 A5.75 5.75 0 0 0 6.25 11 V14.5 Z", "radius": 0},
+        {"type": "arc", "id": "clapper", "center": [12, 17.75], "r": 2, "start": 40, "end": 140}
+      ]
+    },
+    {
+      "name": "calendar",
+      "role": "plan meals by date",
+      "keyline": "square",
+      "shapes": [
+        {"type": "rounded-rect", "id": "page", "x": 4, "y": 6.75, "w": 16, "h": 12.25},
+        {"type": "line", "id": "ring", "from": [8, 4.75], "to": [8, 8.5], "mirror": "x"},
+        {"type": "line", "id": "header", "from": [4, 11], "to": [20, 11], "role": "detail", "variants": ["outline", "duotone"]},
+        {"type": "line", "id": "header-cut", "from": [7.5, 11], "to": [16.5, 11], "role": "detail", "variants": ["solid"]}
+      ]
+    },
+    {
+      "name": "chart",
+      "role": "see cooking statistics",
+      "keyline": "square",
+      "shapes": [
+        {"type": "rounded-rect", "id": "frame", "fit": "square"},
+        {"type": "line", "id": "bar-low", "from": [8.5, 15.5], "to": [8.5, 13], "role": "detail"},
+        {"type": "line", "id": "bar-high", "from": [12, 15.5], "to": [12, 8.5], "role": "detail"},
+        {"type": "line", "id": "bar-mid", "from": [15.5, 15.5], "to": [15.5, 11], "role": "detail"}
+      ]
+    },
+    {
+      "name": "folder",
+      "role": "browse recipe collections",
+      "keyline": "landscape",
+      "shapes": [
+        {"type": "path", "id": "folder", "d": "M3.75 18.25 V5.75 H9.75 L11.75 7.75 H20.25 V18.25 Z"}
+      ]
+    },
+    {
+      "name": "lock",
+      "role": "keep a recipe private",
+      "keyline": "portrait",
+      "shapes": [
+        {"type": "rounded-rect", "id": "body", "x": 5, "y": 11.25, "w": 14, "h": 8.5, "radius": 3},
+        {"type": "path", "id": "shackle", "d": "M8.75 11.25 V8 A3.25 3.25 0 0 1 15.25 8 V11.25"},
+        {"type": "line", "id": "keyhole", "from": [12, 14.5], "to": [12, 16.5], "role": "detail"}
+      ]
+    },
+    {
+      "name": "upload",
+      "role": "import a recipe file",
+      "keyline": "square",
+      "shapes": [
+        {"type": "arrow", "id": "arrow", "from": [12, 14.5], "to": [12, 5], "head": 3.5},
+        {"type": "polyline", "id": "tray", "points": [[4, 13.25], [4, 19], [20, 19], [20, 13.25]], "duotone_fill": true}
+      ]
+    },
+    {
+      "name": "download",
+      "role": "keep a recipe for offline cooking",
+      "keyline": "square",
+      "shapes": [
+        {"type": "arrow", "id": "arrow", "from": [12, 5], "to": [12, 14.5], "head": 3.5},
+        {"type": "polyline", "id": "tray", "points": [[4, 13.25], [4, 19], [20, 19], [20, 13.25]], "duotone_fill": true}
+      ]
+    },
+    {
+      "name": "trash",
+      "role": "delete a recipe",
+      "keyline": "square",
+      "shapes": [
+        {"type": "line", "id": "lid", "from": [4, 7.5], "to": [20, 7.5]},
+        {"type": "polyline", "id": "handle", "points": [[9.5, 7.5], [9.5, 5], [14.5, 5], [14.5, 7.5]], "radius": 1.5},
+        {"type": "polyline", "id": "bin", "points": [[6, 7.5], [7, 19], [17, 19], [18, 7.5]], "role": "body"}
+      ]
+    },
+    {
+      "name": "scale-servings",
+      "role": "scale a recipe's servings up or down",
+      "keyline": "square",
+      "shapes": [
+        {"type": "path", "id": "bowl", "d": "M4 12.5 H20 A8 8 0 0 1 4 12.5 Z"},
+        {"type": "line", "id": "middle-rim", "from": [6.5, 9.5], "to": [17.5, 9.5]},
+        {"type": "line", "id": "top-rim", "from": [9, 6.75], "to": [15, 6.75]}
+      ]
+    },
+    {
+      "name": "pantry-stocked",
+      "role": "mark an ingredient as already in the pantry",
+      "keyline": "portrait",
+      "shapes": [
+        {"type": "rounded-rect", "id": "jar", "x": 5.5, "y": 9.5, "w": 13, "h": 9.75},
+        {"type": "rounded-rect", "id": "lid", "x": 8, "y": 4.5, "w": 8, "h": 2.25, "radius": 1},
+        {"type": "polyline", "id": "check", "points": [[9.5, 14.5], [11.25, 16.25], [14.5, 13]], "radius": 0, "role": "detail"}
+      ]
+    }
+  ]
+}

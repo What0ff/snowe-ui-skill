@@ -28,7 +28,7 @@ Derive the tokens from the art direction, not from a library's defaults:
 
 - **Stroke:** match the stem weight of the UI text beside the icon at its rendered size: `stroke = stem px × grid ÷ rendered px`, so 1.5 px stems beside 20 px icons give 1.8, which rounds to 1.75 on a 24 grid. A whole-pixel stroke at the base size also snaps axis-aligned edges crisp.
 - **Corner radius:** carry the control radius over in proportion, scaling it by the square keyline (18 units on a 24 grid) over the control height: an 8 px radius on a 40 px button gives 3.5. Override a shape whose character needs a tighter corner, such as a gable.
-- **Caps and joins:** echo the typeface's terminals: round for rounded and humanist sans, butt caps with bevel joins for flat-cut grotesques. Square caps cost padding, because the validator bounds them by their diagonal reach.
+- **Caps, joins and character:** from the type and the art direction ([give the family a voice](#give-the-family-a-voice)).
 - **Detail density:** `low` for dense 16 px interfaces, `medium` by default, `high` only for large feature glyphs; shapes marked `min_detail` drop out below it.
 - **Duotone tone:** 0.15–0.35, checked on the real surfaces.
 
@@ -46,6 +46,42 @@ Test recognition on the sheet, then in the host:
 4. **State:** in the tab bar, the solid glyph marks the selection without its label; hiding the duotone secondary still leaves a readable glyph, and forced colors may render both layers at full strength.
 
 The sheet is evidence, not acceptance: finish in the owner with the review below.
+
+## Give the family a voice
+
+One stroke, round caps, round joins and a small radius read as Lucide or Feather in any product. Character tokens make the family the product's own ([schema](cli-reference.md#build-an-icon-family)). Derive them from the art direction, never from taste, and apply them to the whole family.
+
+Start from the typeface beside the icons:
+
+| Type | Terminals | Contrast | Corners and proportion | Open forms |
+|---|---|---|---|---|
+| Grotesk, flat cuts | `butt` caps | none | small radius or `sharp` | none |
+| Humanist sans or serif, angled cuts | `terminal: "angled"`, 30–45° | `contrast` 0.6–0.75 | `sharp` with `miter` joins, `narrow` | none |
+| Rounded sans | `round` caps and joins | none | large radius | `aperture` |
+| Mono or technical, square-cut | `butt` or `square` caps | none | `chamfer` | `junction_gap` |
+| Geometric sans, light | `butt` caps | none | `leaf` or a large radius, `wide` at `fill` 0.85–0.9 | none |
+
+Then read the [loud axes and signature move](art-direction-gate.md#one-signature-move):
+
+- **Line or texture loud:** character lives in terminals, corners and junction gaps; fills stay plain.
+- **Weight loud:** heavier stroke, round or chamfered masses.
+- **Color loud:** an `accent` carries one meaning (the working part, the fresh item); duotone stays for pictograms.
+- **Space or scale loud:** light stroke, airy keylines and one quiet signature corner.
+- **Shape as signature move:** when the move is a leaf card, a cut corner or a stencil break, the family repeats it as its corner or open-form token. Icons then belong to the product at no extra cost.
+
+Budget by density: a dense data UI or a 16 px row carries one quiet token (contrast or a corner); navigation and marketing surfaces carry two or three. Never use them all, because an aperture, an accent and angled cuts together compete with the label.
+
+Character serves recognition:
+
+- Exempt a shape only where a token breaks its meaning (`"aperture": false` on a head, `"junction": false` on parts that must touch) and record why. A glyph with no closed body simply has no aperture.
+- An accent means the same thing in every glyph; write that meaning in `tokens.accent`, and give a glyph none rather than a decorative one.
+- Gaps that paint under 1 CSS px close in a small optical set (`<variant>-small/`); inspect both sets.
+- Angled terminals, contrast and miter joins expand strokes into exact filled outlines, so the outline variant becomes `fill` mode and CSS can no longer change its stroke width.
+
+Test the voice:
+
+1. Run the recognition steps above. Every glyph must stay nameable in the label-less 16 px row and the squint row. If voicing makes a glyph need its label, ease the token for the whole family.
+2. Run `glyph.py compare family.json --sheet compare.html`: the family appears beside its plain monoline baseline (same construction and weight, round caps and joins, a 2-unit radius, no character). If the columns read alike at 20 and 32 px, or the family could pass for Lucide, Feather or Tabler, the voice is not there yet: strengthen first the one token the art direction names.
 
 ## Review at three scales
 
