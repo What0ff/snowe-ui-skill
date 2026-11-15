@@ -994,6 +994,12 @@ V3 = EXAMPLES / "orchestration-hub-v3.scene.json"
 # Digest after the cross-platform two-stage rounding fix (a37196f), which moved a few v2
 # coordinates by 0.01; the 1.2 work must not change it further.
 V11_DIGESTS = {"orchestration-hub-v2": "04d921bfa78bee508b405c39bf620264cf74a2fa311cd518b3269515d469e9c1"}
+# SHA-256 of the schema 1.2 demo SVGs, labeled and with --no-labels, as generated before schema 1.3 existed
+# (main at 2669fe0). Later work must leave 1.2 scenes byte-identical.
+V12_DIGESTS = {
+    ("orchestration-hub-v3", None): "1dbe9a0981e84c1502d74bf1b43388befa1a9966fc667308a69f4b723e3fdb32",
+    ("orchestration-hub-v3", "hidden"): "41c07b6fe1a54c8bb9ec73454616c4265acf7441d3d7372bd3ae426971f2f6c9",
+}
 
 
 def v12(*objects: dict, **settings) -> dict:
@@ -1054,6 +1060,14 @@ class SchemaV12Tests(unittest.TestCase):
                 self.assertEqual(digest, hashlib.sha256(svg.encode("utf-8")).hexdigest())
                 self.assertEqual("1.1", manifest["schema"])
                 self.assertNotIn("labels", manifest)
+
+    def test_1_2_demo_stays_byte_identical_labeled_and_unlabeled(self):
+        for (name, labels), digest in V12_DIGESTS.items():
+            with self.subTest(scene=name, labels=labels):
+                svg, manifest = iso.render_file(EXAMPLES / f"{name}.scene.json", labels)
+                self.assertEqual(digest, hashlib.sha256(svg.encode("utf-8")).hexdigest())
+                self.assertEqual("1.2", manifest["schema"])
+                self.assertEqual([], manifest["warnings"])
 
     def test_older_schemas_keep_their_stylesheet_and_unsnapped_coordinates(self):
         for data in (scene(box("a", 0, 0)), tech(box("a", 0, 0))):
