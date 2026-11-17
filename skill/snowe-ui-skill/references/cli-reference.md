@@ -481,6 +481,46 @@ Observation plan schema `1.0` has `scope`, `sourceRoots` and `cases`:
 
 Each immutable receipt binds plan, observer revision, browser and protocol, actual CSS viewport and DPR, emulated theme, touch and motion, route, font settlement, requested and rendered faces, source inventory, loaded resources, measured layers, and whole and detail captures. Compare at the intended display scale; a full-page image does not replace viewport attention or interaction proof. Receipt reads have an 8 MB budget (contract and journal JSON keep 1 MB); split oversized scopes into justified plans. `compare` pairs identical combinations, warns when content changed, and picks no winner.
 
+## Check a Render for Common Tells
+
+Run before accepting original work, and again after fixing what it finds. It renders a local page and inspects the live DOM and computed styles for the mechanical tells of generic, dated or unfinished UI ([failure patterns](failure-patterns.md)):
+
+```text
+node <skill-directory>/scripts/observe.mjs tells <workspace> <page.html> [--width 1440,390] [--kind auto|app|marketing] [--allow ID,...]
+```
+
+- **Widths:** each `--width` (default 1440 and 390) renders at that exact CSS width and a 900 px height.
+- **Kind:** `auto` infers `app` at the widest width from a tall navigation column or six or more fields and tables, otherwise `marketing`. The copy budget applies to marketing pages only, so pass `--kind` when the guess is wrong.
+- **Output:** JSON with `status` (`CLEAR` or `TELLS_FOUND`), the `kind` used, each finding's `id`, `severity`, `message`, reference, widths, count and up to six examples (selector, document rectangle, evidence), `allowed`, and per-width `metrics` (prose words, focus rules).
+- **Exit codes:** `0` when no `tell` remains, `3` when one does, `1` on an operational error, `2` on a usage mistake.
+- **Exceptions:** a finding is a symptom, not a ban. Fix it, or pass `--allow ID` and record the reason in working notes, for example a left rule that is the direction's signature move. `check` findings never fail the run; look at each one.
+- **Without Node or a browser:** evaluate `tells.js` in the host's browser tool, then call `snoweTells({kind: 'app'})` once per width and read the same findings.
+
+| ID | Severity | Catches |
+|---|---|---|
+| `left-stripe` | tell | A colored left border, inset shadow or pseudo bar on a card, panel or interactive item |
+| `left-rule` | check | The same edge on a plain block, such as a timeline axis |
+| `native-control` | tell | A browser-default select, date, time, color, range or file input, an inset field or an outset button |
+| `native-checkbox` | check | A browser-default checkbox or radio without an accent color |
+| `default-focus` | tell | No `:focus` or `:focus-visible` rule anywhere in the page styles |
+| `admin-chrome` | tell | A dark top bar and a dark sidebar around a light canvas, at desktop widths |
+| `serif-interface` | check | A serif or typewriter face in navigation, buttons, fields, labels or table cells |
+| `framework-defaults` | check | Three or more elements in exact framework default colors or shadows |
+| `purple-gradient` | tell | A gradient running from purple to blue |
+| `gradient-text` | tell | Text filled with a gradient |
+| `icon-tiles` | tell | Icons in tinted tiles heading three or more repeated cards |
+| `emoji-icons` | tell | Emoji leading controls, navigation, list items or headings |
+| `hidden-until-scroll` | tell | Two or more blocks below the fold that stay invisible until a scroll reveal |
+| `eyebrow-every-heading` | tell | Uppercase tracked eyebrows above most page and section headings |
+| `section-numbers` | check | Section labels numbered 01, 02 |
+| `prose-over-budget` | tell | Over 1,200 words of prose outside product visuals on a marketing page |
+| `horizontal-overflow` | tell | Content wider than the viewport, with the outermost offenders |
+| `viewport-meta` | tell | No `<meta name="viewport">` |
+| `low-contrast-text` | tell | Body text under 4.5:1 against a solid background |
+| `glass-default` | check | Backdrop blur on three or more surfaces |
+
+Prose excludes navigation, header, footer, forms, tables, figures, SVG and anything marked `data-visual`, so mark a coded product mock with `data-visual`. Text over images or gradients is skipped by the contrast check; judge it in the render. A clear run proves only that these symptoms are absent: composition, hierarchy, type and the direction still need your review of the whole render.
+
 ## Version a Visual-System Contract
 
 Write a new revision file instead of overwriting the accepted one; the decision ledger stays byte-preserved, and a superseding contract records its reason and revisit trigger in appended history. `visual_system.py` keeps schema `1.0` and supports opt-in `1.1`:

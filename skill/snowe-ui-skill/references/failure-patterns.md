@@ -65,10 +65,11 @@ A page that reads as an earlier period nobody chose fails like slop: the audienc
 
 ## How to Use
 
-1. Look at the full render, at thumbnail and actual size, before reading code or rationale.
-2. List each pattern you see, with its element and state.
-3. Apply the replacement, or write the one-line reason this product is the exception.
-4. Rerender and compare. Removing a pattern must leave a positive design, not an emptier one; if the result looks bare, revisit the direction with [art-direction-gate.md](art-direction-gate.md) instead of adding decoration.
+1. Run the [tells check](cli-reference.md#check-a-render-for-common-tells) at desktop and phone widths; it finds the mechanical tells, not the rest.
+2. Look at the full render, at thumbnail and actual size, before reading code or rationale.
+3. List each pattern you see, with its element and state.
+4. Apply the replacement, or write the one-line reason this product is the exception.
+5. Rerender and compare. Removing a pattern must leave a positive design, not an emptier one; if the result looks bare, revisit the direction with [art-direction-gate.md](art-direction-gate.md) instead of adding decoration.
 
 ## Recorded Incidents
 

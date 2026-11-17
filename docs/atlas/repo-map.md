@@ -150,13 +150,13 @@ The generated map itself is excluded from the counts.
 | `.json` | 100 |
 | `.md` | 90 |
 | `.jpg` | 52 |
-| `.py` | 46 |
+| `.py` | 47 |
 | `.svg` | 35 |
 | `.csv` | 31 |
 | `.html` | 30 |
 | `.css` | 13 |
 | `.mjs` | 10 |
-| `.js` | 8 |
+| `.js` | 9 |
 | `.woff2` | 8 |
 | `.txt` | 7 |
 | `[no extension]` | 5 |

@@ -93,7 +93,7 @@ export function browserArguments({profile, sandbox}) {
 export function capabilities({noSandbox=false}={}) {
   const browser = findBrowser(), reasons = unavailableReasons({browser});
   return {node:process.versions.node, browser, available:reasons.length === 0, reasons, sandbox:sandboxPolicy({requested:noSandbox}),
-    supports:['local-static','click','fill','key','scroll','wait','viewport','dpr','light-dark','touch','reduced-motion','computed-layers','font-faces','resource-closure','png','comparison'],
+    supports:['local-static','click','fill','key','scroll','wait','viewport','dpr','light-dark','touch','reduced-motion','computed-layers','font-faces','resource-closure','png','comparison','tells'],
     unavailable:['cross-origin-resources','closed-shadow-roots','native-apps','production-backends','independent-aesthetic-judgment'],
     boundary:'Optional adapter; Python core requires only its standard library. Use host browser tools for other environments and report unbound proof.'};
 }
@@ -204,28 +204,11 @@ export async function capture({workspace, planPath, output, audit, noSandbox=fal
       res.writeHead(200,{'Content-Type':mime[path.extname(file)]||'application/octet-stream','Cache-Control':'no-store'});res.end(bytes);
     } catch(error) {res.writeHead(404);res.end(String(error.message));}
   });
-  let child,client,profile;
+  const session={};let client;
   try {
     await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
     const origin='http://127.0.0.1:'+server.address().port;
-    profile=await mkdtemp(path.join(tmpdir(),'snowe-observe-'));
-    const sandbox=available.sandbox;
-    child=spawn(available.browser,browserArguments({profile,sandbox:sandbox.sandbox}),{stdio:['ignore','ignore','pipe'],windowsHide:true});
-    let spawnError,browserLog='';child.on('error',error=>{spawnError=error;});
-    child.stderr.on('data',chunk=>{browserLog=(browserLog+chunk).slice(-2000);});
-    const sandboxHint=sandbox.sandbox&&process.platform==='linux'?'. If the Chromium sandbox is unavailable on this host (container or restricted user namespaces), rerun with --no-sandbox or SNOWE_OBSERVE_NO_SANDBOX=1':'';
-    let port;
-    await until(async()=>{
-      if(spawnError)throw spawnError;
-      if(child.exitCode!==null||child.signalCode!==null){
-        const detail=browserLog.trim().split('\n').slice(-3).join(' | ');
-        throw new Error(`Browser exited before DevTools became available (${child.exitCode??child.signalCode})${sandboxHint}${detail?': '+detail:''}`);
-      }
-      try{port=Number((await readFile(path.join(profile,'DevToolsActivePort'),'utf8')).split('\n')[0]);return !!port;}catch{return false;}
-    },`Browser did not expose DevTools within ${BROWSER_START_MS/1000} s`+sandboxHint,BROWSER_START_MS);
-    const targets=await (await fetch(`http://127.0.0.1:${port}/json/list`)).json();
-    const target=targets.find(t=>t.type==='page');assert(target,'No browser page');
-    client=new CDP(target.webSocketDebuggerUrl);await client.connect();
+    client=await openBrowser(available,session);
     for(const method of ['Page.enable','Runtime.enable','Network.enable','DOM.enable','CSS.enable']) await client.send(method);
     await client.send('Network.setCacheDisabled',{cacheDisabled:true});
     await client.send('Network.setBypassServiceWorker',{bypass:true});
@@ -366,17 +349,131 @@ export async function capture({workspace, planPath, output, audit, noSandbox=fal
     await writeFile(path.join(destination,'receipt.json'),JSON.stringify(receipt,null,2)+'\n',{flag:'wx'});
     return {receipt:output+'/receipt.json',cases:observations.length,browser:browserInfo.product,boundary:'Browser observation only; inspect whole renders and details for visual judgment'};
   } finally {
-    const cleanup=[];
-    if(client){try{await client.send('Browser.close');}catch{}client.socket?.close();}
-    if(child&&child.exitCode===null) {
-      try{await until(()=>child.exitCode!==null||child.signalCode!==null,'Browser did not exit',5000);}catch{child.kill('SIGKILL');try{await until(()=>child.exitCode!==null||child.signalCode!==null,'Browser did not terminate',10000);}catch(e){cleanup.push(e);}}
-    }
-    // A browser helper that inherited the diagnostic pipe must not keep this process alive.
-    child?.stderr?.destroy();
+    const cleanup=await closeBrowser(session);
     try{await new Promise(resolve=>server.close(resolve));}catch(e){cleanup.push(e);}
-    if(profile){try{await rm(profile,{recursive:true,force:true,maxRetries:12,retryDelay:100});}catch(e){cleanup.push(e);}}
     if(cleanup.length)throw new AggregateError(cleanup,'Observation cleanup failed');
   }
+}
+
+// Launch the browser into `session` step by step, so closeBrowser can clean up a partial start.
+async function openBrowser(available,session){
+  session.profile=await mkdtemp(path.join(tmpdir(),'snowe-observe-'));
+  const sandbox=available.sandbox;
+  const child=session.child=spawn(available.browser,browserArguments({profile:session.profile,sandbox:sandbox.sandbox}),{stdio:['ignore','ignore','pipe'],windowsHide:true});
+  let spawnError,browserLog='';child.on('error',error=>{spawnError=error;});
+  child.stderr.on('data',chunk=>{browserLog=(browserLog+chunk).slice(-2000);});
+  const sandboxHint=sandbox.sandbox&&process.platform==='linux'?'. If the Chromium sandbox is unavailable on this host (container or restricted user namespaces), rerun with --no-sandbox or SNOWE_OBSERVE_NO_SANDBOX=1':'';
+  let port;
+  await until(async()=>{
+    if(spawnError)throw spawnError;
+    if(child.exitCode!==null||child.signalCode!==null){
+      const detail=browserLog.trim().split('\n').slice(-3).join(' | ');
+      throw new Error(`Browser exited before DevTools became available (${child.exitCode??child.signalCode})${sandboxHint}${detail?': '+detail:''}`);
+    }
+    try{port=Number((await readFile(path.join(session.profile,'DevToolsActivePort'),'utf8')).split('\n')[0]);return !!port;}catch{return false;}
+  },`Browser did not expose DevTools within ${BROWSER_START_MS/1000} s`+sandboxHint,BROWSER_START_MS);
+  const targets=await (await fetch(`http://127.0.0.1:${port}/json/list`)).json();
+  const target=targets.find(t=>t.type==='page');assert(target,'No browser page');
+  session.client=new CDP(target.webSocketDebuggerUrl);await session.client.connect();
+  return session.client;
+}
+
+async function closeBrowser({client,child,profile}){
+  const cleanup=[];
+  if(client){try{await client.send('Browser.close');}catch{}client.socket?.close();}
+  if(child&&child.exitCode===null) {
+    try{await until(()=>child.exitCode!==null||child.signalCode!==null,'Browser did not exit',5000);}catch{child.kill('SIGKILL');try{await until(()=>child.exitCode!==null||child.signalCode!==null,'Browser did not terminate',10000);}catch(e){cleanup.push(e);}}
+  }
+  // A browser helper that inherited the diagnostic pipe must not keep this process alive.
+  child?.stderr?.destroy();
+  if(profile){try{await rm(profile,{recursive:true,force:true,maxRetries:12,retryDelay:100});}catch(e){cleanup.push(e);}}
+  return cleanup;
+}
+
+const TELLS_SOURCE=path.join(path.dirname(script),'tells.js');
+const TELL_KINDS=['auto','app','marketing'];
+
+export async function tellIds(){
+  return [...(await readFile(TELLS_SOURCE,'utf8')).matchAll(/^\s*'([a-z-]+)': \['(tell|check)'/gm)].map(m=>m[1]);
+}
+
+// Render one local page at each width and run tells.js against the live DOM and computed styles.
+export async function tells({workspace, page, widths=[1440,390], kind='auto', allow=[], noSandbox=false}) {
+  const root=await realpath(workspace);
+  await contained(root,page);
+  assert(TELL_KINDS.includes(kind),'Use --kind auto, app or marketing');
+  assert(widths.length&&widths.every(w=>Number.isInteger(w)&&w>=280&&w<=3840),'Use integer --width values from 280 to 3840');
+  const known=await tellIds();
+  for(const id of allow)assert(known.includes(id),'Unknown tell ID for --allow: '+id+'. Known: '+known.join(', '));
+  const available=capabilities({noSandbox});assert(available.available,'Browser observation unavailable: '+available.reasons.join('; ')+'. Evaluate tells.js in the host browser and call snoweTells() instead');
+  const source=await readFile(TELLS_SOURCE,'utf8');
+  const server=createServer(async(req,res)=>{
+    try {
+      const url=new URL(req.url,'http://local');
+      if(url.pathname==='/favicon.ico'){res.writeHead(204);res.end();return;}
+      let name=decodeURIComponent(url.pathname).replace(/^\//,'')||'index.html';
+      let file=await contained(root,name);
+      if((await lstat(file)).isDirectory()){name+='/index.html';file=await contained(root,name);}
+      res.writeHead(200,{'Content-Type':mime[path.extname(file)]||'application/octet-stream','Cache-Control':'no-store'});res.end(await readFile(file));
+    } catch(error) {res.writeHead(404);res.end(String(error.message));}
+  });
+  const session={};let result,failure;
+  try {
+    await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
+    const origin='http://127.0.0.1:'+server.address().port;
+    const client=await openBrowser(available,session);
+    for(const method of ['Page.enable','Runtime.enable'])await client.send(method);
+    const runs=[];let resolved=kind;
+    // The widest width decides an inferred kind, because narrow layouts hide sidebars.
+    for(const width of [...widths].sort((a,b)=>b-a)){
+      // Desktop emulation keeps the layout width exact; viewport-meta reports the phone-specific gap.
+      await client.send('Emulation.setDeviceMetricsOverride',{width,height:900,deviceScaleFactor:1,mobile:false});
+      await client.send('Page.navigate',{url:'about:blank'});
+      await until(()=>client.evaluate("location.href==='about:blank'"),'Failed to clear page');
+      const url=origin+'/'+page.split('/').map(encodeURIComponent).join('/');
+      await client.send('Page.navigate',{url});
+      await until(()=>client.evaluate("document.readyState==='complete'"),'Page did not load');
+      await client.evaluate('document.fonts.ready.then(()=>true)');
+      try{await until(()=>client.evaluate("document.getAnimations().every(a=>a.playState!=='running'||a.effect?.getTiming().iterations===Infinity)"),'',3000);}catch{}
+      await client.evaluate('new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))');
+      const result=await client.evaluate(`${source}\n;snoweTells(${JSON.stringify({kind:resolved})})`);
+      if(resolved==='auto')resolved=result.kind;
+      runs.push({width,...result});
+    }
+    const merged=new Map();
+    for(const run of runs.sort((a,b)=>b.width-a.width))for(const finding of run.findings){
+      const entry=merged.get(finding.id)||{id:finding.id,severity:finding.severity,message:finding.message,ref:finding.ref,widths:[],count:0,examples:[]};
+      entry.widths.push(run.width);entry.count+=finding.count;
+      for(const example of finding.examples)if(entry.examples.length<6)entry.examples.push({width:run.width,...example});
+      merged.set(finding.id,entry);
+    }
+    const all=[...merged.values()],findings=all.filter(f=>!allow.includes(f.id));
+    result={status:findings.some(f=>f.severity==='tell')?'TELLS_FOUND':'CLEAR',page,kind:resolved,widths:runs.map(r=>r.width),
+      findings,allowed:all.filter(f=>allow.includes(f.id)).map(f=>({id:f.id,count:f.count})),
+      metrics:Object.fromEntries(runs.map(r=>[r.width,r.metrics])),
+      boundary:'Finds specific mechanical tells in the rendered DOM; it does not judge taste. Fix each tell or record why this product is the exception, then judge the whole render yourself.'};
+  } catch(error) {failure=error;}
+  const cleanup=await closeBrowser(session);
+  try{await new Promise(resolve=>server.close(resolve));}catch(e){cleanup.push(e);}
+  // A slow browser exit must neither hide the real failure nor discard completed findings.
+  if(failure)throw cleanup.length?new AggregateError([failure,...cleanup],failure.message):failure;
+  if(cleanup.length)result.cleanupWarnings=cleanup.map(e=>e.message);
+  return result;
+}
+
+function tellsArguments(args){
+  const options={widths:[],allow:[],kind:'auto'},positional=[];
+  for(let i=0;i<args.length;i++){
+    const flag=args[i],value=args[i+1];
+    if(flag==='--width'){assert(value!==undefined,'--width needs a value');options.widths.push(...value.split(',').map(Number));i++;}
+    else if(flag==='--kind'){assert(value!==undefined,'--kind needs a value');options.kind=value;i++;}
+    else if(flag==='--allow'){assert(value!==undefined,'--allow needs a value');options.allow.push(...value.split(',').filter(Boolean));i++;}
+    else if(flag.startsWith('--'))return null;
+    else positional.push(flag);
+  }
+  if(positional.length!==2)return null;
+  if(!options.widths.length)options.widths=[1440,390];
+  return {workspace:positional[0],page:positional[1],...options};
 }
 
 function measure(requests) {
@@ -436,6 +533,8 @@ export async function compare(workspace, before, after, output) {
 const usage=`Usage: observe.mjs capabilities [--no-sandbox]
        observe.mjs capture [--no-sandbox] <workspace> <plan.json> <fresh-output-dir>
        observe.mjs compare <workspace> <before-receipt> <after-receipt> <output.html>
+       observe.mjs tells [--no-sandbox] <workspace> <page.html> [--width 1440,390] [--kind auto|app|marketing] [--allow ID,...]
+tells exits 0 when clear, 3 when a tell is found, 1 on an operational error.
 --no-sandbox (or SNOWE_OBSERVE_NO_SANDBOX=1) disables the Chromium sandbox; it is disabled automatically as root on Linux and in Linux containers.`;
 
 function describeError(error){
@@ -447,13 +546,16 @@ function describeError(error){
 if(process.argv[1]&&path.resolve(process.argv[1])===script){
   const [command,...rest]=process.argv.slice(2);
   const noSandbox=rest.includes('--no-sandbox'),args=rest.filter(argument=>argument!=='--no-sandbox');
+  let tellsOptions=null;
+  if(command==='tells'){try{tellsOptions=tellsArguments(args);}catch{tellsOptions=null;}}
   const run=command==='capabilities'&&args.length===0?()=>capabilities({noSandbox})
     :command==='capture'&&args.length===3?()=>capture({workspace:args[0],planPath:args[1],output:args[2],noSandbox})
     :command==='compare'&&args.length===4&&!noSandbox?()=>compare(...args)
+    :command==='tells'&&tellsOptions?()=>tells({...tellsOptions,noSandbox})
     :null;
   if(!run){console.error(usage);process.exitCode=2;}
   else{
-    try{console.log(JSON.stringify(await run(),null,2));}
+    try{const result=await run();console.log(JSON.stringify(result,null,2));if(result?.status==='TELLS_FOUND')process.exitCode=3;}
     catch(error){console.error(describeError(error));process.exitCode=1;}
   }
 }
