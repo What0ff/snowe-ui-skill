@@ -138,6 +138,19 @@ A definite supplied design closes the visual choices it specifies. This is confo
 
 Unspecified responsive states and interactions get the minimum coherent behavior that keeps known priorities and visual language, labelled as extrapolation; a desktop-only frame proves no mobile fidelity, and an unspecified mobile state does not block a proved desktop scope. A missing font, inaccessible frame or unverified behavior stays `UNKNOWN`. When the reference conflicts with a required accessibility, platform, content or functional constraint, name the conflict and first seek a fix that keeps the visible design, such as correct semantics or a non-overlapping transparent hit region; record an unavoidable departure as an unresolved deviation, never a silent redraw.
 
+### Redesign Coverage
+
+A request to redesign an area covers every surface in it, not the first screen. Before designing, list them from the routes and code: pages, tabs, dialogs, drawers, menus, popovers, forms, and empty, loading and error states. Keep the list with one status each and update it as you work:
+
+```text
+surface | redesigned / restyled only / untouched | evidence (render path, widths, open states)
+```
+
+- **Redesigned** means the composition, controls and copy of that surface were rebuilt in the new system and rendered at desktop and phone widths, with its open states.
+- **Restyled only** (new tokens, palette or font on the old layout) is not done. Old controls left beside new ones read as two products: a page mixing 28 px and 44 px fields fails even when both are themed.
+- Work surface by surface and finish one before starting the next. A preview while surfaces remain is labelled partial, with the list; never present it as the result.
+- Completion requires every listed surface `redesigned` or an explicit user decision to leave it. Report the list.
+
 ### Early Gate for a Visual System
 
 Before repeating a new or revised visual system across pages, render its primary decision surface and one representative secondary or repeated context with real content, at the widths that pressure it, reusing the Focused comparison or Portfolio slice already in progress. Settle reading order, grouping, type emphasis and control hierarchy before spreading decoration; [failure patterns](failure-patterns.md) are inspection triggers, not bans.

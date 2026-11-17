@@ -1,9 +1,12 @@
 """The rendered tells check: documented detectors, a self-contained page script and real-browser findings."""
+from functools import partial
+from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 import json
 from pathlib import Path
 import re
 import subprocess
 import tempfile
+import threading
 import unittest
 
 from tests.test_observation import OBSERVER, browser_observation_available, node_executable
@@ -39,6 +42,8 @@ main{margin-left:220px;padding:80px 32px}
 .reveal{opacity:0;transform:translateY(20px)}
 .glass{backdrop-filter:blur(12px);background:rgba(255,255,255,.4);padding:8px}
 .wide{width:600px;background:#fff}
+.big{height:56px;font-size:14px;border:1px solid #999;border-radius:0}
+.r3,.r10,.r14{padding:10px;border:0;background:#ddd}.r3{border-radius:3px}.r10{border-radius:10px}.r14{border-radius:14px}
 </style></head><body>
 <div class="top">Cabinet</div>
 <nav class="side"><a class="active" href="#">Scans</a><a href="#">KvK setup</a><a href="#">Members</a><a href="#">Billing</a><a href="#">Profile</a></nav>
@@ -49,6 +54,9 @@ main{margin-left:220px;padding:80px 32px}
 <div class="card shadow">Second card</div><div class="card shadow">Third card</div>
 <button class="btn">Run</button> <button>Plain</button> <button>\U0001F680 Launch</button>
 <select><option>Siege of Orleans</option></select> <input type="date"> <input type="checkbox"> <input type="text">
+<input class="big" placeholder="Old field"> <input class="big" placeholder="Old field two">
+<button class="r3">Three</button><button class="r10">Ten</button><button class="r14">Fourteen</button>
+<span style="font-family:'Courier New'">mono</span> <span style="font-family:'Times New Roman'">times</span> <span style="font-family:Verdana">verdana</span>
 <p class="eyebrow">Features</p><h2>01 / Fast</h2>
 <div class="features">
 <div class="feature"><div class="tile"><svg width="20" height="20"><circle cx="10" cy="10" r="8"/></svg></div><h3>One</h3><p class="muted">Muted body text here that is hard to read on white.</p></div>
@@ -190,6 +198,22 @@ class TellsBrowserTests(unittest.TestCase):
         self.assertEqual(0, result.returncode, result.stderr)
         self.assertEqual("CLEAR", report["status"])
         self.assertEqual([{"id": "left-stripe", "count": 1}], report["allowed"])
+
+    def test_a_dev_server_url_on_loopback_is_checked(self):
+        handler = partial(SimpleHTTPRequestHandler, directory=str(self.root))
+        handler.log_message = lambda *args: None
+        server = ThreadingHTTPServer(("127.0.0.1", 0), handler)
+        threading.Thread(target=server.serve_forever, daemon=True).start()
+        self.addCleanup(server.server_close)
+        self.addCleanup(server.shutdown)
+        url = f"http://127.0.0.1:{server.server_address[1]}/clean.html"
+        result, report = self.run_tells(url, "--width", "1440")
+        self.assertEqual(0, result.returncode, result.stderr)
+        self.assertEqual("CLEAR", report["status"])
+        self.assertEqual(url, report["page"])
+        result, _ = self.run_tells("https://example.com/", "--width", "1440")
+        self.assertEqual(1, result.returncode)
+        self.assertIn("localhost", result.stderr)
 
     def test_bad_arguments_are_refused(self):
         result, _ = self.run_tells("stripe.html", "--allow", "left-stripes")

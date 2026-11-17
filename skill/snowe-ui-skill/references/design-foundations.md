@@ -23,6 +23,7 @@ These are defaults to start from and then beat. Deviate when content, brand, pla
 
 **Control and heading scale** (derive sizes from the type you chose, so density sets them, not habit)
 - A button or field's visible height is about 2.25–2.75× its label size: a 14 px label gives 32–38 px, a 16 px label 36–44 px. Side padding is about 0.75–1.5× the label size; an icon matches the label's line height. A taller box needs a reason in the task, and the hit area can grow through transparent space instead.
+- In a desktop app or dashboard, controls usually sit at 28–36 px with 13–14 px labels; 40–48 px controls belong to touch layouts and marketing actions. One product keeps one control size scale (small, default, large) on every page, so old controls left beside new ones are unfinished work.
 - Headings climb the chosen scale from body text: an app page title 2–3 steps, a marketing hero 4–6 steps. Go beyond only when display type is the direction's signature move.
 - Section spacing is a multiple of the base unit, set by how much must be seen together; phones use roughly two-thirds of desktop spacing. Viewport width alone never enlarges padding, controls or values.
 - Then compare with a tighter variant ([density](#density-before-dimensions)).

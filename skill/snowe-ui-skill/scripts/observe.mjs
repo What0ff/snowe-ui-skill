@@ -398,9 +398,14 @@ export async function tellIds(){
 }
 
 // Render one local page at each width and run tells.js against the live DOM and computed styles.
+const LOOPBACK_URL=/^http:\/\/(localhost|127\.0\.0\.1|\[::1\])(:\d{1,5})?(\/[^\s]*)?$/;
+
 export async function tells({workspace, page, widths=[1440,390], kind='auto', allow=[], noSandbox=false}) {
   const root=await realpath(workspace);
-  await contained(root,page);
+  // A running dev server is reached by its loopback URL; anything else is a file inside the workspace.
+  const remote=/^[a-z]+:/i.test(page);
+  assert(!remote||LOOPBACK_URL.test(page),'Only http://localhost, 127.0.0.1 or [::1] URLs are allowed; pass a local file otherwise');
+  if(!remote)await contained(root,page);
   assert(TELL_KINDS.includes(kind),'Use --kind auto, app or marketing');
   assert(widths.length&&widths.every(w=>Number.isInteger(w)&&w>=280&&w<=3840),'Use integer --width values from 280 to 3840');
   const known=await tellIds();
@@ -430,7 +435,7 @@ export async function tells({workspace, page, widths=[1440,390], kind='auto', al
       await client.send('Emulation.setDeviceMetricsOverride',{width,height:900,deviceScaleFactor:1,mobile:false});
       await client.send('Page.navigate',{url:'about:blank'});
       await until(()=>client.evaluate("location.href==='about:blank'"),'Failed to clear page');
-      const url=origin+'/'+page.split('/').map(encodeURIComponent).join('/');
+      const url=remote?page:origin+'/'+page.split('/').map(encodeURIComponent).join('/');
       await client.send('Page.navigate',{url});
       await until(()=>client.evaluate("document.readyState==='complete'"),'Page did not load');
       await client.evaluate('document.fonts.ready.then(()=>true)');
@@ -533,7 +538,7 @@ export async function compare(workspace, before, after, output) {
 const usage=`Usage: observe.mjs capabilities [--no-sandbox]
        observe.mjs capture [--no-sandbox] <workspace> <plan.json> <fresh-output-dir>
        observe.mjs compare <workspace> <before-receipt> <after-receipt> <output.html>
-       observe.mjs tells [--no-sandbox] <workspace> <page.html> [--width 1440,390] [--kind auto|app|marketing] [--allow ID,...]
+       observe.mjs tells [--no-sandbox] <workspace> <page.html|http://localhost:PORT/path> [--width 1440,390] [--kind auto|app|marketing] [--allow ID,...]
 tells exits 0 when clear, 3 when a tell is found, 1 on an operational error.
 --no-sandbox (or SNOWE_OBSERVE_NO_SANDBOX=1) disables the Chromium sandbox; it is disabled automatically as root on Linux and in Linux containers.`;
 

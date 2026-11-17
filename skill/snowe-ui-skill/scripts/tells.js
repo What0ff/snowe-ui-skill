@@ -10,6 +10,8 @@ function snoweTells(options = {}) {
     copy: 'references/page-hierarchy.md#keep-marketing-copy-scannable',
     motion: 'references/motion-and-interaction.md#interaction-quality',
     narrow: 'references/quality-gates.md#narrow-screens',
+    scale: 'references/design-foundations.md#starting-points',
+    system: 'references/quality-gates.md#redesign-coverage',
   };
   // id: [severity, message, reference]. "tell" findings fail the check; "check" findings need a look.
   const TELLS = {
@@ -33,6 +35,10 @@ function snoweTells(options = {}) {
     'viewport-meta': ['tell', 'No <meta name="viewport">, so phones render the page at desktop width and shrink it', REF.narrow],
     'low-contrast-text': ['tell', 'Body text below 4.5:1 against its background', REF.generic],
     'glass-default': ['check', 'Backdrop blur on several surfaces; keep glass only over media that matters', REF.generic],
+    'oversized-control': ['tell', 'A field or button taller than its label needs: over 44 px or 3.1x its text in a desktop app, 3.3x on a marketing page', REF.scale],
+    'mixed-control-sizes': ['tell', 'Fields or buttons of the same role come in sizes 1.5x apart: two control systems on one page', REF.system],
+    'mixed-radii': ['check', 'Fields and buttons use more than three corner radii', REF.system],
+    'font-families': ['check', 'More than three font families render on the page', REF.system],
   };
   const W = innerWidth, H = innerHeight;
   const found = new Map();
@@ -138,7 +144,9 @@ function snoweTells(options = {}) {
     return r.left <= 1 && r.width >= 150 && r.width <= 380 && r.height >= H * 0.7 && e.querySelectorAll('a, button').length >= 4 && shown(e);
   });
   const fields = document.querySelectorAll('table, [role=grid], input:not([type=hidden]), select, textarea').length;
-  const kind = ['app', 'marketing'].includes(options.kind) ? options.kind : (sidebar || fields >= 6 ? 'app' : 'marketing');
+  // A marketing page leads with display type; an app page title stays near body size.
+  const display = Math.max(0, ...[...document.querySelectorAll('h1')].filter(shown).map(h => parseFloat(style(h).fontSize)));
+  const kind = ['app', 'marketing'].includes(options.kind) ? options.kind : (sidebar ? 'app' : display >= 40 ? 'marketing' : fields >= 6 ? 'app' : 'marketing');
 
   // Left stripes: a border, an inset shadow or an absolutely placed pseudo bar on the left edge.
   const interactive = e => e.matches('a, button, summary, label, [role=button], [role=tab], [role=option], [role=menuitem], [role=link], [aria-current], [aria-selected=true]');
@@ -324,6 +332,70 @@ function snoweTells(options = {}) {
   // Glass by default.
   const glass = all.filter(e => /blur\(/.test(style(e).backdropFilter || style(e).webkitBackdropFilter || '') && shown(e));
   if (glass.length >= 3) for (const e of glass) add('glass-default', e);
+
+  // One system: control sizes, corner radii and font families.
+  // Text lines a control's label occupies; cards and list rows built as buttons span several.
+  const lines = e => {
+    const tops = [];
+    const walker = document.createTreeWalker(e, NodeFilter.SHOW_TEXT);
+    for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+      if (!node.textContent.trim()) continue;
+      const range = document.createRange();
+      range.selectNodeContents(node);
+      for (const rect of range.getClientRects()) if (rect.width > 1 && !tops.some(top => Math.abs(top - rect.top) < 6)) tops.push(rect.top);
+    }
+    return tops.length;
+  };
+  const boxed = e => { const s = style(e); return color(s.backgroundColor).a > 0.05 || parseFloat(s.borderTopWidth) > 0 || s.boxShadow !== 'none'; };
+  const controlRole = e => {
+    if (e.closest('table, [role=grid], [role=tablist], [role=listbox], [role=menu]') || e.matches('[role=tab], [role=option], [role=menuitem]')) return null;
+    if (e.matches('[role=combobox], [aria-haspopup=listbox], select:not([multiple])')) return 'field';
+    if (e.matches('input')) {
+      const type = (e.getAttribute('type') || 'text').toLowerCase();
+      if (['submit', 'button', 'reset'].includes(type)) return 'button';
+      return ['checkbox', 'radio', 'range', 'color', 'file', 'hidden', 'image'].includes(type) ? null : 'field';
+    }
+    if (e.matches('button, [role=button]')) return words(e.textContent) && boxed(e) && lines(e) === 1 ? 'button' : null;
+    return null;
+  };
+  const controls = {field: [], button: []};
+  for (const e of document.querySelectorAll('input, select, button, [role=button], [role=combobox], [aria-haspopup=listbox]')) {
+    const role = controlRole(e);
+    if (!role || !shown(e)) continue;
+    const r = e.getBoundingClientRect();
+    if (r.height < 16 || r.width < 16) continue;
+    controls[role].push([e, r.height]);
+    const size = parseFloat(style(e).fontSize);
+    if (W >= 1024 && size) {
+      const ratio = r.height / size;
+      if ((kind === 'app' && (r.height > 44.5 || ratio > 3.1)) || (kind === 'marketing' && ratio > 3.3)) add('oversized-control', e, {height: Math.round(r.height), fontSize: size, ratio: Math.round(ratio * 100) / 100});
+    }
+  }
+  for (const [role, list] of Object.entries(controls)) {
+    const clusters = [];
+    for (const [e, h] of [...list].sort((a, b) => a[1] - b[1])) {
+      const last = clusters[clusters.length - 1];
+      if (last && h - last.max <= 4) { last.max = h; last.items.push(e); } else clusters.push({min: h, max: h, items: [e]});
+    }
+    const real = clusters.filter(c => c.items.length >= 2);
+    if (real.length >= 2 && real[real.length - 1].max / real[0].min >= 1.5) {
+      for (const c of [real[0], real[real.length - 1]]) add('mixed-control-sizes', c.items[0], {role, height: Math.round(c.max), members: c.items.length});
+    }
+  }
+  const radii = new Set();
+  for (const [e, h] of [...controls.field, ...controls.button]) {
+    const radius = parseFloat(style(e).borderTopLeftRadius) || 0;
+    if (radius > 0 && radius < h / 2 - 0.5) radii.add(Math.round(radius));
+  }
+  if (radii.size > 3) add('mixed-radii', document.body, {radii: [...radii].sort((a, b) => a - b)});
+  const families = new Set();
+  for (const e of all) {
+    if (![...e.childNodes].some(n => n.nodeType === 3 && n.textContent.trim()) || !shown(e)) continue;
+    // Optical sizes of one family (Sitka Text, Sitka Display) count once.
+    families.add(style(e).fontFamily.split(',')[0].trim().replace(/^["']|["']$/g, '').toLowerCase()
+      .replace(/\s+(text|display|small|subheading|banner|caption|headline|heading|deck|micro|variable|vf)$/, ''));
+  }
+  if (families.size > 3) add('font-families', document.body, {families: [...families]});
 
   const findings = [...found.entries()].map(([id, entry]) => {
     const [severity, message, ref] = TELLS[id];

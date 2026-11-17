@@ -486,8 +486,11 @@ Each immutable receipt binds plan, observer revision, browser and protocol, actu
 Run before accepting original work, and again after fixing what it finds. It renders a local page and inspects the live DOM and computed styles for the mechanical tells of generic, dated or unfinished UI ([failure patterns](failure-patterns.md)):
 
 ```text
-node <skill-directory>/scripts/observe.mjs tells <workspace> <page.html> [--width 1440,390] [--kind auto|app|marketing] [--allow ID,...]
+node <skill-directory>/scripts/observe.mjs tells <workspace> <page.html | http://localhost:PORT/path> [--width 1440,390] [--kind auto|app|marketing] [--allow ID,...]
 ```
+
+- **Page:** a file inside the workspace, or a running dev server on `localhost`, `127.0.0.1` or `[::1]`; other hosts are refused. Run it on every page and dialog state you changed, not only the first screen.
+- **Logged-in or stateful views:** evaluate `tells.js` inside the browser session you already drive (signed in, dialog open, data loaded). With Playwright: `await page.evaluate(source + ';snoweTells({kind: "app"})')`, where `source` is the file's text, once per width.
 
 - **Widths:** each `--width` (default 1440 and 390) renders at that exact CSS width and a 900 px height.
 - **Kind:** `auto` infers `app` at the widest width from a tall navigation column or six or more fields and tables, otherwise `marketing`. The copy budget applies to marketing pages only, so pass `--kind` when the guess is wrong.
@@ -518,6 +521,10 @@ node <skill-directory>/scripts/observe.mjs tells <workspace> <page.html> [--widt
 | `viewport-meta` | tell | No `<meta name="viewport">` |
 | `low-contrast-text` | tell | Body text under 4.5:1 against a solid background |
 | `glass-default` | check | Backdrop blur on three or more surfaces |
+| `oversized-control` | tell | A field or button over 44 px or 3.1× its text in a desktop app, or 3.3× its text on a marketing page (widths of 1024 and up) |
+| `mixed-control-sizes` | tell | Fields, or text buttons, in two size groups 1.5× apart outside tables: two control systems on one page |
+| `mixed-radii` | check | More than three corner radii across fields and buttons, pills excluded |
+| `font-families` | check | More than three font families rendering text |
 
 Prose excludes navigation, header, footer, forms, tables, figures, SVG and anything marked `data-visual`, so mark a coded product mock with `data-visual`. Text over images or gradients is skipped by the contrast check; judge it in the render. A clear run proves only that these symptoms are absent: composition, hierarchy, type and the direction still need your review of the whole render.
 
