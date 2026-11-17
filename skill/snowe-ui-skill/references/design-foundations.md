@@ -169,10 +169,12 @@ Choose components by behavior and platform semantics, then style them within the
 
 - Links navigate; buttons act.
 - Form fields keep persistent labels; placeholders are supplemental.
-- Keep native or repository primitives when they meet the task. Custom controls reproduce keyboard, focus, selected, disabled, validation, text scaling and assistive-technology behavior.
+- Keep native or repository primitives for their behavior when they meet the task, but style them into the system: in an authored interface the browser's default look (select arrow and list, focus outline, date, file and number inputs) is unfinished. Restyle the native element, or build a custom listbox or popover when the open state must match the product. Custom controls reproduce keyboard, focus, selected, disabled, validation, text scaling and assistive-technology behavior.
 - Visible control scale follows density, content, input mode and brand; the hit target can grow through transparent non-overlapping space.
 - Full-width, oversized, icon-only, segmented or chip treatments need a behavioral reason. Choose icon-only, text-only or icon-with-text with the [label-mode rules](iconography-system.md#choose-the-control-label-mode); a known utility needs no new icon sourcing.
 - Choose where each task lives with [surfaces-and-disclosure.md](surfaces-and-disclosure.md); keeping everything on one surface needs a reason as much as moving it off.
+
+**Control specimen.** For a new or redesigned system, render every control type the product uses on one page before applying them to screens: buttons by role, text field, search, select and its open list, combobox, checkbox, radio, toggle, segmented control, tabs, date and file inputs, menu, tooltip and a dialog. Show each in idle, hover, focus-visible, open, selected, disabled and error states beside body text. Reject any that looks browser-default or belongs to another product, then build screens from the specimen.
 
 For a button family, resolve visible height, content width, padding, label metrics, icon size and gap, edge treatment and alignment from the accepted reference or system, or from local density and task. Importance can come from placement and contrast instead of a taller, wider button, so a toolbar action, an inline action and a campaign CTA need not share one size. Removing pills does not authorize square corners ([incident](failure-patterns.md#pills-replaced-with-square-buttons)).
 
