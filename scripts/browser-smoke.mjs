@@ -308,7 +308,8 @@ async function launchBrowser(chrome, debugPort, profile) {
     "about:blank",
   ];
   const child = spawn(chrome, args, { stdio: "ignore", windowsHide: true });
-  const deadline = Date.now() + 15_000;
+  // A cold Chrome on a hosted runner can need more than 15 s; a hang still fails, only later.
+  const deadline = Date.now() + 45_000;
   let targets;
   while (Date.now() < deadline) {
     if (child.exitCode !== null) throw new Error(`Chrome exited before CDP became available (code ${child.exitCode}).`);
@@ -324,7 +325,11 @@ async function launchBrowser(chrome, debugPort, profile) {
     await sleep(100);
   }
   const target = targets?.find((candidate) => candidate.type === "page" && candidate.webSocketDebuggerUrl);
-  if (!target) throw new Error("Chrome did not expose a page target within 15 seconds.");
+  if (!target) {
+    // The caller never receives this child, so stop it here or it keeps the process alive until the job times out.
+    child.kill("SIGKILL");
+    throw new Error("Chrome did not expose a page target within 45 seconds.");
+  }
   return { child, target };
 }
 
